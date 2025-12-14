@@ -15,9 +15,12 @@ class Config:
     GOOGLE_SEARCH_ENGINE_ID: str = os.getenv("GOOGLE_SEARCH_ENGINE_ID", "")
     GOOGLE_SEARCH_API_KEY: str = os.getenv("GOOGLE_SEARCH_API_KEY", "")
     
-    # Email Settings
-    NOTIFY_EMAIL: str = os.getenv("NOTIFY_EMAIL", "")
-    GMAIL_ENABLED: bool = os.getenv("GMAIL_ENABLED", "False").lower() == "true"
+    # Gmail
+    NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL")
+    GMAIL_ENABLED = os.getenv("GMAIL_ENABLED", "False").lower() == "true"
+    
+    # API Cache (Development only)
+    USE_API_CACHE = os.getenv("USE_API_CACHE", "False").lower() == "true"
 
     # Target Leagues
     TARGET_LEAGUES: List[str] = ("EPL", "CL")

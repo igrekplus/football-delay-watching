@@ -11,11 +11,11 @@ from src.report_generator import ReportGenerator
 
 # Configure Logging
 # Setup Logging with File Output
-log_dir = os.path.join(config.OUTPUT_DIR, "raw-data")
+log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
 
 today_str = datetime.now().strftime('%Y-%m-%d')
-log_file = os.path.join(log_dir, f"{today_str}_log.md")
+log_file = os.path.join(log_dir, f"{today_str}.log")
 
 # Configure root logger
 logger = logging.getLogger()
@@ -38,10 +38,6 @@ fh = logging.FileHandler(log_file, encoding='utf-8')
 fh.setFormatter(formatter)
 fh.setLevel(logging.INFO)
 logger.addHandler(fh)
-
-# Add Header to Log File
-with open(log_file, 'a', encoding='utf-8') as f:
-    f.write(f"\n\n# Execution Log: {today_str}\n\n")
 
 def main(dry_run=False):
     # The original instruction used `args.dry_run`, but the existing code passes `dry_run` directly.

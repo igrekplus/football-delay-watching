@@ -20,6 +20,26 @@
     | `/teams/statistics` | チームフォーム（直近5試合 W/D/L） |
     | `/fixtures/headtohead` | 過去の対戦成績（H2H） |
 
+> 各エンドポイントで実際に送っているパラメータと、実装が参照しているレスポンス項目の詳細は `docs/api_endpoints.md` を参照。
+
+#### 2.1.5 APIキャッシュ方針
+- 実装: `src/api_cache.py` の `get_with_cache(url, headers, params)` を経由し、`config.USE_API_CACHE=True` のときのみローカル `api_cache/` に JSON を保存・再利用する。キャッシュキーは `URL + params(json, sort_keys=True)` の MD5。
+- パラメータの実態（現行コード）
+    - `/fixtures` : `date`, `league`, `season`（マッチ抽出・チームID取得用途）
+    - `/fixtures/lineups` : `fixture`（ラインナップ）
+    - `/injuries` : `fixture`
+    - `/fixtures` : `id`（チームID再取得に再利用）
+    - `/teams/statistics` : `team`, `season`, `league`（直近フォーム）※現在は league=39 固定
+    - `/players` : `id`, `season`（国籍取得）
+    - `/fixtures/headtohead` : `h2h`, `last`
+- キャッシュしてよい/慎重にすべき基準
+    - **キャッシュ推奨**（結果が準定常・日次で十分）：`/players`（国籍など静的に近い）、`/fixtures/headtohead`、前日固定の `/fixtures`（ターゲット日付ごとにキー分離される）、`/fixtures/lineups`（同一fixture IDに対し再実行時の節約目的）。
+    - **キャッシュ非推奨または短期のみ**：`/injuries`（当日でも変動が多い）、`/teams/statistics`（リーグ指定ミスで誤キャッシュのリスク、リーグID修正後はキャッシュクリア要推奨）。
+    - **禁止/注意**：ライブスコアや進行中データは現仕様で呼んでいないが、同じキャッシュ層を共有する場合は対象外とする。
+- 運用ガイド
+    - デバッグでクォータ節約したい場合のみ `USE_API_CACHE=True` をオンにする。本番定時実行は最新性重視のためデフォルトOFFを推奨。
+    - キャッシュを ON にしたままリーグIDやクエリ条件を変更した場合、古いキャッシュが混入する可能性があるため `api_cache/` を削除してから再実行する。
+
 #### 2.1.1 負傷者・出場停止情報
 *   `/injuries?fixture={id}` で試合IDに紐づく負傷者リストを取得
 *   レスポンス: 選手名、チーム名、負傷理由（Knee Injury, Muscle Injury 等）

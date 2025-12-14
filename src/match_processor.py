@@ -71,7 +71,8 @@ class MatchProcessor:
             return self._fetch_matches_from_api()
 
     def _fetch_matches_from_api(self) -> List[MatchData]:
-        import requests
+        # import requests # Removed requests import
+        from src.api_cache import get_with_cache
         from datetime import datetime, timedelta
         import pytz
 
@@ -110,7 +111,7 @@ class MatchProcessor:
             }
             
             try:
-                response = requests.get(url, headers=headers, params=querystring)
+                response = get_with_cache(url, headers=headers, params=querystring)
                 
                 # Capture Rate Limit Info
                 if "x-ratelimit-requests-remaining" in response.headers:

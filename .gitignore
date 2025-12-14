@@ -17,6 +17,7 @@ Thumbs.db
 .idea/
 
 # Debug outputs
+api_cache/
 reports_debug/
 
 # Generated reports (may contain copyrighted content)

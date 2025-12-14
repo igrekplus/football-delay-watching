@@ -21,7 +21,8 @@ class FactsService:
             self._fetch_facts_from_api(match)
 
     def _fetch_facts_from_api(self, match: MatchData):
-        import requests
+        # import requests # Removed requests import
+        from src.api_cache import get_with_cache
         
         headers = {
             "X-RapidAPI-Key": config.RAPIDAPI_KEY,
@@ -41,13 +42,14 @@ class FactsService:
         self._fetch_h2h(match, headers)
     
     def _fetch_lineups(self, match: MatchData, headers: dict):
-        import requests
+        # import requests # Removed
+        from src.api_cache import get_with_cache
         
         url = "https://api-football-v1.p.rapidapi.com/v3/fixtures/lineups"
         querystring = {"fixture": match.id}
         
         try:
-            response = requests.get(url, headers=headers, params=querystring)
+            response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
             # Collect player IDs for nationality lookup
@@ -76,8 +78,8 @@ class FactsService:
                     match.away_lineup = start_xi
                     match.away_bench = subs
             
-            # Fetch nationalities for starters (skip in debug mode to save quota)
-            if not config.DEBUG_MODE and player_ids:
+            # Fetch nationalities for starters（実API利用時はデバッグでも取得し、キャッシュが有効ならキャッシュを使用）
+            if not config.USE_MOCK_DATA and player_ids:
                 self._fetch_player_nationalities(match, headers, player_ids)
 
         except Exception as e:
@@ -86,7 +88,8 @@ class FactsService:
     
     def _fetch_player_nationalities(self, match: MatchData, headers: dict, player_ids: list):
         """Fetch nationality for each player using Players API"""
-        import requests
+        # import requests # Removed
+        from src.api_cache import get_with_cache
         
         # Get season year
         import pytz
@@ -100,7 +103,7 @@ class FactsService:
                 url = "https://api-football-v1.p.rapidapi.com/v3/players"
                 querystring = {"id": player_id, "season": season}
                 
-                response = requests.get(url, headers=headers, params=querystring)
+                response = get_with_cache(url, headers=headers, params=querystring)
                 data = response.json()
                 
                 if data.get('response'):
@@ -116,13 +119,14 @@ class FactsService:
                 continue  # Continue with next player
     
     def _fetch_injuries(self, match: MatchData, headers: dict):
-        import requests
+        # import requests # Removed
+        from src.api_cache import get_with_cache
         
         url = "https://api-football-v1.p.rapidapi.com/v3/injuries"
         querystring = {"fixture": match.id}
         
         try:
-            response = requests.get(url, headers=headers, params=querystring)
+            response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
             injuries = []
@@ -142,14 +146,15 @@ class FactsService:
             # Keep default "不明"
     
     def _fetch_team_form(self, match: MatchData, headers: dict):
-        import requests
+        # import requests # Removed
+        from src.api_cache import get_with_cache
         
         # Get fixture details which includes team IDs
         url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
         querystring = {"id": match.id}
         
         try:
-            response = requests.get(url, headers=headers, params=querystring)
+            response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
             if data.get('response'):
@@ -165,7 +170,8 @@ class FactsService:
             logger.error(f"Error fetching fixture details for match {match.id}: {e}")
     
     def _get_team_form(self, team_id: int, headers: dict) -> str:
-        import requests
+        # import requests # Removed
+        from src.api_cache import get_with_cache
         
         url = "https://api-football-v1.p.rapidapi.com/v3/teams/statistics"
         # Use current season - simplified approach
@@ -178,7 +184,7 @@ class FactsService:
         querystring = {"team": team_id, "season": season, "league": 39}  # EPL
         
         try:
-            response = requests.get(url, headers=headers, params=querystring)
+            response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
             if data.get('response'):
@@ -240,14 +246,15 @@ class FactsService:
     
     def _fetch_h2h(self, match: MatchData, headers: dict):
         """Fetch head-to-head history between the two teams"""
-        import requests
+        # import requests # Removed
+        from src.api_cache import get_with_cache
         
         # First, get team IDs from fixture data
         url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
         querystring = {"id": match.id}
         
         try:
-            response = requests.get(url, headers=headers, params=querystring)
+            response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
             if not data.get('response'):
@@ -261,7 +268,7 @@ class FactsService:
             h2h_url = "https://api-football-v1.p.rapidapi.com/v3/fixtures/headtohead"
             h2h_params = {"h2h": f"{home_id}-{away_id}", "last": 5}
             
-            h2h_response = requests.get(h2h_url, headers=headers, params=h2h_params)
+            h2h_response = get_with_cache(h2h_url, headers=headers, params=h2h_params)
             h2h_data = h2h_response.json()
             
             if not h2h_data.get('response'):
