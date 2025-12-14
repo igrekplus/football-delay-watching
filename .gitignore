@@ -21,3 +21,7 @@ reports_debug/
 
 # Generated reports (may contain copyrighted content)
 reports/
+
+# Gmail OAuth credentials (sensitive)
+credentials.json
+token.json

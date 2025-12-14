@@ -37,6 +37,11 @@ jobs:
         GOOGLE_SEARCH_ENGINE_ID: ${{ secrets.GOOGLE_SEARCH_ENGINE_ID }}
         GOOGLE_SEARCH_API_KEY: ${{ secrets.GOOGLE_SEARCH_API_KEY }}
         USE_MOCK_DATA: "False"
+        # Gmail API Settings
+        GMAIL_ENABLED: "True"
+        NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+        GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
+        GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
       run: |
         python main.py
 

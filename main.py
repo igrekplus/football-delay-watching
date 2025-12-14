@@ -66,7 +66,16 @@ def main(dry_run=False):
     
     # 4. Report Generation
     generator = ReportGenerator()
-    generator.generate(matches)
+    report, image_paths = generator.generate(matches)
+    
+    # 5. Email Notification (if enabled)
+    if config.GMAIL_ENABLED and config.NOTIFY_EMAIL:
+        from src.email_service import send_daily_report
+        logger.info(f"Sending email notification to {config.NOTIFY_EMAIL}...")
+        if send_daily_report(report, image_paths):
+            logger.info("Email sent successfully!")
+        else:
+            logger.warning("Failed to send email notification.")
     
     logger.info("Done.")
 

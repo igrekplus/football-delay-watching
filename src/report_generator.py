@@ -62,11 +62,20 @@ class ReportGenerator:
         lines.extend(positions)
         return '\n    - '.join(lines)
 
-    def generate(self, matches: List[MatchData]) -> str:
-        # Generates markdown report string
+    def generate(self, matches: List[MatchData]) -> tuple:
+        """
+        Generates markdown report string
+        
+        Returns:
+            tuple: (report_content: str, image_paths: List[str])
+        """
         lines = []
+        image_paths = []  # 生成された画像パスを収集
+        
         lines.append(self._write_header(matches))
-        lines.append(self._write_match_reports(matches))
+        report_lines, report_images = self._write_match_reports(matches)
+        lines.append(report_lines)
+        image_paths.extend(report_images)
         lines.append(self._write_excluded_list(matches))
         
         report = "\n".join(lines)
@@ -88,7 +97,7 @@ class ReportGenerator:
             f.write(report)
             
         logger.info(f"Report generated: {filename}")
-        return report
+        return report, image_paths
 
     def _write_header(self, matches: List[MatchData]) -> str:
         target_matches = [m for m in matches if m.is_target]
@@ -98,8 +107,15 @@ class ReportGenerator:
         lines.append("\n")
         return "\n".join(lines)
 
-    def _write_match_reports(self, matches: List[MatchData]) -> str:
+    def _write_match_reports(self, matches: List[MatchData]) -> tuple:
+        """
+        試合レポートを生成
+        
+        Returns:
+            tuple: (report_string: str, image_paths: List[str])
+        """
         lines = []
+        image_paths = []
         target_matches = [m for m in matches if m.is_target]
         
         for i, match in enumerate(target_matches, 1):
@@ -143,8 +159,10 @@ class ReportGenerator:
             )
             if home_img:
                 lines.append(f"![{match.home_team}]({home_img})")
+                image_paths.append(home_img)
             if away_img:
                 lines.append(f"![{match.away_team}]({away_img})")
+                image_paths.append(away_img)
             lines.append("")
             
             lines.append("### ■ ニュース要約（600〜1,000字）")
@@ -165,7 +183,7 @@ class ReportGenerator:
             lines.append(f"- {match.error_status}")
             lines.append("\n")
             
-        return "\n".join(lines)
+        return "\n".join(lines), image_paths
 
     def _write_excluded_list(self, matches: List[MatchData]) -> str:
         lines = ["## 選外試合リスト\n"]

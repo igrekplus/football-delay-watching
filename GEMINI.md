@@ -21,6 +21,7 @@
 │   ├── facts_service.py     # スタメン・フォーメーション・国籍取得
 │   ├── news_service.py      # ニュース収集・Gemini要約
 │   ├── report_generator.py  # Markdownレポート生成
+│   ├── email_service.py     # Gmail APIメール送信
 │   ├── formation_image.py   # フォーメーション図生成（Pillow）
 │   ├── nationality_flags.py # 国名→国旗絵文字マッピング
 │   └── spoiler_filter.py    # ネタバレフィルター
@@ -52,6 +53,26 @@ USE_MOCK_DATA=False python main.py
 | `GOOGLE_API_KEY` | Gemini API | [Google AI Studio](https://aistudio.google.com/app/apikey) |
 | `GOOGLE_SEARCH_ENGINE_ID` | Custom Search ID | [Programmable Search](https://programmablesearchengine.google.com/) |
 | `GOOGLE_SEARCH_API_KEY` | Custom Search Key | [GCP Console](https://console.cloud.google.com/apis/credentials) |
+| `GMAIL_TOKEN` | Gmail OAuth Token | `tests/setup_gmail_oauth.py` で生成 |
+| `GMAIL_CREDENTIALS` | Gmail OAuth Client | GCP Console → OAuth 2.0 Client |
+| `NOTIFY_EMAIL` | 送信先メールアドレス | 自分のGmail |
+| `GMAIL_ENABLED` | メール送信有効化 | `True` / `False` |
+
+### Gmail API セットアップ
+
+```bash
+# 1. GCP Console で Gmail API を有効化
+# 2. OAuth 2.0 クライアントID（デスクトップアプリ）を作成
+# 3. credentials.json をダウンロード
+
+# 4. 初回認証（ブラウザが開く）
+python tests/setup_gmail_oauth.py
+
+# 5. GitHub Secrets に登録
+gh secret set GMAIL_TOKEN < token.json
+gh secret set GMAIL_CREDENTIALS < credentials.json
+gh secret set NOTIFY_EMAIL --body 'your-email@gmail.com'
+```
 
 ## 🚀 GitHub連携
 
@@ -134,6 +155,7 @@ gh repo edit --delete-branch-on-merge
 
 | 日付 | 内容 |
 |------|------|
+| 2025-12-14 | Gmail API経由のメール配信機能追加（Issue #5） |
 | 2025-12-14 | Issue #2,#3 対応（ポジション別スタメン表示、国旗絵文字追加） |
 | 2025-12-14 | GitHub Actions設定完了、Secrets連携 |
 | 2025-12-14 | README作成、ドキュメント整理 |
@@ -144,3 +166,30 @@ gh repo edit --delete-branch-on-merge
 - **デバッグモード**: 国籍取得をスキップしてクォータ節約
 - **Issueテンプレート**: 背景→課題→対応方針→完了条件 の形式
 - **コミットメッセージ**: `Closes #N` でIssue自動クローズ
+
+## 🔒 セキュリティ注意事項（AIアシスタント向け）
+
+> **⚠️ 機密ファイルは必ず `.gitignore` に追加すること**
+
+以下のファイルは **絶対にリポジトリにコミットしてはならない**:
+
+| ファイル種別 | 例 | 対応 |
+|-------------|-----|------|
+| API認証トークン | `token.json`, `*_token.json` | `.gitignore` に追加 |
+| OAuth クレデンシャル | `credentials.json`, `client_secret_*.json` | `.gitignore` に追加 |
+| 環境変数ファイル | `.env`, `.env.local` | `.gitignore` に追加（設定済み） |
+| 秘密鍵・証明書 | `*.pem`, `*.key` | `.gitignore` に追加 |
+
+### AI開発時のルール
+
+1. **ファイル作成前に確認**: 機密情報を含むファイルを作成する前に、`.gitignore` に追加されているか確認
+2. **ユーザーに確認**: 不明な場合は「このファイルを `.gitignore` に追加しますか？」と確認
+3. **デフォルトで安全側**: 迷ったら `.gitignore` に追加する
+
+```bash
+# 現在の .gitignore に含まれる機密ファイル
+credentials.json
+token.json
+.env
+.env.local
+```

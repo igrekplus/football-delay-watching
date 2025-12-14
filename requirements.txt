@@ -1,5 +1,9 @@
 python-dotenv
 requests
-pytz
 google-generativeai
+pytz
 Pillow>=10.0.0
+google-auth
+google-auth-oauthlib
+google-api-python-client
+markdown

@@ -67,13 +67,25 @@
         *   権限: `contents: write` が必要。
 
 ### 2.4 閲覧インターフェース (Viewing Interface)
-*   **方式**: **GitHubリポジトリ直接閲覧 (Option A)**
-*   **閲覧場所**: `reports/YYYY-MM-DD.md` (例: `reports/2025-12-07.md`)
-    *   実行日ごとのファイルとして保存・蓄積される。
-*   **更新フロー**: Botが毎日新しいファイルを作成し、リポジトリに追加（Commit & Push）する。
+*   **方式**: **メール配信 (Primary)** + GitHubリポジトリ保存 (Backup)
+*   **閲覧場所**: 
+    *   **メール**: 毎日指定のGmailアドレスにHTMLメールで配信
+    *   **リポジトリ**: `reports/YYYY-MM-DD.md` (バックアップ用)
+*   **更新フロー**: 毎日07:00 JSTにレポート生成後、メール送信
 *   **アーカイブ (Reports Index)**:
     *   すべての過去レポートは `reports/` ディレクトリに保存されます。
     *   GitHub上のファイル一覧から日付 (`YYYY-MM-DD.md`) を選択して閲覧可能です。
+
+### 2.5 メール配信サービス (Email Delivery)
+*   **サービス**: **Gmail API** (OAuth2認証)
+*   **選定理由**: 個人利用で無料、既存のGoogleアカウントを流用可能
+*   **機能**:
+    *   Markdown → HTML変換（CSSスタイル付き）
+    *   フォーメーション画像のインライン添付
+    *   リッチなHTMLテンプレートで視認性向上
+*   **認証方式**: OAuth2 (リフレッシュトークン使用)
+    *   初回のみローカルでブラウザ認証が必要
+    *   以降はリフレッシュトークンで自動更新
 
 ## 3. 必要なアカウントとAPIキー
 詳細はローカル開発環境の `.env` および GitHub Secrets に設定する。
@@ -83,6 +95,8 @@
 | **API-Football** | `RAPIDAPI_KEY` | 試合データ取得 |
 | **Gemini API** | `GOOGLE_API_KEY` | AI要約・検閲 |
 | **Google Search** | `GOOGLE_SEARCH_API_KEY` <br> `GOOGLE_SEARCH_ENGINE_ID` | 記事検索 |
+| **Gmail API** | `GMAIL_TOKEN` <br> `GMAIL_CREDENTIALS` | メール送信認証 |
+| **メール設定** | `NOTIFY_EMAIL` <br> `GMAIL_ENABLED` | 送信先・有効化フラグ |
 
 ## 4. プログラム構造
 ```mermaid
@@ -97,6 +111,8 @@ graph TD
     G -- Gemini API --> I[Summary & Preview]
     B --> J{Report Generation}
     J --> K[daily_report.md]
+    J --> M{Email Service}
+    M -- Gmail API --> N[HTML Email with Images]
     K --> L[Git Commit & Push]
 ```
 
