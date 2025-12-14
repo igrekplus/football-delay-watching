@@ -29,5 +29,4 @@ reports/
 
 # Temporary files & Logs
 logs/
-temp/
 *.log
