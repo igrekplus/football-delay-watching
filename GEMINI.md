@@ -58,21 +58,9 @@ USE_MOCK_DATA=False python main.py
 | `NOTIFY_EMAIL` | 送信先メールアドレス | 自分のGmail |
 | `GMAIL_ENABLED` | メール送信有効化 | `True` / `False` |
 
-### Gmail API セットアップ
+### Gmail API セットアップ詳細
 
-```bash
-# 1. GCP Console で Gmail API を有効化
-# 2. OAuth 2.0 クライアントID（デスクトップアプリ）を作成
-# 3. credentials.json をダウンロード
-
-# 4. 初回認証（ブラウザが開く）
-python tests/setup_gmail_oauth.py
-
-# 5. GitHub Secrets に登録
-gh secret set GMAIL_TOKEN < token.json
-gh secret set GMAIL_CREDENTIALS < credentials.json
-gh secret set NOTIFY_EMAIL --body 'your-email@gmail.com'
-```
+詳細は [README.md](./README.md#gmail-api-セットアップ詳細) を参照してください。
 
 ## 🚀 GitHub連携
 
@@ -188,8 +176,8 @@ gh repo edit --delete-branch-on-merge
 
 ```bash
 # 現在の .gitignore に含まれる機密ファイル
-credentials.json
-token.json
+.gmail_credentials.json
+.gmail_token.json
 .env
 .env.local
 ```

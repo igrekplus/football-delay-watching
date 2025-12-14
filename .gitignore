@@ -23,5 +23,5 @@ reports_debug/
 reports/
 
 # Gmail OAuth credentials (sensitive)
-credentials.json
-token.json
+.gmail_credentials.json
+.gmail_token.json

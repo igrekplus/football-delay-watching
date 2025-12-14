@@ -24,8 +24,8 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 
 def main():
     creds = None
-    credentials_file = 'credentials.json'
-    token_file = 'token.json'
+    credentials_file = '.gmail_credentials.json'
+    token_file = '.gmail_token.json'
     
     # 既存のトークンがあれば読み込み
     if os.path.exists(token_file):

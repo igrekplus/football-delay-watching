@@ -83,6 +83,42 @@ USE_MOCK_DATA=True python main.py
 | `GOOGLE_API_KEY` | Gemini API用キー |
 | `GOOGLE_SEARCH_ENGINE_ID` | 検索エンジンID |
 | `GOOGLE_SEARCH_API_KEY` | Custom Search API用キー |
+| `GMAIL_TOKEN` | Gmail OAuthトークン（`tests/setup_gmail_oauth.py` で生成）|
+| `GMAIL_CREDENTIALS` | Gmail OAuthクライアント情報（GCPから取得）|
+| `NOTIFY_EMAIL` | 通知先メールアドレス |
+| `GMAIL_ENABLED` | `True` で有効化 |
+
+### Gmail API セットアップ詳細
+
+#### 1. OAuth 同意画面 (OAuth Consent Screen)
+- **User Type**: **External** (外部) を選択
+- **アプリ情報**: 任意の名前（例: `football-report`）、メールアドレスを入力
+- **スコープ**: デフォルトのままでOK
+- **テストユーザー (Test Users)**: **【重要】** 
+    - 自分のGmailアドレスを必ず追加してください。
+    - これを忘れると `Error 403: access_denied` になります。
+
+#### 2. 認証情報の作成
+- **認証情報の種類**: **OAuth クライアント ID**
+- **アプリケーションの種類**: **デスクトップ アプリ**
+- **名前**: 任意（例: `Desktop client 1`）
+- 作成後、JSONをダウンロードして `.gmail_credentials.json` にリネームしてプロジェクトルートに配置。
+
+#### 3. 初回認証 (Local)
+```bash
+python tests/setup_gmail_oauth.py
+```
+- ブラウザが開いたら、自分のGoogleアカウントでログイン。
+- 「このアプリはGoogleで確認されていません」と出た場合：
+    - 「詳細」→「football-report（安全ではないページ）に移動」をクリックして進める。
+
+#### 4. GitHub Secrets への登録
+```bash
+gh secret set GMAIL_TOKEN < .gmail_token.json
+gh secret set GMAIL_CREDENTIALS < .gmail_credentials.json
+gh secret set NOTIFY_EMAIL --body 'your-email@gmail.com'
+gh secret set GMAIL_ENABLED --body 'True'
+```
 
 ## 🤖 AI開発について
 
@@ -115,4 +151,3 @@ MIT License
 
 - [API-Football](https://www.api-football.com/) - 試合データ提供
 - [Google AI](https://ai.google/) - Gemini API
-- [Cursor](https://cursor.sh/) - AI統合IDE
