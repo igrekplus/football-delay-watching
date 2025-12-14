@@ -1,0 +1,143 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "files.exclude": {
+      "**/__pycache__": true,
+      "reports": true,
+      "reports_debug": true,
+      "debug_output.txt": true,
+      "**/*.pyc": true
+    },
+    "search.exclude": {
+      "**/__pycache__": true,
+      "reports": true,
+      "reports_debug": true
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+      "tests"
+    ],
+    "python.analysis.typeCheckingMode": "basic"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-toolsai.jupyter",
+      "streetsidesoftware.code-spell-checker",
+      "GitHub.vscode-github-actions"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Run main (prod)",
+        "type": "shell",
+        "command": "${config:python.defaultInterpreterPath}",
+        "args": [
+          "main.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "USE_MOCK_DATA": "False",
+            "DEBUG_MODE": "False"
+          }
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Run main (debug real API)",
+        "type": "shell",
+        "command": "${config:python.defaultInterpreterPath}",
+        "args": [
+          "main.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "USE_MOCK_DATA": "False",
+            "DEBUG_MODE": "True"
+          }
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Run main (mock)",
+        "type": "shell",
+        "command": "${config:python.defaultInterpreterPath}",
+        "args": [
+          "main.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "USE_MOCK_DATA": "True",
+            "DEBUG_MODE": "False"
+          }
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Verify APIs (pytest)",
+        "type": "shell",
+        "command": "${config:python.defaultInterpreterPath}",
+        "args": [
+          "-m",
+          "pytest",
+          "tests"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "problemMatcher": "$pytest-python"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug main (prod)",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/main.py",
+        "env": {
+          "USE_MOCK_DATA": "False",
+          "DEBUG_MODE": "False"
+        },
+        "justMyCode": true
+      },
+      {
+        "name": "Debug main (debug real API)",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/main.py",
+        "env": {
+          "USE_MOCK_DATA": "False",
+          "DEBUG_MODE": "True"
+        },
+        "justMyCode": true
+      },
+      {
+        "name": "Debug main (mock)",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/main.py",
+        "env": {
+          "USE_MOCK_DATA": "True",
+          "DEBUG_MODE": "False"
+        },
+        "justMyCode": true
+      }
+    ]
+  }
+}
