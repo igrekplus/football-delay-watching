@@ -24,6 +24,9 @@ load_dotenv()
 
 from src.email_service import EmailService, send_daily_report
 
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 def main():
     print("="*60)
     print("Gmail API テスト")
