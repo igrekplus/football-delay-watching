@@ -50,11 +50,22 @@ class FactsService:
             response = requests.get(url, headers=headers, params=querystring)
             data = response.json()
             
+            # Collect player IDs for nationality lookup
+            player_ids = []
+            
             for team_data in data.get('response', []):
                 team_name = team_data['team']['name']
                 formation = team_data['formation']
-                start_xi = [p['player']['name'] for p in team_data['startXI']]
-                subs = [p['player']['name'] for p in team_data['substitutes']]
+                
+                # Extract player names and IDs
+                start_xi_data = [(p['player']['name'], p['player']['id']) for p in team_data['startXI']]
+                subs_data = [(p['player']['name'], p['player']['id']) for p in team_data['substitutes']]
+                
+                start_xi = [p[0] for p in start_xi_data]
+                subs = [p[0] for p in subs_data]
+                
+                # Collect player IDs for starters only (to save API quota)
+                player_ids.extend([p[1] for p in start_xi_data])
                 
                 if team_name == match.home_team:
                     match.home_formation = formation
@@ -64,10 +75,45 @@ class FactsService:
                     match.away_formation = formation
                     match.away_lineup = start_xi
                     match.away_bench = subs
+            
+            # Fetch nationalities for starters (skip in debug mode to save quota)
+            if not config.DEBUG_MODE and player_ids:
+                self._fetch_player_nationalities(match, headers, player_ids)
 
         except Exception as e:
             logger.error(f"Error fetching lineups for match {match.id}: {e}")
             match.error_status = config.ERROR_PARTIAL
+    
+    def _fetch_player_nationalities(self, match: MatchData, headers: dict, player_ids: list):
+        """Fetch nationality for each player using Players API"""
+        import requests
+        
+        # Get season year
+        import pytz
+        from datetime import datetime
+        jst = pytz.timezone('Asia/Tokyo')
+        now = datetime.now(jst)
+        season = now.year if now.month >= 8 else now.year - 1
+        
+        for player_id in player_ids:
+            try:
+                url = "https://api-football-v1.p.rapidapi.com/v3/players"
+                querystring = {"id": player_id, "season": season}
+                
+                response = requests.get(url, headers=headers, params=querystring)
+                data = response.json()
+                
+                if data.get('response'):
+                    player_data = data['response'][0]
+                    player_name = player_data['player']['name']
+                    nationality = player_data['player'].get('nationality', '')
+                    
+                    if nationality:
+                        match.player_nationalities[player_name] = nationality
+                        
+            except Exception as e:
+                logger.warning(f"Error fetching nationality for player {player_id}: {e}")
+                continue  # Continue with next player
     
     def _fetch_injuries(self, match: MatchData, headers: dict):
         import requests
@@ -165,6 +211,32 @@ class FactsService:
         match.away_recent_form = "L-D-W-L-D"
         match.h2h_summary = "過去5試合: Home 2勝, 引分 1, Away 2勝"
         match.injuries_info = "Player A(Home): ハムストリング, Player B(Away): 出場停止"
+        
+        # Mock nationalities
+        match.player_nationalities = {
+            "Home Player 1": "England",
+            "Home Player 2": "Portugal",
+            "Home Player 3": "Belgium",
+            "Home Player 4": "England",
+            "Home Player 5": "Norway",
+            "Home Player 6": "Spain",
+            "Home Player 7": "Germany",
+            "Home Player 8": "England",
+            "Home Player 9": "Brazil",
+            "Home Player 10": "Argentina",
+            "Home Player 11": "England",
+            "Away Player 1": "Spain",
+            "Away Player 2": "France",
+            "Away Player 3": "Brazil",
+            "Away Player 4": "England",
+            "Away Player 5": "Japan",
+            "Away Player 6": "Ghana",
+            "Away Player 7": "Norway",
+            "Away Player 8": "England",
+            "Away Player 9": "Nigeria",
+            "Away Player 10": "France",
+            "Away Player 11": "England",
+        }
     
     def _fetch_h2h(self, match: MatchData, headers: dict):
         """Fetch head-to-head history between the two teams"""

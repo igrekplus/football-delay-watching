@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 from .match_processor import MatchData
 import logging
 from .spoiler_filter import SpoilerFilter
 from .formation_image import generate_formation_image
+from .nationality_flags import format_player_with_flag
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -11,6 +12,55 @@ logger = logging.getLogger(__name__)
 class ReportGenerator:
     def __init__(self):
         pass
+
+    def _format_lineup_by_position(self, lineup: List[str], formation: str, team_name: str, nationalities: Dict[str, str] = None) -> str:
+        """
+        フォーメーション情報を元に選手をポジション別に振り分けて表示
+        例: 4-3-3 -> GK:1, DF:4, MF:3, FW:3
+        国籍情報がある場合は国旗絵文字を追加
+        """
+        if nationalities is None:
+            nationalities = {}
+            
+        def format_player(name: str) -> str:
+            nationality = nationalities.get(name, "")
+            return format_player_with_flag(name, nationality)
+        
+        if not lineup or len(lineup) != 11:
+            formatted = [format_player(p) for p in lineup] if lineup else []
+            return ', '.join(formatted) if formatted else "不明"
+        
+        # フォーメーションをパース (例: "4-3-3" -> [4, 3, 3])
+        try:
+            parts = [int(x) for x in formation.split('-')]
+        except (ValueError, AttributeError):
+            # パース失敗時はカンマ区切りにフォールバック
+            formatted = [format_player(p) for p in lineup]
+            return ', '.join(formatted)
+        
+        # GK は常に1人、残りをフォーメーションで振り分け
+        gk = format_player(lineup[0])
+        outfield = lineup[1:]
+        
+        positions = []
+        idx = 0
+        position_names = ['DF', 'MF', 'FW']
+        
+        for i, count in enumerate(parts):
+            if idx + count <= len(outfield):
+                players = [format_player(p) for p in outfield[idx:idx + count]]
+                pos_name = position_names[i] if i < len(position_names) else 'FW'
+                positions.append(f"{pos_name}: {', '.join(players)}")
+                idx += count
+        
+        # 残りの選手がいれば FW に追加
+        if idx < len(outfield):
+            remaining = [format_player(p) for p in outfield[idx:]]
+            positions.append(f"FW: {', '.join(remaining)}")
+        
+        lines = [f"GK: {gk}"]
+        lines.extend(positions)
+        return '\n    - '.join(lines)
 
     def generate(self, matches: List[MatchData]) -> str:
         # Generates markdown report string
@@ -59,8 +109,19 @@ class ReportGenerator:
             lines.append(f"- 大会：{match.competition}")
             lines.append(f"- 日時：{match.kickoff_jst} / {match.kickoff_local}")
             lines.append(f"- 会場：{match.venue}")
-            lines.append(f"- スタメン（Home）：{', '.join(match.home_lineup)}")
-            lines.append(f"- スタメン（Away）：{', '.join(match.away_lineup)}")
+            
+            # ポジション別スタメン表示（国籍情報付き）
+            home_lineup_formatted = self._format_lineup_by_position(
+                match.home_lineup, match.home_formation, match.home_team, match.player_nationalities
+            )
+            away_lineup_formatted = self._format_lineup_by_position(
+                match.away_lineup, match.away_formation, match.away_team, match.player_nationalities
+            )
+            lines.append(f"- スタメン（{match.home_team}）：")
+            lines.append(f"    - {home_lineup_formatted}")
+            lines.append(f"- スタメン（{match.away_team}）：")
+            lines.append(f"    - {away_lineup_formatted}")
+            
             lines.append(f"- ベンチ（Home）：{', '.join(match.home_bench)}")
             lines.append(f"- ベンチ（Away）：{', '.join(match.away_bench)}")
             lines.append(f"- フォーメーション：Home {match.home_formation} / Away {match.away_formation}")

@@ -29,6 +29,9 @@ class MatchData:
     home_recent_form: str = "" # W-L-D
     away_recent_form: str = ""
     
+    # Player Nationalities (name -> nationality mapping)
+    player_nationalities: dict = None  # {"Player Name": "England", ...}
+    
     # Injuries and Suspensions
     injuries_info: str = "不明"  # 負傷者・出場停止情報
     
@@ -50,6 +53,7 @@ class MatchData:
         if self.away_lineup is None: self.away_lineup = []
         if self.home_bench is None: self.home_bench = []
         if self.away_bench is None: self.away_bench = []
+        if self.player_nationalities is None: self.player_nationalities = {}
 
 class MatchProcessor:
     def __init__(self):
