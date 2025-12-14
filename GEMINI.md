@@ -6,8 +6,8 @@
 
 | 項目 | 内容 |
 |------|------|
-| IDE | Cursor (VS Code fork with AI) |
-| AIアシスタント | Claude (Anthropic) via Cursor |
+| IDE | Antigravity |
+| AIアシスタント | Claude Opus 4.5 (Anthropic) |
 | 開発スタイル | 会話ベースの反復開発 |
 
 ## 📂 プロジェクト構造
