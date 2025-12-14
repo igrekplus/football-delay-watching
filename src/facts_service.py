@@ -164,6 +164,7 @@ class FactsService:
         match.home_recent_form = "W-W-D-W-W"
         match.away_recent_form = "L-D-W-L-D"
         match.h2h_summary = "過去5試合: Home 2勝, 引分 1, Away 2勝"
+        match.injuries_info = "Player A(Home): ハムストリング, Player B(Away): 出場停止"
     
     def _fetch_h2h(self, match: MatchData, headers: dict):
         """Fetch head-to-head history between the two teams"""

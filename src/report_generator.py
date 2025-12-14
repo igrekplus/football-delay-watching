@@ -121,5 +121,11 @@ class ReportGenerator:
                 lines.append(f"- {key}: {info}")
             # Static note for Google APIs
             lines.append("- Google Custom Search API: Check Cloud Console (Quota: 100/day free)")
+        
+        # Append execution timestamp
+        import pytz
+        jst = pytz.timezone('Asia/Tokyo')
+        now_jst = datetime.now(jst).strftime('%Y-%m-%d %H:%M:%S')
+        lines.append(f"\n---\n*レポート生成日時: {now_jst} JST*")
             
         return "\n".join(lines)
