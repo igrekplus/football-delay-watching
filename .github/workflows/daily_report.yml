@@ -40,19 +40,30 @@ jobs:
       run: |
         python main.py
 
-    - name: Commit and Push Report
+    - name: Verify Report Generated
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
+        echo "=== Report Generation Check ==="
+        REPORT_FILE=$(ls -t reports/*.md 2>/dev/null | head -1)
         
-        # Add the reports directory
-        git add reports/
-        
-        # Check if there are changes to commit (i.e. new file added)
-        if [[ `git status --porcelain` ]]; then
-          today=$(date +'%Y-%m-%d')
-          git commit -m "Add viewing guide for $today [skip ci]"
-          git push
-        else
-          echo "No changes to commit"
+        if [ -z "$REPORT_FILE" ]; then
+          echo "❌ ERROR: No report file found!"
+          exit 1
         fi
+        
+        echo "✅ Report generated: $REPORT_FILE"
+        echo ""
+        echo "=== Report Summary (first 50 lines) ==="
+        head -50 "$REPORT_FILE"
+        echo ""
+        echo "=== Report Stats ==="
+        echo "Lines: $(wc -l < "$REPORT_FILE")"
+        echo "Characters: $(wc -c < "$REPORT_FILE")"
+        echo ""
+        echo "=== End of Summary ==="
+        
+    # TODO: Add email notification step here
+    # - name: Send Email Notification
+    #   uses: dawidd6/action-send-mail@v3
+    #   with:
+    #     server_address: smtp.gmail.com
+    #     ...
