@@ -1,0 +1,23 @@
+# Environment
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Debug outputs
+reports_debug/
+
+# Generated reports (may contain copyrighted content)
+reports/

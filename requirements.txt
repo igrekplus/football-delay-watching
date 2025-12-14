@@ -1,0 +1,5 @@
+python-dotenv
+requests
+pytz
+google-generativeai
+Pillow>=10.0.0

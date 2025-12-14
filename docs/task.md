@@ -1,0 +1,48 @@
+- [x] Planning & Setup <!-- id: 0 -->
+    - [x] Create implementation plan <!-- id: 1 -->
+    - [x] Setup Python project structure <!-- id: 2 -->
+- [x] Architecture Proposal <!-- id: 17 -->
+    - [x] Draft Architecture Options (draft_architecture.md) <!-- id: 18 -->
+    - [x] Create System Design Document (system_design.md) <!-- id: 22 -->
+- [x] Environment Configuration <!-- id: 19 -->
+    - [x] Create .env.example <!-- id: 20 -->
+    - [x] Update config.py to load secrets <!-- id: 21 -->
+- [x] Core Logic Implementation <!-- id: 3 -->
+    - [x] Match Extraction (3.1) & Selection (3.2) <!-- id: 4 -->
+    - [x] Facts Acquisition (3.3) <!-- id: 5 -->
+    - [x] News Collection & Filtering (3.4) <!-- id: 6 -->
+- [x] Content Generation Information <!-- id: 7 -->
+    - [x] News Summarization (3.5) <!-- id: 8 -->
+    - [x] Tactical Preview (3.6) <!-- id: 9 -->
+    - [x] Spoiler Censorship (3.7) <!-- id: 10 -->
+- [x] Reporting & Output <!-- id: 11 -->
+    - [x] Report Generation (3.8) <!-- id: 12 -->
+    - [x] Excluded List & Error Handling (3.9, 3.10) <!-- id: 13 -->
+- [x] Verification <!-- id: 14 -->
+    - [x] Unit Testing for Filters <!-- id: 15 -->
+    - [x] End-to-End Dry Run <!-- id: 16 -->
+- [x] Real API Integration <!-- id: 23 -->
+    - [x] Match Extraction (API-Football) <!-- id: 24 -->
+    - [x] Facts Acquisition (API-Football) <!-- id: 25 -->
+    - [x] News Collection (Google Search API) <!-- id: 26 -->
+    - [x] Content Generation (Gemini API) <!-- id: 27 -->
+- [x] API Verification Scripts <!-- id: 28 -->
+    - [x] Create verify_api_football.py <!-- id: 29 -->
+    - [x] Create verify_google_search.py <!-- id: 30 -->
+    - [x] Create verify_gemini.py <!-- id: 31 -->
+- [x] Final Review & Cleanup <!-- id: 32 -->
+    - [x] Ensure docs match implementation <!-- id: 33 -->
+    - [x] Verify requirements.txt <!-- id: 34 -->
+- [x] Automation & Workflow Implementation <!-- id: 35 -->
+    - [x] Update System Design with Workflow details <!-- id: 36 -->
+    - [x] Create .github/workflows/daily_report.yml <!-- id: 37 -->
+    - [x] Update Setup Guide with GitHub Secrets instructions <!-- id: 38 -->
+- [x] Refactor Output Structure (Date-based files) <!-- id: 39 -->
+    - [x] Update System Design <!-- id: 40 -->
+    - [x] Update ReportGenerator (src/report_generator.py) <!-- id: 41 -->
+    - [x] Update Workflow (.github/workflows/daily_report.yml) <!-- id: 42 -->
+- [/] Refactoring & Enhancements (User Feedback) <!-- id: 43 -->
+    - [x] 1. Implement Logging (Replace prints) <!-- id: 44 -->
+    - [x] 2. Add Source Attribution to Reports <!-- id: 45 -->
+    - [x] 3. Update System Design with Reports Index <!-- id: 46 -->
+    - [x] 4. Consolidate & Translate Documentation <!-- id: 47 -->
