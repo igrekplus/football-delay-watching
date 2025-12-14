@@ -87,19 +87,7 @@ USE_MOCK_DATA=True python main.py
 ## 🤖 AI開発について
 
 このプロジェクトは **AIペアプログラミング** で開発されています。
-
-### 開発環境
-- **IDE**: Cursor (VS Code fork with AI)
-- **AIアシスタント**: Claude (Anthropic) via Cursor
-- **開発スタイル**: 会話ベースの反復開発
-
-### AI活用のポイント
-- 要件定義から実装まで一貫してAIと対話
-- コードレビュー・デバッグもAIが支援
-- ドキュメント生成の自動化
-
-### 開発ガイド
-`guide_for_AGI/` ディレクトリにAI向けのコンテキスト情報があります。
+詳細は [GEMINI.md](./GEMINI.md) を参照してください。
 
 ## 📁 プロジェクト構造
 
