@@ -25,3 +25,8 @@ reports/
 # Gmail OAuth credentials (sensitive)
 .gmail_credentials.json
 .gmail_token.json
+
+# Temporary files & Logs
+logs/
+temp/
+*.log
