@@ -52,8 +52,8 @@ class FactsService:
             response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
-            # Collect player IDs for nationality lookup
-            player_ids = []
+            # Collect player (id, lineup_name) pairs for nationality lookup
+            player_id_name_pairs = []
             
             for team_data in data.get('response', []):
                 team_name = team_data['team']['name']
@@ -66,8 +66,8 @@ class FactsService:
                 start_xi = [p[0] for p in start_xi_data]
                 subs = [p[0] for p in subs_data]
                 
-                # Collect player IDs for starters only (to save API quota)
-                player_ids.extend([p[1] for p in start_xi_data])
+                # Collect (player_id, lineup_name) pairs for starters only
+                player_id_name_pairs.extend([(p[1], p[0]) for p in start_xi_data])
                 
                 if team_name == match.home_team:
                     match.home_formation = formation
@@ -79,15 +79,19 @@ class FactsService:
                     match.away_bench = subs
             
             # Fetch nationalities for starters（実API利用時はデバッグでも取得し、キャッシュが有効ならキャッシュを使用）
-            if not config.USE_MOCK_DATA and player_ids:
-                self._fetch_player_nationalities(match, headers, player_ids)
+            if not config.USE_MOCK_DATA and player_id_name_pairs:
+                self._fetch_player_nationalities(match, headers, player_id_name_pairs)
 
         except Exception as e:
             logger.error(f"Error fetching lineups for match {match.id}: {e}")
             match.error_status = config.ERROR_PARTIAL
     
-    def _fetch_player_nationalities(self, match: MatchData, headers: dict, player_ids: list):
-        """Fetch nationality for each player using Players API"""
+    def _fetch_player_nationalities(self, match: MatchData, headers: dict, player_id_name_pairs: list):
+        """Fetch nationality for each player using Players API
+        
+        Args:
+            player_id_name_pairs: List of (player_id, lineup_name) tuples
+        """
         # import requests # Removed
         from src.api_cache import get_with_cache
         
@@ -98,7 +102,7 @@ class FactsService:
         now = datetime.now(jst)
         season = now.year if now.month >= 8 else now.year - 1
         
-        for player_id in player_ids:
+        for player_id, lineup_name in player_id_name_pairs:
             try:
                 url = "https://api-football-v1.p.rapidapi.com/v3/players"
                 querystring = {"id": player_id, "season": season}
@@ -108,11 +112,11 @@ class FactsService:
                 
                 if data.get('response'):
                     player_data = data['response'][0]
-                    player_name = player_data['player']['name']
                     nationality = player_data['player'].get('nationality', '')
                     
+                    # Use lineup_name as key (not API's fullname) to match report output
                     if nationality:
-                        match.player_nationalities[player_name] = nationality
+                        match.player_nationalities[lineup_name] = nationality
                         
             except Exception as e:
                 logger.warning(f"Error fetching nationality for player {player_id}: {e}")
