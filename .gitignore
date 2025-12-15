@@ -30,3 +30,4 @@ reports/
 # Temporary files & Logs
 logs/
 *.log
+.gcp_config.md

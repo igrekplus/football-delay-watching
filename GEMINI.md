@@ -10,6 +10,14 @@
 | AIアシスタント | Claude Opus 4.5 (Anthropic) |
 | 開発スタイル | 会話ベースの反復開発 |
 
+### GCP環境
+| 項目 | 内容 |
+|------|------|
+| gcloud CLI | v549.0.1 (`/opt/homebrew/bin/gcloud`) |
+| 設定ファイル | `.gcp_config.md` (gitignore済み) |
+
+> **Note**: プロジェクトID、認証アカウント、GCSバケット名は `.gcp_config.md` を参照してください。
+
 ## 📂 プロジェクト構造
 
 ```
