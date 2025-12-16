@@ -38,8 +38,11 @@
 │   ├── news_service.py      # ニュース収集・Gemini要約
 │   ├── report_generator.py  # Markdownレポート生成
 │   └── email_service.py     # Gmail APIメール送信
-├── scripts/             # ユーティリティスクリプト
-│   └── check_football_api.py  # API-Footballステータス確認
+├── healthcheck/         # APIヘルスチェック
+│   ├── check_football_api.py  # API-Football
+│   ├── check_google_search.py # Google Custom Search
+│   ├── check_gemini.py        # Gemini API
+│   └── check_gmail.py         # Gmail API
 ├── docs/
 │   ├── requirement.md       # 詳細要件定義書
 │   └── system_design.md     # システム設計書
@@ -117,30 +120,31 @@ gh repo edit --delete-branch-on-merge
 
 ## ⚠️ API クォータ管理
 
+> **📢 AI向け指示**: ユーザーが「クォータ確認して」「API確認して」と言った場合、以下のヘルスチェックスクリプトを順番に実行し、結果を報告すること。
+
+```bash
+# 全APIのクォータ・ステータス確認
+python3 healthcheck/check_football_api.py
+python3 healthcheck/check_google_search.py
+python3 healthcheck/check_gemini.py
+python3 healthcheck/check_gmail.py
+```
+
 ### API-Football
 - **無料枠**: 100リクエスト/日
-- **確認方法**: レポート末尾の「API使用状況」または:
-  ```bash
-  # 直接確認
-  python3 -c "
-  import os, requests
-  from dotenv import load_dotenv
-  load_dotenv()
-  resp = requests.get('https://api-football-v1.p.rapidapi.com/v3/fixtures',
-    headers={'X-RapidAPI-Key': os.getenv('RAPIDAPI_KEY'),
-             'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'},
-    params={'date': '2025-01-01', 'league': 39, 'season': 2024})
-  print(f\"Remaining: {resp.headers.get('x-ratelimit-requests-remaining')} / {resp.headers.get('x-ratelimit-requests-limit')}\")
-  "
-  ```
+- **確認**: `python3 healthcheck/check_football_api.py`
 
 ### Google Custom Search
 - **無料枠**: 100クエリ/日
-- **確認**: [Cloud Console](https://console.cloud.google.com/)
+- **確認**: `python3 healthcheck/check_google_search.py`
 
 ### Gemini API
 - **無料枠の目安**: 1,500リクエスト/日（Google AI Pro は5時間ごとリフレッシュ想定）
+- **確認**: `python3 healthcheck/check_gemini.py`
 - 429が出たら数時間待つか軽量モデルに切替
+
+### Gmail API
+- **確認**: `python3 healthcheck/check_gmail.py`
 
 ## 🧠 AIコーディング原則（プロSE向けガードレール）
 
@@ -149,6 +153,7 @@ gh repo edit --delete-branch-on-merge
 - **モジュール境界を意識**: 1ファイル=1責務。外部I/F（関数・クラス・APIコール）を先に固め、docstringと設計書を同期させる。
 - **変更の「Why」を残す**: PR/コミットで根拠・代替案・影響範囲を簡潔に記録。プロンプトもバージョン管理（下記）。
 - **小さくまとめて検証**: 変更は小さく刻み、テスト or 実行ログで裏付け。失敗時のロールバック手順を残す。
+- **pushはチャット最後に**: コミットは随時行ってよいが、`git push`はチャットセッション終了時にまとめて実行する。
 
 ### 2. プロンプト設計チェックリスト（GOLDEN）
 `Goal / Output / Limits / Data / Evaluation / Next` の6要素を必ず埋める。citeturn0search0  
