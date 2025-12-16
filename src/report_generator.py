@@ -153,7 +153,18 @@ class ReportGenerator:
             lines.append(f"- ベンチ（Away）：{', '.join(match.away_bench)}")
             lines.append(f"- フォーメーション：Home {match.home_formation} / Away {match.away_formation}")
             lines.append(f"- 出場停止・負傷者情報：{match.injuries_info}")
-            lines.append(f"- 直近フォーム：Home {match.home_recent_form} / Away {match.away_recent_form}")
+            
+            # Format form with icons (W=✅, D=➖, L=❌)
+            def format_form_with_icons(form: str) -> str:
+                if not form:
+                    return ""
+                icons = {"W": "✅", "D": "➖", "L": "❌"}
+                icon_str = "".join(icons.get(c, c) for c in form)
+                return f"{form} ({icon_str})"
+            
+            home_form = format_form_with_icons(match.home_recent_form)
+            away_form = format_form_with_icons(match.away_recent_form)
+            lines.append(f"- 直近フォーム：Home {home_form} / Away {away_form}")
             lines.append(f"- 過去の対戦成績：{match.h2h_summary}")
             lines.append(f"- 主審：{match.referee}")
             lines.append("")
