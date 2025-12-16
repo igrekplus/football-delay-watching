@@ -197,7 +197,7 @@ class ReportGenerator:
                     """画像キャプションに背番号を追加"""
                     number = match.player_numbers.get(name)
                     if number is not None:
-                        return f"{name}[#{number}]"
+                        return f"{name} #{number}"
                     return name
                 
                 # Home team photos
