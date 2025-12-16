@@ -14,7 +14,7 @@ from src.report_generator import ReportGenerator
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
 
-today_str = datetime.now().strftime('%Y-%m-%d')
+today_str = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 log_file = os.path.join(log_dir, f"{today_str}.log")
 
 # Configure root logger
@@ -72,6 +72,14 @@ def main(dry_run=False):
             logger.info("Email sent successfully!")
         else:
             logger.warning("Failed to send email notification.")
+    
+    # 6. Write API quota to /tmp/quota.txt
+    if config.QUOTA_INFO:
+        quota_file = "/tmp/quota.txt"
+        with open(quota_file, "w", encoding="utf-8") as f:
+            for key, info in config.QUOTA_INFO.items():
+                f.write(f"{key}: {info}\n")
+        logger.info(f"Quota info written to {quota_file}")
     
     logger.info("Done.")
 
