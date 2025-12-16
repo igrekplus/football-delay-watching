@@ -173,11 +173,13 @@ class ReportGenerator:
             lines.append("### ■ フォーメーション図")
             home_img = generate_formation_image(
                 match.home_formation, match.home_lineup, match.home_team,
-                is_home=True, output_dir=config.OUTPUT_DIR, match_id=match.id
+                is_home=True, output_dir=config.OUTPUT_DIR, match_id=match.id,
+                player_numbers=match.player_numbers
             )
             away_img = generate_formation_image(
                 match.away_formation, match.away_lineup, match.away_team,
-                is_home=False, output_dir=config.OUTPUT_DIR, match_id=match.id
+                is_home=False, output_dir=config.OUTPUT_DIR, match_id=match.id,
+                player_numbers=match.player_numbers
             )
             if home_img:
                 lines.append(f"![{match.home_team}]({home_img})")

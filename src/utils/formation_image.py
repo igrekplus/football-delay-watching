@@ -53,7 +53,8 @@ class FormationImageGenerator:
         players: List[str], 
         team_name: str,
         is_home: bool = True,
-        output_path: str = None
+        output_path: str = None,
+        player_numbers: dict = None
     ) -> Optional[str]:
         """
         Generate a formation diagram image.
@@ -93,7 +94,10 @@ class FormationImageGenerator:
                 for x in x_positions:
                     if player_idx < len(players):
                         name = players[player_idx]
-                        self._draw_player(draw, x, y, name, player_bg)
+                        number = None
+                        if player_numbers:
+                            number = player_numbers.get(name)
+                        self._draw_player(draw, x, y, name, player_bg, number)
                         player_idx += 1
             
             # Add team name and formation title
@@ -168,8 +172,8 @@ class FormationImageGenerator:
         return [margin + i * spacing for i in range(num_players)]
     
     def _draw_player(self, draw: ImageDraw.Draw, x: int, y: int, 
-                     name: str, bg_color: tuple):
-        """Draw a player circle with name"""
+                     name: str, bg_color: tuple, number: int = None):
+        """Draw a player circle with name and optional jersey number"""
         # Draw circle
         draw.ellipse(
             [x - PLAYER_RADIUS, y - PLAYER_RADIUS, 
@@ -177,7 +181,19 @@ class FormationImageGenerator:
             fill=bg_color, outline=PLAYER_COLOR, width=2
         )
         
-        # Draw name (shortened)
+        # Draw jersey number inside circle (if available)
+        if number is not None:
+            number_font = self._get_font(16)
+            number_str = str(number)
+            bbox = draw.textbbox((0, 0), number_str, font=number_font)
+            num_width = bbox[2] - bbox[0]
+            num_height = bbox[3] - bbox[1]
+            draw.text(
+                (x - num_width // 2, y - num_height // 2 - 2),
+                number_str, fill=PLAYER_COLOR, font=number_font
+            )
+        
+        # Draw name (shortened) below circle
         short_name = self._shorten_name(name)
         font = self._get_font(18)
             
@@ -237,7 +253,8 @@ def generate_formation_image(
     team_name: str,
     is_home: bool,
     output_dir: str,
-    match_id: str
+    match_id: str,
+    player_numbers: dict = None
 ) -> Optional[str]:
     """
     Generate formation image and return relative path for markdown.
@@ -250,7 +267,7 @@ def generate_formation_image(
     output_path = os.path.join(output_dir, "images", filename)
     
     generator = FormationImageGenerator()
-    result = generator.generate(formation, players, team_name, is_home, output_path)
+    result = generator.generate(formation, players, team_name, is_home, output_path, player_numbers)
     
     if result:
         return f"images/{filename}"
