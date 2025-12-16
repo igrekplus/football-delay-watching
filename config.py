@@ -47,8 +47,11 @@ class Config:
     # Output
     OUTPUT_FILE: str = "daily_report.md"
     
-    # Debug Mode
+    # Debug Mode (limit to 1 match for testing)
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE", "False").lower() == "true"
+    
+    # Mock Mode (use hardcoded data, no API calls)
+    USE_MOCK_DATA: bool = os.getenv("USE_MOCK_DATA", "True").lower() == "true"
     
     # Dynamic Settings based on Debug Mode
     @property
@@ -61,7 +64,18 @@ class Config:
         
     @property
     def OUTPUT_DIR(self) -> str:
-        return "reports_debug" if self.DEBUG_MODE else "reports"
+        """
+        Output directory based on mode:
+        - Mock mode: reports_mock/
+        - Debug mode (real API): reports_debug/
+        - Production mode: reports/
+        """
+        if self.USE_MOCK_DATA:
+            return "reports_mock"
+        elif self.DEBUG_MODE:
+            return "reports_debug"
+        else:
+            return "reports"
     
     @property
     def TARGET_DATE(self) -> 'datetime':
