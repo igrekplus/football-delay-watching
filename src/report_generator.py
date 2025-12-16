@@ -193,13 +193,15 @@ class ReportGenerator:
         for match in excluded:
             lines.append(f"- {match.home_team} vs {match.away_team} （{match.competition}）… {match.selection_reason}")
             
-        # Append API Quota Info
+        # Append API Quota Info (always show in both debug and production mode)
+        lines.append("\n## API使用状況")
         if config.QUOTA_INFO:
-            lines.append("\n## API使用状況")
             for key, info in config.QUOTA_INFO.items():
                 lines.append(f"- {key}: {info}")
-            # Static note for Google APIs
-            lines.append("- Google Custom Search API: Check Cloud Console (Quota: 100/day free)")
+        else:
+            lines.append("- API-Football: (キャッシュから取得のため情報なし)")
+        # Static note for Google APIs
+        lines.append("- Google Custom Search API: Check Cloud Console (Quota: 100/day free)")
         
         # Append execution timestamp
         import pytz
