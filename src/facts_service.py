@@ -52,19 +52,27 @@ class FactsService:
             response = get_with_cache(url, headers=headers, params=querystring)
             data = response.json()
             
-            # Collect player (id, lineup_name) pairs for nationality lookup
+            # Collect player (id, lineup_name, number) pairs for nationality/photo lookup
             player_id_name_pairs = []
             
             for team_data in data.get('response', []):
                 team_name = team_data['team']['name']
                 formation = team_data['formation']
                 
-                # Extract player names and IDs
-                start_xi_data = [(p['player']['name'], p['player']['id']) for p in team_data['startXI']]
+                # Extract player names, IDs, and numbers
+                start_xi_data = [
+                    (p['player']['name'], p['player']['id'], p['player'].get('number'))
+                    for p in team_data['startXI']
+                ]
                 subs_data = [(p['player']['name'], p['player']['id']) for p in team_data['substitutes']]
                 
                 start_xi = [p[0] for p in start_xi_data]
                 subs = [p[0] for p in subs_data]
+                
+                # Store player numbers (name -> number mapping)
+                for name, _, number in start_xi_data:
+                    if number is not None:
+                        match.player_numbers[name] = number
                 
                 # Collect (player_id, lineup_name, team_name) tuples for starters only
                 player_id_name_pairs.extend([(p[1], p[0], team_name) for p in start_xi_data])
@@ -78,16 +86,16 @@ class FactsService:
                     match.away_lineup = start_xi
                     match.away_bench = subs
             
-            # Fetch nationalities for starters（実API利用時はデバッグでも取得し、キャッシュが有効ならキャッシュを使用）
+            # Fetch nationalities and photos for starters
             if not config.USE_MOCK_DATA and player_id_name_pairs:
-                self._fetch_player_nationalities(match, headers, player_id_name_pairs)
+                self._fetch_player_details(match, headers, player_id_name_pairs)
 
         except Exception as e:
             logger.error(f"Error fetching lineups for match {match.id}: {e}")
             match.error_status = config.ERROR_PARTIAL
     
-    def _fetch_player_nationalities(self, match: MatchData, headers: dict, player_id_name_pairs: list):
-        """Fetch nationality for each player using Players API
+    def _fetch_player_details(self, match: MatchData, headers: dict, player_id_name_pairs: list):
+        """Fetch nationality and photo for each player using Players API
         
         Args:
             player_id_name_pairs: List of (player_id, lineup_name, team_name) tuples
@@ -112,14 +120,19 @@ class FactsService:
                 
                 if data.get('response'):
                     player_data = data['response'][0]
-                    nationality = player_data['player'].get('nationality', '')
                     
-                    # Use lineup_name as key (not API's fullname) to match report output
+                    # Get nationality
+                    nationality = player_data['player'].get('nationality', '')
                     if nationality:
                         match.player_nationalities[lineup_name] = nationality
+                    
+                    # Get photo URL
+                    photo = player_data['player'].get('photo', '')
+                    if photo:
+                        match.player_photos[lineup_name] = photo
                         
             except Exception as e:
-                logger.warning(f"Error fetching nationality for player {player_id}: {e}")
+                logger.warning(f"Error fetching details for player {player_id}: {e}")
                 continue  # Continue with next player
     
     def _fetch_injuries(self, match: MatchData, headers: dict):

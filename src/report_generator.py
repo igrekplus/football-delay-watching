@@ -13,18 +13,27 @@ class ReportGenerator:
     def __init__(self):
         pass
 
-    def _format_lineup_by_position(self, lineup: List[str], formation: str, team_name: str, nationalities: Dict[str, str] = None) -> str:
+    def _format_lineup_by_position(self, lineup: List[str], formation: str, team_name: str, 
+                                     nationalities: Dict[str, str] = None, 
+                                     player_numbers: Dict[str, int] = None) -> str:
         """
         フォーメーション情報を元に選手をポジション別に振り分けて表示
         例: 4-3-3 -> GK:1, DF:4, MF:3, FW:3
         国籍情報がある場合は国旗絵文字を追加
+        背番号がある場合は先頭に表示
         """
         if nationalities is None:
             nationalities = {}
+        if player_numbers is None:
+            player_numbers = {}
             
         def format_player(name: str) -> str:
             nationality = nationalities.get(name, "")
-            return format_player_with_flag(name, nationality)
+            number = player_numbers.get(name)
+            formatted = format_player_with_flag(name, nationality)
+            if number is not None:
+                formatted = f"#{number} {formatted}"
+            return formatted
         
         if not lineup or len(lineup) != 11:
             formatted = [format_player(p) for p in lineup] if lineup else []
@@ -126,12 +135,14 @@ class ReportGenerator:
             lines.append(f"- 日時：{match.kickoff_jst} / {match.kickoff_local}")
             lines.append(f"- 会場：{match.venue}")
             
-            # ポジション別スタメン表示（国籍情報付き）
+            # ポジション別スタメン表示（国籍情報・背番号付き）
             home_lineup_formatted = self._format_lineup_by_position(
-                match.home_lineup, match.home_formation, match.home_team, match.player_nationalities
+                match.home_lineup, match.home_formation, match.home_team, 
+                match.player_nationalities, match.player_numbers
             )
             away_lineup_formatted = self._format_lineup_by_position(
-                match.away_lineup, match.away_formation, match.away_team, match.player_nationalities
+                match.away_lineup, match.away_formation, match.away_team, 
+                match.player_nationalities, match.player_numbers
             )
             lines.append(f"- スタメン（{match.home_team}）：")
             lines.append(f"    - {home_lineup_formatted}")
@@ -164,6 +175,30 @@ class ReportGenerator:
                 lines.append(f"![{match.away_team}]({away_img})")
                 image_paths.append(away_img)
             lines.append("")
+            
+            # Player photos section (if available)
+            if match.player_photos:
+                lines.append("### ■ 選手画像")
+                # Home team photos
+                home_photos = [
+                    f"![{name}]({match.player_photos[name]})" 
+                    for name in match.home_lineup 
+                    if name in match.player_photos
+                ]
+                if home_photos:
+                    lines.append(f"**{match.home_team}**")
+                    lines.append(" ".join(home_photos))
+                
+                # Away team photos
+                away_photos = [
+                    f"![{name}]({match.player_photos[name]})" 
+                    for name in match.away_lineup 
+                    if name in match.player_photos
+                ]
+                if away_photos:
+                    lines.append(f"**{match.away_team}**")
+                    lines.append(" ".join(away_photos))
+                lines.append("")
             
             lines.append("### ■ ニュース要約（600〜1,000字）")
             lines.append(f"- {match.news_summary}")

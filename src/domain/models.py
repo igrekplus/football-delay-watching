@@ -36,6 +36,12 @@ class MatchData:
     # Player Nationalities (name -> nationality mapping)
     player_nationalities: dict = None  # {"Player Name": "England", ...}
     
+    # Player Numbers (name -> jersey number mapping)
+    player_numbers: dict = None  # {"Player Name": 1, ...}
+    
+    # Player Photos (name -> photo URL mapping)
+    player_photos: dict = None  # {"Player Name": "https://...", ...}
+    
     # Injuries and Suspensions
     injuries_info: str = "不明"  # 負傷者・出場停止情報
     
@@ -58,3 +64,5 @@ class MatchData:
         if self.home_bench is None: self.home_bench = []
         if self.away_bench is None: self.away_bench = []
         if self.player_nationalities is None: self.player_nationalities = {}
+        if self.player_numbers is None: self.player_numbers = {}
+        if self.player_photos is None: self.player_photos = {}
