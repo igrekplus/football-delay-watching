@@ -179,9 +179,17 @@ class ReportGenerator:
             # Player photos section (if available)
             if match.player_photos:
                 lines.append("### ■ 選手画像")
+                
+                def format_photo_caption(name: str) -> str:
+                    """画像キャプションに背番号を追加"""
+                    number = match.player_numbers.get(name)
+                    if number is not None:
+                        return f"{name}[#{number}]"
+                    return name
+                
                 # Home team photos
                 home_photos = [
-                    f"![{name}]({match.player_photos[name]})" 
+                    f"![{format_photo_caption(name)}]({match.player_photos[name]})" 
                     for name in match.home_lineup 
                     if name in match.player_photos
                 ]
@@ -191,7 +199,7 @@ class ReportGenerator:
                 
                 # Away team photos
                 away_photos = [
-                    f"![{name}]({match.player_photos[name]})" 
+                    f"![{format_photo_caption(name)}]({match.player_photos[name]})" 
                     for name in match.away_lineup 
                     if name in match.player_photos
                 ]
