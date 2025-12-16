@@ -66,8 +66,8 @@ class FactsService:
                 start_xi = [p[0] for p in start_xi_data]
                 subs = [p[0] for p in subs_data]
                 
-                # Collect (player_id, lineup_name) pairs for starters only
-                player_id_name_pairs.extend([(p[1], p[0]) for p in start_xi_data])
+                # Collect (player_id, lineup_name, team_name) tuples for starters only
+                player_id_name_pairs.extend([(p[1], p[0], team_name) for p in start_xi_data])
                 
                 if team_name == match.home_team:
                     match.home_formation = formation
@@ -90,7 +90,7 @@ class FactsService:
         """Fetch nationality for each player using Players API
         
         Args:
-            player_id_name_pairs: List of (player_id, lineup_name) tuples
+            player_id_name_pairs: List of (player_id, lineup_name, team_name) tuples
         """
         # import requests # Removed
         from src.api_cache import get_with_cache
@@ -102,12 +102,12 @@ class FactsService:
         now = datetime.now(jst)
         season = now.year if now.month >= 8 else now.year - 1
         
-        for player_id, lineup_name in player_id_name_pairs:
+        for player_id, lineup_name, team_name in player_id_name_pairs:
             try:
                 url = "https://api-football-v1.p.rapidapi.com/v3/players"
                 querystring = {"id": player_id, "season": season}
                 
-                response = get_with_cache(url, headers=headers, params=querystring)
+                response = get_with_cache(url, headers=headers, params=querystring, team_name=team_name)
                 data = response.json()
                 
                 if data.get('response'):
