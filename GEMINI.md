@@ -25,20 +25,28 @@
 ├── main.py              # エントリーポイント
 ├── config.py            # 設定管理（環境変数読み込み）
 ├── src/
-│   ├── match_processor.py   # 試合データ取得・選定・MatchDataクラス
+│   ├── domain/          # ドメインモデル
+│   │   └── models.py    # MatchDataクラス
+│   ├── clients/         # 外部APIクライアント
+│   │   └── cache.py     # APIキャッシュ（ローカル/GCS対応）
+│   ├── utils/           # ユーティリティ
+│   │   ├── formation_image.py   # フォーメーション図生成
+│   │   ├── nationality_flags.py # 国名→国旗絵文字
+│   │   └── spoiler_filter.py    # ネタバレフィルター
+│   ├── match_processor.py   # 試合データ取得・選定
 │   ├── facts_service.py     # スタメン・フォーメーション・国籍取得
 │   ├── news_service.py      # ニュース収集・Gemini要約
 │   ├── report_generator.py  # Markdownレポート生成
-│   ├── email_service.py     # Gmail APIメール送信
-│   ├── formation_image.py   # フォーメーション図生成（Pillow）
-│   ├── nationality_flags.py # 国名→国旗絵文字マッピング
-│   └── spoiler_filter.py    # ネタバレフィルター
+│   └── email_service.py     # Gmail APIメール送信
+├── scripts/             # ユーティリティスクリプト
+│   └── check_football_api.py  # API-Footballステータス確認
 ├── docs/
 │   ├── requirement.md       # 詳細要件定義書
 │   └── system_design.md     # システム設計書
 ├── tests/                   # API検証スクリプト
 └── .github/workflows/       # GitHub Actions
 ```
+
 
 ## 🔧 開発コマンド
 

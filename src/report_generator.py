@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import List, Dict
-from .match_processor import MatchData
+from src.domain.models import MatchData
 import logging
-from .spoiler_filter import SpoilerFilter
-from .formation_image import generate_formation_image
-from .nationality_flags import format_player_with_flag
+from src.utils.spoiler_filter import SpoilerFilter
+from src.utils.formation_image import generate_formation_image
+from src.utils.nationality_flags import format_player_with_flag
 from config import config
 
 logger = logging.getLogger(__name__)

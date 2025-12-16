@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 from config import config
-from .match_processor import MatchData
-from .spoiler_filter import SpoilerFilter
+from src.domain.models import MatchData
+from src.utils.spoiler_filter import SpoilerFilter
 import logging
 
 logger = logging.getLogger(__name__)
