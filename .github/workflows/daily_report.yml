@@ -29,14 +29,22 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
     - name: Run Report Generator
-      #working-directory: fb-non-result  # Already at repo root
       env:
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         GOOGLE_SEARCH_ENGINE_ID: ${{ secrets.GOOGLE_SEARCH_ENGINE_ID }}
         GOOGLE_SEARCH_API_KEY: ${{ secrets.GOOGLE_SEARCH_API_KEY }}
         USE_MOCK_DATA: "False"
+        # GCS Cache Settings
+        USE_API_CACHE: "True"
+        CACHE_BACKEND: "gcs"
+        GCS_CACHE_BUCKET: "football-delay-watching-cache"
         # Gmail API Settings
         GMAIL_ENABLED: "True"
         NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
