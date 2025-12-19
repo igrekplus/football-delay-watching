@@ -19,8 +19,21 @@ class Config:
     NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL")
     GMAIL_ENABLED = os.getenv("GMAIL_ENABLED", "False").lower() == "true"
     
-    # API Cache (Development only)
-    USE_API_CACHE = os.getenv("USE_API_CACHE", "False").lower() == "true"
+    # API Cache (explicit override via env var)
+    _USE_API_CACHE_OVERRIDE = os.getenv("USE_API_CACHE")
+    
+    @property
+    def USE_API_CACHE(self) -> bool:
+        """
+        API Cache setting:
+        - If USE_API_CACHE env var is set, use that value
+        - Otherwise, enable cache in Debug mode (real API) by default
+        - Disable in production and mock mode
+        """
+        if self._USE_API_CACHE_OVERRIDE is not None:
+            return self._USE_API_CACHE_OVERRIDE.lower() == "true"
+        # Default: enable cache in debug mode with real API
+        return self.DEBUG_MODE and not self.USE_MOCK_DATA
 
     # Target Leagues
     TARGET_LEAGUES: List[str] = ("EPL", "CL")
