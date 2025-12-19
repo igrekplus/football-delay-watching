@@ -23,22 +23,36 @@
 > 各エンドポイントで実際に送っているパラメータと、実装が参照しているレスポンス項目の詳細は `docs/api_endpoints.md` を参照。
 
 #### 2.1.5 APIキャッシュ方針
-- 実装: `src/api_cache.py` の `get_with_cache(url, headers, params)` を経由し、`config.USE_API_CACHE=True` のときのみローカル `api_cache/` に JSON を保存・再利用する。キャッシュキーは `URL + params(json, sort_keys=True)` の MD5。
-- パラメータの実態（現行コード）
-    - `/fixtures` : `date`, `league`, `season`（マッチ抽出・チームID取得用途）
-    - `/fixtures/lineups` : `fixture`（ラインナップ）
-    - `/injuries` : `fixture`
-    - `/fixtures` : `id`（チームID再取得に再利用）
-    - `/teams/statistics` : `team`, `season`, `league`（直近フォーム）※現在は league=39 固定
-    - `/players` : `id`, `season`（国籍取得）
-    - `/fixtures/headtohead` : `h2h`, `last`
-- キャッシュしてよい/慎重にすべき基準
-    - **キャッシュ推奨**（結果が準定常・日次で十分）：`/players`（国籍など静的に近い）、`/fixtures/headtohead`、前日固定の `/fixtures`（ターゲット日付ごとにキー分離される）、`/fixtures/lineups`（同一fixture IDに対し再実行時の節約目的）。
-    - **キャッシュ非推奨または短期のみ**：`/injuries`（当日でも変動が多い）、`/teams/statistics`（リーグ指定ミスで誤キャッシュのリスク、リーグID修正後はキャッシュクリア要推奨）。
-    - **禁止/注意**：ライブスコアや進行中データは現仕様で呼んでいないが、同じキャッシュ層を共有する場合は対象外とする。
-- 運用ガイド
-    - デバッグでクォータ節約したい場合のみ `USE_API_CACHE=True` をオンにする。本番定時実行は最新性重視のためデフォルトOFFを推奨。
-    - キャッシュを ON にしたままリーグIDやクエリ条件を変更した場合、古いキャッシュが混入する可能性があるため `api_cache/` を削除してから再実行する。
+
+##### キャッシュバックエンド
+- 実装: `src/clients/cache.py` の `get_with_cache(url, headers, params)` を使用
+- **ローカルモード**: `CACHE_BACKEND=local` → `api_cache/` ディレクトリに保存
+- **GCSモード**: `CACHE_BACKEND=gcs` → `gs://football-delay-watching-cache/` に保存
+- キャッシュキー: `{endpoint}/{MD5(URL+params)}.json`
+- 選手データ: `players/{team_name}/{player_id}.json`
+
+##### GitHub Actions での設定
+```yaml
+USE_API_CACHE: "True"
+CACHE_BACKEND: "gcs"
+GCS_CACHE_BUCKET: "football-delay-watching-cache"
+```
+
+##### キャッシュしてよい/慎重にすべき基準
+- **キャッシュ推奨**（結果が準定常・日次で十分）：`/players`（国籍など静的）、`/fixtures/headtohead`、`/fixtures/lineups`
+- **キャッシュ非推奨**：`/injuries`（当日変動あり）、`/teams/statistics`（リーグID依存）
+
+##### キャッシュウォーミング機能
+API消費を抑制するため、試合がない平日に上位チームの選手データを事前取得する機能。
+
+- **実装**: `src/cache_warmer.py`
+- **対象チーム**: EPL上位10チーム + CL上位13チーム（`config.py` で定義）
+- **制御**: `CACHE_WARMING_ENABLED` 環境変数（デフォルト: False）
+- **実行条件**:
+  - 残クォータ > 30
+  - 09:00 JST（クォータリセット時間）より前
+  - GCSバックエンドが有効
+- **確認コマンド**: `python3 healthcheck/check_gcs_cache.py`
 
 #### 2.1.1 負傷者・出場停止情報
 *   `/injuries?fixture={id}` で試合IDに紐づく負傷者リストを取得

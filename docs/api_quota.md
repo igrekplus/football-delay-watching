@@ -46,6 +46,7 @@
 ## 5. このプロジェクトでの想定消費目安
 - 1日あたり対象リーグ: EPL/CL、最大3試合（`Config.MATCH_LIMIT`）。  
 - **API-Football**: 1試合で `fixtures`, `lineups`, `statistics`, `events` など10〜15リクエスト想定 → 最大 ~50 req/day。Free枠(100/day)でも足りるが週末ピーク時にバッファが小さいため Pro 推奨。  
+- **GCSキャッシュ効果**: 選手データ（`/players`）などはGCSに永続キャッシュされるため、2回目以降のリクエストはAPI消費ゼロ。週末の大量試合時でも、既知チームの選手情報はキャッシュHITする。
 - **Custom Search**: ニュース10件取得×検索1回程度 → 10 req/day。Free枠(100/day)で十分。  
 - **Gemini**: ニュース10本要約＋フォーメーション説明で ~40k–80k tokens/日程度。無料ティアの rate limit にかかる可能性があるため有料ティアを検討。  
 - **Gmail**: レポート送信 1通/日。Workspace/無料どちらでも上限に余裕あり。
@@ -59,5 +60,15 @@
 - GitHub Actions での実行前に、前日消費量が上限の80%を超えていたら slack/email でアラート（要別途実装）。  
 - 料金改定は頻繁。月初に公式価格ページの更新日を確認し、本ファイルの見直しを行うこと。
 
+## 7. キャッシュウォーミング
+試合がない平日にAPI消費を活用し、上位チームの選手データを事前にGCSにキャッシュする機能。
+
+- **目的**: 週末の試合レポート時にキャッシュHITさせ、API消費を削減
+- **対象**: EPL上位10チーム + CL上位13チーム（`config.EPL_CACHE_TEAMS`, `config.CL_CACHE_TEAMS`）
+- **制御**: `CACHE_WARMING_ENABLED` 環境変数（デフォルト: False）
+  - 週初め（月〜木）に手動でTrueに設定
+  - 週末（金〜日）はFalseのまま運用
+- **キャッシュ確認**: `python3 healthcheck/check_gcs_cache.py`
+
 ---
-最終更新: 2025-12-14
+最終更新: 2025-12-19
