@@ -60,9 +60,19 @@ def main(dry_run=False):
     news_service = NewsService()
     news_service.process_news(matches)
     
+    # 3.5 YouTube Videos (optional, no error on failure)
+    youtube_videos = {}
+    try:
+        from src.youtube_service import YouTubeService
+        youtube_service = YouTubeService()
+        youtube_videos = youtube_service.process_matches(matches)
+        logger.info(f"YouTube videos fetched for {len(youtube_videos)} matches")
+    except Exception as e:
+        logger.warning(f"YouTube video fetch failed (continuing without videos): {e}")
+    
     # 4. Report Generation
     generator = ReportGenerator()
-    report, image_paths = generator.generate(matches)
+    report, image_paths = generator.generate(matches, youtube_videos=youtube_videos)
     
     # 5. Email Notification (if enabled)
     if config.GMAIL_ENABLED and config.NOTIFY_EMAIL:

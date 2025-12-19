@@ -17,7 +17,17 @@
 - **超過時の挙動**: クオータ超過時は課金されず 429 で打ち止め。citeturn0search0
 - **課金モデル**: 月額サブスク（Free/Pro/Ultra/Mega）。RapidAPI経由の場合は各プランのクオータ・課金設定に従う。
 
-## 2. Google Custom Search API
+## 2. YouTube Data API v3
+- **日次クォータ**: 10,000 units/日（無料）
+- **search.list**: 100 units/リクエスト
+- **channels.list**: 1 unit/リクエスト
+- **本プロジェクトでの使用**:
+  - 試合前動画検索（記者会見、因縁、戦術、練習風景）
+  - 各カテゴリ3件取得、各チーム3選手で戦術検索
+  - **予想消費: 約1,200 units/試合**（3試合で3,600 units/日、枠の36%）
+- **実装**: `src/youtube_service.py`、チャンネル設定: `config/channels.py`
+
+## 3. Google Custom Search API
 - **Custom Search JSON API**  
   - 100クエリ/日 無料。  
   - 追加: $5 / 1000クエリ（最大 10k クエリ/日）。 citeturn0search3

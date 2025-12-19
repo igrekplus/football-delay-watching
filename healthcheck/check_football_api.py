@@ -51,8 +51,14 @@ def check_api_football():
         quota_remaining = resp.headers.get('x-ratelimit-requests-remaining', 'N/A')
         quota_limit = resp.headers.get('x-ratelimit-requests-limit', 'N/A')
         
+        # /tmp/quota.txt に書き込み
+        quota_file = "/tmp/quota.txt"
+        with open(quota_file, "w", encoding="utf-8") as f:
+            f.write(f"API-Football: Remaining: {quota_remaining} / Limit: {quota_limit}\n")
+        
         print(f"📡 ステータスコード: {resp.status_code}")
         print(f"📈 クォータ: {quota_remaining} / {quota_limit}")
+        print(f"📝 クォータ情報を {quota_file} に保存しました")
         print()
         
         if resp.status_code == 200:

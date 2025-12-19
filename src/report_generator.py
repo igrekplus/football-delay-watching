@@ -71,18 +71,21 @@ class ReportGenerator:
         lines.extend(positions)
         return '\n    - '.join(lines)
 
-    def generate(self, matches: List[MatchData]) -> tuple:
+    def generate(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None) -> tuple:
         """
         Generates markdown report string
         
         Returns:
             tuple: (report_content: str, image_paths: List[str])
         """
+        if youtube_videos is None:
+            youtube_videos = {}
+            
         lines = []
         image_paths = []  # 生成された画像パスを収集
         
         lines.append(self._write_header(matches))
-        report_lines, report_images = self._write_match_reports(matches)
+        report_lines, report_images = self._write_match_reports(matches, youtube_videos)
         lines.append(report_lines)
         image_paths.extend(report_images)
         lines.append(self._write_excluded_list(matches))
@@ -116,13 +119,16 @@ class ReportGenerator:
         lines.append("\n")
         return "\n".join(lines)
 
-    def _write_match_reports(self, matches: List[MatchData]) -> tuple:
+    def _write_match_reports(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None) -> tuple:
         """
         試合レポートを生成
         
         Returns:
             tuple: (report_string: str, image_paths: List[str])
         """
+        if youtube_videos is None:
+            youtube_videos = {}
+            
         lines = []
         image_paths = []
         target_matches = [m for m in matches if m.is_target]
@@ -234,6 +240,29 @@ class ReportGenerator:
             lines.append(f"- {match.home_interview}")
             lines.append(f"- {match.away_interview}")
             lines.append("")
+            
+            # YouTube Videos Section
+            match_key = f"{match.home_team_name} vs {match.away_team_name}"
+            videos = youtube_videos.get(match_key, [])
+            if videos:
+                lines.append("### ■ 📹 試合前の見どころ動画")
+                
+                # カテゴリ別にグループ化
+                category_labels = {
+                    "press_conference": "記者会見",
+                    "historic": "因縁",
+                    "tactical": "戦術・選手",
+                    "training": "練習風景",
+                }
+                
+                for cat_key, cat_label in category_labels.items():
+                    cat_videos = [v for v in videos if v.get("category") == cat_key]
+                    if cat_videos:
+                        lines.append(f"**[{cat_label}]**")
+                        for v in cat_videos[:3]:  # 各カテゴリ最大3件
+                            lines.append(f"- [{v['title']}]({v['url']})")
+                
+                lines.append("")
             
             lines.append("### ■ エラーステータス")
             lines.append(f"- {match.error_status}")
