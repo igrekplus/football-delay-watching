@@ -81,6 +81,47 @@ def main(dry_run=False):
                 f.write(f"{key}: {info}\n")
         logger.info(f"Quota info written to {quota_file}")
     
+    # 7. Cache Warming (if quota available and GCS enabled)
+    remaining_quota = 0
+    
+    # Get remaining quota from QUOTA_INFO or by checking API
+    if "API-Football" in config.QUOTA_INFO:
+        quota_str = config.QUOTA_INFO.get("API-Football", "")
+        if "Remaining:" in quota_str:
+            try:
+                remaining_quota = int(quota_str.split("Remaining:")[1].split("/")[0].strip())
+            except (ValueError, IndexError):
+                pass
+    
+    # If no quota info (all cache hits), check directly via API
+    if remaining_quota == 0 and not config.USE_MOCK_DATA:
+        import requests
+        try:
+            url = "https://api-football-v1.p.rapidapi.com/v3/status"
+            headers = {
+                "X-RapidAPI-Key": config.RAPIDAPI_KEY,
+                "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+            }
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                account = data.get("response", {}).get("subscription", {})
+                requests_info = data.get("response", {}).get("requests", {})
+                limit = requests_info.get("limit_day", 100)
+                current = requests_info.get("current", 0)
+                remaining_quota = limit - current
+                logger.info(f"API-Football quota check: {remaining_quota}/{limit} remaining")
+        except Exception as e:
+            logger.warning(f"Failed to check API quota: {e}")
+    
+    if remaining_quota > 0:
+        from src.cache_warmer import run_cache_warming
+        logger.info(f"Starting cache warming with {remaining_quota} remaining quota...")
+        result = run_cache_warming(remaining_quota)
+        logger.info(f"Cache warming result: {result}")
+    else:
+        logger.info("Skipping cache warming: no quota info available")
+    
     logger.info("Done.")
 
 if __name__ == "__main__":

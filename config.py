@@ -57,6 +57,41 @@ class Config:
         "Tanaka", "Doan", "Ito", "Minamino", "Ueda"
     )
     
+    # Cache Warming Settings (2024-25 Season, Dec 2024 standings)
+    # EPL Top 10 Teams with their API-Football team IDs
+    EPL_CACHE_TEAMS: List[tuple] = (
+        (40, "Liverpool"),
+        (49, "Chelsea"),
+        (42, "Arsenal"),
+        (65, "Nottingham Forest"),
+        (51, "Brighton"),
+        (50, "Manchester City"),
+        (35, "Bournemouth"),
+        (34, "Newcastle"),
+        (66, "Aston Villa"),
+        (36, "Fulham"),
+    )
+    
+    # CL Top Teams with their API-Football team IDs (12 teams including big clubs)
+    CL_CACHE_TEAMS: List[tuple] = (
+        (40, "Liverpool"),
+        (529, "Barcelona"),
+        (42, "Arsenal"),
+        (505, "Inter"),
+        (168, "Bayer Leverkusen"),
+        (530, "Atletico Madrid"),
+        (489, "AC Milan"),
+        (499, "Atalanta"),
+        (91, "Monaco"),
+        (228, "Sporting CP"),
+        (157, "Bayern Munich"),
+        (165, "Borussia Dortmund"),
+        (541, "Real Madrid"),
+    )
+    
+    # Minimum remaining quota to start cache warming
+    CACHE_WARMING_QUOTA_THRESHOLD: int = 30
+    
     # Output
     OUTPUT_FILE: str = "daily_report.md"
     

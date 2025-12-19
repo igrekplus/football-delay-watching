@@ -42,7 +42,8 @@
 │   ├── check_football_api.py  # API-Football
 │   ├── check_google_search.py # Google Custom Search
 │   ├── check_gemini.py        # Gemini API
-│   └── check_gmail.py         # Gmail API
+│   ├── check_gmail.py         # Gmail API
+│   └── check_gcs_cache.py     # GCSキャッシュ状況
 ├── docs/
 │   ├── requirement.md       # 詳細要件定義書
 │   └── system_design.md     # システム設計書
@@ -145,6 +146,11 @@ python3 healthcheck/check_gmail.py
 
 ### Gmail API
 - **確認**: `python3 healthcheck/check_gmail.py`
+
+### GCSキャッシュ
+- **確認**: `python3 healthcheck/check_gcs_cache.py`
+- チーム別選手キャッシュ状況を表示
+- キャッシュウォーミング対象チームのカバレッジを確認可能
 
 ## 🧠 AIコーディング原則（プロSE向けガードレール）
 
