@@ -157,6 +157,14 @@ class CacheWarmer:
 
 def run_cache_warming(remaining_quota: int) -> Dict:
     """キャッシュウォーミングを実行するエントリーポイント"""
+    import os
+    
+    # Check if cache warming is enabled via environment variable
+    cache_warming_enabled = os.getenv("CACHE_WARMING_ENABLED", "False").lower() == "true"
+    if not cache_warming_enabled:
+        logger.info("Cache warming skipped: CACHE_WARMING_ENABLED is False")
+        return {"skipped": True, "reason": "disabled"}
+    
     if config.USE_MOCK_DATA:
         logger.info("Cache warming skipped: mock mode")
         return {"skipped": True, "reason": "mock_mode"}

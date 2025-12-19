@@ -45,6 +45,8 @@ jobs:
         USE_API_CACHE: "True"
         CACHE_BACKEND: "gcs"
         GCS_CACHE_BUCKET: "football-delay-watching-cache"
+        # Cache Warming (enable on weekdays when quota is available)
+        CACHE_WARMING_ENABLED: "False"
         # Gmail API Settings
         GMAIL_ENABLED: "True"
         NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
