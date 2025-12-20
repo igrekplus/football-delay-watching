@@ -52,6 +52,8 @@ jobs:
         NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
         GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
         GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
+        # YouTube API Settings
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
       run: |
         python main.py
 
