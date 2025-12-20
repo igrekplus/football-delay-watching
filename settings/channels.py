@@ -60,9 +60,10 @@ TACTICS_CHANNELS = {
     "The Athletic FC": "@TheAthleticFC",
     "Leo the football TV": "@Leothefoot",  # 日本語
 }
+from typing import Optional
 
 
-def get_team_channel(team_name: str) -> str | None:
+def get_team_channel(team_name: str) -> Optional[str]:
     """チーム名からチャンネルハンドルを取得"""
     # EPLから探す
     if team_name in EPL_TEAM_CHANNELS:

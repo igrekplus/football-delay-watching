@@ -10,8 +10,10 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 import requests
 
+import os
+
 from config import config
-from config.channels import (
+from settings.channels import (
     get_team_channel,
     LEAGUE_CHANNELS,
     BROADCASTER_CHANNELS,
@@ -29,7 +31,8 @@ class YouTubeService:
     MAX_RESULTS_PER_CATEGORY = 3
     
     def __init__(self, api_key: str = None):
-        self.api_key = api_key or config.GOOGLE_API_KEY
+        # YOUTUBE_API_KEY を優先、なければ GOOGLE_API_KEY にフォールバック
+        self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
         self._channel_id_cache: Dict[str, str] = {}
     
     def _resolve_channel_id(self, handle: str) -> Optional[str]:
