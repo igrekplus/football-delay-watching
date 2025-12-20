@@ -25,7 +25,7 @@
   - 試合前動画検索（記者会見、因縁、戦術、練習風景）
   - 各カテゴリ3件取得、各チーム3選手で戦術検索
   - **予想消費: 約1,200 units/試合**（3試合で3,600 units/日、枠の36%）
-- **実装**: `src/youtube_service.py`、チャンネル設定: `config/channels.py`
+- **実装**: `src/youtube_service.py`、チャンネル設定: `settings/channels.py`
 
 ## 3. Google Custom Search API
 - **Custom Search JSON API**  
