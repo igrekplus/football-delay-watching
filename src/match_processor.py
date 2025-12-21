@@ -30,10 +30,9 @@ class MatchProcessor:
         # Targeted Leagues: 39 (Premier League), 2 (Champions League)
         # Dates: Yesterday
         
-        url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
+        url = "https://v3.football.api-sports.io/fixtures"
         headers = {
-            "X-RapidAPI-Key": config.RAPIDAPI_KEY,
-            "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+            "x-apisports-key": config.API_FOOTBALL_KEY
         }
         
         # Determine Target Date

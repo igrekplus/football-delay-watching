@@ -36,7 +36,7 @@ jobs:
 
     - name: Run Report Generator
       env:
-        RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         GOOGLE_SEARCH_ENGINE_ID: ${{ secrets.GOOGLE_SEARCH_ENGINE_ID }}
         GOOGLE_SEARCH_API_KEY: ${{ secrets.GOOGLE_SEARCH_API_KEY }}

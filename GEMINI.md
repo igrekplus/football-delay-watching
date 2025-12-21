@@ -69,7 +69,7 @@ USE_MOCK_DATA=False python main.py
 
 | 変数名 | 用途 | 取得元 |
 |--------|------|--------|
-| `RAPIDAPI_KEY` | API-Football | [RapidAPI](https://rapidapi.com/api-sports/api/api-football) |
+| `API_FOOTBALL_KEY` | API-Football | [API-Sports Dashboard](https://dashboard.api-football.com/) |
 | `GOOGLE_API_KEY` | Gemini API | [Google AI Studio](https://aistudio.google.com/app/apikey) |
 | `GOOGLE_SEARCH_ENGINE_ID` | Custom Search ID | [Programmable Search](https://programmablesearchengine.google.com/) |
 | `GOOGLE_SEARCH_API_KEY` | Custom Search Key | [GCP Console](https://console.cloud.google.com/apis/credentials) |
@@ -88,7 +88,7 @@ USE_MOCK_DATA=False python main.py
 
 ```bash
 # Secretsの設定
-gh secret set RAPIDAPI_KEY < <(grep "^RAPIDAPI_KEY=" .env | cut -d'=' -f2-)
+gh secret set API_FOOTBALL_KEY < <(grep "^API_FOOTBALL_KEY=" .env | cut -d'=' -f2-)
 
 # ワークフロー手動実行
 gh workflow run daily_report.yml
@@ -132,7 +132,9 @@ python3 healthcheck/check_gmail.py
 ```
 
 ### API-Football
-- **無料枠**: 100リクエスト/日
+- **有料版**: 7,500リクエスト/日（API-Sports 直接アクセス）
+- **エンドポイント**: `https://v3.football.api-sports.io`
+- **認証ヘッダー**: `x-apisports-key`
 - **確認**: `python3 healthcheck/check_football_api.py`
 
 ### Google Custom Search
@@ -213,6 +215,7 @@ python3 healthcheck/check_gmail.py
 
 | 日付 | 内容 |
 |------|------|
+| 2025-12-21 | API-Sports直接アクセスに移行（RapidAPI経由廃止） |
 | 2025-12-14 | Gmail API経由のメール配信機能追加（Issue #5） |
 | 2025-12-14 | Issue #2,#3 対応（ポジション別スタメン表示、国旗絵文字追加） |
 | 2025-12-14 | GitHub Actions設定完了、Secrets連携 |

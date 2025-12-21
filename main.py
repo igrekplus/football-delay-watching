@@ -107,10 +107,9 @@ def main(dry_run=False):
     if remaining_quota == 0 and not config.USE_MOCK_DATA:
         import requests
         try:
-            url = "https://api-football-v1.p.rapidapi.com/v3/status"
+            url = "https://v3.football.api-sports.io/status"
             headers = {
-                "X-RapidAPI-Key": config.RAPIDAPI_KEY,
-                "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+                "x-apisports-key": config.API_FOOTBALL_KEY
             }
             response = requests.get(url, headers=headers)
             if response.status_code == 200:

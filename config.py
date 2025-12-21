@@ -10,7 +10,7 @@ load_dotenv()
 @dataclass
 class Config:
     # API Keys
-    RAPIDAPI_KEY: str = os.getenv("RAPIDAPI_KEY", "")
+    API_FOOTBALL_KEY: str = os.getenv("API_FOOTBALL_KEY", "")
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     GOOGLE_SEARCH_ENGINE_ID: str = os.getenv("GOOGLE_SEARCH_ENGINE_ID", "")
     GOOGLE_SEARCH_API_KEY: str = os.getenv("GOOGLE_SEARCH_API_KEY", "")

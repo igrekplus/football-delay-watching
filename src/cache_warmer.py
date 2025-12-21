@@ -20,10 +20,9 @@ class CacheWarmer:
     """上位チームの選手データをキャッシュするクラス"""
     
     def __init__(self):
-        self.api_base = "https://api-football-v1.p.rapidapi.com/v3"
+        self.api_base = "https://v3.football.api-sports.io"
         self.headers = {
-            "X-RapidAPI-Key": config.RAPIDAPI_KEY,
-            "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+            "x-apisports-key": config.API_FOOTBALL_KEY
         }
         self.requests_made = 0
         self.cache_hits = 0

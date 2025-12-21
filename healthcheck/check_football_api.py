@@ -25,9 +25,9 @@ def check_api_football():
     """API-Footballのステータスとクォータを確認"""
     load_dotenv()
     
-    api_key = os.getenv('RAPIDAPI_KEY')
+    api_key = os.getenv('API_FOOTBALL_KEY')
     if not api_key:
-        print("❌ RAPIDAPI_KEY が設定されていません")
+        print("❌ API_FOOTBALL_KEY が設定されていません")
         return False
     
     print("=" * 50)
@@ -39,10 +39,9 @@ def check_api_football():
     try:
         # タイムゾーン情報を取得（軽量なエンドポイント）
         resp = requests.get(
-            'https://api-football-v1.p.rapidapi.com/v3/timezone',
+            'https://v3.football.api-sports.io/timezone',
             headers={
-                'X-RapidAPI-Key': api_key,
-                'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+                'x-apisports-key': api_key
             },
             timeout=10
         )
