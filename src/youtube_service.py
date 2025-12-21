@@ -287,7 +287,15 @@ class YouTubeService:
         
         home_team = match.home_team
         away_team = match.away_team
-        kickoff_time = match.kickoff_time
+        # kickoff_jstは "2025/12/21 04:00 JST" 形式の文字列
+        from datetime import datetime
+        try:
+            kickoff_time = datetime.strptime(
+                match.kickoff_jst.replace(" JST", ""), "%Y/%m/%d %H:%M"
+            )
+        except (ValueError, AttributeError):
+            # パース失敗時は現在時刻を使用
+            kickoff_time = datetime.now()
         
         logger.info(f"Fetching YouTube videos for {home_team} vs {away_team}")
         
