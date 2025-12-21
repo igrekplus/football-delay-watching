@@ -149,27 +149,23 @@ class YouTubeService:
         away_team: str,
         kickoff_time: datetime,
     ) -> List[Dict]:
-        """過去の名勝負を検索"""
+        """過去の名勝負・対戦ハイライトを検索（当日のプレビューではなく過去試合）"""
         results = []
         
-        # 実行日3日前〜キックオフ（最近の対戦ハイライト）
-        published_after = kickoff_time - timedelta(days=3)
+        # 過去2年〜キックオフまでの動画を検索
+        # "highlights"キーワードで試合後のハイライト動画を特定
+        published_after = kickoff_time - timedelta(days=730)  # 2年前
+        published_before = kickoff_time  # キックオフまで
         
-        # リーグチャンネルで検索
-        league_channels = [
-            self._resolve_channel_id(h) for h in LEAGUE_CHANNELS.values()
-        ]
-        league_channels = [c for c in league_channels if c]
-        
+        # ハイライト系キーワードで検索（プレビューではなく過去試合結果）
         for query in [
-            f"{home_team} vs {away_team}",
-            f"{home_team} 対 {away_team}",
+            f"{home_team} vs {away_team} highlights",
+            f"{home_team} {away_team} extended highlights",
         ]:
-            # チャンネル指定なしで検索（より多くの結果を得るため）
             videos = self._search_videos(
                 query=query,
                 published_after=published_after,
-                published_before=kickoff_time,
+                published_before=published_before,
                 max_results=3,
             )
             for v in videos:
@@ -287,15 +283,21 @@ class YouTubeService:
         
         home_team = match.home_team
         away_team = match.away_team
-        # kickoff_jstは "2025/12/21 04:00 JST" 形式の文字列
+        # kickoff_jstは "2025/12/21 00:00 JST" 形式の文字列
+        # JSTとしてパースしてUTCに変換
         from datetime import datetime
+        import pytz
         try:
-            kickoff_time = datetime.strptime(
+            jst = pytz.timezone('Asia/Tokyo')
+            kickoff_naive = datetime.strptime(
                 match.kickoff_jst.replace(" JST", ""), "%Y/%m/%d %H:%M"
             )
-        except (ValueError, AttributeError):
-            # パース失敗時は現在時刻を使用
-            kickoff_time = datetime.now()
+            # JSTとしてタイムゾーンを設定してUTCに変換
+            kickoff_time = jst.localize(kickoff_naive).astimezone(pytz.UTC)
+            logger.info(f"Kickoff time: {match.kickoff_jst} -> UTC: {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
+        except (ValueError, AttributeError) as e:
+            logger.warning(f"Failed to parse kickoff_jst: {e}")
+            kickoff_time = datetime.now(pytz.UTC)
         
         logger.info(f"Fetching YouTube videos for {home_team} vs {away_team}")
         
