@@ -74,6 +74,15 @@ def main(dry_run=False):
     generator = ReportGenerator()
     report, image_paths = generator.generate(matches, youtube_videos=youtube_videos)
     
+    # 4.5 HTML Generation for Web (Firebase Hosting)
+    html_path = None
+    try:
+        from src.html_generator import generate_html_report
+        html_path = generate_html_report(report)
+        logger.info(f"HTML report generated: {html_path}")
+    except Exception as e:
+        logger.warning(f"HTML generation failed (continuing): {e}")
+    
     # 5. Email Notification (if enabled)
     if config.GMAIL_ENABLED and config.NOTIFY_EMAIL:
         from src.email_service import send_daily_report

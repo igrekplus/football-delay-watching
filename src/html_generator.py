@@ -1,11 +1,12 @@
 """
 HTML生成モジュール
 
-Markdownレポートを認証付きHTMLに変換してpublic/に配置する。
+Markdownレポートを認証付きHTMLに変換してpublic/reports/に配置する。
+日付付きファイル名で生成し、manifest.jsonでレポート一覧を管理する。
 """
 
 import os
-import re
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -17,18 +18,31 @@ from config import config
 
 logger = logging.getLogger(__name__)
 
+REPORTS_DIR = "public/reports"
+MANIFEST_FILE = "public/reports/manifest.json"
 
-def generate_html_report(markdown_content: str, output_dir: str = "public") -> str:
+
+def generate_html_report(markdown_content: str, report_datetime: str = None) -> str:
     """
-    MarkdownレポートをHTMLに変換してpublic/report.htmlに保存
+    MarkdownレポートをHTMLに変換してpublic/reports/に日時付きで保存
     
     Args:
         markdown_content: Markdown形式のレポート内容
-        output_dir: 出力ディレクトリ（デフォルト: public）
+        report_datetime: レポート日時 (YYYY-MM-DD_HHMMSS形式、省略時は現在日時)
     
     Returns:
         生成されたHTMLファイルのパス
     """
+    jst = pytz.timezone('Asia/Tokyo')
+    now_jst = datetime.now(jst)
+    
+    if report_datetime is None:
+        report_datetime = now_jst.strftime('%Y-%m-%d_%H%M%S')
+    
+    # 表示用（日付部分を抽出）
+    report_date = report_datetime.split('_')[0] if '_' in report_datetime else report_datetime
+    timestamp = now_jst.strftime('%Y-%m-%d %H:%M:%S JST')
+    
     # Markdown→HTML変換
     html_body = markdown.markdown(
         markdown_content,
@@ -41,7 +55,7 @@ def generate_html_report(markdown_content: str, output_dir: str = "public") -> s
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サッカー観戦ガイド レポート</title>
+    <title>サッカー観戦ガイド - {report_date}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -56,6 +70,14 @@ def generate_html_report(markdown_content: str, output_dir: str = "public") -> s
             margin: 0 auto;
             padding: 30px 20px;
         }}
+        .back-link {{
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }}
+        .back-link:hover {{ text-decoration: underline; }}
         h1, h2, h3 {{
             color: #feca57;
             margin: 25px 0 15px 0;
@@ -95,9 +117,10 @@ def generate_html_report(markdown_content: str, output_dir: str = "public") -> s
 </head>
 <body>
     <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
         {html_body}
         <div class="timestamp">
-            生成日時: {datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M JST')}
+            生成日時: {timestamp}
         </div>
     </div>
 </body>
@@ -105,24 +128,56 @@ def generate_html_report(markdown_content: str, output_dir: str = "public") -> s
 """
     
     # 出力ディレクトリ作成
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    Path(REPORTS_DIR).mkdir(parents=True, exist_ok=True)
     
-    # ファイル保存
-    output_path = os.path.join(output_dir, "report.html")
+    # 日時付きファイル名で保存
+    filename = f"report_{report_datetime}.html"
+    output_path = os.path.join(REPORTS_DIR, filename)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_template)
     
     logger.info(f"Generated HTML report: {output_path}")
+    
+    # manifest.json更新
+    update_manifest(report_datetime, filename, timestamp)
+    
     return output_path
 
 
-def generate_from_latest_report(reports_dir: str = None, output_dir: str = "public") -> str:
+def update_manifest(report_datetime: str, filename: str, timestamp: str):
+    """
+    manifest.jsonを更新してレポート一覧を管理（日時単位で追加）
+    """
+    manifest_path = Path(MANIFEST_FILE)
+    
+    # 既存のmanifestを読み込み
+    if manifest_path.exists():
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+    else:
+        manifest = {"reports": []}
+    
+    # 日時単位で新規追加（上書きしない）
+    reports = manifest.get("reports", [])
+    reports.append({"datetime": report_datetime, "file": filename, "generated": timestamp})
+    
+    # 日時でソート（新しい順）
+    reports.sort(key=lambda x: x.get("datetime", ""), reverse=True)
+    manifest["reports"] = reports
+    
+    # 保存
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, ensure_ascii=False, indent=2)
+    
+    logger.info(f"Updated manifest: {len(reports)} reports")
+
+
+def generate_from_latest_report(reports_dir: str = None) -> str:
     """
     最新のMarkdownレポートを読み込んでHTMLに変換
     
     Args:
         reports_dir: レポートディレクトリ（デフォルト: config.OUTPUT_DIR）
-        output_dir: 出力ディレクトリ
     
     Returns:
         生成されたHTMLファイルのパス
@@ -144,21 +199,19 @@ def generate_from_latest_report(reports_dir: str = None, output_dir: str = "publ
     with open(latest_file, "r", encoding="utf-8") as f:
         markdown_content = f.read()
     
-    return generate_html_report(markdown_content, output_dir)
+    # 日時はgenerate_html_report内で自動生成
+    return generate_html_report(markdown_content)
 
 
 if __name__ == "__main__":
     import sys
     logging.basicConfig(level=logging.INFO)
     
-    # デバッグモードで実行
     if len(sys.argv) > 1:
-        # 引数でMarkdownファイルを指定
         with open(sys.argv[1], "r", encoding="utf-8") as f:
             content = f.read()
         path = generate_html_report(content)
     else:
-        # 最新レポートを変換
         path = generate_from_latest_report()
     
     if path:

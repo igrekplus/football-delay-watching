@@ -3,11 +3,16 @@ YouTube動画取得サービス
 
 試合前の関連動画（記者会見、過去の名勝負、戦術解説、練習風景）を
 YouTube Data API v3で取得する。
+
+キャッシュ: 24時間TTLでローカルに保存し、開発中のクォータ消費を抑制。
 """
 
 import logging
+import json
+import hashlib
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
+from pathlib import Path
 import requests
 
 import os
@@ -23,6 +28,9 @@ from src.domain.models import MatchData
 
 logger = logging.getLogger(__name__)
 
+# YouTube検索結果のキャッシュ設定
+YOUTUBE_CACHE_DIR = Path("api_cache/youtube")
+YOUTUBE_CACHE_TTL_HOURS = 24  # キャッシュ有効期限（時間）
 
 class YouTubeService:
     """YouTube動画を取得するサービス"""
@@ -69,6 +77,60 @@ class YouTubeService:
         
         return None
     
+    def _get_cache_key(self, query: str, channel_id: Optional[str], 
+                       published_after: Optional[datetime], 
+                       published_before: Optional[datetime]) -> str:
+        """検索条件からキャッシュキーを生成"""
+        key_parts = [
+            query,
+            channel_id or "",
+            published_after.strftime("%Y%m%d") if published_after else "",
+            published_before.strftime("%Y%m%d") if published_before else "",
+        ]
+        key_str = "|".join(key_parts)
+        return hashlib.md5(key_str.encode()).hexdigest()
+    
+    def _read_cache(self, cache_key: str) -> Optional[List[Dict]]:
+        """キャッシュから読み込み（TTLチェック付き）"""
+        cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
+        
+        if not cache_file.exists():
+            return None
+        
+        try:
+            with open(cache_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            
+            # TTLチェック
+            cached_at = datetime.fromisoformat(data.get("cached_at", "2000-01-01"))
+            if datetime.now() - cached_at > timedelta(hours=YOUTUBE_CACHE_TTL_HOURS):
+                logger.debug(f"Cache expired: {cache_key}")
+                return None
+            
+            logger.info(f"YouTube cache HIT: {cache_key[:8]}...")
+            return data.get("results", [])
+        except Exception as e:
+            logger.warning(f"Failed to read YouTube cache: {e}")
+            return None
+    
+    def _write_cache(self, cache_key: str, results: List[Dict]):
+        """キャッシュに書き込み"""
+        try:
+            YOUTUBE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
+            
+            data = {
+                "cached_at": datetime.now().isoformat(),
+                "results": results,
+            }
+            
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            
+            logger.debug(f"YouTube cache saved: {cache_key[:8]}...")
+        except Exception as e:
+            logger.warning(f"Failed to write YouTube cache: {e}")
+    
     def _search_videos(
         self,
         query: str,
@@ -77,7 +139,15 @@ class YouTubeService:
         published_before: Optional[datetime] = None,
         max_results: int = 3,
     ) -> List[Dict]:
-        """YouTube検索を実行"""
+        """YouTube検索を実行（24時間キャッシュ付き）"""
+        
+        # キャッシュチェック
+        cache_key = self._get_cache_key(query, channel_id, published_after, published_before)
+        cached = self._read_cache(cache_key)
+        if cached is not None:
+            return cached[:max_results]
+        
+        # API呼び出し
         try:
             url = f"{self.API_BASE}/search"
             params = {
@@ -114,6 +184,11 @@ class YouTubeService:
                             "thumbnail_url": item["snippet"]["thumbnails"]["medium"]["url"],
                             "published_at": item["snippet"]["publishedAt"],
                         })
+                
+                # キャッシュ保存
+                self._write_cache(cache_key, results)
+                logger.info(f"YouTube cache MISS: {cache_key[:8]}... (saved {len(results)} results)")
+                
                 return results
             else:
                 logger.warning(f"YouTube search failed: {response.status_code} - {response.text}")

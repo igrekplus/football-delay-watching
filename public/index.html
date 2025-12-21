@@ -105,11 +105,54 @@
             display: block;
         }
 
-        .report-frame {
+        .report-list {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 30px;
-            min-height: 400px;
+        }
+
+        .report-list h2 {
+            color: #feca57;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .report-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(5px);
+        }
+
+        .report-item a {
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .report-item a:hover {
+            text-decoration: underline;
+        }
+
+        .report-meta {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .no-reports {
+            text-align: center;
+            padding: 40px;
+            color: #888;
         }
 
         .error {
@@ -146,6 +189,16 @@
             padding: 40px;
             color: #888;
         }
+
+        .debug-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 100, 100, 0.1);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #ff6b6b;
+        }
     </style>
 </head>
 
@@ -177,9 +230,15 @@
         </div>
 
         <div id="content" class="content">
-            <div class="report-frame">
-                <iframe id="report-iframe" src=""
-                    style="width:100%; height:800px; border:none; background:transparent;"></iframe>
+            <div class="report-list">
+                <h2>📋 レポート一覧</h2>
+                <div id="reports-container" class="loading">
+                    レポートを読み込み中...
+                </div>
+            </div>
+            <div id="debug-info" class="debug-info" style="display:none;">
+                <strong>🔧 デバッグ情報</strong>
+                <div id="debug-content"></div>
             </div>
         </div>
     </div>
@@ -246,7 +305,7 @@
             document.getElementById('content').classList.add('visible');
             document.getElementById('user-info').style.display = 'block';
             document.getElementById('user-email').textContent = user.email;
-            loadReport();
+            loadReportList();
         }
 
         function showError(message) {
@@ -259,8 +318,51 @@
             document.getElementById('error-message').textContent = '';
         }
 
-        function loadReport() {
-            document.getElementById('report-iframe').src = '/report.html';
+        async function loadReportList() {
+            const container = document.getElementById('reports-container');
+            const debugInfo = document.getElementById('debug-info');
+            const debugContent = document.getElementById('debug-content');
+
+            try {
+                const response = await fetch('/reports/manifest.json');
+
+                if (!response.ok) {
+                    container.innerHTML = '<div class="no-reports">レポートがまだありません。<br>GitHub Actionsでレポートを生成してください。</div>';
+                    return;
+                }
+
+                const manifest = await response.json();
+                const reports = manifest.reports || [];
+
+                if (reports.length === 0) {
+                    container.innerHTML = '<div class="no-reports">レポートがまだありません。</div>';
+                    return;
+                }
+
+                let html = '';
+                reports.forEach(report => {
+                    const displayDate = report.datetime || report.date || '不明';
+                    html += `
+                        <div class="report-item">
+                            <a href="/reports/${report.file}">${displayDate} のレポート</a>
+                            <span class="report-meta">生成: ${report.generated || '不明'}</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+
+                // デバッグ情報表示
+                debugInfo.style.display = 'block';
+                debugContent.innerHTML = `
+                    <p>総レポート数: ${reports.length}</p>
+                    <p>最新レポート: ${reports[0]?.datetime || reports[0]?.date || 'なし'}</p>
+                `;
+
+            } catch (e) {
+                container.innerHTML = '<div class="no-reports">レポート読み込みエラー: ' + e.message + '</div>';
+                console.error('Failed to load reports:', e);
+            }
         }
 
         // Enterキーでログイン

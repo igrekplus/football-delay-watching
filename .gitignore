@@ -33,3 +33,7 @@ logs/
 .gcp_config.md
 reports_mock/
 .firebase/
+
+# Firebase Hosting reports (may contain copyrighted content)
+public/reports/*.html
+public/reports/manifest.json

@@ -78,9 +78,11 @@ jobs:
         echo ""
         echo "=== End of Summary ==="
         
-    # TODO: Add email notification step here
-    # - name: Send Email Notification
-    #   uses: dawidd6/action-send-mail@v3
-    #   with:
-    #     server_address: smtp.gmail.com
-    #     ...
+    - name: Deploy to Firebase Hosting
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        npm install -g firebase-tools
+        firebase deploy --only hosting --token "$FIREBASE_TOKEN"
+        echo "✅ Deployed to Firebase Hosting"
+        echo "URL: https://football-delay-watching-a8830.web.app"
