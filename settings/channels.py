@@ -54,11 +54,20 @@ BROADCASTER_CHANNELS = {
     "BBC Sport": "@BBCSport",
 }
 
+# 日本向け放送局（ハイライト動画用）
+JAPAN_BROADCASTER_CHANNELS = {
+    "U-NEXT サッカー": "@UNEXT_football",
+    "WOWOW": "@waboringwow",  # 公式ハンドル要確認
+    "SPOTV": "@SPOTVnow_official",
+}
+
 # 戦術分析チャンネル
 TACTICS_CHANNELS = {
     "Tifo Football": "@TifoFootball_",
     "The Athletic FC": "@TheAthleticFC",
     "Leo the football TV": "@Leothefoot",  # 日本語
+    "CRACK FOOTBALL": "@CRACKfootball",  # 追加
+    "Football Made Simple": "@FootballMadeSimple",
 }
 from typing import Optional
 

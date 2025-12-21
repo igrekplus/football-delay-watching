@@ -16,6 +16,7 @@
 8. レポート生成機能
 9. 選外試合リスト出力機能
 10. エラーハンドリング機能
+11. **YouTube動画取得機能** → [youtube_requirement.md](./youtube_requirement.md)
 
 ## 機能一覧・機能詳細
 

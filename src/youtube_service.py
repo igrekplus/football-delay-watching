@@ -28,7 +28,13 @@ class YouTubeService:
     """YouTube動画を取得するサービス"""
     
     API_BASE = "https://www.googleapis.com/youtube/v3"
+    
+    # チューニング可能なパラメータ
     MAX_RESULTS_PER_CATEGORY = 3
+    HISTORIC_SEARCH_DAYS = 730      # 過去ハイライト検索期間（2年）
+    RECENT_SEARCH_HOURS = 48        # 公式動画検索期間（48時間）
+    TACTICAL_SEARCH_DAYS = 180      # 戦術動画検索期間（6ヶ月）
+    PLAYER_SEARCH_DAYS = 180        # 選手紹介動画検索期間（6ヶ月）
     
     def __init__(self, api_key: str = None):
         # YOUTUBE_API_KEY を優先、なければ GOOGLE_API_KEY にフォールバック
@@ -152,9 +158,9 @@ class YouTubeService:
         """過去の名勝負・対戦ハイライトを検索（当日のプレビューではなく過去試合）"""
         results = []
         
-        # 過去2年〜キックオフまでの動画を検索
+        # 過去2年〜キックオフまでの動画を検索（パラメータ化）
         # "highlights"キーワードで試合後のハイライト動画を特定
-        published_after = kickoff_time - timedelta(days=730)  # 2年前
+        published_after = kickoff_time - timedelta(days=self.HISTORIC_SEARCH_DAYS)
         published_before = kickoff_time  # キックオフまで
         
         # ハイライト系キーワードで検索（プレビューではなく過去試合結果）
@@ -183,8 +189,8 @@ class YouTubeService:
         """戦術・選手プレー集を検索"""
         results = []
         
-        # 直近1ヶ月〜キックオフ
-        published_after = kickoff_time - timedelta(days=30)
+        # 戦術チャンネルで検索（パラメータ化）
+        published_after = kickoff_time - timedelta(days=self.TACTICAL_SEARCH_DAYS)
         
         # 戦術チャンネルで検索
         for handle in TACTICS_CHANNELS.values():
