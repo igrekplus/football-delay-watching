@@ -242,7 +242,7 @@ class ReportGenerator:
             lines.append("")
             
             # YouTube Videos Section
-            match_key = f"{match.home_team_name} vs {match.away_team_name}"
+            match_key = f"{match.home_team} vs {match.away_team}"
             videos = youtube_videos.get(match_key, [])
             if videos:
                 lines.append("### ■ 📹 試合前の見どころ動画")

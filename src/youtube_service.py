@@ -285,8 +285,8 @@ class YouTubeService:
         """試合に関連する動画を取得"""
         all_videos = []
         
-        home_team = match.home_team_name
-        away_team = match.away_team_name
+        home_team = match.home_team
+        away_team = match.away_team
         kickoff_time = match.kickoff_time
         
         logger.info(f"Fetching YouTube videos for {home_team} vs {away_team}")
@@ -321,7 +321,7 @@ class YouTubeService:
         results = {}
         
         for match in matches:
-            match_key = f"{match.home_team_name} vs {match.away_team_name}"
+            match_key = f"{match.home_team} vs {match.away_team}"
             results[match_key] = self.get_videos_for_match(match)
         
         return results
