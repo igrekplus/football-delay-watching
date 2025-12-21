@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ サッカー観戦ガイド</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .login-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .login-btn {
+            background: linear-gradient(90deg, #4285f4, #34a853);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3);
+        }
+
+        .content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .content.visible {
+            display: block;
+        }
+
+        .report-frame {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .success {
+            color: #34a853;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            text-align: right;
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #888;
+            color: #888;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚽ サッカー観戦ガイド</h1>
+            <p>ネタバレなしで試合を楽しむために</p>
+        </header>
+
+        <div id="user-info" class="user-info" style="display:none;">
+            <span id="user-email"></span>
+            <button class="logout-btn" onclick="logout()">ログアウト</button>
+        </div>
+
+        <div id="login-section" class="login-section">
+            <h2 style="margin-bottom: 25px;">ログイン</h2>
+            <div class="input-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" placeholder="example@email.com">
+            </div>
+            <div class="input-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" placeholder="パスワード">
+            </div>
+            <button class="login-btn" onclick="login()">🔐 ログイン</button>
+            <p id="error-message" class="error"></p>
+            <p id="success-message" class="success"></p>
+        </div>
+
+        <div id="content" class="content">
+            <div class="report-frame">
+                <iframe id="report-iframe" src=""
+                    style="width:100%; height:800px; border:none; background:transparent;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGpOTSVi1DlmoruNE5sodcRHptEtc95Ro",
+            authDomain: "football-delay-watching-a8830.firebaseapp.com",
+            projectId: "football-delay-watching-a8830",
+            storageBucket: "football-delay-watching-a8830.firebasestorage.app",
+            messagingSenderId: "245958261672",
+            appId: "1:245958261672:web:8ad1819865311400cf3b9d"
+        };
+
+        // 許可するメールアドレス
+        const ALLOWED_EMAILS = ['nakame.kate@gmail.com', 'sampleexample@gmail.com'];
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // 認証状態の監視
+        auth.onAuthStateChanged((user) => {
+            if (user && ALLOWED_EMAILS.includes(user.email)) {
+                showContent(user);
+            } else if (user) {
+                showError('このアカウントではアクセスできません: ' + user.email);
+                auth.signOut();
+            } else {
+                showLogin();
+            }
+        });
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showError('メールアドレスとパスワードを入力してください');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    showSuccess('ログイン成功！');
+                })
+                .catch((error) => {
+                    showError(error.message);
+                });
+        }
+
+        function logout() {
+            auth.signOut();
+        }
+
+        function showLogin() {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('content').classList.remove('visible');
+            document.getElementById('user-info').style.display = 'none';
+        }
+
+        function showContent(user) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('content').classList.add('visible');
+            document.getElementById('user-info').style.display = 'block';
+            document.getElementById('user-email').textContent = user.email;
+            loadReport();
+        }
+
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('success-message').textContent = '';
+        }
+
+        function showSuccess(message) {
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('error-message').textContent = '';
+        }
+
+        function loadReport() {
+            document.getElementById('report-iframe').src = '/report.html';
+        }
+
+        // Enterキーでログイン
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+
+</html>

@@ -32,3 +32,4 @@ logs/
 *.log
 .gcp_config.md
 reports_mock/
+.firebase/
