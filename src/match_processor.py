@@ -185,39 +185,55 @@ class MatchProcessor:
         ]
 
     def select_matches(self, matches: List[MatchData]) -> List[MatchData]:
-        # 3.2 logic:
-        # 1. City (Absolute) always first
-        # 2. S rank (CL > EPL, then by sub-rank/importance but here just S)
-        # 3. A rank
-        # Max 3 matches
-        
-        # Sort keys: 
-        # - Has City (priority) -> handled by rank 'Absolute'
-        # - Rank priority: Absolute > S > A > None
+        """
+        試合の選定ロジック:
+        1. まず rank != None を優先順位で選出
+        2. 選出数が MATCH_LIMIT 未満なら、rank == None で補充（フィラー）
+        3. 上限は MATCH_LIMIT
+        """
         
         rank_order = {"Absolute": 0, "S": 1, "A": 2, "None": 3}
         
         # Sort logic
         def sort_key(m: MatchData):
             r_score = rank_order.get(m.rank, 99)
-            # Secondary sort: CL < EPL (CL is preferred over EPL for same rank per 3.2.3)
-            # "CL > プレミア" means CL comes first. Alphabetically CL < EPL, so ASC sort works.
+            # Secondary sort: CL < EPL (CL is preferred over EPL for same rank)
             comp_score = 0 if m.competition == "CL" else 1
             return (r_score, comp_score)
 
         sorted_matches = sorted(matches, key=sort_key)
         
-        # Select top N (Dynamic limit)
-        selected = []
         limit = config.MATCH_LIMIT
         
-        for i, match in enumerate(sorted_matches):
-            if i < limit and match.rank != "None":
+        # Step 1: rank != None の試合を選出
+        high_rank_matches = [m for m in sorted_matches if m.rank != "None"]
+        low_rank_matches = [m for m in sorted_matches if m.rank == "None"]
+        
+        selected_count = 0
+        result = []
+        
+        # 高ランク試合を優先的に選出
+        for match in high_rank_matches:
+            if selected_count < limit:
                 match.is_target = True
-                selected.append(match)
+                match.selection_reason = None  # Clear any previous reason
+                selected_count += 1
             else:
                 match.is_target = False
-                match.selection_reason = "Out of quota" if match.rank != "None" else "Low rank"
-                selected.append(match) # We keep them but marked as not target
-                
-        return selected
+                match.selection_reason = "Out of quota"
+            result.append(match)
+        
+        # Step 2: 残り枠をLowランクで補充（フィラー）
+        for match in low_rank_matches:
+            if selected_count < limit:
+                match.is_target = True
+                match.selection_reason = "Included as filler"
+                logger.info(f"Including low-rank match as filler: {match.home_team} vs {match.away_team}")
+                selected_count += 1
+            else:
+                match.is_target = False
+                match.selection_reason = "Low rank"
+            result.append(match)
+        
+        logger.info(f"Selected {selected_count} matches (limit: {limit})")
+        return result
