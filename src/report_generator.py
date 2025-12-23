@@ -175,69 +175,60 @@ class ReportGenerator:
             lines.append(f"- 主審：{match.referee}")
             lines.append("")
             
-            # Generate formation diagrams
+            # Generate formation diagrams - Firebase Hosting用にpublic/reports/images/に保存
             lines.append("### ■ フォーメーション図")
+            web_image_dir = "public/reports"  # Firebase用の出力先
+            
             home_img = generate_formation_image(
                 match.home_formation, match.home_lineup, match.home_team,
-                is_home=True, output_dir=config.OUTPUT_DIR, match_id=match.id,
+                is_home=True, output_dir=web_image_dir, match_id=match.id,
                 player_numbers=match.player_numbers
             )
             away_img = generate_formation_image(
                 match.away_formation, match.away_lineup, match.away_team,
-                is_home=False, output_dir=config.OUTPUT_DIR, match_id=match.id,
+                is_home=False, output_dir=web_image_dir, match_id=match.id,
                 player_numbers=match.player_numbers
             )
+            # Markdown用は相対パス、HTML変換時に/reports/images/xxx.pngに
             if home_img:
-                lines.append(f"![{match.home_team}]({home_img})")
-                image_paths.append(home_img)
+                lines.append(f"![{match.home_team}](/reports/{home_img})")
+                image_paths.append(f"public/reports/{home_img}")
             if away_img:
-                lines.append(f"![{match.away_team}]({away_img})")
-                image_paths.append(away_img)
+                lines.append(f"![{match.away_team}](/reports/{away_img})")
+                image_paths.append(f"public/reports/{away_img}")
             lines.append("")
             
-            # Player photos section (if available)
+            # Player photos section (if available) - 外部URLを直接使用
             if match.player_photos:
-                from src.utils.image_downloader import download_player_images
+                lines.append("### ■ 選手画像")
                 
-                # 画像をダウンロード
-                local_photos = download_player_images(
-                    match.player_photos,
-                    config.OUTPUT_DIR,
-                    match.id
-                )
+                def format_photo_caption(name: str) -> str:
+                    """画像キャプションに背番号を追加"""
+                    number = match.player_numbers.get(name)
+                    if number is not None:
+                        return f"{name} #{number}"
+                    return name
                 
-                if local_photos:
-                    lines.append("### ■ 選手画像")
-                    
-                    def format_photo_caption(name: str) -> str:
-                        """画像キャプションに背番号を追加"""
-                        number = match.player_numbers.get(name)
-                        if number is not None:
-                            return f"{name} #{number}"
-                        return name
-                    
-                    # Home team photos
-                    home_photos = [
-                        f"![{format_photo_caption(name)}]({local_photos[name]})" 
-                        for name in match.home_lineup 
-                        if name in local_photos
-                    ]
-                    if home_photos:
-                        lines.append(f"**{match.home_team}**")
-                        lines.append(" ".join(home_photos))
-                        image_paths.extend([local_photos[name] for name in match.home_lineup if name in local_photos])
-                    
-                    # Away team photos
-                    away_photos = [
-                        f"![{format_photo_caption(name)}]({local_photos[name]})" 
-                        for name in match.away_lineup 
-                        if name in local_photos
-                    ]
-                    if away_photos:
-                        lines.append(f"**{match.away_team}**")
-                        lines.append(" ".join(away_photos))
-                        image_paths.extend([local_photos[name] for name in match.away_lineup if name in local_photos])
-                    lines.append("")
+                # Home team photos - 外部URLを直接使用
+                home_photos = [
+                    f"![{format_photo_caption(name)}]({match.player_photos[name]})" 
+                    for name in match.home_lineup 
+                    if name in match.player_photos and match.player_photos[name]
+                ]
+                if home_photos:
+                    lines.append(f"**{match.home_team}**")
+                    lines.append(" ".join(home_photos))
+                
+                # Away team photos - 外部URLを直接使用
+                away_photos = [
+                    f"![{format_photo_caption(name)}]({match.player_photos[name]})" 
+                    for name in match.away_lineup 
+                    if name in match.player_photos and match.player_photos[name]
+                ]
+                if away_photos:
+                    lines.append(f"**{match.away_team}**")
+                    lines.append(" ".join(away_photos))
+                lines.append("")
             
             lines.append("### ■ ニュース要約（600〜1,000字）")
             lines.append(f"- {match.news_summary}")

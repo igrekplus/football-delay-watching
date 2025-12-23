@@ -324,7 +324,9 @@
             const debugContent = document.getElementById('debug-content');
 
             try {
-                const response = await fetch('/reports/manifest.json');
+                // キャッシュバスター追加でブラウザキャッシュを回避
+                const cacheBuster = Date.now();
+                const response = await fetch(`/reports/manifest.json?v=${cacheBuster}`);
 
                 if (!response.ok) {
                     container.innerHTML = '<div class="no-reports">レポートがまだありません。<br>GitHub Actionsでレポートを生成してください。</div>';
