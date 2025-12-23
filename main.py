@@ -77,7 +77,9 @@ def main(dry_run=False):
     # 4.5 HTML Generation for Web (Firebase Hosting)
     html_path = None
     try:
-        from src.html_generator import generate_html_report
+        from src.html_generator import generate_html_report, sync_from_firebase
+        # 既存HTMLファイルをFirebaseからダウンロード（ファイル消失防止）
+        sync_from_firebase()
         html_path = generate_html_report(report)
         logger.info(f"HTML report generated: {html_path}")
     except Exception as e:

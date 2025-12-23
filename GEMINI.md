@@ -154,6 +154,80 @@ python3 healthcheck/check_gmail.py
 - チーム別選手キャッシュ状況を表示
 - キャッシュウォーミング対象チームのカバレッジを確認可能
 
+## 🌐 Web開発（Firebase Hosting）
+
+### アーキテクチャ
+
+```
+┌─────────────────────────────────────────────────────┐
+│                Firebase Hosting                      │
+│  (https://football-delay-watching-a8830.web.app)    │
+├─────────────────────────────────────────────────────┤
+│  public/                                            │
+│  ├── index.html          ← ログイン＋レポート一覧   │
+│  └── reports/                                        │
+│      ├── manifest.json   ← レポート一覧データ       │
+│      ├── report_YYYY-MM-DD_HHMMSS.html ← 各レポート │
+│      └── images/         ← フォーメーション図       │
+└─────────────────────────────────────────────────────┘
+```
+
+### 関連ファイル
+
+| ファイル | 役割 |
+|---------|------|
+| `src/html_generator.py` | Markdown→HTML変換、manifest.json更新 |
+| `public/index.html` | ログイン画面＋レポート一覧表示 |
+| `firebase.json` | Firebase Hosting設定 |
+| `.github/workflows/daily_report.yml` | Actions→デプロイ |
+
+### デプロイコマンド
+
+```bash
+# ローカルからデプロイ
+firebase deploy --only hosting
+
+# GitHub Actions経由（自動）
+gh workflow run daily_report.yml
+```
+
+### ⚠️ AI向け重要注意事項
+
+> **絶対に `rm -rf public/reports` を実行しないこと！**
+
+Firebase Hostingは**毎回デプロイ時に`public/`の内容で完全に置き換える**。
+ローカルにファイルがないと、Firebase上からも削除される。
+
+**正しい開発フロー:**
+1. `public/reports/` は削除せずに保持
+2. 新しいHTMLは追記される
+3. manifest.jsonはFirebaseから既存分をマージ
+
+### manifest.jsonの仕組み
+
+```json
+{
+  "reports": [
+    {
+      "datetime": "2025-12-23_071533",
+      "file": "report_2025-12-23_071533.html",
+      "generated": "2025-12-23 07:15:33 JST",
+      "is_debug": false
+    }
+  ]
+}
+```
+
+- `html_generator.py`がFirebase上のmanifest.jsonを取得
+- 新規レポートを追加してマージ
+- 重複除去して保存
+
+### デバッグモードの識別
+
+- `is_debug: true` → レポート一覧にDEBUGバッジ表示
+- HTML本文: 「🔧 DEBUG MODE」バナー表示
+- ブラウザタブ: `[DEBUG] サッカー観戦ガイド`
+
 ## 🧠 AIコーディング原則（プロSE向けガードレール）
 
 ### 1. 進め方（設計→実装の順序を徹底）

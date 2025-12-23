@@ -20,6 +20,61 @@ logger = logging.getLogger(__name__)
 
 REPORTS_DIR = "public/reports"
 MANIFEST_FILE = "public/reports/manifest.json"
+FIREBASE_BASE_URL = "https://football-delay-watching-a8830.web.app/reports"
+
+
+def sync_from_firebase():
+    """
+    Firebase Hostingから既存のHTMLファイルをダウンロードしてローカルに保存
+    デプロイ前に実行することでファイル消失を防ぐ
+    """
+    import requests
+    
+    # ディレクトリ作成
+    Path(REPORTS_DIR).mkdir(parents=True, exist_ok=True)
+    Path(f"{REPORTS_DIR}/images").mkdir(parents=True, exist_ok=True)
+    
+    # manifest.jsonを取得
+    manifest_url = f"{FIREBASE_BASE_URL}/manifest.json?v={datetime.now().timestamp()}"
+    try:
+        response = requests.get(manifest_url, timeout=10)
+        if response.status_code != 200:
+            logger.warning(f"Could not fetch manifest from Firebase: {response.status_code}")
+            return 0
+        
+        manifest = response.json()
+        reports = manifest.get("reports", [])
+        
+        downloaded = 0
+        for report in reports:
+            filename = report.get("file")
+            if not filename:
+                continue
+            
+            local_path = f"{REPORTS_DIR}/{filename}"
+            
+            # 既にローカルにある場合はスキップ
+            if os.path.exists(local_path):
+                continue
+            
+            # HTMLファイルをダウンロード
+            html_url = f"{FIREBASE_BASE_URL}/{filename}"
+            try:
+                html_response = requests.get(html_url, timeout=30)
+                if html_response.status_code == 200:
+                    with open(local_path, "w", encoding="utf-8") as f:
+                        f.write(html_response.text)
+                    logger.info(f"Downloaded from Firebase: {filename}")
+                    downloaded += 1
+            except Exception as e:
+                logger.warning(f"Failed to download {filename}: {e}")
+        
+        logger.info(f"Synced {downloaded} files from Firebase")
+        return downloaded
+        
+    except Exception as e:
+        logger.warning(f"Firebase sync failed: {e}")
+        return 0
 
 
 def generate_html_report(markdown_content: str, report_datetime: str = None) -> str:
