@@ -43,6 +43,9 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
     report_date = report_datetime.split('_')[0] if '_' in report_datetime else report_datetime
     timestamp = now_jst.strftime('%Y-%m-%d %H:%M:%S JST')
     
+    # デバッグモード判定（タイトル表示用）
+    debug_prefix = "[DEBUG] " if config.DEBUG_MODE else ""
+    
     # Markdown→HTML変換
     html_body = markdown.markdown(
         markdown_content,
@@ -55,7 +58,7 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サッカー観戦ガイド - {report_date}</title>
+    <title>{debug_prefix}サッカー観戦ガイド - {report_date}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -118,6 +121,7 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
 <body>
     <div class="container">
         <a href="/" class="back-link">← レポート一覧に戻る</a>
+        {'<div style="background:#ff6b6b;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🔧 DEBUG MODE - このレポートはデバッグ用です</div>' if config.DEBUG_MODE else ''}
         {html_body}
         <div class="timestamp">
             生成日時: {timestamp}
@@ -146,30 +150,65 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
 
 def update_manifest(report_datetime: str, filename: str, timestamp: str):
     """
-    manifest.jsonを更新してレポート一覧を管理（日時単位で追加）
+    manifest.jsonを更新してレポート一覧を管理
+    Firebase上の既存manifestを取得してマージすることで過去レポートを保持
     """
-    manifest_path = Path(MANIFEST_FILE)
+    import requests
     
-    # 既存のmanifestを読み込み
+    manifest_path = Path(MANIFEST_FILE)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # 1. Firebase上の既存manifestを取得（過去レポートを保持するため）
+    firebase_url = "https://football-delay-watching-a8830.web.app/reports/manifest.json"
+    existing_reports = []
+    
+    try:
+        response = requests.get(firebase_url, timeout=10)
+        if response.status_code == 200:
+            firebase_manifest = response.json()
+            existing_reports = firebase_manifest.get("reports", [])
+            logger.info(f"Fetched {len(existing_reports)} existing reports from Firebase")
+    except Exception as e:
+        logger.warning(f"Could not fetch existing manifest from Firebase: {e}")
+    
+    # 2. ローカルのmanifestも読み込み（今回のセッションで生成した分）
     if manifest_path.exists():
         with open(manifest_path, "r", encoding="utf-8") as f:
-            manifest = json.load(f)
+            local_manifest = json.load(f)
+            local_reports = local_manifest.get("reports", [])
     else:
-        manifest = {"reports": []}
+        local_reports = []
     
-    # 日時単位で新規追加（上書きしない）
-    reports = manifest.get("reports", [])
-    reports.append({"datetime": report_datetime, "file": filename, "generated": timestamp})
+    # 3. マージ（既存 + ローカル + 新規）
+    all_reports = existing_reports + local_reports
     
-    # 日時でソート（新しい順）
-    reports.sort(key=lambda x: x.get("datetime", ""), reverse=True)
-    manifest["reports"] = reports
+    # 新しいレポートを追加（デバッグフラグ付き）
+    new_report = {
+        "datetime": report_datetime, 
+        "file": filename, 
+        "generated": timestamp,
+        "is_debug": config.DEBUG_MODE
+    }
+    all_reports.append(new_report)
     
-    # 保存
+    # 4. 重複除去（datetimeベース）
+    seen = set()
+    unique_reports = []
+    for r in all_reports:
+        dt = r.get("datetime")
+        if dt and dt not in seen:
+            seen.add(dt)
+            unique_reports.append(r)
+    
+    # 5. 日時でソート（新しい順）
+    unique_reports.sort(key=lambda x: x.get("datetime", ""), reverse=True)
+    
+    # 6. 保存
+    manifest = {"reports": unique_reports}
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=2)
     
-    logger.info(f"Updated manifest: {len(reports)} reports")
+    logger.info(f"Updated manifest: {len(unique_reports)} reports (merged from Firebase)")
 
 
 def generate_from_latest_report(reports_dir: str = None) -> str:

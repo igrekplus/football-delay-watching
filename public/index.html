@@ -344,9 +344,10 @@
                 let html = '';
                 reports.forEach(report => {
                     const displayDate = report.datetime || report.date || '不明';
+                    const debugBadge = report.is_debug ? '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">DEBUG</span>' : '';
                     html += `
                         <div class="report-item">
-                            <a href="/reports/${report.file}">${displayDate} のレポート</a>
+                            <a href="/reports/${report.file}">${displayDate} のレポート${debugBadge}</a>
                             <span class="report-meta">生成: ${report.generated || '不明'}</span>
                         </div>
                     `;
