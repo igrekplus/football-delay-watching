@@ -54,12 +54,29 @@
 - **OAuth テストユーザー枠**: External アプリはテストユーザー数に制約があるため、運用前に本番公開 or 内部（Internal）設定へ切替が必要。
 
 ## 5. このプロジェクトでの想定消費目安
-- 1日あたり対象リーグ: EPL/CL、最大3試合（`Config.MATCH_LIMIT`）。  
-- **API-Football**: 1試合で `fixtures`, `lineups`, `statistics`, `events` など10〜15リクエスト想定 → 最大 ~50 req/day。Free枠(100/day)でも足りるが週末ピーク時にバッファが小さいため Pro 推奨。  
-- **GCSキャッシュ効果**: 選手データ（`/players`）などはGCSに永続キャッシュされるため、2回目以降のリクエストはAPI消費ゼロ。週末の大量試合時でも、既知チームの選手情報はキャッシュHITする。
-- **Custom Search**: ニュース10件取得×検索1回程度 → 10 req/day。Free枠(100/day)で十分。  
-- **Gemini**: ニュース10本要約＋フォーメーション説明で ~40k–80k tokens/日程度。無料ティアの rate limit にかかる可能性があるため有料ティアを検討。  
-- **Gmail**: レポート送信 1通/日。Workspace/無料どちらでも上限に余裕あり。
+
+1日あたり対象リーグ: EPL/CL、最大3試合（`Config.MATCH_LIMIT`）。
+
+| API | 1試合あたり | 3試合/日 | 上限 | 消費率※ |
+|-----|-----------|---------|------|---------|
+| **API-Football** | ~25 req | ~75 req | 7,500/日 (Pro) | ✅ 1% |
+| **YouTube Data API** | ~13クエリ=1,300 units | ~3,900 units | 10,000/日 | ⚠️ 39% |
+| **Custom Search** | ~3 req | ~9 req | 100/日 | ✅ 9% |
+| **Gemini** | ~20k tokens | ~60k tokens | 無料枠あり | ✅ |
+| **Gmail** | 1通/日 | 1通/日 | 500/日 | ✅ 0.2% |
+
+※ 消費率 = 3試合/日の消費量 ÷ 日次上限 × 100。低いほど余裕あり。
+
+### 詳細
+
+- **API-Football**: `fixtures`, `lineups`, `players`(22人分), `statistics`, `injuries` など。選手データはGCSキャッシュで削減可能。
+- **YouTube Data API**: 現状20クエリ/試合 → 改善後13クエリ/試合（Issue #27対応後）。search.list=100units/req。
+- **GCSキャッシュ効果**: 選手データはGCSに永続キャッシュ。2回目以降はAPI消費ゼロ。
+- **Custom Search**: ニュース検索×試合数。Free枠(100/day)で十分。
+- **Gemini**: ニュース要約で使用。トークン消費は軽量。
+- **Gmail**: レポート送信1通/日。上限に余裕あり。
+
+> ⚠️ **注意**: YouTube APIはクォータ消費が激しい。デバッグ+本番で枯渇リスクあり。キャッシュ（1週間TTL）を活用すること。
 
 ## 6. 運用チェックリスト
 - 429/402/403 が出た場合:  
@@ -69,6 +86,36 @@
   - Gmail: 管理コンソールで送信制限違反/一時停止を確認。  
 - GitHub Actions での実行前に、前日消費量が上限の80%を超えていたら slack/email でアラート（要別途実装）。  
 - 料金改定は頻繁。月初に公式価格ページの更新日を確認し、本ファイルの見直しを行うこと。
+
+## 6.5. ヘルスチェックスクリプト
+
+各APIのクォータ・ステータスを確認するスクリプト:
+
+| スクリプト | 対象API | 確認内容 |
+|-----------|---------|----------|
+| `check_football_api.py` | API-Football | 残りリクエスト数、日次上限 |
+| `check_youtube.py` | YouTube Data API | クォータ消費状況、キャッシュ状態 |
+| `check_google_search.py` | Google Custom Search | 日次使用量 |
+| `check_gemini.py` | Gemini API | API接続確認 |
+| `check_gmail.py` | Gmail API | OAuth認証状態、送信可否 |
+| `check_gcs_cache.py` | GCS Cache | キャッシュカバレッジ確認 |
+
+### 実行方法
+
+```bash
+# 全API一括確認
+python3 healthcheck/check_football_api.py
+python3 healthcheck/check_youtube.py
+python3 healthcheck/check_google_search.py
+python3 healthcheck/check_gemini.py
+python3 healthcheck/check_gmail.py
+
+# GCSキャッシュ確認
+python3 healthcheck/check_gcs_cache.py
+```
+
+### AI向け指示
+> ユーザーが「クォータ確認して」「API確認して」と言った場合、上記スクリプトを順番に実行して結果を報告すること。
 
 ## 7. キャッシュウォーミング
 試合がない平日にAPI消費を活用し、上位チームの選手データを事前にGCSにキャッシュする機能。
@@ -80,5 +127,26 @@
   - 週末（金〜日）はFalseのまま運用
 - **キャッシュ確認**: `python3 healthcheck/check_gcs_cache.py`
 
+## 8. 日次クォータリフレッシュタイミング
+
+各APIのクォータリセット時刻（日本時間）:
+
+| API | リセット時刻（JST） | リセット時刻（UTC） | 備考 |
+|-----|------------------|------------------|------|
+| **API-Football** | 09:00 JST | 00:00 UTC | 毎日UTC 0時にリセット |
+| **YouTube Data API** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00（PDT/PST）にリセット |
+| **Google Custom Search** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00にリセット |
+| **Gemini API** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00にリセット |
+| **Gmail API** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00にリセット |
+
+> **Note**: 太平洋時間は夏時間（PDT: UTC-7）と冬時間（PST: UTC-8）で1時間ずれる。
+> - 夏時間（3月〜11月）: 16:00 JST
+> - 冬時間（11月〜3月）: 17:00 JST
+
+### 運用上の注意
+- **デバッグ実行**: クォータ消費が多い場合は翌日のリセット後に実行
+- **YouTube API**: 特にクォータ消費が激しい（100ユニット/リクエスト）ため、17:00 JST以降の実行を推奨
+- **GitHub Actions**: 毎日 7:00 JST に実行するため、YouTube以外は余裕あり
+
 ---
-最終更新: 2025-12-19
+最終更新: 2025-12-24
