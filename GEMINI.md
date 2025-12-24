@@ -14,9 +14,9 @@
 | 項目 | 内容 |
 |------|------|
 | gcloud CLI | v549.0.1 (`/opt/homebrew/bin/gcloud`) |
-| 設定ファイル | `.gcp_config.md` (gitignore済み) |
+| 設定ファイル | `.env` (gitignore済み) |
 
-> **Note**: プロジェクトID、認証アカウント、GCSバケット名は `.gcp_config.md` を参照してください。
+> **Note**: プロジェクトID、認証アカウント、GCSバケット名は `.env` を参照してください。
 
 ### Antigravityブラウザプロファイル
 
@@ -329,12 +329,6 @@ Firebase Hostingは**毎回デプロイ時に`public/`の内容で完全に置�
 
 1. **ファイル作成前に確認**: 機密情報を含むファイルを作成する前に、`.gitignore` に追加されているか確認
 2. **ユーザーに確認**: 不明な場合は「このファイルを `.gitignore` に追加しますか？」と確認
-3. **デフォルトで安全側**: 迷ったら `.gitignore` に追加する
-
-```bash
-# 現在の .gitignore に含まれる機密ファイル
-.gmail_credentials.json
-.gmail_token.json
+3. **デフォルトで安全側**: 迷ったら# 現在の .gitignore に含まれる機密ファイル
 .env
 .env.local
-```

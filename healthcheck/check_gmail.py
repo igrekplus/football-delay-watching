@@ -82,13 +82,21 @@ def check_gmail():
             print("🔄 トークンをリフレッシュしました")
         
         # Test API connection
-        service = build('gmail', 'v1', credentials=creds)
-        profile = service.users().getProfile(userId='me').execute()
-        email = profile.get('emailAddress', 'N/A')
+        # Note: getProfile requires gmail.readonly or similar. sending-only scope might fail here.
+        try:
+            service = build('gmail', 'v1', credentials=creds)
+            profile = service.users().getProfile(userId='me').execute()
+            email = profile.get('emailAddress', 'N/A')
+            print(f"📧 認証済みメールアドレス: {email}")
+        except Exception as e:
+            if "insufficient authentication scopes" in str(e):
+                print("⚠️ プロファイル取得不可 (権限不足 - gmail.sendのみのため正常)")
+                # トークンリフレッシュが成功していれば認証自体はOKとみなす
+            else:
+                raise e
         
-        print(f"📧 認証済みメールアドレス: {email}")
         print()
-        print("✅ Gmail API: 正常")
+        print("✅ Gmail API: 正常 (認証成功)")
         return True
         
     except Exception as e:

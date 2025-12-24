@@ -102,7 +102,7 @@ USE_MOCK_DATA=True python main.py
 - **認証情報の種類**: **OAuth クライアント ID**
 - **アプリケーションの種類**: **デスクトップ アプリ**
 - **名前**: 任意（例: `Desktop client 1`）
-- 作成後、JSONをダウンロードして `.gmail_credentials.json` にリネームしてプロジェクトルートに配置。
+- 作成後、JSONの内容を `.env` の `GMAIL_CREDENTIALS` に設定（改行なしのJSON文字列として）。
 
 #### 3. 初回認証 (Local)
 ```bash
@@ -114,8 +114,8 @@ python tests/setup_gmail_oauth.py
 
 #### 4. GitHub Secrets への登録
 ```bash
-gh secret set GMAIL_TOKEN < .gmail_token.json
-gh secret set GMAIL_CREDENTIALS < .gmail_credentials.json
+gh secret set GMAIL_TOKEN < <(echo $GMAIL_TOKEN)
+gh secret set GMAIL_CREDENTIALS < <(echo $GMAIL_CREDENTIALS)
 gh secret set NOTIFY_EMAIL --body 'your-email@gmail.com'
 gh secret set GMAIL_ENABLED --body 'True'
 ```

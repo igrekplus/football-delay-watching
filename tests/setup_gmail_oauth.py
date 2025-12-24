@@ -62,7 +62,8 @@ def main():
     token_data = json.loads(creds.to_json())
     print("\n📌 GMAIL_TOKEN:")
     print("-" * 40)
-    print(json.dumps(token_data, indent=2))
+    token_str = json.dumps(token_data, indent=None)
+    print(token_str)
     
     # GMAIL_CREDENTIALS (optional, for reference)
     if os.path.exists(credentials_file):
@@ -70,13 +71,19 @@ def main():
         print("-" * 40)
         with open(credentials_file, 'r') as f:
             creds_data = json.load(f)
-        print(json.dumps(creds_data, indent=2))
+        creds_str = json.dumps(creds_data, indent=None)
+        print(creds_str)
     
     print("\n" + "="*60)
-    print("登録方法:")
-    print("  gh secret set GMAIL_TOKEN < token.json")
-    print("  gh secret set GMAIL_CREDENTIALS < credentials.json")
+    print("登録方法 (GitHub Secrets):")
+    print("  gh secret set GMAIL_TOKEN < <(echo $GMAIL_TOKEN_CONTENT)")
+    print("  gh secret set GMAIL_CREDENTIALS < <(echo $GMAIL_CREDENTIALS_CONTENT)")
     print("  gh secret set NOTIFY_EMAIL --body 'your-email@gmail.com'")
+    print("-" * 60)
+    print("登録方法 (Local .env):")
+    print("  .env ファイルに以下の形式で追記してください:")
+    print("  GMAIL_TOKEN='{...}'")
+    print("  GMAIL_CREDENTIALS='{...}'")
     print("="*60)
 
 if __name__ == '__main__':
