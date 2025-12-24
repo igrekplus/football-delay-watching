@@ -48,6 +48,10 @@ class MatchData:
     # Head-to-Head History
     h2h_summary: str = ""  # 過去の対戦成績サマリー（例: "5試合: Home 2勝, Draw 1, Away 2勝"）
     
+    # Manager names (populated from lineups API coach data)
+    home_manager: str = ""
+    away_manager: str = ""
+    
     # Generated Content (NewsService)
     news_summary: str = ""
     tactical_preview: str = ""

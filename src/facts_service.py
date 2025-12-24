@@ -58,6 +58,9 @@ class FactsService:
                 team_name = team_data['team']['name']
                 formation = team_data['formation']
                 
+                # Extract coach name
+                coach_name = team_data.get('coach', {}).get('name', '')
+                
                 # Extract player names, IDs, and numbers
                 start_xi_data = [
                     (p['player']['name'], p['player']['id'], p['player'].get('number'))
@@ -80,10 +83,12 @@ class FactsService:
                     match.home_formation = formation
                     match.home_lineup = start_xi
                     match.home_bench = subs
+                    match.home_manager = coach_name
                 elif team_name == match.away_team:
                     match.away_formation = formation
                     match.away_lineup = start_xi
                     match.away_bench = subs
+                    match.away_manager = coach_name
             
             # Fetch nationalities and photos for starters
             if not config.USE_MOCK_DATA and player_id_name_pairs:

@@ -249,23 +249,37 @@ class ReportGenerator:
             videos = youtube_videos.get(match_key, [])
             if videos:
                 lines.append("### ■ 📹 試合前の見どころ動画")
+                lines.append("")
                 
-                # カテゴリ別にグループ化
+                # カテゴリ別にグループ化してテーブル表示
                 category_labels = {
-                    "press_conference": "記者会見",
-                    "historic": "因縁",
-                    "tactical": "戦術・選手",
-                    "training": "練習風景",
+                    "press_conference": "🎤 記者会見",
+                    "historic": "⚔️ 因縁",
+                    "tactical": "📊 戦術分析",
+                    "player_highlight": "⭐ 選手紹介",
+                    "training": "🏃 練習風景",
                 }
                 
                 for cat_key, cat_label in category_labels.items():
                     cat_videos = [v for v in videos if v.get("category") == cat_key]
                     if cat_videos:
-                        lines.append(f"**[{cat_label}]**")
-                        for v in cat_videos[:3]:  # 各カテゴリ最大3件
-                            lines.append(f"- [{v['title']}]({v['url']})")
+                        lines.append(f"**{cat_label}**")
+                        lines.append("")
+                        lines.append("| 動画 | チャンネル |")
+                        lines.append("|------|-----------|")
+                        # チューニング中は全件出力
+                        for v in cat_videos:
+                            title = v.get('title', 'No Title')
+                            # パイプ文字をテーブル破損防止のため全角に置換
+                            title = title.replace('|', '｜')
+                            # タイトルが長すぎる場合は省略
+                            if len(title) > 50:
+                                title = title[:47] + "..."
+                            url = v.get('url', '')
+                            channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
+                            lines.append(f"| [{title}]({url}) | {channel_display} |")
+                        lines.append("")
                 
-                lines.append("")
             
             lines.append("### ■ エラーステータス")
             lines.append(f"- {match.error_status}")

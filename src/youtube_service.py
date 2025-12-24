@@ -1,28 +1,29 @@
 """
 YouTube動画取得サービス
 
-試合前の関連動画（記者会見、過去の名勝負、戦術解説、練習風景）を
+試合前の関連動画（記者会見、過去の名勝負、戦術解説、練習風景、選手紹介）を
 YouTube Data API v3で取得する。
 
-キャッシュ: 24時間TTLでローカルに保存し、開発中のクォータ消費を抑制。
+キャッシュ: 1週間TTLでローカルに保存し、開発中のクォータ消費を抑制。
+
+Issue #27: クエリ削減（20→13/試合）とpost-fetchフィルタ方式への移行
 """
 
 import logging
 import json
 import hashlib
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from pathlib import Path
 import requests
-
 import os
 
 from config import config
 from settings.channels import (
     get_team_channel,
-    LEAGUE_CHANNELS,
-    BROADCASTER_CHANNELS,
-    TACTICS_CHANNELS,
+    is_trusted_channel,
+    get_channel_info,
+    TACTICS_CHANNELS,  # 後方互換性のため残す（将来削除予定）
 )
 from src.domain.models import MatchData
 
@@ -30,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 # YouTube検索結果のキャッシュ設定
 YOUTUBE_CACHE_DIR = Path("api_cache/youtube")
-YOUTUBE_CACHE_TTL_HOURS = 24  # キャッシュ有効期限（時間）
+YOUTUBE_CACHE_TTL_HOURS = 168  # キャッシュ有効期限（1週間）
+
 
 class YouTubeService:
     """YouTube動画を取得するサービス"""
@@ -38,44 +40,19 @@ class YouTubeService:
     API_BASE = "https://www.googleapis.com/youtube/v3"
     
     # チューニング可能なパラメータ
-    MAX_RESULTS_PER_CATEGORY = 3
     HISTORIC_SEARCH_DAYS = 730      # 過去ハイライト検索期間（2年）
     RECENT_SEARCH_HOURS = 48        # 公式動画検索期間（48時間）
+    TRAINING_SEARCH_HOURS = 168     # 練習動画検索期間（1週間）
     TACTICAL_SEARCH_DAYS = 180      # 戦術動画検索期間（6ヶ月）
     PLAYER_SEARCH_DAYS = 180        # 選手紹介動画検索期間（6ヶ月）
+    
+    # post-fetch用: 取得件数（フィルタ後に絞り込む）
+    FETCH_MAX_RESULTS = 10
     
     def __init__(self, api_key: str = None):
         # YOUTUBE_API_KEY を優先、なければ GOOGLE_API_KEY にフォールバック
         self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
         self._channel_id_cache: Dict[str, str] = {}
-    
-    def _resolve_channel_id(self, handle: str) -> Optional[str]:
-        """ハンドル名(@xxx)からチャンネルIDを解決"""
-        if handle in self._channel_id_cache:
-            return self._channel_id_cache[handle]
-        
-        # ハンドル名の@を除去
-        clean_handle = handle.lstrip("@")
-        
-        try:
-            url = f"{self.API_BASE}/channels"
-            params = {
-                "key": self.api_key,
-                "forHandle": clean_handle,
-                "part": "id",
-            }
-            response = requests.get(url, params=params)
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("items"):
-                    channel_id = data["items"][0]["id"]
-                    self._channel_id_cache[handle] = channel_id
-                    return channel_id
-        except Exception as e:
-            logger.warning(f"Failed to resolve channel ID for {handle}: {e}")
-        
-        return None
     
     def _get_cache_key(self, query: str, channel_id: Optional[str], 
                        published_after: Optional[datetime], 
@@ -134,15 +111,18 @@ class YouTubeService:
     def _search_videos(
         self,
         query: str,
-        channel_id: Optional[str] = None,
         published_after: Optional[datetime] = None,
         published_before: Optional[datetime] = None,
-        max_results: int = 3,
+        max_results: int = 10,
     ) -> List[Dict]:
-        """YouTube検索を実行（24時間キャッシュ付き）"""
+        """
+        YouTube検索を実行（1週間キャッシュ付き）
         
-        # キャッシュチェック
-        cache_key = self._get_cache_key(query, channel_id, published_after, published_before)
+        post-fetch方式: チャンネル指定なしで検索し、後からフィルタ
+        """
+        
+        # キャッシュチェック（チャンネルIDなしで検索するため、channel_id=None）
+        cache_key = self._get_cache_key(query, None, published_after, published_before)
         cached = self._read_cache(cache_key)
         if cached is not None:
             return cached[:max_results]
@@ -159,9 +139,6 @@ class YouTubeService:
                 "order": "relevance",
             }
             
-            if channel_id:
-                params["channelId"] = channel_id
-            
             if published_after:
                 params["publishedAfter"] = published_after.strftime("%Y-%m-%dT%H:%M:%SZ")
             
@@ -173,21 +150,23 @@ class YouTubeService:
             if response.status_code == 200:
                 data = response.json()
                 results = []
-                for item in data.get("items", []):
+                for i, item in enumerate(data.get("items", [])):
                     video_id = item["id"].get("videoId")
                     if video_id:
                         results.append({
                             "video_id": video_id,
                             "title": item["snippet"]["title"],
                             "url": f"https://www.youtube.com/watch?v={video_id}",
+                            "channel_id": item["snippet"]["channelId"],
                             "channel_name": item["snippet"]["channelTitle"],
                             "thumbnail_url": item["snippet"]["thumbnails"]["medium"]["url"],
                             "published_at": item["snippet"]["publishedAt"],
+                            "original_index": i,  # relevance順を保持
                         })
                 
                 # キャッシュ保存
                 self._write_cache(cache_key, results)
-                logger.info(f"YouTube cache MISS: {cache_key[:8]}... (saved {len(results)} results)")
+                logger.info(f"YouTube API: '{query}' -> {len(results)} results")
                 
                 return results
             else:
@@ -197,32 +176,65 @@ class YouTubeService:
         
         return []
     
+    def _apply_trusted_channel_filter(self, videos: List[Dict]) -> List[Dict]:
+        """
+        信頼チャンネル優先でソート + バッジ付与
+        
+        チューニング中は全件出力、信頼チャンネルにはバッジを付与
+        """
+        for v in videos:
+            channel_id = v.get("channel_id", "")
+            v["is_trusted"] = is_trusted_channel(channel_id)
+            
+            if v["is_trusted"]:
+                info = get_channel_info(channel_id)
+                v["channel_display"] = f"✅ {info['name']}"
+                logger.info(f"YouTube result: \"{v['title'][:30]}...\" by {info['name']} (✅ trusted)")
+            else:
+                v["channel_display"] = f"⚠️ {v.get('channel_name', 'Unknown')}"
+                logger.info(f"YouTube result: \"{v['title'][:30]}...\" by {v.get('channel_name', 'Unknown')} (⚠️ not trusted)")
+        
+        # ソート: 信頼チャンネル優先、その中ではrelevance順維持
+        videos.sort(key=lambda v: (
+            0 if v["is_trusted"] else 1,
+            v.get("original_index", 0)
+        ))
+        
+        return videos
+    
     def _search_press_conference(
         self,
         team_name: str,
+        manager_name: str,
         kickoff_time: datetime,
     ) -> List[Dict]:
-        """記者会見を検索"""
-        results = []
-        channel_handle = get_team_channel(team_name)
-        channel_id = self._resolve_channel_id(channel_handle) if channel_handle else None
+        """
+        記者会見を検索
         
+        変更: 日本語クエリ削除、監督名追加、post-fetchフィルタ
+        クエリ数: 1クエリ/チーム
+        """
         # 48時間前〜キックオフ
-        published_after = kickoff_time - timedelta(hours=48)
+        published_after = kickoff_time - timedelta(hours=self.RECENT_SEARCH_HOURS)
         
-        for query in [f"{team_name} press conference", f"{team_name} 記者会見"]:
-            videos = self._search_videos(
-                query=query,
-                channel_id=channel_id,
-                published_after=published_after,
-                published_before=kickoff_time,
-                max_results=2,
-            )
-            for v in videos:
-                v["category"] = "press_conference"
-            results.extend(videos)
+        # 監督名がある場合は含める
+        if manager_name:
+            query = f"{team_name} {manager_name} press conference"
+        else:
+            query = f"{team_name} press conference"
         
-        return results[:self.MAX_RESULTS_PER_CATEGORY]
+        videos = self._search_videos(
+            query=query,
+            published_after=published_after,
+            published_before=kickoff_time,
+            max_results=self.FETCH_MAX_RESULTS,
+        )
+        
+        for v in videos:
+            v["category"] = "press_conference"
+        
+        # post-fetchフィルタ適用
+        return self._apply_trusted_channel_filter(videos)
     
     def _search_historic_clashes(
         self,
@@ -230,101 +242,118 @@ class YouTubeService:
         away_team: str,
         kickoff_time: datetime,
     ) -> List[Dict]:
-        """過去の名勝負・対戦ハイライトを検索（当日のプレビューではなく過去試合）"""
-        results = []
+        """
+        過去の名勝負・対戦ハイライトを検索
         
-        # 過去2年〜キックオフまでの動画を検索（パラメータ化）
-        # "highlights"キーワードで試合後のハイライト動画を特定
+        変更: extended highlights クエリ削除、post-fetchフィルタ
+        クエリ数: 1クエリ
+        """
+        # 過去2年〜キックオフまでの動画を検索
         published_after = kickoff_time - timedelta(days=self.HISTORIC_SEARCH_DAYS)
-        published_before = kickoff_time  # キックオフまで
+        published_before = kickoff_time
         
-        # ハイライト系キーワードで検索（プレビューではなく過去試合結果）
-        for query in [
-            f"{home_team} vs {away_team} highlights",
-            f"{home_team} {away_team} extended highlights",
-        ]:
-            videos = self._search_videos(
-                query=query,
-                published_after=published_after,
-                published_before=published_before,
-                max_results=3,
-            )
-            for v in videos:
-                v["category"] = "historic"
-            results.extend(videos)
+        query = f"{home_team} vs {away_team} highlights"
         
-        return results[:self.MAX_RESULTS_PER_CATEGORY]
+        videos = self._search_videos(
+            query=query,
+            published_after=published_after,
+            published_before=published_before,
+            max_results=self.FETCH_MAX_RESULTS,
+        )
+        
+        for v in videos:
+            v["category"] = "historic"
+        
+        # post-fetchフィルタ適用
+        return self._apply_trusted_channel_filter(videos)
     
     def _search_tactical(
         self,
         team_name: str,
-        players: List[str],
         kickoff_time: datetime,
     ) -> List[Dict]:
-        """戦術・選手プレー集を検索"""
-        results = []
+        """
+        戦術分析を検索
         
-        # 戦術チャンネルで検索（パラメータ化）
+        変更: 日本語のみ、戦術チャンネル指定なし（post-fetch）、選手検索は分離
+        クエリ数: 1クエリ/チーム
+        """
         published_after = kickoff_time - timedelta(days=self.TACTICAL_SEARCH_DAYS)
         
-        # 戦術チャンネルで検索
-        for handle in TACTICS_CHANNELS.values():
-            channel_id = self._resolve_channel_id(handle)
-            if not channel_id:
-                continue
-            
-            # チーム戦術
-            videos = self._search_videos(
-                query=f"{team_name} tactics analysis",
-                channel_id=channel_id,
-                published_after=published_after,
-                published_before=kickoff_time,
-                max_results=2,
-            )
-            for v in videos:
-                v["category"] = "tactical"
-            results.extend(videos)
+        # 日本語のみで検索
+        query = f"{team_name} 戦術 分析"
         
-        # 選手プレー集（各チーム3人）
-        for player in players[:3]:
-            videos = self._search_videos(
-                query=f"{player} skills",
-                published_after=published_after,
-                published_before=kickoff_time,
-                max_results=1,
-            )
-            for v in videos:
-                v["category"] = "tactical"
-            results.extend(videos)
+        videos = self._search_videos(
+            query=query,
+            published_after=published_after,
+            published_before=kickoff_time,
+            max_results=self.FETCH_MAX_RESULTS,
+        )
         
-        return results[:self.MAX_RESULTS_PER_CATEGORY]
+        for v in videos:
+            v["category"] = "tactical"
+        
+        # post-fetchフィルタ適用
+        return self._apply_trusted_channel_filter(videos)
+    
+    def _search_player_highlight(
+        self,
+        player_name: str,
+        kickoff_time: datetime,
+    ) -> List[Dict]:
+        """
+        選手紹介動画を検索（新規カテゴリ）
+        
+        クエリ: 選手名のみ
+        クエリ数: 1クエリ/選手
+        """
+        published_after = kickoff_time - timedelta(days=self.PLAYER_SEARCH_DAYS)
+        
+        # 選手名 + 日本語で検索して日本語コンテンツも拾う
+        # 名前のフルネームを使用（略称ではなく）
+        query = f"{player_name} ハイライト"
+        
+        videos = self._search_videos(
+            query=query,
+            published_after=published_after,
+            published_before=kickoff_time,
+            max_results=self.FETCH_MAX_RESULTS,
+        )
+        
+        for v in videos:
+            v["category"] = "player_highlight"
+        
+        # post-fetchフィルタ適用
+        return self._apply_trusted_channel_filter(videos)
     
     def _search_training(
         self,
         team_name: str,
         kickoff_time: datetime,
     ) -> List[Dict]:
-        """練習風景を検索"""
-        results = []
-        channel_handle = get_team_channel(team_name)
-        channel_id = self._resolve_channel_id(channel_handle) if channel_handle else None
+        """
+        練習風景を検索
         
-        # 48時間前〜キックオフ
-        published_after = kickoff_time - timedelta(hours=48)
+        変更: 日本語クエリ削除、post-fetchフィルタ、期間を1週間に延長
+        クエリ数: 1クエリ/チーム
+        """
+        # 1週間前〜キックオフ（公式動画を拾いやすくするため期間延長）
+        published_after = kickoff_time - timedelta(hours=self.TRAINING_SEARCH_HOURS)
         
-        for query in [f"{team_name} training", f"{team_name} 練習"]:
-            videos = self._search_videos(
-                query=query,
-                channel_id=channel_id,
-                published_after=published_after,
-                published_before=kickoff_time,
-                max_results=2,
-            )
-            for v in videos:
-                v["category"] = "training"
-            results.extend(videos)
+        query = f"{team_name} training"
         
-        return results[:self.MAX_RESULTS_PER_CATEGORY]
+        videos = self._search_videos(
+            query=query,
+            published_after=published_after,
+            published_before=kickoff_time,
+            max_results=self.FETCH_MAX_RESULTS,
+        )
+        
+        for v in videos:
+            v["category"] = "training"
+        
+        # post-fetchフィルタ適用
+        return self._apply_trusted_channel_filter(videos)
     
     def _deduplicate(self, videos: List[Dict]) -> List[Dict]:
         """重複を排除"""
@@ -336,25 +365,30 @@ class YouTubeService:
                 unique.append(v)
         return unique
     
-    def _get_key_players(self, match: MatchData) -> tuple[List[str], List[str]]:
-        """各チームのキープレイヤー3人を取得（FW/MF優先）"""
+    def _get_key_players(self, match: MatchData) -> Tuple[List[str], List[str]]:
+        """
+        各チームのキープレイヤーを取得（FW/MF優先）
+        
+        デバッグモード: 1人/チーム
+        通常モード: 3人/チーム
+        """
+        player_count = 1 if config.DEBUG_MODE else 3
+        
         home_players = []
         away_players = []
         
-        # ホームチーム
-        if hasattr(match, 'home_players') and match.home_players:
-            # FW, MF, DF の順で優先
-            for pos in ["FW", "MF", "DF", "GK"]:
-                for p in match.home_players:
-                    if p.get("position", "").startswith(pos) and len(home_players) < 3:
-                        home_players.append(p.get("name", ""))
+        # ホームチーム - リストから取得（FW/MF優先は形式的）
+        if match.home_lineup:
+            # スタメンリストから後ろの方（FW想定）を優先
+            for player in reversed(match.home_lineup):
+                if len(home_players) < player_count:
+                    home_players.append(player)
         
         # アウェイチーム
-        if hasattr(match, 'away_players') and match.away_players:
-            for pos in ["FW", "MF", "DF", "GK"]:
-                for p in match.away_players:
-                    if p.get("position", "").startswith(pos) and len(away_players) < 3:
-                        away_players.append(p.get("name", ""))
+        if match.away_lineup:
+            for player in reversed(match.away_lineup):
+                if len(away_players) < player_count:
+                    away_players.append(player)
         
         return home_players, away_players
     
@@ -364,9 +398,11 @@ class YouTubeService:
         
         home_team = match.home_team
         away_team = match.away_team
+        home_manager = getattr(match, 'home_manager', '')
+        away_manager = getattr(match, 'away_manager', '')
+        
         # kickoff_jstは "2025/12/21 00:00 JST" 形式の文字列
         # JSTとしてパースしてUTCに変換
-        from datetime import datetime
         import pytz
         try:
             jst = pytz.timezone('Asia/Tokyo')
@@ -381,27 +417,41 @@ class YouTubeService:
             kickoff_time = datetime.now(pytz.UTC)
         
         logger.info(f"Fetching YouTube videos for {home_team} vs {away_team}")
+        if home_manager:
+            logger.info(f"Home manager: {home_manager}")
+        if away_manager:
+            logger.info(f"Away manager: {away_manager}")
         
         # キープレイヤーを取得
         home_players, away_players = self._get_key_players(match)
+        logger.info(f"Key players - Home: {home_players}, Away: {away_players}")
         
-        # 1. 記者会見
-        all_videos.extend(self._search_press_conference(home_team, kickoff_time))
-        all_videos.extend(self._search_press_conference(away_team, kickoff_time))
+        # 1. 記者会見（2クエリ = 1クエリ × 2チーム）
+        all_videos.extend(self._search_press_conference(home_team, home_manager, kickoff_time))
+        all_videos.extend(self._search_press_conference(away_team, away_manager, kickoff_time))
         
-        # 2. 因縁
+        # 2. 因縁（1クエリ）
         all_videos.extend(self._search_historic_clashes(home_team, away_team, kickoff_time))
         
-        # 3. 戦術
-        all_videos.extend(self._search_tactical(home_team, home_players, kickoff_time))
-        all_videos.extend(self._search_tactical(away_team, away_players, kickoff_time))
+        # 3. 戦術（2クエリ = 1クエリ × 2チーム）
+        all_videos.extend(self._search_tactical(home_team, kickoff_time))
+        all_videos.extend(self._search_tactical(away_team, kickoff_time))
         
-        # 4. 練習風景
+        # 4. 選手紹介（6クエリ = 3選手 × 2チーム、デバッグモードは2クエリ）
+        for player in home_players:
+            all_videos.extend(self._search_player_highlight(player, kickoff_time))
+        for player in away_players:
+            all_videos.extend(self._search_player_highlight(player, kickoff_time))
+        
+        # 5. 練習風景（2クエリ = 1クエリ × 2チーム）
         all_videos.extend(self._search_training(home_team, kickoff_time))
         all_videos.extend(self._search_training(away_team, kickoff_time))
         
         # 重複排除
         unique_videos = self._deduplicate(all_videos)
+        
+        # 最終ソート（信頼チャンネル優先）
+        unique_videos = self._apply_trusted_channel_filter(unique_videos)
         
         logger.info(f"Found {len(unique_videos)} unique videos for {home_team} vs {away_team}")
         
@@ -412,7 +462,8 @@ class YouTubeService:
         results = {}
         
         for match in matches:
-            match_key = f"{match.home_team} vs {match.away_team}"
-            results[match_key] = self.get_videos_for_match(match)
+            if match.is_target:
+                match_key = f"{match.home_team} vs {match.away_team}"
+                results[match_key] = self.get_videos_for_match(match)
         
         return results
