@@ -41,3 +41,4 @@ temp/send_actual_report.py
 
 # 許可メールアドレスリスト
 public/allowed_emails.json
+public/firebase_config.json
