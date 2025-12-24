@@ -37,3 +37,7 @@ reports_mock/
 # Firebase Hosting reports (may contain copyrighted content)
 public/reports/*.html
 public/reports/manifest.json
+temp/send_actual_report.py
+
+# 許可メールアドレスリスト
+public/allowed_emails.json

@@ -254,8 +254,22 @@
             appId: "1:245958261672:web:8ad1819865311400cf3b9d"
         };
 
-        // 許可するメールアドレス
-        const ALLOWED_EMAILS = ['nakame.kate@gmail.com', 'sampleexample@gmail.com'];
+        // 許可するメールアドレス（allowed_emails.jsonから読み込み）
+        let ALLOWED_EMAILS = [];
+
+        // 許可メールアドレスを外部ファイルから読み込み
+        async function loadAllowedEmails() {
+            try {
+                const response = await fetch('/allowed_emails.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    ALLOWED_EMAILS = data.emails || [];
+                }
+            } catch (e) {
+                console.error('Failed to load allowed emails:', e);
+            }
+        }
+        loadAllowedEmails();
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
