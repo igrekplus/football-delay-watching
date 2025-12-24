@@ -18,6 +18,16 @@
 
 > **Note**: プロジェクトID、認証アカウント、GCSバケット名は `.gcp_config.md` を参照してください。
 
+### Antigravityブラウザプロファイル
+
+| 項目 | 内容 |
+|------|------|
+| プロファイルパス | `~/.gemini/antigravity-browser-profile` |
+| ログインアカウント | `nakame.kate@gmail.com` |
+| 永続化 | ✅ セッション間でログイン状態維持 |
+
+> **Note**: Antigravityのブラウザサブエージェントは独自のChromeプロファイルを使用します。ユーザーの個人Chromeプロファイルとは別管理ですが、YouTubeなどへのログイン状態はセッションを超えて維持されます。
+
 ## 📂 プロジェクト構造
 
 ```

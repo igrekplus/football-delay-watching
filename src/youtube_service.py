@@ -114,15 +114,20 @@ class YouTubeService:
         published_after: Optional[datetime] = None,
         published_before: Optional[datetime] = None,
         max_results: int = 10,
+        relevance_language: Optional[str] = None,
     ) -> List[Dict]:
         """
         YouTube検索を実行（1週間キャッシュ付き）
         
         post-fetch方式: チャンネル指定なしで検索し、後からフィルタ
+        
+        Args:
+            relevance_language: 結果の言語優先度（ISO 639-1、例: "ja"）
         """
         
         # キャッシュチェック（チャンネルIDなしで検索するため、channel_id=None）
-        cache_key = self._get_cache_key(query, None, published_after, published_before)
+        # relevance_languageもキャッシュキーに含める
+        cache_key = self._get_cache_key(query + (relevance_language or ""), None, published_after, published_before)
         cached = self._read_cache(cache_key)
         if cached is not None:
             return cached[:max_results]
@@ -144,6 +149,9 @@ class YouTubeService:
             
             if published_before:
                 params["publishedBefore"] = published_before.strftime("%Y-%m-%dT%H:%M:%SZ")
+            
+            if relevance_language:
+                params["relevanceLanguage"] = relevance_language
             
             response = requests.get(url, params=params)
             
@@ -318,6 +326,7 @@ class YouTubeService:
             published_after=published_after,
             published_before=kickoff_time,
             max_results=self.FETCH_MAX_RESULTS,
+            relevance_language="ja",
         )
         
         for v in videos:
@@ -334,19 +343,21 @@ class YouTubeService:
         """
         練習風景を検索
         
-        変更: 日本語クエリ削除、post-fetchフィルタ、期間を1週間に延長
+        変更: 日本語クエリ + relevanceLanguage=ja、期間を1週間に延長
         クエリ数: 1クエリ/チーム
         """
         # 1週間前〜キックオフ（公式動画を拾いやすくするため期間延長）
         published_after = kickoff_time - timedelta(hours=self.TRAINING_SEARCH_HOURS)
         
-        query = f"{team_name} training"
+        # 日本語クエリ + relevanceLanguage=ja
+        query = f"{team_name} トレーニング"
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
             published_before=kickoff_time,
             max_results=self.FETCH_MAX_RESULTS,
+            relevance_language="ja",
         )
         
         for v in videos:

@@ -22,4 +22,27 @@ ITコンサルタントとして業務をしており、個人開発としてこ
 * github(ghコマンドで参照できます) :https://github.com/igrekplus/football-delay-watching
 * デプロイ先:https://football-delay-watching-a8830.web.app
   * このデプロイ先をWEB-Accessして確認してもらうことが多いです。
-  * 認証情報は.envの`FIREBASE_TEST_EMAIL`と`FIREBASE_TEST_PASSWORD`
+  * 認証情報は.envの`FIREBASE_TEST_EMAIL`と`FIREBASE_TEST_PASSWORD`を参照してください。
+
+# ノウハウ（Webログイン・レポート確認）
+1) **ログイン情報**は`.env`の`FIREBASE_TEST_EMAIL`/`FIREBASE_TEST_PASSWORD`を使用してください。
+2) **実サイト確認の基本導線**  
+   - トップでログイン → レポート一覧 → 最新レポートを開く流れです。  
+   - `public/index.html`は`/reports/manifest.json`を読み込み、一覧リンクは`/reports/{file}`です。
+3) **Playwrightでの自動確認（推奨）**  
+   - `temp/playwright_login_check.py` を実行するとログイン→一覧表示→最新レポート表示まで自動確認できます。  
+   - 成果物は`temp/site_reports_list.png`と`temp/site_report_view.png`です。
+4) **MCP/Playwright設定（VS Code）**  
+   - `.vscode/settings.json`に以下を追加してください。
+     ```json
+     "mcpServers": {
+       "playwright": {
+         "command": "npx",
+         "args": ["@playwright/mcp@latest"]
+       }
+     }
+     ```
+   - MCPが利用できない場合は、Playwrightのスクリプト実行で代替できます。
+
+# 運用ルール（ドキュメント）
+- **/docs配下のドキュメントは私の依頼なしに編集しないこと。** 変更提案は口頭で行い、実際の修正はユーザーが行う前提で進めてください。
