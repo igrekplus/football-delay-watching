@@ -33,16 +33,28 @@ ITコンサルタントとして業務をしており、個人開発としてこ
    - `temp/playwright_login_check.py` を実行するとログイン→一覧表示→最新レポート表示まで自動確認できます。  
    - 成果物は`temp/site_reports_list.png`と`temp/site_report_view.png`です。
 4) **MCP/Playwright設定（VS Code）**  
-   - `.vscode/settings.json`に以下を追加してください。
+   - `.vscode/settings.json`には**すでに追加済み**です（`npx`対話回避のため`-y`を付与）。
      ```json
      "mcpServers": {
        "playwright": {
          "command": "npx",
-         "args": ["@playwright/mcp@latest"]
+         "args": ["-y", "@playwright/mcp@latest"]
        }
      }
      ```
+   - **手動で起動する場合**はターミナルで以下を実行します（STDIO待受のため無出力で停止しているように見えます）。
+     ```bash
+     npx -y @playwright/mcp@latest
+     ```
+   - **Codex CLIからMCPを使う場合**は、Codex側にも登録が必要です。
+     ```bash
+     codex mcp add playwright -- npx -y @playwright/mcp@latest
+     codex mcp list
+     ```
    - MCPが利用できない場合は、Playwrightのスクリプト実行で代替できます。
+
+# 外部サイト確認の扱い
+- 外部サイト（例：プレミアリーグ公式サイト）の確認は**依頼があるときのみ**実施します。
 
 # 運用ルール（ドキュメント）
 - **/docs配下のドキュメントは私の依頼なしに編集しないこと。** 変更提案は口頭で行い、実際の修正はユーザーが行う前提で進めてください。

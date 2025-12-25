@@ -26,8 +26,6 @@
 | ログインアカウント | `.env`の`BROWSER_LOGIN_EMAIL`を参照 |
 | 永続化 | ✅ セッション間でログイン状態維持 |
 
-> **Note**: Antigravityのブラウザサブエージェントは独自のChromeプロファイルを使用します。ユーザーの個人Chromeプロファイルとは別管理ですが、YouTubeなどへのログイン状態はセッションを超えて維持されます。
-
 ## 📂 プロジェクト構造
 
 ```
@@ -46,8 +44,12 @@
 │   ├── match_processor.py   # 試合データ取得・選定
 │   ├── facts_service.py     # スタメン・フォーメーション・国籍取得
 │   ├── news_service.py      # ニュース収集・Gemini要約
+│   ├── youtube_service.py   # YouTube動画検索
 │   ├── report_generator.py  # Markdownレポート生成
+│   ├── html_generator.py    # HTML変換・Firebase manifest管理
 │   └── email_service.py     # Gmail APIメール送信
+├── settings/            # 設定ファイル
+│   └── channels.py      # YouTubeチャンネル優先度設定
 ├── healthcheck/         # APIヘルスチェック
 │   ├── check_football_api.py  # API-Football
 │   ├── check_google_search.py # Google Custom Search
@@ -61,41 +63,36 @@
 └── .github/workflows/       # GitHub Actions
 ```
 
-
 ## 🔧 開発コマンド
 
-### 初回セットアップ（venv作成）
+### ⚠️ 重要: Python実行パス
+
+> ローカルには複数のPythonバージョンが存在するため、**必ず `/usr/local/bin/python` (3.11.11) を使用すること**
 
 ```bash
-# Python 3.11でvenv作成（Homebrew版を使用）
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+# バージョン確認
+/usr/local/bin/python --version  # Python 3.11.11
+
+# 実行時は python コマンドで OK（/usr/local/bin が優先される）
+python main.py
 ```
 
-### 依存パッケージ更新
+### 実行モード
 
+| モード | コマンド | 用途 |
+|--------|---------|------|
+| **モック** | `DEBUG_MODE=True USE_MOCK_DATA=True python main.py` | API不使用・高速テスト |
+| **デバッグ** | `DEBUG_MODE=True USE_MOCK_DATA=False python main.py` | 実API・1試合のみ |
+| **本番** | `USE_MOCK_DATA=False python main.py` | APIフル使用 |
+
+### デバッグ後のデプロイ
+
+デバッグ実行後は以下でWEBに反映:
 ```bash
-source .venv/bin/activate
-pip install --upgrade -r requirements.txt
+firebase deploy --only hosting
 ```
 
-### 実行コマンド（venv activate後）
-
-```bash
-source .venv/bin/activate
-
-# モックモード（API不使用・高速テスト）
-DEBUG_MODE=True USE_MOCK_DATA=True python main.py
-
-# デバッグモード（実API・1試合のみ・国籍取得スキップ）
-DEBUG_MODE=True USE_MOCK_DATA=False python main.py
-
-# 本番モード（APIフル使用）
-USE_MOCK_DATA=False python main.py
-```
-
+または `/debug-run` ワークフローを使用（実行→デプロイまで自動）
 
 ## 🔑 環境変数（Secrets）
 
@@ -105,50 +102,31 @@ USE_MOCK_DATA=False python main.py
 | `GOOGLE_API_KEY` | Gemini API | [Google AI Studio](https://aistudio.google.com/app/apikey) |
 | `GOOGLE_SEARCH_ENGINE_ID` | Custom Search ID | [Programmable Search](https://programmablesearchengine.google.com/) |
 | `GOOGLE_SEARCH_API_KEY` | Custom Search Key | [GCP Console](https://console.cloud.google.com/apis/credentials) |
+| `YOUTUBE_API_KEY` | YouTube Data API | [GCP Console](https://console.cloud.google.com/apis/credentials) |
 | `GMAIL_TOKEN` | Gmail OAuth Token | `tests/setup_gmail_oauth.py` で生成 |
 | `GMAIL_CREDENTIALS` | Gmail OAuth Client | GCP Console → OAuth 2.0 Client |
 | `NOTIFY_EMAIL` | 送信先メールアドレス | 自分のGmail |
 | `GMAIL_ENABLED` | メール送信有効化 | `True` / `False` |
-
-### Gmail API セットアップ詳細
-
-詳細は [README.md](./README.md#gmail-api-セットアップ詳細) を参照してください。
 
 ## 🚀 GitHub連携
 
 ### ghコマンドでの操作
 
 ```bash
-# Secretsの設定
-gh secret set API_FOOTBALL_KEY < <(grep "^API_FOOTBALL_KEY=" .env | cut -d'=' -f2-)
-
-# ワークフロー手動実行
-gh workflow run daily_report.yml
-
-# 実行状況確認
-gh run list --workflow="daily_report.yml" --limit 5
-
-# ログ確認
-gh run view <RUN_ID> --log
-
 # Issue一覧
 gh issue list --state all
 
-# Issueクローズ
-gh issue close <NUMBER> --comment "Fixed in commit xxx"
-```
+# Issue詳細
+gh issue view <NUMBER>
 
-### リポジトリ設定
+# Issueクローズ（コメント付き）
+gh issue close <NUMBER> --comment "対応内容を記載"
 
-```bash
-# Description設定
-gh repo edit --description "説明文"
+# Issueにコメント追加
+gh issue comment <NUMBER> --body "コメント内容"
 
-# Topics設定
-gh repo edit --add-topic python --add-topic github-actions
-
-# マージ後ブランチ自動削除
-gh repo edit --delete-branch-on-merge
+# ワークフロー手動実行
+gh workflow run daily_report.yml
 ```
 
 ## ⚠️ API クォータ管理
@@ -156,71 +134,31 @@ gh repo edit --delete-branch-on-merge
 > **📢 AI向け指示**: ユーザーが「クォータ確認して」「API確認して」と言った場合、以下のヘルスチェックスクリプトを順番に実行し、結果を報告すること。
 
 ```bash
-# 全APIのクォータ・ステータス確認
-python3 healthcheck/check_football_api.py
-python3 healthcheck/check_google_search.py
-python3 healthcheck/check_gemini.py
-python3 healthcheck/check_gmail.py
+python healthcheck/check_football_api.py
+python healthcheck/check_google_search.py
+python healthcheck/check_gemini.py
+python healthcheck/check_gmail.py
 ```
 
-### API-Football
-- **有料版**: 7,500リクエスト/日（API-Sports 直接アクセス）
-- **エンドポイント**: `https://v3.football.api-sports.io`
-- **認証ヘッダー**: `x-apisports-key`
-- **確認**: `python3 healthcheck/check_football_api.py`
-
-### Google Custom Search
-- **無料枠**: 100クエリ/日
-- **確認**: `python3 healthcheck/check_google_search.py`
-
-### Gemini API
-- **無料枠の目安**: 1,500リクエスト/日（Google AI Pro は5時間ごとリフレッシュ想定）
-- **確認**: `python3 healthcheck/check_gemini.py`
-- 429が出たら数時間待つか軽量モデルに切替
-
-### Gmail API
-- **確認**: `python3 healthcheck/check_gmail.py`
-
-### GCSキャッシュ
-- **確認**: `python3 healthcheck/check_gcs_cache.py`
-- チーム別選手キャッシュ状況を表示
-- キャッシュウォーミング対象チームのカバレッジを確認可能
+| API | 日次上限 | 確認コマンド |
+|-----|---------|-------------|
+| API-Football | 7,500/日 | `python healthcheck/check_football_api.py` |
+| Google Custom Search | 100/日 | `python healthcheck/check_google_search.py` |
+| YouTube Data API | 10,000/日 | - |
+| Gemini API | ~1,500/日 | `python healthcheck/check_gemini.py` |
 
 ## 🌐 Web開発（Firebase Hosting）
 
 ### アーキテクチャ
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                Firebase Hosting                      │
-│  (https://football-delay-watching-a8830.web.app)    │
-├─────────────────────────────────────────────────────┤
-│  public/                                            │
-│  ├── index.html          ← ログイン＋レポート一覧   │
-│  └── reports/                                        │
-│      ├── manifest.json   ← レポート一覧データ       │
-│      ├── report_YYYY-MM-DD_HHMMSS.html ← 各レポート │
-│      └── images/         ← フォーメーション図       │
-└─────────────────────────────────────────────────────┘
-```
-
-### 関連ファイル
-
-| ファイル | 役割 |
-|---------|------|
-| `src/html_generator.py` | Markdown→HTML変換、manifest.json更新 |
-| `public/index.html` | ログイン画面＋レポート一覧表示 |
-| `firebase.json` | Firebase Hosting設定 |
-| `.github/workflows/daily_report.yml` | Actions→デプロイ |
-
-### デプロイコマンド
-
-```bash
-# ローカルからデプロイ
-firebase deploy --only hosting
-
-# GitHub Actions経由（自動）
-gh workflow run daily_report.yml
+Firebase Hosting (https://football-delay-watching-a8830.web.app)
+├── public/
+│   ├── index.html          ← ログイン＋レポート一覧
+│   └── reports/
+│       ├── manifest.json   ← レポート一覧データ
+│       ├── report_*.html   ← 各レポート
+│       └── images/         ← フォーメーション図
 ```
 
 ### ⚠️ AI向け重要注意事項
@@ -230,127 +168,53 @@ gh workflow run daily_report.yml
 Firebase Hostingは**毎回デプロイ時に`public/`の内容で完全に置き換える**。
 ローカルにファイルがないと、Firebase上からも削除される。
 
-**正しい開発フロー:**
-1. `public/reports/` は削除せずに保持
-2. 新しいHTMLは追記される
-3. manifest.jsonはFirebaseから既存分をマージ
+### デプロイコマンド
 
-### manifest.jsonの仕組み
-
-```json
-{
-  "reports": [
-    {
-      "datetime": "2025-12-23_071533",
-      "file": "report_2025-12-23_071533.html",
-      "generated": "2025-12-23 07:15:33 JST",
-      "is_debug": false
-    }
-  ]
-}
+```bash
+firebase deploy --only hosting
 ```
-
-- `html_generator.py`がFirebase上のmanifest.jsonを取得
-- 新規レポートを追加してマージ
-- 重複除去して保存
-
-### デバッグモードの識別
-
-- `is_debug: true` → レポート一覧にDEBUGバッジ表示
-- HTML本文: 「🔧 DEBUG MODE」バナー表示
-- ブラウザタブ: `[DEBUG] サッカー観戦ガイド`
-
-## 🧠 AIコーディング原則（プロSE向けガードレール）
-
-### 1. 進め方（設計→実装の順序を徹底）
-- **設計書を先に更新**: 仕様・I/Fをドキュメントに落とし、レビュー後に実装。設計変更なしのコード変更は禁止。
-- **モジュール境界を意識**: 1ファイル=1責務。外部I/F（関数・クラス・APIコール）を先に固め、docstringと設計書を同期させる。
-- **変更の「Why」を残す**: PR/コミットで根拠・代替案・影響範囲を簡潔に記録。プロンプトもバージョン管理（下記）。
-- **小さくまとめて検証**: 変更は小さく刻み、テスト or 実行ログで裏付け。失敗時のロールバック手順を残す。
-- **pushはチャット最後に**: コミットは随時行ってよいが、`git push`はチャットセッション終了時にまとめて実行する。
-
-### 2. プロンプト設計チェックリスト（GOLDEN）
-`Goal / Output / Limits / Data / Evaluation / Next` の6要素を必ず埋める。citeturn0search0  
-- Goal: 目的と成功条件を1行で明示  
-- Output: 形式・長さ・トーン（例: JSON / 600–1000字）  
-- Limits: 禁止事項（ネタバレ・推測・スコア記述禁止）  
-- Data: 最新3–5本のスニペットだけ渡す  
-- Evaluation: 受入基準（禁止語・文字数・構造）  
-- Next: 低信頼時の再試行や代替案
-
-### 3. モデル別注意点
-- **Gemini**: 検証・制約を短い箇条書きで明示。マルチモーダル/引用要否も書く。citeturn0search1  
-- **複数モデル運用**: 出力差分を比較しログに残す（モデル差テスト推奨）。citeturn0search6
-
-### 4. 失敗時ハンドリング
-- 429/Quota: 5分間隔で最大3回リトライ。失敗時は `error_status=E3` + プレースホルダ文をセット。
-- 5xx/Network: 1→2→4分バックオフ。
-- モデル切替: `gemini-pro-latest` → `gemini-1.5-flash` → モック。切替はログに `model=fallback` を残す。
-
-### 5. コンテキスト投入ルール
-- スニペットは最新3–5本・各200–400字に圧縮。長文丸投げ禁止（混乱とコスト増を防ぐ）。citeturn0search2turn0search8
-- 試合後疑いのある文には `[POSSIBLE SPOILER]` を付け、出力で無視させる。
-
-### 6. プロンプト資産の管理
-- プロンプトをリポジトリで版管理し、変更理由を残す（コードと同格でレビュー）。citeturn0search6
-- 安定したプロンプトは `docs/prompts/` 等に置き、`AGENTS.md` から参照。
-
-### 7. 実装ガード
-- 新規APIコール前に `docs/system_design.md` / `docs/api_endpoints.md` を更新し、パラメータとレスポンス項目を確定させてから実装。
-- モジュール分割: 高凝集・低結合。外部I/Fは小さく固定し、副作用のある処理（API/IO）は境界モジュールに隔離。
-- 仕様未確定部分は「TODO: spec pending」と明示し、推測実装を禁止。
-
-### 8. 評価とログ
-- 生成物にはモデル名・リクエストID・リトライ回数をログ出力。
-- 出力後に自動チェック: 禁止語、文字数、JSON構造、参照URL本数。NGならEステータスで表に出す。
 
 ## 📝 Issue対応フロー
 
 1. `gh issue list` でIssue確認
 2. `gh issue view <NUMBER>` で詳細確認
 3. コード修正
-4. コミットメッセージに `Closes #<NUMBER>` を含める
+4. コミット（メッセージに `Closes #<NUMBER>` を含める）
 5. `git push` でIssueが自動クローズ
+6. **クローズ後、Issueにコメントで修正内容と確認結果を記載**
 
-## 🔍 レビューモード
+```bash
+# コメント例
+gh issue comment 30 --body "## 対応内容
+- xxx を修正
+## 確認結果
+- デバッグモードで動作確認済み"
+```
 
-`guide_for_AGI/reviewer.md` に高度な技術レビュアー行動規範があります。
-レビュー依頼時は「Reviewer Modeで確認して」と伝えてください。
-
-## 📋 開発履歴（主要な変更）
-
-| 日付 | 内容 |
-|------|------|
-| 2025-12-21 | API-Sports直接アクセスに移行（RapidAPI経由廃止） |
-| 2025-12-14 | Gmail API経由のメール配信機能追加（Issue #5） |
-| 2025-12-14 | Issue #2,#3 対応（ポジション別スタメン表示、国旗絵文字追加） |
-| 2025-12-14 | GitHub Actions設定完了、Secrets連携 |
-| 2025-12-14 | README作成、ドキュメント整理 |
-
-## 💡 Tips
-
-- **モック開発時**: `USE_MOCK_DATA=True` でAPIを消費せずテスト
-- **デバッグモード**: 国籍取得をスキップしてクォータ節約
-- **Issueテンプレート**: 背景→課題→対応方針→完了条件 の形式
-- **コミットメッセージ**: `Closes #N` でIssue自動クローズ
-
-## 🔒 セキュリティ注意事項（AIアシスタント向け）
+## 🔒 セキュリティ注意事項
 
 > **⚠️ 機密ファイルは必ず `.gitignore` に追加すること**
 
 以下のファイルは **絶対にリポジトリにコミットしてはならない**:
 
-| ファイル種別 | 例 | 対応 |
-|-------------|-----|------|
-| API認証トークン | `token.json`, `*_token.json` | `.gitignore` に追加 |
-| OAuth クレデンシャル | `credentials.json`, `client_secret_*.json` | `.gitignore` に追加 |
-| 環境変数ファイル | `.env`, `.env.local` | `.gitignore` に追加（設定済み） |
-| 秘密鍵・証明書 | `*.pem`, `*.key` | `.gitignore` に追加 |
+| ファイル種別 | 例 |
+|-------------|-----|
+| API認証トークン | `token.json`, `*_token.json` |
+| OAuth クレデンシャル | `credentials.json`, `client_secret_*.json` |
+| 環境変数ファイル | `.env`, `.env.local` |
 
-### AI開発時のルール
+## 💡 Tips
 
-1. **ファイル作成前に確認**: 機密情報を含むファイルを作成する前に、`.gitignore` に追加されているか確認
-2. **ユーザーに確認**: 不明な場合は「このファイルを `.gitignore` に追加しますか？」と確認
-3. **デフォルトで安全側**: 迷ったら# 現在の .gitignore に含まれる機密ファイル
-.env
-.env.local
+- **モック開発時**: `USE_MOCK_DATA=True` でAPIを消費せずテスト
+- **デバッグモード**: 1試合のみ処理でクォータ節約
+- **コミットメッセージ**: `Closes #N` でIssue自動クローズ
+- **Issue対応後**: 必ずコメントで修正内容を記録
+
+## 📋 開発履歴（主要な変更）
+
+| 日付 | 内容 |
+|------|------|
+| 2025-12-25 | Issue #30-35対応、GEMINI.mdリファクタ |
+| 2025-12-21 | API-Sports直接アクセスに移行（RapidAPI経由廃止） |
+| 2025-12-14 | Gmail API経由のメール配信機能追加（Issue #5） |
+| 2025-12-14 | GitHub Actions設定完了、Secrets連携 |
