@@ -212,6 +212,7 @@ class NewsService:
                 data = response.json()
                 
                 if 'items' not in data:
+                    logger.info(f"  [INTERVIEW] {team_name}: 検索結果なし (query: {query[:50]}...)")
                     continue
                     
                 for item in data['items']:
@@ -230,6 +231,8 @@ class NewsService:
             except Exception as e:
                 logger.error(f"Error searching interviews for {team_name}: {e}")
         
+        if not all_articles:
+            logger.info(f"  [INTERVIEW] {team_name}: 関連記事が見つかりませんでした")
         return all_articles[:4]  # Max 4 articles per team
     
     def _summarize_interview(self, team_name: str, articles: List[Dict[str, str]]) -> str:
@@ -237,7 +240,8 @@ class NewsService:
         import google.generativeai as genai
         
         if not articles:
-            return ""
+            # Issue #31: 記事なしの理由を明確化
+            return f"【{team_name}】関連記事が見つかりませんでした"
             
         genai.configure(api_key=config.GOOGLE_API_KEY)
         model = genai.GenerativeModel("gemini-pro-latest")
@@ -257,5 +261,7 @@ class NewsService:
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
-            logger.error(f"Error summarizing interview for {team_name}: {e}")
-            return f"【{team_name}】インタビュー要約エラー"
+            # Issue #31: APIエラー理由を明確化
+            error_type = type(e).__name__
+            logger.error(f"Error summarizing interview for {team_name}: {error_type} - {e}")
+            return f"【{team_name}】要約エラー（{error_type}）"
