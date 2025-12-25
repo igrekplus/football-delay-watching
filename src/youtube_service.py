@@ -169,6 +169,7 @@ class YouTubeService:
                             "channel_name": item["snippet"]["channelTitle"],
                             "thumbnail_url": item["snippet"]["thumbnails"]["medium"]["url"],
                             "published_at": item["snippet"]["publishedAt"],
+                            "description": item["snippet"].get("description", ""),
                             "original_index": i,  # relevance順を保持
                         })
                 

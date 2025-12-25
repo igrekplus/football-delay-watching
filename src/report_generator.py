@@ -12,6 +12,39 @@ logger = logging.getLogger(__name__)
 class ReportGenerator:
     def __init__(self):
         pass
+    
+    def _format_relative_date(self, iso_date: str) -> str:
+        """ISO日付を「3日前」のような相対表示に変換"""
+        if not iso_date:
+            return "不明"
+        try:
+            import pytz
+            # ISO形式をパース（2025-12-19T14:00:00Z）
+            pub_date = datetime.fromisoformat(iso_date.replace('Z', '+00:00'))
+            jst = pytz.timezone('Asia/Tokyo')
+            now = datetime.now(jst)
+            diff = now - pub_date.astimezone(jst)
+            
+            days = diff.days
+            if days == 0:
+                hours = diff.seconds // 3600
+                if hours == 0:
+                    return "数分前"
+                return f"{hours}時間前"
+            elif days == 1:
+                return "1日前"
+            elif days < 7:
+                return f"{days}日前"
+            elif days < 30:
+                weeks = days // 7
+                return f"{weeks}週間前"
+            elif days < 365:
+                months = days // 30
+                return f"{months}ヶ月前"
+            else:
+                return pub_date.strftime("%Y/%m/%d")
+        except Exception:
+            return iso_date[:10] if len(iso_date) >= 10 else iso_date
 
     def _format_lineup_by_position(self, lineup: List[str], formation: str, team_name: str, 
                                      nationalities: Dict[str, str] = None, 
@@ -279,12 +312,20 @@ class ReportGenerator:
                             url = v.get('url', '')
                             thumbnail = v.get('thumbnail_url', '')
                             channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
-                            published_at = v.get('published_at', '')[:10]
+                            published_at = v.get('published_at', '')
+                            description = v.get('description', '')[:60].replace('|', '｜').replace('\n', ' ')
+                            
+                            # 公開日を相対表示に変換
+                            relative_date = self._format_relative_date(published_at)
                             
                             # サムネイル画像（小サイズ）+ 情報
                             thumb_cell = f"[![thumb]({thumbnail})]({url})" if thumbnail else "-"
-                            info_cell = f"**[{title}]({url})**<br/>{channel_display} / {published_at}"
-                            lines.append(f"| {thumb_cell} | {info_cell} |")
+                            # チャンネル名を太字、説明文を追加
+                            info_lines = f"**[{title}]({url})**<br/>"
+                            info_lines += f"📺 **{channel_display}** ・ 🕐 {relative_date}"
+                            if description:
+                                info_lines += f"<br/>_{description}..._"
+                            lines.append(f"| {thumb_cell} | {info_lines} |")
                         
                         lines.append("")
                 
