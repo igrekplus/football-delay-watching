@@ -53,7 +53,8 @@ class NewsService:
         
         # Google Custom Search API
         url = "https://www.googleapis.com/customsearch/v1"
-        query = f'"{match.home_team}" "{match.away_team}" match preview'
+        # Issue #34: 女子チームを除外し、対戦関連記事を優先
+        query = f'"{match.home_team}" "{match.away_team}" match preview -women -WFC -WSL -女子'
         
         params = {
             "key": config.GOOGLE_SEARCH_API_KEY,
@@ -82,15 +83,27 @@ class NewsService:
                 content_text = f"{title}\n{snippet}"
                 
                 if self.filter.is_safe_article(content_text):
+                    # Issue #34: 両チーム名を含むかスコアを計算
+                    content_lower = content_text.lower()
+                    relevance_score = 0
+                    if match.home_team.lower() in content_lower:
+                        relevance_score += 1
+                    if match.away_team.lower() in content_lower:
+                        relevance_score += 1
+                        
                     articles.append({
                         "content": content_text,
                         "title": title,
                         "source": display_link,
-                        "url": link
+                        "url": link,
+                        "relevance_score": relevance_score
                     })
-                    logger.info(f"  [ACCEPTED] {title} ({display_link})")
+                    logger.info(f"  [ACCEPTED] {title} ({display_link}) relevance={relevance_score}")
                 else:
                     logger.info(f"  [REJECTED] {title} (Spoiler detected)")
+            
+            # Issue #34: 両チーム名を含む記事を優先してソート
+            articles.sort(key=lambda x: x.get("relevance_score", 0), reverse=True)
                     
             if not articles:
                 match.error_status = config.ERROR_MINOR
