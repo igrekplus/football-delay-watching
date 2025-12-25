@@ -192,8 +192,8 @@ class MatchProcessor:
         # Sort logic
         def sort_key(m: MatchData):
             r_score = rank_order.get(m.rank, 99)
-            # Competition priority: CL > LALIGA > EPL > COPA > FA
-            comp_priority = {"CL": 0, "LALIGA": 1, "EPL": 2, "COPA": 3, "FA": 4}
+            # Competition priority: CL > LALIGA > EPL > COPA > FA > EFL
+            comp_priority = {"CL": 0, "LALIGA": 1, "EPL": 2, "COPA": 3, "FA": 4, "EFL": 5}
             comp_score = comp_priority.get(m.competition, 99)
             return (r_score, comp_score)
 
