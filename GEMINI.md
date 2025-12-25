@@ -64,7 +64,28 @@
 
 ## 🔧 開発コマンド
 
+### 初回セットアップ（venv作成）
+
 ```bash
+# Python 3.11でvenv作成（Homebrew版を使用）
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 依存パッケージ更新
+
+```bash
+source .venv/bin/activate
+pip install --upgrade -r requirements.txt
+```
+
+### 実行コマンド（venv activate後）
+
+```bash
+source .venv/bin/activate
+
 # モックモード（API不使用・高速テスト）
 DEBUG_MODE=True USE_MOCK_DATA=True python main.py
 
@@ -74,6 +95,7 @@ DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 # 本番モード（APIフル使用）
 USE_MOCK_DATA=False python main.py
 ```
+
 
 ## 🔑 環境変数（Secrets）
 

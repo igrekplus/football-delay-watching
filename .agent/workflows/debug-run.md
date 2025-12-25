@@ -6,13 +6,18 @@ description: デバッグモードでレポート生成 + Firebase Hostingへデ
 
 デバッグモードでレポートを生成し、Firebase Hostingにデプロイするワークフロー。
 
+## 前提条件
+
+- `.venv` が作成済みであること
+- 初回のみ: `python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+
 ## 手順
 
 // turbo-all
 
-1. デバッグモードで実行
+1. venv を有効化してデバッグモードで実行
 ```bash
-DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+source .venv/bin/activate && DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 ```
 
 2. 生成されたHTMLとimagesを確認
