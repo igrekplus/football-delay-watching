@@ -270,8 +270,8 @@ class FactsService:
         # import requests # Removed
         from src.clients.cache import get_with_cache
         
-        # First, get team IDs from fixture data
-        url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
+        # Issue #35: First, get team IDs from fixture data (直契約URLに統一)
+        url = "https://v3.football.api-sports.io/fixtures"
         querystring = {"id": match.id}
         
         try:
@@ -279,6 +279,9 @@ class FactsService:
             data = response.json()
             
             if not data.get('response'):
+                # Issue #35: 空レスポンス時のログ出力
+                logger.warning(f"H2H: fixtures response empty for match {match.id}")
+                match.h2h_summary = "対戦成績取得失敗（fixture取得エラー）"
                 return
                 
             fixture_data = data['response'][0]
@@ -293,6 +296,7 @@ class FactsService:
             h2h_data = h2h_response.json()
             
             if not h2h_data.get('response'):
+                logger.info(f"H2H: No history found for {match.home_team} vs {match.away_team}")
                 match.h2h_summary = "対戦履歴なし"
                 return
             
@@ -325,5 +329,7 @@ class FactsService:
             match.h2h_summary = f"過去{total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
             
         except Exception as e:
-            logger.error(f"Error fetching H2H for match {match.id}: {e}")
-            match.h2h_summary = "取得エラー"
+            # Issue #35: エラー内容を明確にログ出力
+            error_type = type(e).__name__
+            logger.error(f"Error fetching H2H for match {match.id}: {error_type} - {e}")
+            match.h2h_summary = f"対戦成績取得エラー（{error_type}）"
