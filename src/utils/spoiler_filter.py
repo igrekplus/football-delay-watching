@@ -23,32 +23,9 @@ class SpoilerFilter:
         ]
 
     def check_text(self, text: str) -> str:
-        # returns sanitized text or raises error if content should be discarded
-        # For this version, we will replace banned words/patterns with [CENSORED]
-        
-        sanitized = text
-        
-        # 1. Temporarily escape formation patterns
-        placeholders = {}
-        for i, formation in enumerate(self.formation_patterns):
-            placeholder = f"__FORMATION_{i}__"
-            sanitized = re.sub(formation, placeholder, sanitized)
-            placeholders[placeholder] = formation.replace(r'\\', '')
-        
-        # 2. Check scores (only real scores now)
-        sanitized = self.score_pattern.sub("[SCORE REMOVED]", sanitized)
-        
-        # 3. Restore formation patterns
-        for placeholder, original in placeholders.items():
-            sanitized = sanitized.replace(placeholder, original)
-        
-        # 4. Check keywords
-        for keyword in self.banned_keywords:
-            # Case insensitive check
-            pattern = re.compile(re.escape(keyword), re.IGNORECASE)
-            sanitized = pattern.sub("[CENSORED]", sanitized)
-            
-        return sanitized
+        # Issue #32: CENSORED置換を無効化し、そのまま出力
+        # 結果言及の判定は別Issue（#33）でGeminiを使用して実施
+        return text
 
     def is_safe_article(self, article_content: str) -> bool:
         # Pre-check: if too many forbidden words, mark as unsafe
