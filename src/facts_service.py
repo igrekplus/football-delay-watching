@@ -184,13 +184,13 @@ class FactsService:
                 away_id = fixture_data['teams']['away']['id']
                 
                 # Fetch form for each team
-                match.home_recent_form = self._get_team_form(home_id, headers)
-                match.away_recent_form = self._get_team_form(away_id, headers)
+                match.home_recent_form = self._get_team_form(home_id, headers, match.competition)
+                match.away_recent_form = self._get_team_form(away_id, headers, match.competition)
                 
         except Exception as e:
             logger.error(f"Error fetching fixture details for match {match.id}: {e}")
     
-    def _get_team_form(self, team_id: int, headers: dict) -> str:
+    def _get_team_form(self, team_id: int, headers: dict, competition: str) -> str:
         # import requests # Removed
         from src.clients.cache import get_with_cache
         
@@ -202,7 +202,9 @@ class FactsService:
         now = datetime.now(jst)
         season = now.year if now.month >= 8 else now.year - 1
         
-        querystring = {"team": team_id, "season": season, "league": 39}  # EPL
+        # Get league ID based on competition
+        league_id = config.LEAGUE_IDS.get(competition, 39)
+        querystring = {"team": team_id, "season": season, "league": league_id}
         
         try:
             response = get_with_cache(url, headers=headers, params=querystring)

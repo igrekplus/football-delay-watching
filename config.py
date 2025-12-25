@@ -36,7 +36,16 @@ class Config:
         return self.DEBUG_MODE and not self.USE_MOCK_DATA
 
     # Target Leagues
-    TARGET_LEAGUES: List[str] = ("EPL", "CL")
+    TARGET_LEAGUES: List[str] = ("EPL", "CL", "LALIGA", "FA", "COPA")
+    
+    # League ID Mapping for API-Football
+    LEAGUE_IDS = {
+        "EPL": 39,      # Premier League
+        "CL": 2,        # Champions League
+        "LALIGA": 140,  # La Liga
+        "FA": 45,       # FA Cup
+        "COPA": 143,    # Copa del Rey
+    }
     
     # S Rank Teams - Manchester City (highest priority)
     S_RANK_TEAMS: List[str] = ("Manchester City",)

@@ -43,7 +43,7 @@ class MatchProcessor:
         logger.info(f"Fetching matches for date: {date_str}")
         
         matches = []
-        target_league_ids = {"EPL": 39, "CL": 2}
+        target_league_ids = config.LEAGUE_IDS
         
         # Calculate Season based on target_date
         # Approx: If Month >= 8 (Aug), Season = Year. Else Season = Year-1.
@@ -192,8 +192,9 @@ class MatchProcessor:
         # Sort logic
         def sort_key(m: MatchData):
             r_score = rank_order.get(m.rank, 99)
-            # Secondary sort: CL < EPL (CL is preferred over EPL for same rank)
-            comp_score = 0 if m.competition == "CL" else 1
+            # Competition priority: CL > LALIGA > EPL > COPA > FA
+            comp_priority = {"CL": 0, "LALIGA": 1, "EPL": 2, "COPA": 3, "FA": 4}
+            comp_score = comp_priority.get(m.competition, 99)
             return (r_score, comp_score)
 
         sorted_matches = sorted(matches, key=sort_key)
