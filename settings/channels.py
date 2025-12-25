@@ -20,6 +20,7 @@ TRUSTED_CHANNELS: Dict[str, Dict] = {
     # 実際のチャンネルIDはログから取得
     "UCkzCjdRMrW2vXLx8mvPVLdQ": {"name": "Man City", "handle": "@mancity", "category": "team"},
     "UCBTy8j2cPy6zw68godcE7MQ": {"name": "Arsenal", "handle": "@Arsenal", "category": "team"},
+    "UCpryVRk_VDudG8SHXgWcG0w": {"name": "Arsenal", "handle": "@arsenal", "category": "team"},
     "UCU2PacFf99vhb5boBUeckbQ": {"name": "Chelsea", "handle": "@chelseafc", "category": "team"},
     "UC9LQwHZoucFT94I2h6JOcjw": {"name": "Liverpool", "handle": "@LiverpoolFC", "category": "team"},
     "UC6yW44UGJJBvYTlfC7CRg2Q": {"name": "Manchester United", "handle": "@manutd", "category": "team"},
@@ -53,8 +54,10 @@ TRUSTED_CHANNELS: Dict[str, Dict] = {
     "UCuIXf9o7jB34bPl8tXHYEGw": {"name": "TNT Sports", "handle": "@tntsports", "category": "broadcaster"},
     "UCSZ21xyG8w_33KriMM69IxQ": {"name": "DAZN Football", "handle": "@DAZNFootball", "category": "broadcaster"},
     "UCf3sCM5LyzU1hI_lU4Av3eQ": {"name": "DAZN Japan", "handle": "@DAZNJapan", "category": "broadcaster"},
+    "UCoFLB_Gw_AoxUuuzKjXrc_Q": {"name": "DAZN Japan", "handle": "@daznjapan", "category": "broadcaster"},
     "UCFCxCBBybXz6mR8A6G3e3Lg": {"name": "BBC Sport", "handle": "@BBCSport", "category": "broadcaster"},
     "UCWw6scNyopJ0yjMu1SyOEyw": {"name": "talkSPORT", "handle": "@talkSPORT", "category": "broadcaster"},
+    "UCMjvvElkdLRTgcTKklAUkSw": {"name": "U-NEXT フットボール", "handle": "@unext_football", "category": "broadcaster"},
     
     # ====== 戦術分析 ======
     "UCGYlBmk04IsNLTWbRgS-xkQ": {"name": "Tifo Football", "handle": "@TifoFootball_", "category": "tactics"},
@@ -62,6 +65,10 @@ TRUSTED_CHANNELS: Dict[str, Dict] = {
     "UC0N2Fv3QGMSR2R3aB-3rZTw": {"name": "レオザフットボール", "handle": "@Leothefoot", "category": "tactics"},
     "UCpZ8KoBzFcIJUzg4NL-H3Dw": {"name": "CRACK FOOTBALL", "handle": "@CRACKfootball", "category": "tactics"},
     "UCGWYb9tLAsmKXKIDKMBTbWw": {"name": "Football Made Simple", "handle": "@FootballMadeSimple", "category": "tactics"},
+    "UCifwRb0DHe-NjHT1GahgWmA": {"name": "GOAT理論【切り抜き】", "handle": "@goat_theory", "category": "tactics"},
+    "UCkWccBKBP0pvnUhuplw3lIA": {"name": "スポルティーバ", "handle": "@sportiva", "category": "media"},
+    "UC8yHePe_RgUBE-waRWy6olw": {"name": "PIVOT 公式チャンネル", "handle": "@pivot00", "category": "media"},
+    "UC5a1Zmq6dNNKKaW_sL6tjIA": {"name": "レオザマニア【Leothefootball】公認切り抜き", "handle": "@レオザマニア", "category": "tactics"},
 }
 
 # =============================================================================
