@@ -147,17 +147,27 @@ class NewsService:
         context_lines = [a['content'] for a in articles]
         context = "\n".join(context_lines)
         
+        # Issue #29: 前置き文禁止・本文のみ出力を明記
         if mode == "SUMMARY":
             prompt = f"""
             Task: Summarize the following news snippets for '{match.home_team} vs {match.away_team}' into a Japanese pre-match summary (600-1000 chars).
-            Constraint: Do NOT reveal results. Check sources provided in context if needed.
+            
+            Constraints:
+            - Do NOT reveal results. Check sources provided in context if needed.
+            - 前置き文（「はい、承知いたしました」「以下に」等のAI応答文）は絶対に含めず、本文のみを出力してください。
+            
             Context:
             {context}
             """
         else: # PREVIEW
             prompt = f"""
             Task: Extract tactical analysis for '{match.home_team} vs {match.away_team}' (Japanese).
-            Constraint: Focus on likely formations and matchups. Do NOT reveal results.
+            
+            Constraints:
+            - Focus on likely formations and matchups. Do NOT reveal results.
+            - 前置き文（「はい、承知いたしました」「以下に」等のAI応答文）は絶対に含めず、本文のみを出力してください。
+            - 最初の一文から戦術分析の内容を開始してください。
+            
             Context:
             {context}
             """
