@@ -253,7 +253,7 @@ class ReportGenerator:
                 lines.append("### ■ 📹 試合前の見どころ動画")
                 lines.append("")
                 
-                # カテゴリ別にグループ化してテーブル表示
+                # カテゴリ別にグループ化して折りたたみ表示
                 category_labels = {
                     "press_conference": "🎤 記者会見",
                     "historic": "⚔️ 因縁",
@@ -265,21 +265,37 @@ class ReportGenerator:
                 for cat_key, cat_label in category_labels.items():
                     cat_videos = [v for v in videos if v.get("category") == cat_key]
                     if cat_videos:
-                        lines.append(f"**{cat_label}**")
+                        # 折りたたみ開始
+                        lines.append(f"<details>")
+                        lines.append(f"<summary>{cat_label} ({len(cat_videos)}件)</summary>")
                         lines.append("")
-                        lines.append("| 動画 | チャンネル |")
-                        lines.append("|------|-----------|")
-                        # チューニング中は全件出力
+                        
+                        # 各動画をカード形式で表示
                         for v in cat_videos:
                             title = v.get('title', 'No Title')
-                            # パイプ文字をテーブル破損防止のため全角に置換
-                            title = title.replace('|', '｜')
-                            # タイトルが長すぎる場合は省略
-                            if len(title) > 50:
-                                title = title[:47] + "..."
                             url = v.get('url', '')
+                            thumbnail = v.get('thumbnail_url', '')
                             channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
-                            lines.append(f"| [{title}]({url}) | {channel_display} |")
+                            published_at = v.get('published_at', '')[:10]  # YYYY-MM-DD
+                            description = v.get('description', '')[:50]  # 冒頭50文字
+                            
+                            # サムネイル画像
+                            if thumbnail:
+                                lines.append(f"![{title[:30]}]({thumbnail})")
+                            lines.append("")
+                            # タイトル（リンク）
+                            lines.append(f"**[{title}]({url})**")
+                            lines.append("")
+                            # メタ情報
+                            lines.append(f"{channel_display} / {published_at}")
+                            if description:
+                                lines.append(f"> {description}...")
+                            lines.append("")
+                            lines.append("---")
+                            lines.append("")
+                        
+                        # 折りたたみ終了
+                        lines.append("</details>")
                         lines.append("")
                 
             

@@ -219,50 +219,55 @@ class FactsService:
             return ""
 
     def _get_mock_facts(self, match: MatchData):
-        # Populates facts: Venue, lineups, formation, etc. with MOCK DATA
-        # In real impl, this would query an API based on match.id
+        # Real match data: Manchester City vs West Ham (2025-12-21)
+        # Use actual player names, formations, and nationalities
         
-        match.venue = "Etihad Stadium, Manchester" if "City" in match.home_team else "Stadium X"
-        match.referee = "Michael Oliver"
-        match.home_formation = "4-3-3"
-        match.away_formation = "4-2-3-1"
+        match.venue = "Etihad Stadium, Manchester"
+        match.referee = "Paul Tierney, England"
+        match.home_formation = "4-3-2-1"
+        match.away_formation = "4-3-1-2"
+        match.home_manager = "Pep Guardiola"
+        match.away_manager = "Nuno Espirito Santo"
         
-        # Mock Lineups
-        match.home_lineup = [f"Home Player {i}" for i in range(1, 12)]
-        match.away_lineup = [f"Away Player {i}" for i in range(1, 12)]
+        # Manchester City Lineup (Real)
+        match.home_lineup = [
+            "G. Donnarumma", "M. Nunes", "R. Dias", "J. Gvardiol", "N. O'Reilly",
+            "T. Reijnders", "Nico", "B. Silva",
+            "R. Cherki", "P. Foden", "E. Haaland"
+        ]
+        # West Ham Lineup (Real)
+        match.away_lineup = [
+            "A. Areola", "K. Walker-Peters", "M. Kilman", "J. Todibo", "O. Scarles",
+            "S. Magassa", "F. Potts", "M. Fernandes",
+            "Lucas Paqueta", "J. Bowen", "C. Summerville"
+        ]
         
-        match.home_bench = [f"Home Sub {i}" for i in range(1, 8)]
-        match.away_bench = [f"Away Sub {i}" for i in range(1, 8)]
+        match.home_bench = ["J. Trafford", "N. Ake", "Savinho", "A. Khusanov", "C. Gray", "D. Mukasa", "R. Lewis"]
+        match.away_bench = ["M. Hermansen", "Igor", "C. Wilson", "K. Mavropanos", "G. Rodriguez", "T. Soucek", "A. Irving"]
         
-        match.home_recent_form = "W-W-D-W-W"
-        match.away_recent_form = "L-D-W-L-D"
-        match.h2h_summary = "過去5試合: Home 2勝, 引分 1, Away 2勝"
-        match.injuries_info = "Player A(Home): ハムストリング, Player B(Away): 出場停止"
+        match.home_recent_form = "WWWWW"
+        match.away_recent_form = "LDDLL"
+        match.h2h_summary = "過去5試合: Manchester City 5勝, 引分 0, West Ham 0勝"
+        match.injuries_info = "R. Ait Nouri(MC): International duty, O. Bobb(MC): Hamstring, J. Doku(MC): Leg Injury"
         
-        # Mock nationalities
+        # Player numbers
+        match.player_numbers = {
+            "G. Donnarumma": 25, "M. Nunes": 27, "R. Dias": 3, "J. Gvardiol": 24, "N. O'Reilly": 33,
+            "T. Reijnders": 4, "Nico": 14, "B. Silva": 20, "R. Cherki": 10, "P. Foden": 47, "E. Haaland": 9,
+            "A. Areola": 23, "K. Walker-Peters": 2, "M. Kilman": 3, "J. Todibo": 25, "O. Scarles": 30,
+            "S. Magassa": 27, "F. Potts": 32, "M. Fernandes": 18, "Lucas Paqueta": 10, "J. Bowen": 20, "C. Summerville": 7
+        }
+        
+        # Player nationalities (Real)
         match.player_nationalities = {
-            "Home Player 1": "England",
-            "Home Player 2": "Portugal",
-            "Home Player 3": "Belgium",
-            "Home Player 4": "England",
-            "Home Player 5": "Norway",
-            "Home Player 6": "Spain",
-            "Home Player 7": "Germany",
-            "Home Player 8": "England",
-            "Home Player 9": "Brazil",
-            "Home Player 10": "Argentina",
-            "Home Player 11": "England",
-            "Away Player 1": "Spain",
-            "Away Player 2": "France",
-            "Away Player 3": "Brazil",
-            "Away Player 4": "England",
-            "Away Player 5": "Japan",
-            "Away Player 6": "Ghana",
-            "Away Player 7": "Norway",
-            "Away Player 8": "England",
-            "Away Player 9": "Nigeria",
-            "Away Player 10": "France",
-            "Away Player 11": "England",
+            "G. Donnarumma": "Italy", "M. Nunes": "Portugal", "R. Dias": "Portugal",
+            "J. Gvardiol": "Croatia", "N. O'Reilly": "England", "T. Reijnders": "Netherlands",
+            "Nico": "Spain", "B. Silva": "Portugal", "R. Cherki": "France",
+            "P. Foden": "England", "E. Haaland": "Norway",
+            "A. Areola": "France", "K. Walker-Peters": "England", "M. Kilman": "England",
+            "J. Todibo": "France", "O. Scarles": "England", "S. Magassa": "France",
+            "F. Potts": "England", "M. Fernandes": "Portugal", "Lucas Paqueta": "Brazil",
+            "J. Bowen": "England", "C. Summerville": "Netherlands"
         }
     
     def _fetch_h2h(self, match: MatchData, headers: dict):

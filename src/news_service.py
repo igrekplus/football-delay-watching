@@ -117,9 +117,14 @@ class NewsService:
             return []
 
     def _get_mock_news(self, match: MatchData) -> List[Dict[str, str]]:
+        # Real-style mock news for Manchester City vs West Ham
         return [
-            {"content": f"Guardiola says {match.away_team} is tough.", "title": "Pep Talk", "source": "mock-sports.com", "url": "http://mock"},
-            {"content": "Key player X returned.", "title": "Injury Update", "source": "mock-news.net", "url": "http://mock"}
+            {"content": f"Premier League preview: {match.home_team} host {match.away_team} at Etihad Stadium. Guardiola's side looking to continue their dominance.", 
+             "title": f"{match.home_team} vs {match.away_team}: Premier League Preview", "source": "www.bbc.com", "url": "https://www.bbc.com/sport"},
+            {"content": f"Lucas Paqueta will be key for {match.away_team}. His creativity and passing could unlock City's defense.", 
+             "title": "Paqueta's role vital for West Ham", "source": "www.skysports.com", "url": "https://www.skysports.com"},
+            {"content": "Haaland has scored in his last 5 Premier League games. The Norwegian striker is in phenomenal form.", 
+             "title": "Haaland's scoring streak continues", "source": "www.goal.com", "url": "https://www.goal.com"}
         ]
 
     def _generate_summary(self, match: MatchData, articles: List[Dict[str, str]]) -> str:
@@ -180,11 +185,33 @@ class NewsService:
             return f"Error generating {mode}"
 
     def _get_mock_summary(self, match: MatchData, articles: List[Dict[str, str]]) -> str:
-        base_text = " ".join([a['content'] for a in articles])
-        return f"SUMMARY for {match.home_team} vs {match.away_team}: {base_text} (Mock Summary)"
+        # Real-style mock summary for layout testing
+        return f"""プレミアリーグの注目カード、{match.home_team}対{match.away_team}の一戦が間近に迫り、多くのサッカーメディアやファンが試合のプレビューを発信し、期待感を高めている。
+
+昨シーズンの王者である{match.home_team}は、今季もその圧倒的な攻撃力と組織的な守備でリーグを席巻している。ホームで迎えるこの一戦でも、盤石の試合運びで確実に勝ち点を狙ってくるだろう。
+
+対する{match.away_team}は、強敵シティにアウェイで挑む形となる。チームの創造性の中心を担うのは、ブラジル代表のルーカス・パケタだ。彼の卓越したテクニックとパスセンスが、シティの堅固な守備陣をこじ開ける鍵となることは間違いない。
+
+試合の焦点は、シティが誇るボール支配に対し、{match.away_team}がいかにして効果的なカウンターを仕掛けられるかという点にある。王者シティがその強さを見せつけるのか、それとも{match.away_team}がキーマン・パケタを中心に一矢報いるのか。"""
 
     def _get_mock_preview(self, match: MatchData, articles: List[Dict[str, str]]) -> str:
-        return f"TACTICAL PREVIEW: {match.home_team} vs {match.away_team} (Mock Preview)"
+        # Real-style tactical preview for layout testing
+        return f"""### {match.home_team} vs {match.away_team}：戦術分析プレビュー
+
+プレミアリーグ屈指の戦術的な対決となるこの一戦は、対照的なスタイルを持つ両チームの激突が予想される。
+
+**{match.home_team}の予想フォーメーション: 4-2-3-1**
+- グアルディオラ監督のチームは、圧倒的なボールポゼッションで試合を支配することを目指す
+- 最前線のハーランドをターゲットに、両翼のウインガーがハーフスペースを利用
+
+**{match.away_team}の予想フォーメーション: 4-5-1**
+- 自陣でコンパクトな守備ブロックを形成し、シティの攻撃スペースを消す
+- ボーウェンのスピードとパケタの創造性がカウンターの起点
+
+**注目のマッチアップ:**
+1. ハーランド vs ウェストハムのCB - フィジカルとポジショニングの攻防
+2. ロドリ vs パケタ - 中盤の主導権争い
+3. シティのウインガー vs サイドバック - 1対1の勝負"""
 
     def _check_spoiler_with_llm(self, text: str, match: MatchData) -> tuple:
         """Issue #33: Geminiで結果言及の可能性を判定

@@ -470,11 +470,71 @@ class YouTubeService:
     
     def process_matches(self, matches: List[MatchData]) -> Dict[str, List[Dict]]:
         """全試合の動画を取得"""
+        # モックモード: APIアクセスなしでリアルなダミーデータを返却
+        if config.USE_MOCK_DATA:
+            return self._get_mock_videos(matches)
+        
         results = {}
         
         for match in matches:
             if match.is_target:
                 match_key = f"{match.home_team} vs {match.away_team}"
                 results[match_key] = self.get_videos_for_match(match)
+        
+        return results
+    
+    def _get_mock_videos(self, matches: List[MatchData]) -> Dict[str, List[Dict]]:
+        """モック用YouTube動画データ（MC vs West Ham 2025-12-21 実データベース）"""
+        results = {}
+        
+        for match in matches:
+            if not match.is_target:
+                continue
+            match_key = f"{match.home_team} vs {match.away_team}"
+            
+            # リアルなモックデータ（実際のYouTubeキャッシュから構成）
+            results[match_key] = [
+                # 記者会見
+                {"video_id": "FYuyWxcX604", "title": "Manager's Preview | Pep Guardiola press conference", 
+                 "url": "https://www.youtube.com/watch?v=FYuyWxcX604", "channel_id": "UCkzCjdRMrW2vXLx8mvPVLdQ",
+                 "channel_name": "Man City", "thumbnail_url": "https://i.ytimg.com/vi/FYuyWxcX604/mqdefault.jpg",
+                 "published_at": "2025-12-19T14:00:00Z", "description": "Pep Guardiola speaks ahead of...",
+                 "category": "press_conference", "is_trusted": True, "channel_display": "✅ Man City"},
+                {"video_id": "qmsEeXaoBu8", "title": "Pep Guardiola Speaks On His Future At Man City",
+                 "url": "https://www.youtube.com/watch?v=qmsEeXaoBu8", "channel_id": "UC7gFIlP3YVcY5gYhPdQ0jNA",
+                 "channel_name": "DAZN Football", "thumbnail_url": "https://i.ytimg.com/vi/qmsEeXaoBu8/mqdefault.jpg",
+                 "published_at": "2025-12-19T16:30:00Z", "description": "Exclusive interview with Pep...",
+                 "category": "press_conference", "is_trusted": True, "channel_display": "✅ DAZN Football"},
+                # 因縁（過去ハイライト）
+                {"video_id": "sAewmh-Lu8U", "title": "EXTENDED HIGHLIGHTS | 4-IN-A-ROW | Man City 3-1 West Ham",
+                 "url": "https://www.youtube.com/watch?v=sAewmh-Lu8U", "channel_id": "UCkzCjdRMrW2vXLx8mvPVLdQ",
+                 "channel_name": "Man City", "thumbnail_url": "https://i.ytimg.com/vi/sAewmh-Lu8U/mqdefault.jpg",
+                 "published_at": "2024-05-19T22:00:00Z", "description": "City secure fourth consecutive title...",
+                 "category": "historic", "is_trusted": True, "channel_display": "✅ Man City"},
+                {"video_id": "rPmUSbkSl34", "title": "Man City Win The Premier League! | Man City 3-1 West Ham",
+                 "url": "https://www.youtube.com/watch?v=rPmUSbkSl34", "channel_id": "UCG5qGW...",
+                 "channel_name": "Premier League", "thumbnail_url": "https://i.ytimg.com/vi/rPmUSbkSl34/mqdefault.jpg",
+                 "published_at": "2024-05-19T23:00:00Z", "description": "Premier League champions crowned...",
+                 "category": "historic", "is_trusted": True, "channel_display": "✅ Premier League"},
+                # 戦術分析
+                {"video_id": "B6RgCAiLg44", "title": "【試合総括】マンチェスターCvsナポリを解説！",
+                 "url": "https://www.youtube.com/watch?v=B6RgCAiLg44", "channel_id": "UCxxxxx",
+                 "channel_name": "GOAT理論【切り抜き】", "thumbnail_url": "https://i.ytimg.com/vi/B6RgCAiLg44/mqdefault.jpg",
+                 "published_at": "2025-12-10T10:00:00Z", "description": "ナポリの守備を攻略したペップの戦略...",
+                 "category": "tactical", "is_trusted": False, "channel_display": "⚠️ GOAT理論【切り抜き】"},
+                # 選手紹介
+                {"video_id": "VPgwGN9kGpI", "title": "Erling Haaland's First 100 Premier League Goals!",
+                 "url": "https://www.youtube.com/watch?v=VPgwGN9kGpI", "channel_id": "UCG5qGW...",
+                 "channel_name": "Premier League", "thumbnail_url": "https://i.ytimg.com/vi/VPgwGN9kGpI/mqdefault.jpg",
+                 "published_at": "2025-11-30T15:00:00Z", "description": "Watch all 100 of Haaland's goals...",
+                 "category": "player_highlight", "is_trusted": True, "channel_display": "✅ Premier League"},
+                # 練習風景
+                {"video_id": "Hv2IXyyAgBQ", "title": "HIGHLIGHTS! Haaland and Foden help power City to victory",
+                 "url": "https://www.youtube.com/watch?v=Hv2IXyyAgBQ", "channel_id": "UCkzCjdRMrW2vXLx8mvPVLdQ",
+                 "channel_name": "Man City", "thumbnail_url": "https://i.ytimg.com/vi/Hv2IXyyAgBQ/mqdefault.jpg",
+                 "published_at": "2025-12-14T22:00:00Z", "description": "Crystal Palace 0-3 Man City...",
+                 "category": "training", "is_trusted": True, "channel_display": "✅ Man City"},
+            ]
+            logger.info(f"[MOCK] YouTube: Returning {len(results[match_key])} mock videos for {match_key}")
         
         return results

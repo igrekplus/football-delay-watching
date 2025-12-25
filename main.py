@@ -78,8 +78,11 @@ def main(dry_run=False):
     html_path = None
     try:
         from src.html_generator import generate_html_report, sync_from_firebase
-        # 既存HTMLファイルをFirebaseからダウンロード（ファイル消失防止）
-        sync_from_firebase()
+        # モックモード以外は既存HTMLファイルをFirebaseからダウンロード（ファイル消失防止）
+        if not config.USE_MOCK_DATA:
+            sync_from_firebase()
+        else:
+            logger.info("Mock mode: Skipping Firebase sync")
         html_path = generate_html_report(report)
         logger.info(f"HTML report generated: {html_path}")
     except Exception as e:

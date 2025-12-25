@@ -155,32 +155,27 @@ class MatchProcessor:
         match.rank = "None"
     
     def _get_mock_matches(self) -> List[MatchData]:
-        # Mock data based on requirements examples
+        # Mock data based on real match: Manchester City vs West Ham (2025-12-21)
         return [
             MatchData(
-                id="m1", home_team="Manchester City", away_team="Arsenal",
-                competition="EPL", kickoff_jst="2025/05/01 04:00 JST", kickoff_local="2025/04/30 20:00 GMT",
-                rank="Absolute"
+                id="1379135", home_team="Manchester City", away_team="West Ham",
+                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 Local",
+                rank="S", venue="Etihad Stadium, Manchester", referee="Paul Tierney, England"
             ),
             MatchData(
-                id="m2", home_team="Real Madrid", away_team="Bayern Munich",
-                competition="CL", kickoff_jst="2025/05/01 04:00 JST", kickoff_local="2025/04/30 21:00 CET",
-                rank="S"
+                id="m2", home_team="Newcastle", away_team="Chelsea",
+                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 GMT",
+                rank="A"
             ),
             MatchData(
-                id="m3", home_team="Brighton", away_team="Liverpool",
-                competition="EPL", kickoff_jst="2025/05/01 23:00 JST", kickoff_local="2025/05/01 15:00 GMT",
-                rank="A"  # Assuming Mitoma plays
+                id="m3", home_team="Everton", away_team="Arsenal",
+                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 GMT",
+                rank="A"
             ),
             MatchData(
-                id="m4", home_team="Crystal Palace", away_team="Fulham",
-                competition="EPL", kickoff_jst="2025/05/01 23:00 JST", kickoff_local="2025/05/01 15:00 GMT",
+                id="m4", home_team="Brighton", away_team="Sunderland",
+                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 GMT",
                 rank="None"
-            ),
-             MatchData(
-                id="m5", home_team="Barcelona", away_team="PSG",
-                competition="CL", kickoff_jst="2025/05/01 04:00 JST", kickoff_local="2025/04/30 21:00 CET",
-                rank="S"
             )
         ]
 
