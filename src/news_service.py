@@ -22,6 +22,13 @@ class NewsService:
                 raw_summary = self._generate_summary(match, articles)
                 match.news_summary = self.filter.check_text(raw_summary)
                 
+                # Issue #33: Geminiで結果言及をチェック
+                if raw_summary and not config.USE_MOCK_DATA:
+                    is_safe, reason = self._check_spoiler_with_llm(raw_summary, match)
+                    if not is_safe:
+                        logger.warning(f"  [SPOILER CHECK] {match.home_team} vs {match.away_team}: {reason}")
+                        match.news_summary = f"⚠️ 結果言及の可能性あり: {reason}\n\n{match.news_summary}"
+                
                 # 3. Generate Tactical Preview
                 raw_preview = self._generate_tactical_preview(match, articles)
                 match.tactical_preview = self.filter.check_text(raw_preview)
@@ -155,6 +162,50 @@ class NewsService:
 
     def _get_mock_preview(self, match: MatchData, articles: List[Dict[str, str]]) -> str:
         return f"TACTICAL PREVIEW: {match.home_team} vs {match.away_team} (Mock Preview)"
+
+    def _check_spoiler_with_llm(self, text: str, match: MatchData) -> tuple:
+        """Issue #33: Geminiで結果言及の可能性を判定
+        
+        Returns:
+            tuple: (is_safe: bool, reason: str)
+        """
+        import google.generativeai as genai
+        import json
+        
+        genai.configure(api_key=config.GOOGLE_API_KEY)
+        model = genai.GenerativeModel("gemini-pro-latest")
+        
+        prompt = f"""以下のテキストが「{match.home_team} vs {match.away_team}」の試合結果を言及しているかを判定してください。
+
+テキスト:
+{text[:1500]}
+
+判定基準:
+- スコア（例: 2-1, 3-0）の記載
+- 勝敗の記載（例: 〇〇が勝利、敗北、won, lost）
+- ゴールを決めた選手名（得点者）
+
+回答は以下のJSON形式のみで（説明不要）:
+{{"is_safe": true, "reason": "なし"}} または {{"is_safe": false, "reason": "理由"}}
+"""
+        
+        try:
+            response = model.generate_content(prompt)
+            # JSONを抽出
+            response_text = response.text.strip()
+            # マークダウンコードブロックを除去
+            if response_text.startswith("```"):
+                response_text = response_text.split("```")[1]
+                if response_text.startswith("json"):
+                    response_text = response_text[4:]
+            result = json.loads(response_text)
+            return result.get("is_safe", True), result.get("reason", "")
+        except json.JSONDecodeError as e:
+            logger.warning(f"Spoiler check JSON parse error: {e}")
+            return True, "判定スキップ（JSON解析エラー）"
+        except Exception as e:
+            logger.warning(f"Spoiler check failed: {e}")
+            return True, "判定スキップ（APIエラー）"
 
     def _process_interviews(self, match: MatchData):
         """Search and summarize pre-match interviews for both teams"""
