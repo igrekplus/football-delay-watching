@@ -210,11 +210,3 @@ gh issue comment 30 --body "## 対応内容
 - **コミットメッセージ**: `Closes #N` でIssue自動クローズ
 - **Issue対応後**: 必ずコメントで修正内容を記録
 
-## 📋 開発履歴（主要な変更）
-
-| 日付 | 内容 |
-|------|------|
-| 2025-12-25 | Issue #30-35対応、GEMINI.mdリファクタ |
-| 2025-12-21 | API-Sports直接アクセスに移行（RapidAPI経由廃止） |
-| 2025-12-14 | Gmail API経由のメール配信機能追加（Issue #5） |
-| 2025-12-14 | GitHub Actions設定完了、Secrets連携 |
