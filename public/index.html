@@ -366,10 +366,16 @@
                 let html = '';
                 reports.forEach(report => {
                     const displayDate = report.datetime || report.date || '不明';
-                    const debugBadge = report.is_debug ? '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">DEBUG</span>' : '';
+                    // MOCKとDEBUGバッジを分けて表示
+                    let badge = '';
+                    if (report.is_mock) {
+                        badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">MOCK</span>';
+                    } else if (report.is_debug) {
+                        badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">DEBUG</span>';
+                    }
                     html += `
                         <div class="report-item">
-                            <a href="/reports/${report.file}">${displayDate} のレポート${debugBadge}</a>
+                            <a href="/reports/${report.file}">${displayDate} のレポート${badge}</a>
                             <span class="report-meta">生成: ${report.generated || '不明'}</span>
                         </div>
                     `;

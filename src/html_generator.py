@@ -98,8 +98,13 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
     report_date = report_datetime.split('_')[0] if '_' in report_datetime else report_datetime
     timestamp = now_jst.strftime('%Y-%m-%d %H:%M:%S JST')
     
-    # デバッグモード判定（タイトル表示用）
-    debug_prefix = "[DEBUG] " if config.DEBUG_MODE else ""
+    # デバッグ/モックモード判定（タイトル表示用）
+    if config.USE_MOCK_DATA:
+        mode_prefix = "[MOCK] "
+    elif config.DEBUG_MODE:
+        mode_prefix = "[DEBUG] "
+    else:
+        mode_prefix = ""
     
     # Markdown→HTML変換
     html_body = markdown.markdown(
@@ -113,7 +118,7 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{debug_prefix}サッカー観戦ガイド - {report_date}</title>
+    <title>{mode_prefix}サッカー観戦ガイド - {report_date}</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
@@ -176,7 +181,7 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
 <body>
     <div class="container">
         <a href="/" class="back-link">← レポート一覧に戻る</a>
-        {'<div style="background:#ff6b6b;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🔧 DEBUG MODE - このレポートはデバッグ用です</div>' if config.DEBUG_MODE else ''}
+        {'<div style="background:#9b59b6;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🧪 MOCK MODE - このレポートはモックデータです</div>' if config.USE_MOCK_DATA else ('<div style="background:#ff6b6b;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🔧 DEBUG MODE - このレポートはデバッグ用です</div>' if config.DEBUG_MODE else '')}
         {html_body}
         <div class="timestamp">
             生成日時: {timestamp}
@@ -242,7 +247,8 @@ def update_manifest(report_datetime: str, filename: str, timestamp: str):
         "datetime": report_datetime, 
         "file": filename, 
         "generated": timestamp,
-        "is_debug": config.DEBUG_MODE
+        "is_debug": config.DEBUG_MODE,
+        "is_mock": config.USE_MOCK_DATA
     }
     all_reports.append(new_report)
     
