@@ -236,7 +236,9 @@ class ReportGenerator:
             
             lines.append("### ■ 戦術プレビュー")
             lines.append(f"- {match.tactical_preview}")
-            lines.append(f"- URL: {match.preview_url}")
+            # Issue #30: 有効なURLがある場合のみ出力（プレースホルダは除外）
+            if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
+                lines.append(f"- URL: {match.preview_url}")
             lines.append("")
             
             lines.append("### ■ 監督・選手コメント")
