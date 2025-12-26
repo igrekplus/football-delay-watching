@@ -48,24 +48,40 @@ class ReportGenerator:
 
     def _format_lineup_by_position(self, lineup: List[str], formation: str, team_name: str, 
                                      nationalities: Dict[str, str] = None, 
-                                     player_numbers: Dict[str, int] = None) -> str:
+                                     player_numbers: Dict[str, int] = None,
+                                     player_birthdates: Dict[str, str] = None) -> str:
         """
         フォーメーション情報を元に選手をポジション別に振り分けて表示
         例: 4-3-3 -> GK:1, DF:4, MF:3, FW:3
         国籍情報がある場合は国旗絵文字を追加
         背番号がある場合は先頭に表示
+        生年月日がある場合は (YYYY/MM/DD) 形式で表示
         """
         if nationalities is None:
             nationalities = {}
         if player_numbers is None:
             player_numbers = {}
+        if player_birthdates is None:
+            player_birthdates = {}
+            
+        def format_birthdate(date_str: str) -> str:
+            """YYYY-MM-DD を YYYY/MM/DD に変換"""
+            if not date_str:
+                return ""
+            try:
+                return date_str.replace('-', '/')
+            except Exception:
+                return ""
             
         def format_player(name: str) -> str:
             nationality = nationalities.get(name, "")
             number = player_numbers.get(name)
+            birthdate = player_birthdates.get(name, "")
             formatted = format_player_with_flag(name, nationality)
             if number is not None:
                 formatted = f"#{number} {formatted}"
+            if birthdate:
+                formatted = f"{formatted} ({format_birthdate(birthdate)})"
             return formatted
         
         if not lineup or len(lineup) != 11:
@@ -103,6 +119,143 @@ class ReportGenerator:
         lines = [f"GK: {gk}"]
         lines.extend(positions)
         return '\n    - '.join(lines)
+
+    def _calculate_age(self, birthdate_str: str) -> int:
+        """生年月日から年齢を計算"""
+        if not birthdate_str:
+            return None
+        try:
+            from datetime import datetime
+            import pytz
+            birth = datetime.strptime(birthdate_str, "%Y-%m-%d")
+            jst = pytz.timezone('Asia/Tokyo')
+            today = datetime.now(jst).replace(tzinfo=None)
+            age = today.year - birth.year
+            if (today.month, today.day) < (birth.month, birth.day):
+                age -= 1
+            return age
+        except Exception:
+            return None
+
+    def _get_player_position(self, index: int, lineup_size: int, formation: str) -> str:
+        """選手のインデックスとフォーメーションからポジションを決定"""
+        if index == 0:
+            return "GK"
+        
+        # フォーメーションをパース（例: "4-3-3" -> [4, 3, 3]）
+        try:
+            parts = [int(x) for x in formation.split('-')]
+        except (ValueError, AttributeError):
+            return "FW"  # パース失敗時
+        
+        position_names = ['DF', 'MF', 'FW']
+        outfield_index = index - 1  # GKを除いたインデックス
+        
+        cumulative = 0
+        for i, count in enumerate(parts):
+            cumulative += count
+            if outfield_index < cumulative:
+                return position_names[i] if i < len(position_names) else 'FW'
+        
+        return 'FW'
+
+    def _format_player_cards(self, lineup: List[str], formation: str, team_name: str,
+                             nationalities: Dict[str, str] = None,
+                             player_numbers: Dict[str, int] = None,
+                             player_birthdates: Dict[str, str] = None,
+                             player_photos: Dict[str, str] = None,
+                             position_label: str = None) -> str:
+        """
+        選手リストをカード形式のHTMLに変換
+        
+        Args:
+            position_label: 全選手に使用するポジションラベル（例: "SUB"）。
+                           Noneの場合はフォーメーションから計算
+        """
+        if nationalities is None:
+            nationalities = {}
+        if player_numbers is None:
+            player_numbers = {}
+        if player_birthdates is None:
+            player_birthdates = {}
+        if player_photos is None:
+            player_photos = {}
+        
+        if not lineup:
+            return '<div class="player-cards"><p>選手情報なし</p></div>'
+        
+        cards_html = []
+        for idx, name in enumerate(lineup):
+            # ポジションラベルが指定されていればそれを使用、なければフォーメーションから計算
+            if position_label:
+                position = position_label
+            else:
+                position = self._get_player_position(idx, len(lineup), formation)
+            
+            number = player_numbers.get(name)
+            nationality = nationalities.get(name, "")
+            birthdate = player_birthdates.get(name, "")
+            photo_url = player_photos.get(name, "")
+            age = self._calculate_age(birthdate)
+            
+            # 国旗を取得
+            flag = format_player_with_flag("", nationality).strip() if nationality else ""
+            
+            # カードHTML生成
+            number_display = f"#{number}" if number is not None else ""
+            photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
+            age_display = f"{age}歳" if age else ""
+            nationality_display = f"{flag} {nationality}" if nationality else ""
+            
+            card = f'''<div class="player-card">
+<div class="player-card-header"><span>{position} {number_display}</span><span>{flag}</span></div>
+<div class="player-card-body">
+{photo_html}
+<div class="player-card-info">
+<div class="player-card-name">{name}</div>
+<div class="player-card-nationality">{nationality}</div>
+<div class="player-card-age">{age_display}</div>
+</div>
+</div>
+</div>'''
+            cards_html.append(card)
+        
+        return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
+
+    def _format_injury_cards(self, injuries_list: list, player_photos: Dict[str, str] = None) -> str:
+        """
+        怪我人・出場停止リストをカード形式のHTMLに変換
+        """
+        if not injuries_list:
+            return '<div class="player-cards"><p>なし</p></div>'
+        
+        if player_photos is None:
+            player_photos = {}
+        
+        cards_html = []
+        for injury in injuries_list:
+            name = injury.get("name", "Unknown")
+            team = injury.get("team", "")
+            reason = injury.get("reason", "")
+            # injuries_list 内の photo を優先、なければ player_photos から取得
+            photo_url = injury.get("photo", "") or player_photos.get(name, "")
+            
+            photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
+            
+            card = f'''<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+{photo_html}
+<div class="player-card-info">
+<div class="player-card-name">{name}</div>
+<div class="player-card-nationality">{team}</div>
+<div class="player-card-age injury-reason">⚠️ {reason}</div>
+</div>
+</div>
+</div>'''
+            cards_html.append(card)
+        
+        return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
 
     def generate(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None) -> tuple:
         """
@@ -174,24 +327,45 @@ class ReportGenerator:
             lines.append(f"- 日時：{match.kickoff_jst} / {match.kickoff_local}")
             lines.append(f"- 会場：{match.venue}")
             
-            # ポジション別スタメン表示（国籍情報・背番号付き）
-            home_lineup_formatted = self._format_lineup_by_position(
-                match.home_lineup, match.home_formation, match.home_team, 
-                match.player_nationalities, match.player_numbers
+            # スタメン選手カード表示（HTML直接出力）
+            home_cards_html = self._format_player_cards(
+                match.home_lineup, match.home_formation, match.home_team,
+                match.player_nationalities, match.player_numbers,
+                match.player_birthdates, match.player_photos
             )
-            away_lineup_formatted = self._format_lineup_by_position(
-                match.away_lineup, match.away_formation, match.away_team, 
-                match.player_nationalities, match.player_numbers
+            away_cards_html = self._format_player_cards(
+                match.away_lineup, match.away_formation, match.away_team,
+                match.player_nationalities, match.player_numbers,
+                match.player_birthdates, match.player_photos
             )
-            lines.append(f"- スタメン（{match.home_team}）：")
-            lines.append(f"    - {home_lineup_formatted}")
-            lines.append(f"- スタメン（{match.away_team}）：")
-            lines.append(f"    - {away_lineup_formatted}")
+            lines.append(f"### スタメン（{match.home_team}）フォーメーション: {match.home_formation}")
+            lines.append(home_cards_html)
+            lines.append(f"### スタメン（{match.away_team}）フォーメーション: {match.away_formation}")
+            lines.append(away_cards_html)
             
-            lines.append(f"- ベンチ（Home）：{', '.join(match.home_bench)}")
-            lines.append(f"- ベンチ（Away）：{', '.join(match.away_bench)}")
+            # ベンチ選手もカード形式で表示
+            home_bench_html = self._format_player_cards(
+                match.home_bench, "", match.home_team,
+                match.player_nationalities, match.player_numbers,
+                match.player_birthdates, match.player_photos,
+                position_label="SUB"
+            )
+            away_bench_html = self._format_player_cards(
+                match.away_bench, "", match.away_team,
+                match.player_nationalities, match.player_numbers,
+                match.player_birthdates, match.player_photos,
+                position_label="SUB"
+            )
+            lines.append(f"### ベンチ（{match.home_team}）")
+            lines.append(home_bench_html)
+            lines.append(f"### ベンチ（{match.away_team}）")
+            lines.append(away_bench_html)
             lines.append(f"- フォーメーション：Home {match.home_formation} / Away {match.away_formation}")
-            lines.append(f"- 出場停止・負傷者情報：{match.injuries_info}")
+            
+            # 怪我人・出場停止情報をカード形式で表示
+            lines.append("### 出場停止・負傷者情報")
+            injury_cards_html = self._format_injury_cards(match.injuries_list, match.player_photos)
+            lines.append(injury_cards_html)
             
             # Format form with icons (W=✅, D=➖, L=❌)
             def format_form_with_icons(form: str) -> str:
@@ -231,37 +405,7 @@ class ReportGenerator:
                 image_paths.append(f"public/reports/{away_img}")
             lines.append("")
             
-            # Player photos section (if available) - 外部URLを直接使用
-            if match.player_photos:
-                lines.append("### ■ 選手画像")
-                
-                def format_photo_caption(name: str) -> str:
-                    """画像キャプションに背番号を追加"""
-                    number = match.player_numbers.get(name)
-                    if number is not None:
-                        return f"{name} #{number}"
-                    return name
-                
-                # Home team photos - 外部URLを直接使用
-                home_photos = [
-                    f"![{format_photo_caption(name)}]({match.player_photos[name]})" 
-                    for name in match.home_lineup 
-                    if name in match.player_photos and match.player_photos[name]
-                ]
-                if home_photos:
-                    lines.append(f"**{match.home_team}**")
-                    lines.append(" ".join(home_photos))
-                
-                # Away team photos - 外部URLを直接使用
-                away_photos = [
-                    f"![{format_photo_caption(name)}]({match.player_photos[name]})" 
-                    for name in match.away_lineup 
-                    if name in match.player_photos and match.player_photos[name]
-                ]
-                if away_photos:
-                    lines.append(f"**{match.away_team}**")
-                    lines.append(" ".join(away_photos))
-                lines.append("")
+            # 選手画像はカードに統合済みのため、このセクションは削除
             
             lines.append("### ■ ニュース要約（600〜1,000字）")
             lines.append(f"- {match.news_summary}")

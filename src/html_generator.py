@@ -176,6 +176,90 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
             padding-top: 20px;
             border-top: 1px solid #444;
         }}
+        /* Player Card Styles */
+        .player-cards {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }}
+        .player-card {{
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }}
+        .player-card:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }}
+        .player-card-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }}
+        .player-card-body {{
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }}
+        .player-card-photo {{
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }}
+        .player-card-photo-placeholder {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }}
+        .player-card-photo-placeholder::before {{
+            content: '👤';
+        }}
+        .player-card-info {{
+            flex: 1;
+            min-width: 0;
+        }}
+        .player-card-name {{
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }}
+        .player-card-nationality {{
+            color: #aaa;
+            font-size: 0.75rem;
+        }}
+        .player-card-age {{
+            color: #888;
+            font-size: 0.75rem;
+        }}
+        /* Injury Card Styles */
+        .injury-card {{
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }}
+        .injury-card .player-card-header {{
+            color: #ff6b6b;
+        }}
+        .injury-reason {{
+            color: #ff6b6b;
+            font-weight: bold;
+        }}
     </style>
 </head>
 <body>

@@ -42,8 +42,12 @@ class MatchData:
     # Player Photos (name -> photo URL mapping)
     player_photos: dict = None  # {"Player Name": "https://...", ...}
     
-    # Injuries and Suspensions
-    injuries_info: str = "不明"  # 負傷者・出場停止情報
+    # Player Birthdates (name -> birth date mapping)
+    player_birthdates: dict = None  # {"Player Name": "2000-03-06", ...}
+    
+    # Injuries and Suspensions (structured data)
+    injuries_list: list = None  # [{"name": "Player", "team": "Team", "reason": "Injury"}, ...]
+    injuries_info: str = "不明"  # 負傷者・出場停止情報（フォールバック用テキスト）
     
     # Head-to-Head History
     h2h_summary: str = ""  # 過去の対戦成績サマリー（例: "5試合: Home 2勝, Draw 1, Away 2勝"）
@@ -70,3 +74,5 @@ class MatchData:
         if self.player_nationalities is None: self.player_nationalities = {}
         if self.player_numbers is None: self.player_numbers = {}
         if self.player_photos is None: self.player_photos = {}
+        if self.player_birthdates is None: self.player_birthdates = {}
+        if self.injuries_list is None: self.injuries_list = []
