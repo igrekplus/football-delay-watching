@@ -13,7 +13,7 @@ import logging
 import json
 import hashlib
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Callable
 from pathlib import Path
 import requests
 import os
@@ -49,10 +49,24 @@ class YouTubeService:
     # post-fetch用: 取得件数（フィルタ後に絞り込む）
     FETCH_MAX_RESULTS = 10
     
-    def __init__(self, api_key: str = None):
+    def __init__(
+        self,
+        api_key: str = None,
+        http_get: Optional[Callable] = None,
+        search_override: Optional[Callable[[Dict], List[Dict]]] = None,
+        cache_enabled: Optional[bool] = None,
+    ):
         # YOUTUBE_API_KEY を優先、なければ GOOGLE_API_KEY にフォールバック
         self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
         self._channel_id_cache: Dict[str, str] = {}
+        self._http_get = http_get or requests.get
+        self._search_override = search_override
+        # allow forcing cache behavior for healthcheck/mocks
+        self._cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
+        
+        # API呼び出しカウンター
+        self.api_call_count = 0
+        self.cache_hit_count = 0
     
     def _get_cache_key(self, query: str, channel_id: Optional[str], 
                        published_after: Optional[datetime], 
@@ -69,6 +83,8 @@ class YouTubeService:
     
     def _read_cache(self, cache_key: str) -> Optional[List[Dict]]:
         """キャッシュから読み込み（TTLチェック付き）"""
+        if not self._cache_enabled:
+            return None
         cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
         
         if not cache_file.exists():
@@ -85,6 +101,7 @@ class YouTubeService:
                 return None
             
             logger.info(f"YouTube cache HIT: {cache_key[:8]}...")
+            self.cache_hit_count += 1
             return data.get("results", [])
         except Exception as e:
             logger.warning(f"Failed to read YouTube cache: {e}")
@@ -92,6 +109,8 @@ class YouTubeService:
     
     def _write_cache(self, cache_key: str, results: List[Dict]):
         """キャッシュに書き込み"""
+        if not self._cache_enabled:
+            return
         try:
             YOUTUBE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
             cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
@@ -115,6 +134,8 @@ class YouTubeService:
         published_before: Optional[datetime] = None,
         max_results: int = 10,
         relevance_language: Optional[str] = None,
+        region_code: Optional[str] = None,
+        channel_id: Optional[str] = None,
     ) -> List[Dict]:
         """
         YouTube検索を実行（1週間キャッシュ付き）
@@ -125,9 +146,30 @@ class YouTubeService:
             relevance_language: 結果の言語優先度（ISO 639-1、例: "ja"）
         """
         
+        # モック/テスト用の上書きがある場合はここで返す
+        if self._search_override:
+            try:
+                return self._search_override({
+                    "query": query,
+                    "published_after": published_after,
+                    "published_before": published_before,
+                    "max_results": max_results,
+                    "relevance_language": relevance_language,
+                    "region_code": region_code,
+                    "channel_id": channel_id,
+                })[:max_results]
+            except Exception as e:
+                logger.warning(f"YouTube search override failed: {e}")
+                return []
+
         # キャッシュチェック（チャンネルIDなしで検索するため、channel_id=None）
-        # relevance_languageもキャッシュキーに含める
-        cache_key = self._get_cache_key(query + (relevance_language or ""), None, published_after, published_before)
+        # relevance_language/region_codeもキャッシュキーに含める
+        cache_key = self._get_cache_key(
+            query + (relevance_language or "") + (region_code or ""),
+            channel_id,
+            published_after,
+            published_before,
+        )
         cached = self._read_cache(cache_key)
         if cached is not None:
             return cached[:max_results]
@@ -152,8 +194,12 @@ class YouTubeService:
             
             if relevance_language:
                 params["relevanceLanguage"] = relevance_language
+            if region_code:
+                params["regionCode"] = region_code
+            if channel_id:
+                params["channelId"] = channel_id
             
-            response = requests.get(url, params=params)
+            response = self._http_get(url, params=params)
             
             if response.status_code == 200:
                 data = response.json()
@@ -175,7 +221,8 @@ class YouTubeService:
                 
                 # キャッシュ保存
                 self._write_cache(cache_key, results)
-                logger.info(f"YouTube API: '{query}' -> {len(results)} results")
+                self.api_call_count += 1
+                logger.info(f"YouTube API: '{query}' -> {len(results)} results (API calls: {self.api_call_count})")
                 
                 return results
             else:
@@ -184,6 +231,27 @@ class YouTubeService:
             logger.error(f"YouTube search error: {e}")
         
         return []
+
+    def search_videos_raw(
+        self,
+        query: str,
+        published_after: Optional[datetime] = None,
+        published_before: Optional[datetime] = None,
+        max_results: int = 10,
+        relevance_language: Optional[str] = None,
+        region_code: Optional[str] = None,
+        channel_id: Optional[str] = None,
+    ) -> List[Dict]:
+        """healthcheck等から使うための生検索API"""
+        return self._search_videos(
+            query=query,
+            published_after=published_after,
+            published_before=published_before,
+            max_results=max_results,
+            relevance_language=relevance_language,
+            region_code=region_code,
+            channel_id=channel_id,
+        )
     
     def _apply_trusted_channel_filter(self, videos: List[Dict]) -> List[Dict]:
         """
@@ -344,21 +412,20 @@ class YouTubeService:
         """
         練習風景を検索
         
-        変更: 日本語クエリ + relevanceLanguage=ja、期間を1週間に延長
+        変更: 英語クエリ（training）に統一、期間を1週間に延長
         クエリ数: 1クエリ/チーム
         """
         # 1週間前〜キックオフ（公式動画を拾いやすくするため期間延長）
         published_after = kickoff_time - timedelta(hours=self.TRAINING_SEARCH_HOURS)
         
-        # 日本語クエリ + relevanceLanguage=ja
-        query = f"{team_name} トレーニング"
+        # 英語クエリ（training）
+        query = f"{team_name} training"
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
             published_before=kickoff_time,
             max_results=self.FETCH_MAX_RESULTS,
-            relevance_language="ja",
         )
         
         for v in videos:

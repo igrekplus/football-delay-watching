@@ -30,6 +30,7 @@ TRUSTED_CHANNELS: Dict[str, Dict] = {
     "UC6QlrbRd_WmGPFZM3FebpkQ": {"name": "Fulham", "handle": "@FulhamFC", "category": "team"},
     "UChIWZA2-w04XdMRHPsYcvAw": {"name": "Nottingham Forest", "handle": "@NFFC", "category": "team"},
     "UChBePPmH51FJpJTNm8cDG2Q": {"name": "Bournemouth", "handle": "@afcbournemouth", "category": "team"},
+    "UCCNOsmurvpEit9paBOzWtUg": {"name": "West Ham United", "handle": "@westhamunited", "category": "team"},
     
     # ====== チーム公式（CL/国際）======
     "UCHVWgs35DG0xHQkDFYl4xYg": {"name": "Barcelona", "handle": "@fcbarcelona", "category": "team"},
@@ -113,6 +114,7 @@ EPL_TEAM_CHANNELS = {
     "Fulham": "@FulhamFC",
     "Nottingham Forest": "@NFFC",
     "Bournemouth": "@afcbournemouth",
+    "West Ham United": "@westhamunited",
 }
 
 # CL ビッグクラブ公式チャンネル

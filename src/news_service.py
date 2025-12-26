@@ -36,7 +36,7 @@ class NewsService:
                 
                 # 4. Append Sources to Summary (for report display)
                 if articles:
-                   sources_text = "\n\n**Sources:**\n" + "\n".join([f"- {a['source']}: {a['title']}" for a in articles])
+                   sources_text = "\n\n**Sources:**\n" + "\n".join([f"- {a['source']}: [{a['title']}]({a['url']})" for a in articles])
                    match.news_summary += sources_text
                 
                 # 5. Collect and Generate Interviews

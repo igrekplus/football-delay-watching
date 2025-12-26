@@ -275,8 +275,9 @@
 
                 // 認証状態の監視
                 auth.onAuthStateChanged((user) => {
-                    if (user && ALLOWED_EMAILS.includes(user.email)) {
-                        showContent(user);
+                    if (user && ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase())) {
+                        showSuccess('ログイン成功！');
+                        setTimeout(() => showContent(user), 300);  // 少し待ってから遷移
                     } else if (user) {
                         showError('このアカウントではアクセスできません: ' + user.email);
                         auth.signOut();
@@ -296,12 +297,10 @@
                     }
 
                     auth.signInWithEmailAndPassword(email, password)
-                        .then(() => {
-                            showSuccess('ログイン成功！');
-                        })
                         .catch((error) => {
                             showError(error.message);
                         });
+                    // 成功時の処理はonAuthStateChangedで行う
                 };
 
                 window.logout = function () {

@@ -62,17 +62,22 @@ def main(dry_run=False):
     
     # 3.5 YouTube Videos (optional, no error on failure)
     youtube_videos = {}
+    youtube_stats = {"api_calls": 0, "cache_hits": 0}
     try:
         from src.youtube_service import YouTubeService
         youtube_service = YouTubeService()
         youtube_videos = youtube_service.process_matches(matches)
-        logger.info(f"YouTube videos fetched for {len(youtube_videos)} matches")
+        youtube_stats = {
+            "api_calls": youtube_service.api_call_count,
+            "cache_hits": youtube_service.cache_hit_count,
+        }
+        logger.info(f"YouTube videos fetched for {len(youtube_videos)} matches (API calls: {youtube_stats['api_calls']}, Cache hits: {youtube_stats['cache_hits']})")
     except Exception as e:
         logger.warning(f"YouTube video fetch failed (continuing without videos): {e}")
     
     # 4. Report Generation
     generator = ReportGenerator()
-    report, image_paths = generator.generate(matches, youtube_videos=youtube_videos)
+    report, image_paths = generator.generate(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
     
     # 4.5 HTML Generation for Web (Firebase Hosting)
     html_path = None

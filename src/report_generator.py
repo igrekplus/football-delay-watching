@@ -257,7 +257,7 @@ class ReportGenerator:
         
         return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
 
-    def generate(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None) -> tuple:
+    def generate(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None, youtube_stats: Dict[str, int] = None) -> tuple:
         """
         Generates markdown report string
         
@@ -266,6 +266,8 @@ class ReportGenerator:
         """
         if youtube_videos is None:
             youtube_videos = {}
+        if youtube_stats is None:
+            youtube_stats = {"api_calls": 0, "cache_hits": 0}
             
         lines = []
         image_paths = []  # 生成された画像パスを収集
@@ -274,7 +276,7 @@ class ReportGenerator:
         report_lines, report_images = self._write_match_reports(matches, youtube_videos)
         lines.append(report_lines)
         image_paths.extend(report_images)
-        lines.append(self._write_excluded_list(matches))
+        lines.append(self._write_excluded_list(matches, youtube_stats))
         
         report = "\n".join(lines)
         
@@ -480,7 +482,10 @@ class ReportGenerator:
             
         return "\n".join(lines), image_paths
 
-    def _write_excluded_list(self, matches: List[MatchData]) -> str:
+    def _write_excluded_list(self, matches: List[MatchData], youtube_stats: Dict[str, int] = None) -> str:
+        if youtube_stats is None:
+            youtube_stats = {"api_calls": 0, "cache_hits": 0}
+            
         lines = ["## 選外試合リスト\n"]
         excluded = [m for m in matches if not m.is_target]
         if not excluded:
@@ -497,6 +502,12 @@ class ReportGenerator:
             lines.append("- API-Football: (キャッシュから取得のため情報なし)")
         # Static note for Google APIs
         lines.append("- Google Custom Search API: Check Cloud Console (Quota: 100/day free)")
+        
+        # YouTube API Stats
+        api_calls = youtube_stats.get("api_calls", 0)
+        cache_hits = youtube_stats.get("cache_hits", 0)
+        total_requests = api_calls + cache_hits
+        lines.append(f"- YouTube Data API: {api_calls}回呼び出し (キャッシュ: {cache_hits}件, 合計リクエスト: {total_requests}件)")
         
         # Append execution timestamp
         import pytz
