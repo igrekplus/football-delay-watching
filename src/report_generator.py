@@ -444,35 +444,41 @@ class ReportGenerator:
                 for cat_key, cat_label in category_labels.items():
                     cat_videos = [v for v in videos if v.get("category") == cat_key]
                     if cat_videos:
-                        lines.append(f"#### {cat_label} ({len(cat_videos)}件)")
-                        lines.append("")
+                        # 折りたたみ開始（details/summary）
+                        lines.append(f"<details>")
+                        lines.append(f"<summary><strong>{cat_label} ({len(cat_videos)}件)</strong></summary>")
                         
-                        # テーブル形式でサムネイル付き表示
-                        lines.append("| サムネイル | 動画情報 |")
-                        lines.append("|:---:|:---|")
+                        # HTMLテーブル形式でサムネイル付き表示
+                        lines.append('<table class="youtube-table">')
+                        lines.append('<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>')
+                        lines.append('<tbody>')
                         
                         for v in cat_videos:
-                            title = v.get('title', 'No Title').replace('|', '｜')
+                            title = v.get('title', 'No Title')
                             if len(title) > 40:
                                 title = title[:37] + "..."
                             url = v.get('url', '')
                             thumbnail = v.get('thumbnail_url', '')
                             channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
                             published_at = v.get('published_at', '')
-                            description = v.get('description', '')[:60].replace('|', '｜').replace('\n', ' ')
+                            description = v.get('description', '')[:60].replace('\n', ' ')
                             
                             # 公開日を相対表示に変換
                             relative_date = self._format_relative_date(published_at)
                             
                             # サムネイル画像（小サイズ）+ 情報
-                            thumb_cell = f"[![thumb]({thumbnail})]({url})" if thumbnail else "-"
+                            thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
                             # チャンネル名を太字、説明文を追加
-                            info_lines = f"**[{title}]({url})**<br/>"
-                            info_lines += f"📺 **{channel_display}** ・ 🕐 {relative_date}"
+                            info_html = f'<strong><a href="{url}" target="_blank">{title}</a></strong><br/>'
+                            info_html += f'📺 <strong>{channel_display}</strong> ・ 🕐 {relative_date}'
                             if description:
-                                info_lines += f"<br/>_{description}..._"
-                            lines.append(f"| {thumb_cell} | {info_lines} |")
+                                info_html += f'<br/><em>{description}...</em>'
+                            
+                            lines.append(f'<tr><td style="text-align:center">{thumb_cell}</td><td style="text-align:left">{info_html}</td></tr>')
                         
+                        lines.append('</tbody>')
+                        lines.append('</table>')
+                        lines.append("</details>")
                         lines.append("")
                 
             

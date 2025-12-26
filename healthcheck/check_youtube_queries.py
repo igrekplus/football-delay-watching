@@ -109,60 +109,12 @@ def _print_results(label: str, results: List[Dict], flag_keywords: List[str]):
     for r in results:
         flags = _flag_keywords(f"{r['title']} {r['description']}", flag_keywords)
         flag_str = f" [FLAG: {', '.join(flags)}]" if flags else ""
+        channel_title = r.get("channel_title") or r.get("channel_name") or "Unknown"
         print(f"- {r['title']}{flag_str}")
-        print(f"  {r['channel_title']} | {r['published_at']}")
+        print(f"  {channel_title} | {r['published_at']}")
         print(f"  {r['url']}")
     print()
 
-
-def _player_filter_rules() -> List[Dict]:
-    """
-    Post-filter rules for player search.
-    - Allow compilations (goals/skills/best/compilation)
-    - Exclude match-level or live content
-    """
-    return [
-        {"reason": "match_highlights", "contains": ["match highlights", "extended highlights"]},
-        {"reason": "full_match", "contains": ["full match", "full game", "full replay"]},
-        {"reason": "live_stream", "contains": ["live", "livestream", "watch live", "streaming"]},
-        {"reason": "matchday", "contains": ["matchday"]},
-        {"reason": "press_conference", "contains": ["press conference"]},
-        {"reason": "reaction", "contains": ["reaction"]},
-    ]
-
-
-def _apply_player_post_filter(results: List[Dict]) -> Dict[str, List[Dict]]:
-    """
-    Apply post-filter to player results.
-    Returns dict with 'kept' and 'removed' (removed includes reason).
-    """
-    kept: List[Dict] = []
-    removed: List[Dict] = []
-
-    rules = _player_filter_rules()
-
-    for r in results:
-        text = f"{r['title']} {r['description']}".lower()
-        reason = None
-
-        # Rule: "highlights" + vs/v is likely match highlight
-        if "highlights" in text and (" vs " in text or " v " in text or " vs." in text):
-            reason = "match_highlights_vs"
-
-        if reason is None:
-            for rule in rules:
-                if any(kw in text for kw in rule["contains"]):
-                    reason = rule["reason"]
-                    break
-
-        if reason:
-            rr = dict(r)
-            rr["filter_reason"] = reason
-            removed.append(rr)
-        else:
-            kept.append(r)
-
-    return {"kept": kept, "removed": removed}
 
 
 def _run_training_queries(
@@ -199,6 +151,7 @@ def _run_training_queries(
                     None,
                     channel_id,
                 )
+                results = yt.apply_trusted_channel_sort(results)
                 label = f"TRAINING (official only) | {team} | query: {q}"
                 _print_results(label, results, TRAINING_FLAG_KEYWORDS)
                 if len(results) < min_official_results:
@@ -212,6 +165,7 @@ def _run_training_queries(
                         None,
                         None,
                     )
+                    fallback = yt.apply_trusted_channel_sort(fallback)
                     label = f"TRAINING (fallback) | {team} | query: {q}"
                     _print_results(label, fallback, TRAINING_FLAG_KEYWORDS)
             except Exception as e:
@@ -228,6 +182,7 @@ def _run_training_queries(
                     None,
                     None,
                 )
+                results = yt.apply_trusted_channel_sort(results)
                 label = f"TRAINING | {team} | query: {q}"
                 _print_results(label, results, TRAINING_FLAG_KEYWORDS)
             except Exception as e:
@@ -271,11 +226,13 @@ def _run_player_queries(
                 region_code,
                 None,
             )
+            results = yt.apply_trusted_channel_sort(results)
             raw_label = f"PLAYER RAW | {player} | query: {q}"
             _print_results(raw_label, results, PLAYER_FLAG_KEYWORDS)
 
             if show_filter:
-                filtered = _apply_player_post_filter(results)
+                filtered = yt.apply_player_post_filter(results)
+                filtered["kept"] = yt.apply_trusted_channel_sort(filtered["kept"])
                 kept_label = f"PLAYER FILTERED (KEPT) | {player} | query: {q}"
                 _print_results(kept_label, filtered["kept"], PLAYER_FLAG_KEYWORDS)
 
@@ -285,8 +242,9 @@ def _run_player_queries(
                 print("=" * 80)
                 for r in removed:
                     reason = r.get("filter_reason", "unknown")
+                    channel_title = r.get("channel_title") or r.get("channel_name") or "Unknown"
                     print(f"- {r['title']} [REMOVED: {reason}]")
-                    print(f"  {r['channel_title']} | {r['published_at']}")
+                    print(f"  {channel_title} | {r['published_at']}")
                     print(f"  {r['url']}")
                 print()
         except Exception as e:

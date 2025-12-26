@@ -48,6 +48,7 @@ class YouTubeService:
     
     # post-fetch用: 取得件数（フィルタ後に絞り込む）
     FETCH_MAX_RESULTS = 10
+    PLAYER_FETCH_MAX_RESULTS = 50
     
     def __init__(
         self,
@@ -278,6 +279,49 @@ class YouTubeService:
         ))
         
         return videos
+
+    def apply_trusted_channel_sort(self, videos: List[Dict]) -> List[Dict]:
+        """healthcheck等から使うための信頼チャンネル優先ソート"""
+        return self._apply_trusted_channel_filter(videos)
+
+    def apply_player_post_filter(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """
+        選手紹介向けのpost-filter
+        - 試合ハイライト/フルマッチ/ライブ/会見/反応系を除外
+        - highlights + vs/v を含む場合は試合ハイライト扱いで除外
+        """
+        rules = [
+            ("match_highlights", ["match highlights", "extended highlights"]),
+            ("full_match", ["full match", "full game", "full replay"]),
+            ("live_stream", ["live", "livestream", "watch live", "streaming"]),
+            ("matchday", ["matchday"]),
+            ("press_conference", ["press conference"]),
+            ("reaction", ["reaction"]),
+        ]
+
+        kept: List[Dict] = []
+        removed: List[Dict] = []
+
+        for v in videos:
+            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
+            reason = None
+
+            if "highlights" in text and (" vs " in text or " v " in text or " vs." in text):
+                reason = "match_highlights_vs"
+            else:
+                for rule_name, keywords in rules:
+                    if any(kw in text for kw in keywords):
+                        reason = rule_name
+                        break
+
+            if reason:
+                vv = dict(v)
+                vv["filter_reason"] = reason
+                removed.append(vv)
+            else:
+                kept.append(v)
+
+        return {"kept": kept, "removed": removed}
     
     def _search_press_conference(
         self,
@@ -376,26 +420,28 @@ class YouTubeService:
     def _search_player_highlight(
         self,
         player_name: str,
+        team_name: str,
         kickoff_time: datetime,
     ) -> List[Dict]:
         """
         選手紹介動画を検索（新規カテゴリ）
         
-        クエリ: 選手名のみ
+        クエリ: 選手名 + チーム名 + プレー（カタカナ）
         クエリ数: 1クエリ/選手
         """
         published_after = kickoff_time - timedelta(days=self.PLAYER_SEARCH_DAYS)
         
-        # 選手名 + 日本語で検索して日本語コンテンツも拾う
-        # 名前のフルネームを使用（略称ではなく）
-        query = f"{player_name} ハイライト"
+        # 英語名 + カタカナの「プレー」で検索（チーム名を含めて関連性を上げる）
+        if team_name:
+            query = f"{player_name} {team_name} プレー"
+        else:
+            query = f"{player_name} プレー"
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
             published_before=kickoff_time,
-            max_results=self.FETCH_MAX_RESULTS,
-            relevance_language="ja",
+            max_results=self.PLAYER_FETCH_MAX_RESULTS,
         )
         
         for v in videos:
@@ -518,10 +564,20 @@ class YouTubeService:
         
         # 4. 選手紹介（6クエリ = 3選手 × 2チーム、デバッグモードは2クエリ）
         for player in home_players:
-            all_videos.extend(self._search_player_highlight(player, kickoff_time))
+            all_videos.extend(self._search_player_highlight(player, home_team, kickoff_time))
         for player in away_players:
-            all_videos.extend(self._search_player_highlight(player, kickoff_time))
+            all_videos.extend(self._search_player_highlight(player, away_team, kickoff_time))
         
+        # 選手紹介だけpost-filterを適用
+        player_videos = [v for v in all_videos if v.get("category") == "player_highlight"]
+        non_player_videos = [v for v in all_videos if v.get("category") != "player_highlight"]
+        if player_videos:
+            filtered = self.apply_player_post_filter(player_videos)
+            removed_count = len(filtered["removed"])
+            if removed_count:
+                logger.info(f"Player post-filter removed {removed_count} videos")
+            all_videos = non_player_videos + filtered["kept"]
+
         # 5. 練習風景（2クエリ = 1クエリ × 2チーム）
         all_videos.extend(self._search_training(home_team, kickoff_time))
         all_videos.extend(self._search_training(away_team, kickoff_time))
