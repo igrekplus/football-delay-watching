@@ -48,7 +48,7 @@ class YouTubeService:
     
     # post-fetch用: 取得件数（フィルタ後に絞り込む）
     FETCH_MAX_RESULTS = 10
-    PLAYER_FETCH_MAX_RESULTS = 10
+    PLAYER_FETCH_MAX_RESULTS = 50  # 選手紹介は50件取得してフィルター後に10件に絞る
     
     def __init__(
         self,
@@ -292,6 +292,7 @@ class YouTubeService:
         """
         rules = [
             ("match_highlights", ["match highlights", "extended highlights"]),
+            ("highlights", ["highlights"]),  # 単体のhighlightsも除外
             ("full_match", ["full match", "full game", "full replay"]),
             ("live_stream", ["live", "livestream", "watch live", "streaming"]),
             ("matchday", ["matchday"]),
