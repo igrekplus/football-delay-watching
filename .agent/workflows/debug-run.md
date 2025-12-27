@@ -26,12 +26,17 @@ ls -la public/reports/*.html | tail -5
 ls -la public/reports/images/*.png | tail -5
 ```
 
-3. Firebase Hostingへデプロイ
+3. デプロイ前にFirebaseからレポートを同期（紛失防止）
+```bash
+python scripts/sync_firebase_reports.py
+```
+
+4. Firebase Hostingへデプロイ
 ```bash
 firebase deploy --only hosting
 ```
 
-4. デプロイ完了後、ブラウザでWEBサイトを確認
+5. デプロイ完了後、ブラウザでWEBサイトを確認
 ```bash
 open https://football-delay-watching-a8830.web.app
 ```
