@@ -149,8 +149,11 @@ class Config:
         now_jst = datetime.now(jst)
         
         if self.DEBUG_MODE and not self.USE_MOCK_DATA:
-            # TEMPORARY: Force today (2024-12-27) for pre-match preview
-            return now_jst
+            # Debug mode with real API: Most recent Saturday (for testing)
+            days_since_saturday = (now_jst.weekday() - 5) % 7
+            if days_since_saturday == 0:
+                days_since_saturday = 7  # If today is Saturday, go to last Saturday
+            return now_jst - timedelta(days=days_since_saturday)
         else:
             # Normal mode: yesterday
             return now_jst - timedelta(days=1)

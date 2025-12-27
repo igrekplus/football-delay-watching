@@ -80,8 +80,7 @@ class MatchProcessor:
                     # Check status (Finished only?)
                     # For now get all and let logic filter or assumed finished if running next day
                     status = fixture['status']['short']
-                    # TEMPORARY: Include NS (Not Started) for pre-match preview
-                    if status not in ["FT", "AET", "PEN", "NS"]:
+                    if status not in ["FT", "AET", "PEN"]:
                         continue # Skip non-finished matches
                     
                     # Convert match time to JST string (from UTC timestamp or string)
