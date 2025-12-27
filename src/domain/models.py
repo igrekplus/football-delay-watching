@@ -45,6 +45,9 @@ class MatchData:
     # Player Birthdates (name -> birth date mapping)
     player_birthdates: dict = None  # {"Player Name": "2000-03-06", ...}
     
+    # Player Positions (name -> position mapping, for bench players)
+    player_positions: dict = None  # {"Player Name": "G", ...} (G=GK, D=DF, M=MF, F=FW)
+    
     # Injuries and Suspensions (structured data)
     injuries_list: list = None  # [{"name": "Player", "team": "Team", "reason": "Injury"}, ...]
     injuries_info: str = "不明"  # 負傷者・出場停止情報（フォールバック用テキスト）
@@ -55,6 +58,14 @@ class MatchData:
     # Manager names (populated from lineups API coach data)
     home_manager: str = ""
     away_manager: str = ""
+    
+    # Issue #52: Team logos
+    home_logo: str = ""  # ホームチームロゴURL
+    away_logo: str = ""  # アウェイチームロゴURL
+    
+    # Issue #53: Manager photos
+    home_manager_photo: str = ""  # ホーム監督画像URL
+    away_manager_photo: str = ""  # アウェイ監督画像URL
     
     # Generated Content (NewsService)
     news_summary: str = ""
@@ -75,4 +86,5 @@ class MatchData:
         if self.player_numbers is None: self.player_numbers = {}
         if self.player_photos is None: self.player_photos = {}
         if self.player_birthdates is None: self.player_birthdates = {}
+        if self.player_positions is None: self.player_positions = {}
         if self.injuries_list is None: self.injuries_list = []

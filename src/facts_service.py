@@ -58,23 +58,35 @@ class FactsService:
                 team_name = team_data['team']['name']
                 formation = team_data['formation']
                 
-                # Extract coach name
+                # Extract coach name and photo (Issue #53)
                 coach_name = team_data.get('coach', {}).get('name', '')
+                coach_photo = team_data.get('coach', {}).get('photo', '')
                 
                 # Extract player names, IDs, and numbers
                 start_xi_data = [
                     (p['player']['name'], p['player']['id'], p['player'].get('number'))
                     for p in team_data['startXI']
                 ]
-                subs_data = [(p['player']['name'], p['player']['id']) for p in team_data['substitutes']]
+                # ベンチ選手のポジションと背番号も取得
+                subs_data = [
+                    (p['player']['name'], p['player']['id'], p['player'].get('number'), p['player'].get('pos', ''))
+                    for p in team_data['substitutes']
+                ]
                 
                 start_xi = [p[0] for p in start_xi_data]
                 subs = [p[0] for p in subs_data]
                 
-                # Store player numbers (name -> number mapping)
+                # Store player numbers (name -> number mapping) for starters
                 for name, _, number in start_xi_data:
                     if number is not None:
                         match.player_numbers[name] = number
+                
+                # Store player numbers and positions for bench players
+                for name, _, number, pos in subs_data:
+                    if number is not None:
+                        match.player_numbers[name] = number
+                    if pos:
+                        match.player_positions[name] = pos
                 
                 # Collect (player_id, lineup_name, team_name) tuples for starters and subs
                 player_id_name_pairs.extend([(p[1], p[0], team_name) for p in start_xi_data])
@@ -85,11 +97,13 @@ class FactsService:
                     match.home_lineup = start_xi
                     match.home_bench = subs
                     match.home_manager = coach_name
+                    match.home_manager_photo = coach_photo
                 elif team_name == match.away_team:
                     match.away_formation = formation
                     match.away_lineup = start_xi
                     match.away_bench = subs
                     match.away_manager = coach_name
+                    match.away_manager_photo = coach_photo
             
             # Fetch nationalities and photos for starters
             if not config.USE_MOCK_DATA and player_id_name_pairs:

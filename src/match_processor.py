@@ -80,7 +80,8 @@ class MatchProcessor:
                     # Check status (Finished only?)
                     # For now get all and let logic filter or assumed finished if running next day
                     status = fixture['status']['short']
-                    if status not in ["FT", "AET", "PEN"]:
+                    # TEMPORARY: Include NS (Not Started) for pre-match preview
+                    if status not in ["FT", "AET", "PEN", "NS"]:
                         continue # Skip non-finished matches
                     
                     # Convert match time to JST string (from UTC timestamp or string)
@@ -110,16 +111,25 @@ class MatchProcessor:
                     venue_city = fixture.get('venue', {}).get('city', '')
                     venue_full = f"{venue_name}, {venue_city}" if venue_city else venue_name
 
+                    # Issue #55: 日本語曜日を追加
+                    weekday_ja = ['月', '火', '水', '木', '金', '土', '日'][match_date_jst.weekday()]
+                    
+                    # Issue #52: チームロゴURLを取得
+                    home_logo_url = teams['home'].get('logo', '')
+                    away_logo_url = teams['away'].get('logo', '')
+                    
                     matches.append(MatchData(
                         id=str(fixture['id']),
                         home_team=teams['home']['name'],
                         away_team=teams['away']['name'],
                         competition=league_name,
-                        kickoff_jst=match_date_jst.strftime('%Y/%m/%d %H:%M JST'),
+                        kickoff_jst=match_date_jst.strftime(f'%Y/%m/%d({weekday_ja}) %H:%M JST'),
                         kickoff_local=match_date_local.strftime('%Y-%m-%d %H:%M Local'), # TODO: accurate local time
                         rank="None", # Rank calculated later
                         venue=venue_full,
-                        referee=fixture.get('referee', 'Unknown')
+                        referee=fixture.get('referee', 'Unknown'),
+                        home_logo=home_logo_url,
+                        away_logo=away_logo_url
                     ))
             
             except Exception as e:

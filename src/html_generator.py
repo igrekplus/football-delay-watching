@@ -148,6 +148,21 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
         h1 {{ font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }}
         h2 {{ font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }}
         h3 {{ font-size: 1.2rem; color: #74b9ff; }}
+        /* Issue #52: Team logo and lineup header styles */
+        .team-logo {{
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }}
+        .lineup-header {{
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }}
         p {{ margin: 10px 0; }}
         ul, ol {{ margin: 15px 0; padding-left: 30px; }}
         li {{ margin: 5px 0; }}
@@ -240,6 +255,13 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
             text-overflow: ellipsis;
             white-space: nowrap;
         }}
+        /* Issue #51: Position display style */
+        .player-card-position {{
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }}
         .player-card-nationality {{
             color: #aaa;
             font-size: 0.75rem;
@@ -259,6 +281,107 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
         .injury-reason {{
             color: #ff6b6b;
             font-weight: bold;
+        }}
+        /* Issue #55: Match Info Grid Styles */
+        .match-info-grid {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }}
+        .match-info-item {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }}
+        .match-info-icon {{
+            font-size: 1.8rem;
+        }}
+        .match-info-content {{
+            display: flex;
+            flex-direction: column;
+        }}
+        .match-info-label {{
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        .match-info-value {{
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }}
+        .match-info-small {{
+            flex: 0 0 auto;
+            min-width: 120px;
+        }}
+        .match-info-wide {{
+            flex: 2;
+            min-width: 280px;
+        }}
+        .match-info-subtext {{
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }}
+        /* Issue #53: Manager Section Styles */
+        .manager-section {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }}
+        .manager-card {{
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }}
+        .manager-photo {{
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }}
+        .manager-photo-placeholder {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }}
+        .manager-info {{
+            flex: 1;
+        }}
+        .manager-team {{
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        .manager-name {{
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }}
+        .manager-comment {{
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
         }}
     </style>
 </head>

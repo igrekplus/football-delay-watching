@@ -35,8 +35,10 @@ class NewsService:
                 match.preview_url = "https://example.com/tactical-preview"
                 
                 # 4. Append Sources to Summary (for report display)
+                # Issue #54: Sources を折りたたみ（details/summary）で表示
                 if articles:
-                   sources_text = "\n\n**Sources:**\n" + "\n".join([f"- {a['source']}: [{a['title']}]({a['url']})" for a in articles])
+                   sources_list = "\n".join([f'<li><a href="{a["url"]}" target="_blank">{a["title"]}</a> ({a["source"]})</li>' for a in articles])
+                   sources_text = f'\n\n<details>\n<summary><strong>📚 Sources ({len(articles)}件)</strong></summary>\n<ul>\n{sources_list}\n</ul>\n</details>'
                    match.news_summary += sources_text
                 
                 # 5. Collect and Generate Interviews

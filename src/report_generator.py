@@ -164,13 +164,15 @@ class ReportGenerator:
                              player_numbers: Dict[str, int] = None,
                              player_birthdates: Dict[str, str] = None,
                              player_photos: Dict[str, str] = None,
-                             position_label: str = None) -> str:
+                             position_label: str = None,
+                             player_positions: Dict[str, str] = None) -> str:
         """
         選手リストをカード形式のHTMLに変換
         
         Args:
             position_label: 全選手に使用するポジションラベル（例: "SUB"）。
                            Noneの場合はフォーメーションから計算
+            player_positions: 選手名 -> ポジションのマッピング（ベンチ用）
         """
         if nationalities is None:
             nationalities = {}
@@ -180,15 +182,21 @@ class ReportGenerator:
             player_birthdates = {}
         if player_photos is None:
             player_photos = {}
+        if player_positions is None:
+            player_positions = {}
         
         if not lineup:
             return '<div class="player-cards"><p>選手情報なし</p></div>'
         
+        # ポジション略称からフル名への変換
+        pos_map = {'G': 'GK', 'D': 'DF', 'M': 'MF', 'F': 'FW'}
+        
         cards_html = []
         for idx, name in enumerate(lineup):
-            # ポジションラベルが指定されていればそれを使用、なければフォーメーションから計算
+            # ベンチ選手の場合: player_positionsから取得、なければposition_labelを使用
             if position_label:
-                position = position_label
+                api_pos = player_positions.get(name, '')
+                position = pos_map.get(api_pos, api_pos) if api_pos else position_label
             else:
                 position = self._get_player_position(idx, len(lineup), formation)
             
@@ -201,19 +209,24 @@ class ReportGenerator:
             # 国旗を取得
             flag = format_player_with_flag("", nationality).strip() if nationality else ""
             
-            # カードHTML生成
+            # Issue #51: カードHTML構造を改善
             number_display = f"#{number}" if number is not None else ""
             photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
+            # 年齢と生年月日を併記
+            birthdate_formatted = birthdate.replace('-', '/') if birthdate else ""
             age_display = f"{age}歳" if age else ""
+            if birthdate_formatted and age_display:
+                age_display = f"{age_display} ({birthdate_formatted})"
+            # 国籍に国旗を追加
             nationality_display = f"{flag} {nationality}" if nationality else ""
             
             card = f'''<div class="player-card">
-<div class="player-card-header"><span>{position} {number_display}</span><span>{flag}</span></div>
+<div class="player-card-header"><span>{name}</span></div>
 <div class="player-card-body">
 {photo_html}
 <div class="player-card-info">
-<div class="player-card-name">{name}</div>
-<div class="player-card-nationality">{nationality}</div>
+<div class="player-card-position">{position} {number_display}</div>
+<div class="player-card-nationality">{nationality_display}</div>
 <div class="player-card-age">{age_display}</div>
 </div>
 </div>
@@ -243,11 +256,11 @@ class ReportGenerator:
             photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
             
             card = f'''<div class="player-card injury-card">
-<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-header"><span>{name}</span></div>
 <div class="player-card-body">
 {photo_html}
 <div class="player-card-info">
-<div class="player-card-name">{name}</div>
+<div class="player-card-position">🏥 OUT</div>
 <div class="player-card-nationality">{team}</div>
 <div class="player-card-age injury-reason">⚠️ {reason}</div>
 </div>
@@ -324,10 +337,32 @@ class ReportGenerator:
         for i, match in enumerate(target_matches, 1):
             lines.append(f"## 試合{i}：{match.home_team} vs {match.away_team} （{match.competition}／{match.rank}）\n")
             
-            lines.append("### ■ 基本情報（固定情報）")
-            lines.append(f"- 大会：{match.competition}")
-            lines.append(f"- 日時：{match.kickoff_jst} / {match.kickoff_local}")
-            lines.append(f"- 会場：{match.venue}")
+            # Issue #55: 基本情報をカード形式で表示
+            lines.append("### ■ 基本情報")
+            match_info_html = f'''<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">{match.competition}</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">{match.kickoff_jst}<br><span class="match-info-subtext">{match.kickoff_local}</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">{match.venue}</div>
+</div>
+</div>
+</div>'''
+            lines.append(match_info_html)
             
             # スタメン選手カード表示（HTML直接出力）
             home_cards_html = self._format_player_cards(
@@ -340,34 +375,50 @@ class ReportGenerator:
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos
             )
-            lines.append(f"### スタメン（{match.home_team}）フォーメーション: {match.home_formation}")
-            lines.append(home_cards_html)
-            lines.append(f"### スタメン（{match.away_team}）フォーメーション: {match.away_formation}")
-            lines.append(away_cards_html)
-            
-            # ベンチ選手もカード形式で表示
+            # ベンチ選手もカード形式で表示（APIポジションを使用）
             home_bench_html = self._format_player_cards(
                 match.home_bench, "", match.home_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos,
-                position_label="SUB"
+                position_label="SUB",
+                player_positions=match.player_positions
             )
             away_bench_html = self._format_player_cards(
                 match.away_bench, "", match.away_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos,
-                position_label="SUB"
+                position_label="SUB",
+                player_positions=match.player_positions
             )
-            lines.append(f"### ベンチ（{match.home_team}）")
-            lines.append(home_bench_html)
-            lines.append(f"### ベンチ（{match.away_team}）")
-            lines.append(away_bench_html)
-            lines.append(f"- フォーメーション：Home {match.home_formation} / Away {match.away_formation}")
             
-            # 怪我人・出場停止情報をカード形式で表示
-            lines.append("### 出場停止・負傷者情報")
-            injury_cards_html = self._format_injury_cards(match.injuries_list, match.player_photos)
-            lines.append(injury_cards_html)
+            # Issue #52: チームロゴ付きヘッダー
+            home_logo_html = f'<img src="{match.home_logo}" alt="{match.home_team}" class="team-logo">' if match.home_logo else ''
+            away_logo_html = f'<img src="{match.away_logo}" alt="{match.away_team}" class="team-logo">' if match.away_logo else ''
+            
+            # 負傷者をチーム別にフィルタリング
+            home_injuries = [i for i in match.injuries_list if i.get("team", "") == match.home_team]
+            away_injuries = [i for i in match.injuries_list if i.get("team", "") == match.away_team]
+            home_injury_html = self._format_injury_cards(home_injuries, match.player_photos)
+            away_injury_html = self._format_injury_cards(away_injuries, match.player_photos)
+            
+            # チーム別にスタメン・サブ・負傷者をグループ化
+            # ホームチーム
+            lines.append(f'<h3 class="lineup-header">{home_logo_html} {match.home_team}（{match.home_formation}）</h3>')
+            lines.append("#### Starting XI")
+            lines.append(home_cards_html)
+            lines.append("#### Substitutes")
+            lines.append(home_bench_html)
+            lines.append("#### Injuries / Suspended")
+            lines.append(home_injury_html)
+            
+            # アウェイチーム
+            lines.append(f'<h3 class="lineup-header">{away_logo_html} {match.away_team}（{match.away_formation}）</h3>')
+            lines.append("#### Starting XI")
+            lines.append(away_cards_html)
+            lines.append("#### Substitutes")
+            lines.append(away_bench_html)
+            lines.append("#### Injuries / Suspended")
+            lines.append(away_injury_html)
             
             # Format form with icons (W=✅, D=➖, L=❌)
             def format_form_with_icons(form: str) -> str:
@@ -420,9 +471,30 @@ class ReportGenerator:
                 lines.append(f"- URL: {match.preview_url}")
             lines.append("")
             
-            lines.append("### ■ 監督・選手コメント")
-            lines.append(f"- {match.home_interview}")
-            lines.append(f"- {match.away_interview}")
+            # Issue #53: 監督セクション（画像付き）
+            lines.append("### ■ 監督プレビュー")
+            home_manager_photo_html = f'<img src="{match.home_manager_photo}" alt="{match.home_manager}" class="manager-photo">' if match.home_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
+            away_manager_photo_html = f'<img src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo">' if match.away_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
+            
+            manager_section_html = f'''<div class="manager-section">
+<div class="manager-card">
+{home_manager_photo_html}
+<div class="manager-info">
+<div class="manager-team">{match.home_team}</div>
+<div class="manager-name">{match.home_manager}</div>
+<div class="manager-comment">{match.home_interview}</div>
+</div>
+</div>
+<div class="manager-card">
+{away_manager_photo_html}
+<div class="manager-info">
+<div class="manager-team">{match.away_team}</div>
+<div class="manager-name">{match.away_manager}</div>
+<div class="manager-comment">{match.away_interview}</div>
+</div>
+</div>
+</div>'''
+            lines.append(manager_section_html)
             lines.append("")
             
             # YouTube Videos Section
