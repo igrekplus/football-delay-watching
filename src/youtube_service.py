@@ -48,7 +48,7 @@ class YouTubeService:
     
     # post-fetch用: 取得件数（フィルタ後に絞り込む）
     FETCH_MAX_RESULTS = 10
-    PLAYER_FETCH_MAX_RESULTS = 50
+    PLAYER_FETCH_MAX_RESULTS = 10
     
     def __init__(
         self,
@@ -608,7 +608,7 @@ class YouTubeService:
         for player in away_players:
             all_videos.extend(self._search_player_highlight(player, away_team, kickoff_time))
         
-        # 選手紹介だけpost-filterを適用
+        # 選手紹介だけpost-filterを適用 + 最大10件に制限
         player_videos = [v for v in all_videos if v.get("category") == "player_highlight"]
         non_player_videos = [v for v in all_videos if v.get("category") != "player_highlight"]
         if player_videos:
@@ -616,7 +616,9 @@ class YouTubeService:
             removed_count = len(filtered["removed"])
             if removed_count:
                 logger.info(f"Player post-filter removed {removed_count} videos")
-            all_videos = non_player_videos + filtered["kept"]
+            # 選手動画は最大10件に制限
+            player_kept = filtered["kept"][:10]
+            all_videos = non_player_videos + player_kept
 
         # 5. 練習風景（2クエリ = 1クエリ × 2チーム）
         all_videos.extend(self._search_training(home_team, kickoff_time))
