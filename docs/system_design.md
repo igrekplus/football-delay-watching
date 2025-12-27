@@ -24,12 +24,11 @@
 
 #### 2.1.5 APIキャッシュ方針
 
-##### キャッシュバックエンド
-- 実装: `src/clients/cache.py` の `get_with_cache(url, headers, params)` を使用
-- **ローカルモード**: `CACHE_BACKEND=local` → `api_cache/` ディレクトリに保存
-- **GCSモード**: `CACHE_BACKEND=gcs` → `gs://football-delay-watching-cache/` に保存
-- キャッシュキー: `{endpoint}/{MD5(URL+params)}.json`
-- 選手データ: `players/{team_name}/{player_id}.json`
+API呼び出し回数を削減し、クォータ消費を抑制するためのキャッシュ機構。
+
+- **実装**: `src/clients/cache.py`
+- **バックエンド**: Google Cloud Storage (GCS)
+- **詳細**: [キャッシュ設計書 (cache_design.md)](cache_design.md) を参照
 
 ##### GitHub Actions での設定
 ```yaml
@@ -37,22 +36,6 @@ USE_API_CACHE: "True"
 CACHE_BACKEND: "gcs"
 GCS_CACHE_BUCKET: "football-delay-watching-cache"
 ```
-
-##### キャッシュしてよい/慎重にすべき基準
-- **キャッシュ推奨**（結果が準定常・日次で十分）：`/players`（国籍など静的）、`/fixtures/headtohead`、`/fixtures/lineups`
-- **キャッシュ非推奨**：`/injuries`（当日変動あり）、`/teams/statistics`（リーグID依存）
-
-##### キャッシュウォーミング機能
-API消費を抑制するため、試合がない平日に上位チームの選手データを事前取得する機能。
-
-- **実装**: `src/cache_warmer.py`
-- **対象チーム**: EPL上位10チーム + CL上位13チーム（`config.py` で定義）
-- **制御**: `CACHE_WARMING_ENABLED` 環境変数（デフォルト: False）
-- **実行条件**:
-  - 残クォータ > 30
-  - 09:00 JST（クォータリセット時間）より前
-  - GCSバックエンドが有効
-- **確認コマンド**: `python3 healthcheck/check_gcs_cache.py`
 
 #### 2.1.1 負傷者・出場停止情報
 *   `/injuries?fixture={id}` で試合IDに紐づく負傷者リストを取得

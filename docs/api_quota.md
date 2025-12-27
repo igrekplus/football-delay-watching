@@ -19,13 +19,25 @@
 
 ## 2. YouTube Data API v3
 - **日次クォータ**: 10,000 units/日（無料）
-- **search.list**: 100 units/リクエスト
+- **search.list**: 100 units/リクエスト（maxResultsに関わらず固定）
+- **videos.list**: 1 unit/リクエスト（再生数等の詳細取得用、現在未使用）
 - **channels.list**: 1 unit/リクエスト
 - **本プロジェクトでの使用**:
-  - 試合前動画検索（記者会見、因縁、戦術、練習風景）
-  - 各カテゴリ3件取得、各チーム3選手で戦術検索
-  - **予想消費: 約1,200 units/試合**（3試合で3,600 units/日、枠の36%）
+  - 試合前動画検索（記者会見、因縁、戦術、選手紹介、練習風景）
+  - 各カテゴリ50件取得 → post-filterでフィルタリング
+  - **予想消費: 約1,300 units/試合**（13クエリ × 100ユニット）
 - **実装**: `src/youtube_service.py`、チャンネル設定: `settings/channels.py`
+
+### クォータ確認方法
+
+> ⚠️ **注意**: APIレスポンスにはクォータ消費量は含まれていません。
+
+| 方法 | 説明 |
+|------|------|
+| **GCP Console** | [YouTube API Quotas](https://console.cloud.google.com/apis/api/youtube.googleapis.com/quotas) で確認 |
+| **GCP Metrics** | [API Metrics Dashboard](https://console.cloud.google.com/apis/api/youtube.googleapis.com/metrics) でリアルタイム確認 |
+| **ローカル概算** | `YouTubeService.api_call_count × 100` で概算可能 |
+| **ログ確認** | `YouTube API: '...' -> N results (API calls: X)` で呼び出し回数を確認 |
 
 ## 3. Google Custom Search API
 - **Custom Search JSON API**  

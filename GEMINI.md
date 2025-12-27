@@ -94,6 +94,12 @@ firebase deploy --only hosting
 
 または `/debug-run` ワークフローを使用（実行→デプロイまで自動）
 
+> **📢 AI向け指示**: デバッグモード実行 + デプロイ完了後は、**必ずユーザーにレポートURLを連携すること**。
+> 
+> **レポートURL形式**: `https://football-delay-watching-a8830.web.app/reports/report_YYYY-MM-DD_HHMMSS.html`
+> 
+> ログから生成されたレポートファイル名を確認して連携する。
+
 ### 📅 デバッグモードの日付処理
 
 > **📢 AI向け指示**: デバッグモード実行時は、**対象となる試合の時間ウィンドウを必ずユーザーに報告すること**。

@@ -1,7 +1,7 @@
 # YouTube動画取得ロジック仕様書
 
-> **Last Updated**: 2025-12-27  
-> **Source of Truth**: `src/youtube_service.py` (実装を正とする)
+> **Last Updated**: 2025-12-28  
+> **Source of Truth**: `src/youtube_service.py`, `src/youtube_filter.py`
 
 ## 概要
 
@@ -18,13 +18,24 @@
 ├─────────────────────────────────────────────────────────────┤
 │  get_videos_for_match(match)                                │
 │    ├─ _search_press_conference() × 2チーム                  │
+│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
 │    ├─ _search_historic_clashes() × 1                        │
+│    │    └─ filter.sort_trusted() のみ（ハイライト除外なし）  │
 │    ├─ _search_tactical() × 2チーム                          │
+│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
 │    ├─ _search_player_highlight() × 6選手                    │
-│    │    └─ apply_player_post_filter() ← 選手のみ追加フィルタ │
+│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
 │    ├─ _search_training() × 2チーム                          │
-│    ├─ _deduplicate()                                        │
-│    └─ _apply_trusted_channel_filter()                       │
+│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
+│    └─ filter.deduplicate() ← 最後に全結果を統合             │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                 YouTubePostFilter (新規)                    │
+├─────────────────────────────────────────────────────────────┤
+│  exclude_highlights(videos) → 試合ハイライト/ライブ等を除外 │
+│  sort_trusted(videos)       → 信頼チャンネル優先ソート     │
+│  deduplicate(videos)        → 重複排除（video_id ベース）  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -32,15 +43,46 @@
 
 ## パラメータ一覧
 
-| パラメータ名 | デフォルト値 | 説明 |
-|-------------|-------------|------|
-| `HISTORIC_SEARCH_DAYS` | **730**（2年） | 過去ハイライト検索期間 |
-| `RECENT_SEARCH_HOURS` | **48** | 記者会見検索期間 |
-| `TRAINING_SEARCH_HOURS` | **168**（1週間） | 練習動画検索期間 |
-| `TACTICAL_SEARCH_DAYS` | **180**（6ヶ月） | 戦術分析検索期間 |
-| `PLAYER_SEARCH_DAYS` | **180**（6ヶ月） | 選手紹介検索期間 |
-| `FETCH_MAX_RESULTS` | **10** | 通常カテゴリの取得件数 |
-| `PLAYER_FETCH_MAX_RESULTS` | **50** | 選手紹介の取得件数（post-filter前） |
+| パラメータ名 | デフォルト値 | 対応メソッド | 説明 |
+|-------------|-------------|-------------|------|
+| `PRESS_CONFERENCE_SEARCH_HOURS` | **48** | `_search_press_conference()` | 記者会見検索期間 |
+| `HISTORIC_SEARCH_DAYS` | **730**（2年） | `_search_historic_clashes()` | 過去ハイライト検索期間 |
+| `TACTICAL_SEARCH_DAYS` | **180**（6ヶ月） | `_search_tactical()` | 戦術分析検索期間 |
+| `PLAYER_SEARCH_DAYS` | **180**（6ヶ月） | `_search_player_highlight()` | 選手紹介検索期間 |
+| `TRAINING_SEARCH_HOURS` | **168**（1週間） | `_search_training()` | 練習動画検索期間 |
+| `FETCH_MAX_RESULTS` | **50** | 全メソッド | 取得件数（post-filter前） |
+
+---
+
+## YouTubePostFilter クラス設計
+
+### ファイル: `src/youtube_filter.py` (新規)
+
+```python
+class YouTubePostFilter:
+    """YouTube動画のpost-filterを提供するクラス"""
+    
+    def exclude_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """試合ハイライト/フルマッチ/ライブ配信を除外"""
+        # returns {"kept": [...], "removed": [...]}
+    
+    def sort_trusted(self, videos: List[Dict]) -> List[Dict]:
+        """信頼チャンネル優先でソート"""
+    
+    def deduplicate(self, videos: List[Dict]) -> List[Dict]:
+        """重複排除（video_id ベース）"""
+```
+
+### 各検索メソッドでのフィルター適用
+
+| カテゴリ | `exclude_highlights()` | `sort_trusted()` | `deduplicate()` |
+|---------|:---------------------:|:----------------:|:---------------:|
+| 記者会見 | ✅ | ✅ | - |
+| 過去対戦 | ❌（クエリがhighlights含む） | ✅ | - |
+| 戦術分析 | ✅ | ✅ | - |
+| 選手紹介 | ✅ | ✅ | - |
+| 練習風景 | ✅ | ✅ | - |
+| **全体** | - | - | ✅（最後に1回） |
 
 ---
 
@@ -54,8 +96,8 @@
 | クエリ | `{team} {manager_name} press conference` |
 | クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
 | 検索期間 | キックオフ - 48時間 ～ キックオフ |
-| maxResults | 10 |
-| フィルタ | 信頼チャンネル優先ソートのみ |
+| maxResults | **50** |
+| フィルタ | `exclude_highlights()` + `sort_trusted()` |
 
 > **Note**: 監督名がない場合は `{team} press conference`
 
@@ -69,8 +111,10 @@
 | クエリ | `{home} vs {away} highlights` |
 | クエリ数 | **1クエリ/試合** |
 | 検索期間 | キックオフ - 730日 ～ キックオフ |
-| maxResults | 10 |
-| フィルタ | 信頼チャンネル優先ソートのみ |
+| maxResults | **50** |
+| フィルタ | `sort_trusted()` のみ |
+
+> **Note**: クエリ自体が `highlights` を含むため、ハイライト除外フィルタは適用しない
 
 ---
 
@@ -82,8 +126,8 @@
 | クエリ | `{team} 戦術 分析` **（日本語固定）** |
 | クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
 | 検索期間 | キックオフ - 180日 ～ キックオフ |
-| maxResults | 10 |
-| フィルタ | 信頼チャンネル優先ソートのみ |
+| maxResults | **50** |
+| フィルタ | `exclude_highlights()` + `sort_trusted()` |
 
 ---
 
@@ -95,8 +139,8 @@
 | クエリ | `{player_name} {team_name} プレー` **（日本語固定）** |
 | クエリ数 | **6クエリ/試合**（3選手 × 2チーム）、デバッグ: 2クエリ |
 | 検索期間 | キックオフ - 180日 ～ キックオフ |
-| maxResults | **50**（post-filter適用のため多め） |
-| フィルタ | 信頼チャンネル優先ソート **+ post-filter** |
+| maxResults | **50** |
+| フィルタ | `exclude_highlights()` + `sort_trusted()` |
 
 #### 選手選択ロジック
 
@@ -108,20 +152,6 @@ for player in reversed(match.home_lineup):
         home_players.append(player)
 ```
 
-#### post-filter ルール
-
-選手紹介動画として不適切なコンテンツを除外：
-
-| ルール名 | 除外キーワード |
-|---------|---------------|
-| `match_highlights_vs` | `highlights` + (`vs` or `v` or `vs.`) |
-| `match_highlights` | `match highlights`, `extended highlights` |
-| `full_match` | `full match`, `full game`, `full replay` |
-| `live_stream` | `live`, `livestream`, `watch live`, `streaming` |
-| `matchday` | `matchday` |
-| `press_conference` | `press conference` |
-| `reaction` | `reaction` |
-
 ---
 
 ### カテゴリ5: 練習風景 (`training`)
@@ -132,30 +162,56 @@ for player in reversed(match.home_lineup):
 | クエリ | `{team} training` **（英語固定）** |
 | クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
 | 検索期間 | キックオフ - 168時間（1週間） ～ キックオフ |
-| maxResults | 10 |
-| フィルタ | 信頼チャンネル優先ソートのみ |
+| maxResults | **50** |
+| フィルタ | `exclude_highlights()` + `sort_trusted()` |
 
 ---
 
 ## 処理フロー
 
 ```
-1. 各カテゴリで _search_videos() を実行
-   └─ キャッシュチェック（HIT ならAPI呼び出しスキップ）
-   └─ YouTube Data API search.list 呼び出し
-   └─ 結果をキャッシュに保存
-
-2. 各カテゴリで _apply_trusted_channel_filter() を適用
-   └─ 信頼チャンネル判定（TRUSTED_CHANNELS 照合）
-   └─ ソート: 信頼チャンネル優先、relevance順維持
-
-3. 選手紹介のみ追加で apply_player_post_filter() を適用
-   └─ 不適切な動画を除外
-
-4. _deduplicate() で重複排除（video_id ベース）
-
-5. 最終ソート（_apply_trusted_channel_filter() 再適用）
+┌─────────────────────────────────────────────────────────────┐
+│ Step 1: 検索（カテゴリ別）                                  │
+│   YouTubeService._search_videos()                           │
+│   ├─ キャッシュチェック（HIT ならAPI呼び出しスキップ）      │
+│   ├─ YouTube Data API search.list 呼び出し                  │
+│   └─ 結果をキャッシュに保存                                 │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Step 2: フィルター適用（カテゴリ別）                        │
+│   YouTubePostFilter を使用                                  │
+│   ├─ filter.exclude_highlights()  ... 過去対戦以外で適用   │
+│   └─ filter.sort_trusted()        ... 全カテゴリで適用     │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Step 3: 集約・重複排除（全カテゴリ統合後）                  │
+│   filter.deduplicate()                                      │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## exclude_highlights() ルール
+
+`YouTubePostFilter.exclude_highlights()` で適用されるルール。
+
+**適用カテゴリ**: 記者会見、戦術分析、選手紹介、練習風景  
+**除外カテゴリ**: 過去対戦ハイライト（クエリ自体が `highlights` を含むため）
+
+| ルール名 | 除外キーワード | 説明 |
+|---------|---------------|------|
+| `match_highlights_vs` | `highlights` + (`vs` or `v` or `vs.`) | 試合ハイライト（対戦形式） |
+| `match_highlights` | `match highlights`, `extended highlights` | 試合ハイライト（単独） |
+| `highlights` | `highlights` | 単独の「highlights」 |
+| `full_match` | `full match`, `full game`, `full replay` | フルマッチ |
+| `live_stream` | `live`, `livestream`, `watch live`, `streaming` | ライブ配信 |
+| `matchday` | `matchday` | マッチデー |
+| `press_conference` | `press conference` | 記者会見（選手紹介向け） |
+| `reaction` | `reaction` | リアクション動画 |
+
+> **Note**: フィルタはタイトル + 説明文に対して適用（小文字変換後）
 
 ---
 
@@ -281,6 +337,8 @@ videos.sort(key=lambda v: (
 
 | 日付 | 内容 |
 |------|------|
+| 2025-12-28 | 全カテゴリ maxResults を 50 に拡張（Issue #45, #46対応） |
+| 2025-12-28 | ハイライト除外post-filterを全カテゴリに適用（過去対戦除く） |
 | 2025-12-27 | 選手クエリを `{player} {team} プレー` に変更 |
 | 2025-12-27 | 選手紹介 maxResults を 50 に拡張 + post-filter追加 |
 | 2025-12-27 | 練習動画検索期間を168時間（1週間）に延長 |

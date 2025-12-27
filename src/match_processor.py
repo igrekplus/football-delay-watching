@@ -77,11 +77,10 @@ class MatchProcessor:
                     teams = item['teams']
                     league = item['league']
                     
-                    # Check status (Finished only?)
-                    # For now get all and let logic filter or assumed finished if running next day
-                    status = fixture['status']['short']
-                    if status not in ["FT", "AET", "PEN"]:
-                        continue # Skip non-finished matches
+                    # Check status (Finished only?) - テスト用に無効化
+                    # status = fixture['status']['short']
+                    # if status not in ["FT", "AET", "PEN"]:
+                    #     continue # Skip non-finished matches
                     
                     # Convert match time to JST string (from UTC timestamp or string)
                     jst = pytz.timezone('Asia/Tokyo')
