@@ -322,6 +322,46 @@ class YouTubeService:
                 kept.append(v)
 
         return {"kept": kept, "removed": removed}
+
+    # ========== 公開API（healthcheck等から使用） ==========
+    
+    def search_training_videos(
+        self,
+        team_name: str,
+        kickoff_time: datetime,
+        max_results: int = 10,
+    ) -> List[Dict]:
+        """
+        練習動画を検索（公開API）
+        
+        ヘルスチェックやデバッグ用に本体ロジックを公開
+        """
+        videos = self._search_training(team_name, kickoff_time)
+        return videos[:max_results]
+    
+    def search_player_videos(
+        self,
+        player_name: str,
+        team_name: str,
+        kickoff_time: datetime,
+        max_results: int = 10,
+        apply_post_filter: bool = True,
+    ) -> Dict[str, List[Dict]]:
+        """
+        選手紹介動画を検索（公開API）
+        
+        Returns:
+            apply_post_filter=True の場合: {"kept": [...], "removed": [...]}
+            apply_post_filter=False の場合: {"kept": [...], "removed": []}
+        """
+        videos = self._search_player_highlight(player_name, team_name, kickoff_time)
+        
+        if apply_post_filter:
+            filtered = self.apply_player_post_filter(videos)
+            filtered["kept"] = filtered["kept"][:max_results]
+            return filtered
+        else:
+            return {"kept": videos[:max_results], "removed": []}
     
     def _search_press_conference(
         self,
