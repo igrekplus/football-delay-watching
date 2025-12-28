@@ -534,14 +534,17 @@ class ReportGenerator:
                             channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
                             published_at = v.get('published_at', '')
                             description = v.get('description', '')[:60].replace('\n', ' ')
+                            query_label = v.get('query_label', '')
                             
                             # 公開日を相対表示に変換
                             relative_date = self._format_relative_date(published_at)
                             
                             # サムネイル画像（小サイズ）+ 情報
                             thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
+                            # query_labelがあれば先頭に【ラベル】を追加
+                            label_prefix = f'【{query_label}】 ' if query_label else ''
                             # チャンネル名を太字、説明文を追加
-                            info_html = f'<strong><a href="{url}" target="_blank">{title}</a></strong><br/>'
+                            info_html = f'<strong><a href="{url}" target="_blank">{label_prefix}{title}</a></strong><br/>'
                             info_html += f'📺 <strong>{channel_display}</strong> ・ 🕐 {relative_date}'
                             if description:
                                 info_html += f'<br/><em>{description}...</em>'

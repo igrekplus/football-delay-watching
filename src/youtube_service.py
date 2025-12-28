@@ -347,6 +347,7 @@ class YouTubeService:
         
         for v in videos:
             v["category"] = "press_conference"
+            v["query_label"] = manager_name or team_name
         
         # フィルター適用: exclude_highlights + sort_trusted
         videos = self.filter.exclude_highlights(videos)["kept"]
@@ -408,6 +409,7 @@ class YouTubeService:
         
         for v in videos:
             v["category"] = "tactical"
+            v["query_label"] = team_name
         
         # フィルター適用: exclude_highlights + sort_trusted
         videos = self.filter.exclude_highlights(videos)["kept"]
@@ -442,6 +444,7 @@ class YouTubeService:
         
         for v in videos:
             v["category"] = "player_highlight"
+            v["query_label"] = player_name
         
         # フィルター適用: exclude_highlights + sort_trusted
         videos = self.filter.exclude_highlights(videos)["kept"]
@@ -473,6 +476,7 @@ class YouTubeService:
         
         for v in videos:
             v["category"] = "training"
+            v["query_label"] = team_name
         
         # フィルター適用: exclude_highlights + sort_trusted
         videos = self.filter.exclude_highlights(videos)["kept"]
