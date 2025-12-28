@@ -525,8 +525,10 @@ def generate_html_reports(report_list: list) -> list:
             extensions=['tables', 'fenced_code', 'nl2br']
         )
         
-        # ページタイトル
-        title = f"{mode_prefix}{match.home_team} vs {match.away_team} - {match.competition}"
+        # ページタイトル（実行時刻を含む）
+        time_part = generation_datetime.split('_')[1]  # "HHMMSS"
+        time_display = f"{time_part[:2]}:{time_part[2:4]}:{time_part[4:]}"
+        title = f"{mode_prefix}{match.home_team} vs {match.away_team} - {match.competition} ({time_display})"
         
         # CSS付きHTMLテンプレート
         html_template = _get_html_template(title, html_body, timestamp)
@@ -630,14 +632,9 @@ def update_manifest_with_matches(match_entries: list, generation_datetime: str, 
                 "matches": []
             }
         
-        # 重複チェック（fixture_idベース） - 同じfixtureがあれば上書き
+        # 同じfixture_idでも実行ごとに別レポートとして保持
         existing_matches = reports_by_date[match_date]["matches"]
-        existing_idx = next((i for i, m in enumerate(existing_matches) if m.get("fixture_id") == entry["fixture_id"]), None)
-        if existing_idx is not None:
-            # 既存エントリを最新で上書き
-            existing_matches[existing_idx] = entry
-        else:
-            existing_matches.append(entry)
+        existing_matches.append(entry)
     
     # 3. 旧形式レポート（reports）をlegacy_reportsに移行
     legacy_reports = existing_manifest.get("legacy_reports", [])
