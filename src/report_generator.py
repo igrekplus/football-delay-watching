@@ -499,8 +499,19 @@ class ReportGenerator:
             
             # YouTube Videos Section
             match_key = f"{match.home_team} vs {match.away_team}"
-            videos = youtube_videos.get(match_key, [])
-            if videos:
+            video_data = youtube_videos.get(match_key, {})
+            
+            # 新形式（{kept, removed, overflow}）と旧形式（リスト）の両方に対応
+            if isinstance(video_data, dict):
+                videos = video_data.get("kept", [])
+                removed_videos = video_data.get("removed", [])
+                overflow_videos = video_data.get("overflow", [])
+            else:
+                videos = video_data  # 旧形式（リスト）
+                removed_videos = []
+                overflow_videos = []
+            
+            if videos or removed_videos or overflow_videos:
                 lines.append("### ■ 📹 試合前の見どころ動画")
                 lines.append("")
                 
@@ -513,46 +524,67 @@ class ReportGenerator:
                     "training": "🏃 練習風景",
                 }
                 
+                # 動画表示用ヘルパー関数
+                def render_video_table(video_list: list, show_reason: bool = False) -> list:
+                    table_lines = []
+                    table_lines.append('<table class="youtube-table">')
+                    table_lines.append('<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>')
+                    table_lines.append('<tbody>')
+                    
+                    for v in video_list:
+                        title = v.get('title', 'No Title')
+                        if len(title) > 40:
+                            title = title[:37] + "..."
+                        url = v.get('url', '')
+                        thumbnail = v.get('thumbnail_url', '')
+                        channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
+                        published_at = v.get('published_at', '')
+                        query_label = v.get('query_label', '')
+                        filter_reason = v.get('filter_reason', '') if show_reason else ''
+                        
+                        relative_date = self._format_relative_date(published_at)
+                        
+                        thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
+                        label_prefix = f'【{query_label}】 ' if query_label else ''
+                        reason_suffix = f' <span style="color:#f44336">[除外: {filter_reason}]</span>' if filter_reason else ''
+                        info_html = f'<strong><a href="{url}" target="_blank">{label_prefix}{title}</a></strong>{reason_suffix}<br/>'
+                        info_html += f'📺 <strong>{channel_display}</strong> ・ 🕐 {relative_date}'
+                        
+                        table_lines.append(f'<tr><td style="text-align:center">{thumb_cell}</td><td style="text-align:left">{info_html}</td></tr>')
+                    
+                    table_lines.append('</tbody>')
+                    table_lines.append('</table>')
+                    return table_lines
+                
                 for cat_key, cat_label in category_labels.items():
                     cat_videos = [v for v in videos if v.get("category") == cat_key]
-                    if cat_videos:
-                        # 折りたたみ開始（details/summary）
-                        lines.append(f"<details>")
+                    cat_overflow = [v for v in overflow_videos if v.get("category") == cat_key]
+                    cat_removed = [v for v in removed_videos if v.get("category") == cat_key]
+                    
+                    if cat_videos or cat_overflow or cat_removed:
+                        # メインセクション（表示件数）
+                        lines.append(f"<details open>")
                         lines.append(f"<summary><strong>{cat_label} ({len(cat_videos)}件)</strong></summary>")
                         
-                        # HTMLテーブル形式でサムネイル付き表示
-                        lines.append('<table class="youtube-table">')
-                        lines.append('<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>')
-                        lines.append('<tbody>')
+                        if cat_videos:
+                            lines.extend(render_video_table(cat_videos))
+                        else:
+                            lines.append("<p>表示する動画がありません</p>")
                         
-                        for v in cat_videos:
-                            title = v.get('title', 'No Title')
-                            if len(title) > 40:
-                                title = title[:37] + "..."
-                            url = v.get('url', '')
-                            thumbnail = v.get('thumbnail_url', '')
-                            channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
-                            published_at = v.get('published_at', '')
-                            description = v.get('description', '')[:60].replace('\n', ' ')
-                            query_label = v.get('query_label', '')
-                            
-                            # 公開日を相対表示に変換
-                            relative_date = self._format_relative_date(published_at)
-                            
-                            # サムネイル画像（小サイズ）+ 情報
-                            thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
-                            # query_labelがあれば先頭に【ラベル】を追加
-                            label_prefix = f'【{query_label}】 ' if query_label else ''
-                            # チャンネル名を太字、説明文を追加
-                            info_html = f'<strong><a href="{url}" target="_blank">{label_prefix}{title}</a></strong><br/>'
-                            info_html += f'📺 <strong>{channel_display}</strong> ・ 🕐 {relative_date}'
-                            if description:
-                                info_html += f'<br/><em>{description}...</em>'
-                            
-                            lines.append(f'<tr><td style="text-align:center">{thumb_cell}</td><td style="text-align:left">{info_html}</td></tr>')
+                        # ソート落ち動画（overflow）の折りたたみ
+                        if cat_overflow:
+                            lines.append(f"<details>")
+                            lines.append(f"<summary>📋 ソートで落ちた動画 ({len(cat_overflow)}件)</summary>")
+                            lines.extend(render_video_table(cat_overflow))
+                            lines.append("</details>")
                         
-                        lines.append('</tbody>')
-                        lines.append('</table>')
+                        # 除外動画（removed）の折りたたみ
+                        if cat_removed:
+                            lines.append(f"<details>")
+                            lines.append(f"<summary>🚫 除外された動画 ({len(cat_removed)}件)</summary>")
+                            lines.extend(render_video_table(cat_removed, show_reason=True))
+                            lines.append("</details>")
+                        
                         lines.append("</details>")
                         lines.append("")
                 

@@ -322,12 +322,13 @@ class YouTubeService:
         team_name: str,
         manager_name: str,
         kickoff_time: datetime,
-    ) -> List[Dict]:
+        max_display: int = 10,
+    ) -> Dict[str, List[Dict]]:
         """
         記者会見を検索
         
-        変更: 日本語クエリ削除、監督名追加、post-fetchフィルタ
-        クエリ数: 1クエリ/チーム
+        Returns:
+            {"kept": [...], "removed": [...], "overflow": [...]}
         """
         # 48時間前〜キックオフ
         published_after = kickoff_time - timedelta(hours=self.PRESS_CONFERENCE_SEARCH_HOURS)
@@ -349,21 +350,32 @@ class YouTubeService:
             v["category"] = "press_conference"
             v["query_label"] = manager_name or team_name
         
-        # フィルター適用: exclude_highlights + sort_trusted
-        videos = self.filter.exclude_highlights(videos)["kept"]
-        return self.filter.sort_trusted(videos)
+        # フィルター適用: exclude_highlights
+        filter_result = self.filter.exclude_highlights(videos)
+        kept = filter_result["kept"]
+        removed = filter_result["removed"]
+        
+        # sort_trusted適用
+        kept = self.filter.sort_trusted(kept)
+        
+        # 表示件数制限、超過分はoverflowへ
+        overflow = kept[max_display:] if len(kept) > max_display else []
+        kept = kept[:max_display]
+        
+        return {"kept": kept, "removed": removed, "overflow": overflow}
     
     def _search_historic_clashes(
         self,
         home_team: str,
         away_team: str,
         kickoff_time: datetime,
-    ) -> List[Dict]:
+        max_display: int = 10,
+    ) -> Dict[str, List[Dict]]:
         """
         過去の名勝負・対戦ハイライトを検索
         
-        変更: extended highlights クエリ削除、post-fetchフィルタ
-        クエリ数: 1クエリ
+        Returns:
+            {"kept": [...], "removed": [...], "overflow": [...]}
         """
         # 過去2年〜キックオフまでの動画を検索
         published_after = kickoff_time - timedelta(days=self.HISTORIC_SEARCH_DAYS)
@@ -382,18 +394,25 @@ class YouTubeService:
             v["category"] = "historic"
         
         # フィルター適用: sort_trustedのみ（クエリ自体がhighlights含む）
-        return self.filter.sort_trusted(videos)
+        kept = self.filter.sort_trusted(videos)
+        
+        # 表示件数制限
+        overflow = kept[max_display:] if len(kept) > max_display else []
+        kept = kept[:max_display]
+        
+        return {"kept": kept, "removed": [], "overflow": overflow}
     
     def _search_tactical(
         self,
         team_name: str,
         kickoff_time: datetime,
-    ) -> List[Dict]:
+        max_display: int = 10,
+    ) -> Dict[str, List[Dict]]:
         """
         戦術分析を検索
         
-        変更: 日本語のみ、戦術チャンネル指定なし（post-fetch）、選手検索は分離
-        クエリ数: 1クエリ/チーム
+        Returns:
+            {"kept": [...], "removed": [...], "overflow": [...]}
         """
         published_after = kickoff_time - timedelta(days=self.TACTICAL_SEARCH_DAYS)
         
@@ -411,25 +430,36 @@ class YouTubeService:
             v["category"] = "tactical"
             v["query_label"] = team_name
         
-        # フィルター適用: exclude_highlights + sort_trusted
-        videos = self.filter.exclude_highlights(videos)["kept"]
-        return self.filter.sort_trusted(videos)
+        # フィルター適用: exclude_highlights
+        filter_result = self.filter.exclude_highlights(videos)
+        kept = filter_result["kept"]
+        removed = filter_result["removed"]
+        
+        # sort_trusted適用
+        kept = self.filter.sort_trusted(kept)
+        
+        # 表示件数制限
+        overflow = kept[max_display:] if len(kept) > max_display else []
+        kept = kept[:max_display]
+        
+        return {"kept": kept, "removed": removed, "overflow": overflow}
     
     def _search_player_highlight(
         self,
         player_name: str,
         team_name: str,
         kickoff_time: datetime,
-    ) -> List[Dict]:
+        max_display: int = 10,
+    ) -> Dict[str, List[Dict]]:
         """
-        選手紹介動画を検索（新規カテゴリ）
+        選手紹介動画を検索
         
-        クエリ: 選手名 + チーム名 + プレー（カタカナ）
-        クエリ数: 1クエリ/選手
+        Returns:
+            {"kept": [...], "removed": [...], "overflow": [...]}
         """
         published_after = kickoff_time - timedelta(days=self.PLAYER_SEARCH_DAYS)
         
-        # 英語名 + カタカナの「プレー」で検索（チーム名を含めて関連性を上げる）
+        # 英語名 + カタカナの「プレー」で検索
         if team_name:
             query = f"{player_name} {team_name} プレー"
         else:
@@ -446,22 +476,33 @@ class YouTubeService:
             v["category"] = "player_highlight"
             v["query_label"] = player_name
         
-        # フィルター適用: exclude_highlights + sort_trusted
-        videos = self.filter.exclude_highlights(videos)["kept"]
-        return self.filter.sort_trusted(videos)
+        # フィルター適用: exclude_highlights
+        filter_result = self.filter.exclude_highlights(videos)
+        kept = filter_result["kept"]
+        removed = filter_result["removed"]
+        
+        # sort_trusted適用
+        kept = self.filter.sort_trusted(kept)
+        
+        # 表示件数制限
+        overflow = kept[max_display:] if len(kept) > max_display else []
+        kept = kept[:max_display]
+        
+        return {"kept": kept, "removed": removed, "overflow": overflow}
     
     def _search_training(
         self,
         team_name: str,
         kickoff_time: datetime,
-    ) -> List[Dict]:
+        max_display: int = 10,
+    ) -> Dict[str, List[Dict]]:
         """
         練習風景を検索
         
-        変更: 英語クエリ（training）に統一、期間を1週間に延長
-        クエリ数: 1クエリ/チーム
+        Returns:
+            {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        # 1週間前〜キックオフ（公式動画を拾いやすくするため期間延長）
+        # 1週間前〜キックオフ
         published_after = kickoff_time - timedelta(hours=self.TRAINING_SEARCH_HOURS)
         
         # 英語クエリ（training）
@@ -478,9 +519,19 @@ class YouTubeService:
             v["category"] = "training"
             v["query_label"] = team_name
         
-        # フィルター適用: exclude_highlights + sort_trusted
-        videos = self.filter.exclude_highlights(videos)["kept"]
-        return self.filter.sort_trusted(videos)
+        # フィルター適用: exclude_highlights
+        filter_result = self.filter.exclude_highlights(videos)
+        kept = filter_result["kept"]
+        removed = filter_result["removed"]
+        
+        # sort_trusted適用
+        kept = self.filter.sort_trusted(kept)
+        
+        # 表示件数制限
+        overflow = kept[max_display:] if len(kept) > max_display else []
+        kept = kept[:max_display]
+        
+        return {"kept": kept, "removed": removed, "overflow": overflow}
     
     def _deduplicate(self, videos: List[Dict]) -> List[Dict]:
         """重複を排除（後方互換性のため、内部ではself.filter.deduplicateを使用）"""
@@ -513,9 +564,11 @@ class YouTubeService:
         
         return home_players, away_players
     
-    def get_videos_for_match(self, match: MatchData) -> List[Dict]:
-        """試合に関連する動画を取得"""
-        all_videos = []
+    def get_videos_for_match(self, match: MatchData) -> Dict[str, List[Dict]]:
+        """試合に関連する動画を取得（kept/removed/overflowを含む辞書を返す）"""
+        all_kept = []
+        all_removed = []
+        all_overflow = []
         
         home_team = match.home_team
         away_team = match.away_team
@@ -547,33 +600,43 @@ class YouTubeService:
         home_players, away_players = self._get_key_players(match)
         logger.info(f"Key players - Home: {home_players}, Away: {away_players}")
         
+        # ヘルパー: 結果をマージ
+        def merge_result(result: Dict[str, List[Dict]]):
+            all_kept.extend(result.get("kept", []))
+            all_removed.extend(result.get("removed", []))
+            all_overflow.extend(result.get("overflow", []))
+        
         # 1. 記者会見（2クエリ = 1クエリ × 2チーム）
-        all_videos.extend(self._search_press_conference(home_team, home_manager, kickoff_time))
-        all_videos.extend(self._search_press_conference(away_team, away_manager, kickoff_time))
+        merge_result(self._search_press_conference(home_team, home_manager, kickoff_time))
+        merge_result(self._search_press_conference(away_team, away_manager, kickoff_time))
         
         # 2. 因縁（1クエリ）
-        all_videos.extend(self._search_historic_clashes(home_team, away_team, kickoff_time))
+        merge_result(self._search_historic_clashes(home_team, away_team, kickoff_time))
         
         # 3. 戦術（2クエリ = 1クエリ × 2チーム）
-        all_videos.extend(self._search_tactical(home_team, kickoff_time))
-        all_videos.extend(self._search_tactical(away_team, kickoff_time))
+        merge_result(self._search_tactical(home_team, kickoff_time))
+        merge_result(self._search_tactical(away_team, kickoff_time))
         
-        # 4. 選手紹介（6クエリ = 3選手 × 2チーム、デバッグモードは2クエリ）
+        # 4. 選手紹介（各選手×チーム、デバッグモードは1人/チーム）
         for player in home_players:
-            all_videos.extend(self._search_player_highlight(player, home_team, kickoff_time))
+            merge_result(self._search_player_highlight(player, home_team, kickoff_time))
         for player in away_players:
-            all_videos.extend(self._search_player_highlight(player, away_team, kickoff_time))
+            merge_result(self._search_player_highlight(player, away_team, kickoff_time))
         
         # 5. 練習風景（2クエリ = 1クエリ × 2チーム）
-        all_videos.extend(self._search_training(home_team, kickoff_time))
-        all_videos.extend(self._search_training(away_team, kickoff_time))
+        merge_result(self._search_training(home_team, kickoff_time))
+        merge_result(self._search_training(away_team, kickoff_time))
         
-        # 重複排除
-        unique_videos = self.filter.deduplicate(all_videos)
+        # 重複排除（keptのみ）
+        unique_kept = self.filter.deduplicate(all_kept)
         
-        logger.info(f"Found {len(unique_videos)} unique videos for {home_team} vs {away_team}")
+        logger.info(f"Found {len(unique_kept)} kept, {len(all_removed)} removed, {len(all_overflow)} overflow videos for {home_team} vs {away_team}")
         
-        return unique_videos
+        return {
+            "kept": unique_kept,
+            "removed": all_removed,
+            "overflow": all_overflow
+        }
     
     def process_matches(self, matches: List[MatchData]) -> Dict[str, List[Dict]]:
         """全試合の動画を取得"""
