@@ -11,7 +11,7 @@ from src.report_generator import ReportGenerator
 
 # Configure Logging
 # Setup Logging with File Output
-log_dir = "logs"
+log_dir = "logs/execution"
 os.makedirs(log_dir, exist_ok=True)
 
 today_str = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
