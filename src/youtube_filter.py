@@ -27,13 +27,20 @@ class YouTubePostFilter:
         ("reaction", ["reaction"]),
     ]
 
-    def exclude_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def exclude_highlights(self, videos: List[Dict], skip_rules: List[str] = None) -> Dict[str, List[Dict]]:
         """
         ハイライト/フルマッチ/ライブ配信を除外
+        
+        Args:
+            videos: 動画リスト
+            skip_rules: スキップするルール名のリスト（例: ["press_conference"]）
         
         Returns:
             {"kept": [...], "removed": [...]}
         """
+        if skip_rules is None:
+            skip_rules = []
+        
         kept: List[Dict] = []
         removed: List[Dict] = []
 
@@ -46,6 +53,9 @@ class YouTubePostFilter:
                 reason = "match_highlights_vs"
             else:
                 for rule_name, keywords in self.EXCLUDE_RULES:
+                    # スキップ対象のルールは無視
+                    if rule_name in skip_rules:
+                        continue
                     if any(kw in text for kw in keywords):
                         reason = rule_name
                         break

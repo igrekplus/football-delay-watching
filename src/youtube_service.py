@@ -350,8 +350,8 @@ class YouTubeService:
             v["category"] = "press_conference"
             v["query_label"] = manager_name or team_name
         
-        # フィルター適用: exclude_highlights
-        filter_result = self.filter.exclude_highlights(videos)
+        # フィルター適用: exclude_highlights（press_conferenceルールはスキップ）
+        filter_result = self.filter.exclude_highlights(videos, skip_rules=["press_conference"])
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
