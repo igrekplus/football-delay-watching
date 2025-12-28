@@ -322,7 +322,6 @@ class YouTubeService:
         team_name: str,
         manager_name: str,
         kickoff_time: datetime,
-        max_display: int = 10,
     ) -> Dict[str, List[Dict]]:
         """
         記者会見を検索
@@ -357,21 +356,16 @@ class YouTubeService:
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
-        # sort_trusted適用
+        # sort_trusted適用（件数制限なし）
         kept = self.filter.sort_trusted(kept)
         
-        # 表示件数制限、超過分はoverflowへ
-        overflow = kept[max_display:] if len(kept) > max_display else []
-        kept = kept[:max_display]
-        
-        return {"kept": kept, "removed": removed, "overflow": overflow}
+        return {"kept": kept, "removed": removed}
     
     def _search_historic_clashes(
         self,
         home_team: str,
         away_team: str,
         kickoff_time: datetime,
-        max_display: int = 10,
     ) -> Dict[str, List[Dict]]:
         """
         過去の名勝負・対戦ハイライトを検索
@@ -402,20 +396,15 @@ class YouTubeService:
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
-        # sort_trusted適用
+        # sort_trusted適用（件数制限なし）
         kept = self.filter.sort_trusted(kept)
         
-        # 表示件数制限
-        overflow = kept[max_display:] if len(kept) > max_display else []
-        kept = kept[:max_display]
-        
-        return {"kept": kept, "removed": [], "overflow": overflow}
+        return {"kept": kept, "removed": []}
     
     def _search_tactical(
         self,
         team_name: str,
         kickoff_time: datetime,
-        max_display: int = 10,
     ) -> Dict[str, List[Dict]]:
         """
         戦術分析を検索
@@ -446,21 +435,16 @@ class YouTubeService:
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
-        # sort_trusted適用
+        # sort_trusted適用（件数制限なし）
         kept = self.filter.sort_trusted(kept)
         
-        # 表示件数制限
-        overflow = kept[max_display:] if len(kept) > max_display else []
-        kept = kept[:max_display]
-        
-        return {"kept": kept, "removed": removed, "overflow": overflow}
+        return {"kept": kept, "removed": removed}
     
     def _search_player_highlight(
         self,
         player_name: str,
         team_name: str,
         kickoff_time: datetime,
-        max_display: int = 10,
     ) -> Dict[str, List[Dict]]:
         """
         選手紹介動画を検索
@@ -494,20 +478,15 @@ class YouTubeService:
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
-        # sort_trusted適用
+        # sort_trusted適用（件数制限なし）
         kept = self.filter.sort_trusted(kept)
         
-        # 表示件数制限
-        overflow = kept[max_display:] if len(kept) > max_display else []
-        kept = kept[:max_display]
-        
-        return {"kept": kept, "removed": removed, "overflow": overflow}
+        return {"kept": kept, "removed": removed}
     
     def _search_training(
         self,
         team_name: str,
         kickoff_time: datetime,
-        max_display: int = 10,
     ) -> Dict[str, List[Dict]]:
         """
         練習風景を検索
@@ -539,14 +518,10 @@ class YouTubeService:
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
-        # sort_trusted適用
+        # sort_trusted適用（件数制限なし）
         kept = self.filter.sort_trusted(kept)
         
-        # 表示件数制限
-        overflow = kept[max_display:] if len(kept) > max_display else []
-        kept = kept[:max_display]
-        
-        return {"kept": kept, "removed": removed, "overflow": overflow}
+        return {"kept": kept, "removed": removed}
     
     def _deduplicate(self, videos: List[Dict]) -> List[Dict]:
         """重複を排除（後方互換性のため、内部ではself.filter.deduplicateを使用）"""
@@ -645,12 +620,27 @@ class YouTubeService:
         # 重複排除（keptのみ）
         unique_kept = self.filter.deduplicate(all_kept)
         
-        logger.info(f"Found {len(unique_kept)} kept, {len(all_removed)} removed, {len(all_overflow)} overflow videos for {home_team} vs {away_team}")
+        # カテゴリ別にグルーピングして10件制限
+        MAX_PER_CATEGORY = 10
+        categories = ["press_conference", "historic", "tactical", "player_highlight", "training"]
+        final_kept = []
+        final_overflow = []
+        
+        for category in categories:
+            cat_videos = [v for v in unique_kept if v.get("category") == category]
+            if cat_videos:
+                # 既にsort_trusted済みだが、2チーム分をまとめた後なので再ソート
+                cat_videos = self.filter.sort_trusted(cat_videos)
+                final_kept.extend(cat_videos[:MAX_PER_CATEGORY])
+                if len(cat_videos) > MAX_PER_CATEGORY:
+                    final_overflow.extend(cat_videos[MAX_PER_CATEGORY:])
+        
+        logger.info(f"Found {len(final_kept)} kept, {len(all_removed)} removed, {len(final_overflow)} overflow videos for {home_team} vs {away_team}")
         
         return {
-            "kept": unique_kept,
+            "kept": final_kept,
             "removed": all_removed,
-            "overflow": all_overflow
+            "overflow": final_overflow
         }
     
     def process_matches(self, matches: List[MatchData]) -> Dict[str, List[Dict]]:
