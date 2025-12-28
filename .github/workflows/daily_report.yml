@@ -60,21 +60,23 @@ jobs:
     - name: Verify Report Generated
       run: |
         echo "=== Report Generation Check ==="
-        REPORT_FILE=$(ls -t reports/*.md 2>/dev/null | head -1)
+        # 新形式: public/reports/ 配下にHTMLファイルを生成
+        HTML_COUNT=$(ls -1 public/reports/*.html 2>/dev/null | wc -l)
         
-        if [ -z "$REPORT_FILE" ]; then
-          echo "❌ ERROR: No report file found!"
+        if [ "$HTML_COUNT" -eq 0 ]; then
+          echo "❌ ERROR: No HTML report files found!"
           exit 1
         fi
         
-        echo "✅ Report generated: $REPORT_FILE"
+        echo "✅ Generated $HTML_COUNT HTML report(s)"
         echo ""
-        echo "=== Report Summary (first 50 lines) ==="
-        head -50 "$REPORT_FILE"
+        echo "=== Generated Files ==="
+        ls -la public/reports/*.html | tail -10
         echo ""
-        echo "=== Report Stats ==="
-        echo "Lines: $(wc -l < "$REPORT_FILE")"
-        echo "Characters: $(wc -c < "$REPORT_FILE")"
+        echo "=== Manifest Summary ==="
+        if [ -f "public/reports/manifest.json" ]; then
+          cat public/reports/manifest.json | head -30
+        fi
         echo ""
         echo "=== End of Summary ==="
         
