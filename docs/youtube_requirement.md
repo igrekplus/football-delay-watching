@@ -97,7 +97,8 @@ class YouTubePostFilter:
 | クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
 | 検索期間 | キックオフ - 48時間 ～ キックオフ |
 | maxResults | **50** |
-| フィルタ | `exclude_highlights()` + `sort_trusted()` |
+| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `reaction` |
+| ソートフィルタ | `sort_trusted()` |
 
 > **Note**: 監督名がない場合は `{team} press conference`
 
@@ -112,7 +113,8 @@ class YouTubePostFilter:
 | クエリ数 | **1クエリ/試合** |
 | 検索期間 | キックオフ - 730日 ～ キックオフ |
 | maxResults | **50** |
-| フィルタ | `sort_trusted()` のみ |
+| 除外フィルタ | `live_stream`, `press_conference`, `reaction` |
+| ソートフィルタ | `sort_trusted()` |
 
 > **Note**: クエリ自体が `highlights` を含むため、ハイライト除外フィルタは適用しない
 
@@ -127,7 +129,8 @@ class YouTubePostFilter:
 | クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
 | 検索期間 | キックオフ - 180日 ～ キックオフ |
 | maxResults | **50** |
-| フィルタ | `exclude_highlights()` + `sort_trusted()` |
+| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
+| ソートフィルタ | `sort_trusted()` |
 
 ---
 
@@ -140,7 +143,8 @@ class YouTubePostFilter:
 | クエリ数 | **6クエリ/試合**（3選手 × 2チーム）、デバッグ: 2クエリ |
 | 検索期間 | キックオフ - 180日 ～ キックオフ |
 | maxResults | **50** |
-| フィルタ | `exclude_highlights()` + `sort_trusted()` |
+| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
+| ソートフィルタ | `sort_trusted()` |
 
 #### 選手選択ロジック
 
@@ -163,7 +167,8 @@ for player in reversed(match.home_lineup):
 | クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
 | 検索期間 | キックオフ - 168時間（1週間） ～ キックオフ |
 | maxResults | **50** |
-| フィルタ | `exclude_highlights()` + `sort_trusted()` |
+| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
+| ソートフィルタ | `sort_trusted()` |
 
 ---
 
@@ -180,13 +185,22 @@ for player in reversed(match.home_lineup):
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ Step 2: フィルター適用（カテゴリ別）                        │
-│   YouTubePostFilter を使用                                  │
-│   ├─ filter.exclude_highlights()  ... 過去対戦以外で適用   │
-│   └─ filter.sort_trusted()        ... 全カテゴリで適用     │
+│   YouTubePostFilter.apply_filters() を使用                  │
+│   ├─ 記者会見: [match_highlights, highlights, ...]         │
+│   ├─ 過去対戦: [live_stream, press_conference, reaction]   │
+│   ├─ 戦術分析: [match_highlights, highlights, ..., 全6種]  │
+│   ├─ 選手紹介: [同上]                                       │
+│   └─ 練習風景: [同上]                                       │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ Step 3: 集約・重複排除（全カテゴリ統合後）                  │
+│ Step 3: ソート・件数制限（カテゴリ別）                      │
+│   filter.sort_trusted()  ... 信頼チャンネル優先ソート      │
+│   各カテゴリ10件に制限、超過分はoverflow                    │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Step 4: 重複排除（全カテゴリ統合後）                        │
 │   filter.deduplicate()                                      │
 └─────────────────────────────────────────────────────────────┘
 ```
