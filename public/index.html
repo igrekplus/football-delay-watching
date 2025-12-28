@@ -459,25 +459,25 @@
                 }
 
                 const manifest = await response.json();
-                
+
                 // 新構造（reports_by_date）と旧構造（reports/legacy_reports）の両方に対応
                 const reportsByDate = manifest.reports_by_date || {};
                 const legacyReports = manifest.legacy_reports || manifest.reports || [];
-                
+
                 let html = '';
                 let totalCount = 0;
-                
+
                 // 1. 新形式: 日付グループで表示
                 const sortedDates = Object.keys(reportsByDate).sort().reverse();
-                
+
                 if (sortedDates.length > 0) {
                     html += '<h3 style="color:#feca57;margin:15px 0 10px 0;font-size:1.2rem;">📅 試合別レポート</h3>';
-                    
+
                     sortedDates.forEach(date => {
                         const dateData = reportsByDate[date];
                         const matches = dateData.matches || [];
                         if (matches.length === 0) return;
-                        
+
                         // 日付ヘッダー
                         let dateBadge = '';
                         if (dateData.is_mock) {
@@ -485,12 +485,28 @@
                         } else if (dateData.is_debug) {
                             dateBadge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
                         }
-                        
+
                         html += `<div style="margin:10px 0 5px 0;font-weight:bold;color:#74b9ff;font-size:0.95rem;">${date}${dateBadge}</div>`;
-                        
+
+                        // ファイル名の実行時刻で降順ソート（新しい順）
+                        const sortedMatches = [...matches].sort((a, b) => {
+                            const timeA = a.file.match(/_(\d{8})_(\d{6})\.html$/);
+                            const timeB = b.file.match(/_(\d{8})_(\d{6})\.html$/);
+                            const keyA = timeA ? timeA[1] + timeA[2] : '';
+                            const keyB = timeB ? timeB[1] + timeB[2] : '';
+                            return keyB.localeCompare(keyA);  // 降順
+                        });
+
                         // 各試合
-                        matches.forEach(match => {
-                            const title = `${match.home_team} vs ${match.away_team}`;
+                        sortedMatches.forEach(match => {
+                            // ファイル名から実行時刻を抽出（例: 2025-12-20_Team_vs_Team_20251228_201958.html → 20:19:58）
+                            const timeMatch = match.file.match(/_(\d{8})_(\d{6})\.html$/);
+                            let timeDisplay = '';
+                            if (timeMatch && timeMatch[2]) {
+                                const t = timeMatch[2];
+                                timeDisplay = ` (${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)})`;
+                            }
+                            const title = `${match.home_team} vs ${match.away_team}${timeDisplay}`;
                             const meta = `${match.competition || ''} / ${match.kickoff_jst || ''}`;
                             html += `
                                 <div class="report-item">
@@ -502,11 +518,11 @@
                         });
                     });
                 }
-                
+
                 // 2. 旧形式: 既存レポート表示
                 if (legacyReports.length > 0) {
                     html += '<h3 style="color:#feca57;margin:25px 0 10px 0;font-size:1.2rem;border-top:1px solid #444;padding-top:15px;">📋 過去のレポート</h3>';
-                    
+
                     legacyReports.forEach(report => {
                         const displayDate = report.datetime || report.date || '不明';
                         let badge = '';
@@ -524,7 +540,7 @@
                         totalCount++;
                     });
                 }
-                
+
                 if (totalCount === 0) {
                     container.innerHTML = '<div class="no-reports">レポートがまだありません。</div>';
                     return;
