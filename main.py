@@ -77,19 +77,46 @@ def main(dry_run=False):
     
     # 4. Report Generation
     generator = ReportGenerator()
-    report, image_paths = generator.generate(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
+    
+    # 環境変数で新旧切り替え
+    USE_PER_MATCH_REPORTS = os.getenv("USE_PER_MATCH_REPORTS", "False") == "True"
+    
+    if USE_PER_MATCH_REPORTS:
+        # 新方式: 1試合=1レポート
+        logger.info("Using per-match report generation (new mode)")
+        report_list = generator.generate_all(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
+        logger.info(f"Generated {len(report_list)} individual match reports")
+        
+        # Phase 4で実装予定: 複数HTMLファイル生成
+        # TODO: generate_html_reports(report_list) を呼び出す
+        html_path = None
+        image_paths = []
+        for r in report_list:
+            image_paths.extend(r.get("image_paths", []))
+            logger.info(f"  - {r['filename']}")
+    else:
+        # 旧方式: 1実行=1レポート
+        report, image_paths = generator.generate(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
     
     # 4.5 HTML Generation for Web (Firebase Hosting)
     html_path = None
+    html_paths = []
     try:
-        from src.html_generator import generate_html_report, sync_from_firebase
+        from src.html_generator import generate_html_report, generate_html_reports, sync_from_firebase
         # モックモード以外は既存HTMLファイルをFirebaseからダウンロード（ファイル消失防止）
         if not config.USE_MOCK_DATA:
             sync_from_firebase()
         else:
             logger.info("Mock mode: Skipping Firebase sync")
-        html_path = generate_html_report(report)
-        logger.info(f"HTML report generated: {html_path}")
+        
+        if USE_PER_MATCH_REPORTS:
+            # 新方式: 試合別HTMLファイル生成
+            html_paths = generate_html_reports(report_list)
+            logger.info(f"Generated {len(html_paths)} HTML files")
+        else:
+            # 旧方式
+            html_path = generate_html_report(report)
+            logger.info(f"HTML report generated: {html_path}")
     except Exception as e:
         logger.warning(f"HTML generation failed (continuing): {e}")
     

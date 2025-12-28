@@ -97,23 +97,83 @@ def download_file(remote_path: str, local_path: Path) -> bool:
 
 
 def merge_manifests(local: Dict, remote: Dict) -> Dict:
-    """マニフェストをマージ（重複排除）"""
-    local_files = {r.get("file"): r for r in local.get("reports", [])}
+    """
+    マニフェストをマージ（新構造対応）
     
+    新構造:
+    {
+        "reports_by_date": {...},  # 試合別レポート
+        "legacy_reports": [...]     # 旧形式レポート
+    }
+    
+    旧構造:
+    {
+        "reports": [...]
+    }
+    """
+    # 新構造のベース
+    merged = {
+        "reports_by_date": {},
+        "legacy_reports": []
+    }
+    
+    # --- reports_by_date のマージ ---
+    # ローカル優先（新しく生成したもの）
+    local_reports_by_date = local.get("reports_by_date", {})
+    remote_reports_by_date = remote.get("reports_by_date", {})
+    
+    # リモートから取得
+    for date_key, date_data in remote_reports_by_date.items():
+        if date_key not in merged["reports_by_date"]:
+            merged["reports_by_date"][date_key] = date_data
+    
+    # ローカルで上書き（ローカル優先）
+    for date_key, date_data in local_reports_by_date.items():
+        if date_key not in merged["reports_by_date"]:
+            merged["reports_by_date"][date_key] = date_data
+        else:
+            # 試合のマージ（fixture_idで重複除去）
+            existing_ids = {m.get("fixture_id") for m in merged["reports_by_date"][date_key].get("matches", [])}
+            for match in date_data.get("matches", []):
+                if match.get("fixture_id") not in existing_ids:
+                    merged["reports_by_date"][date_key]["matches"].append(match)
+    
+    # --- legacy_reports のマージ ---
+    # 旧形式（reports）も含めてすべてlegacy_reportsに統合
+    legacy_files = {}
+    
+    # リモートのlegacy_reports
+    for report in remote.get("legacy_reports", []):
+        file_name = report.get("file")
+        if file_name:
+            legacy_files[file_name] = report
+    
+    # リモートの旧形式（reports）
     for report in remote.get("reports", []):
         file_name = report.get("file")
-        if file_name and file_name not in local_files:
-            local_files[file_name] = report
-            logger.info(f"Added to manifest: {file_name}")
+        if file_name and file_name not in legacy_files:
+            legacy_files[file_name] = report
+    
+    # ローカルのlegacy_reports
+    for report in local.get("legacy_reports", []):
+        file_name = report.get("file")
+        if file_name and file_name not in legacy_files:
+            legacy_files[file_name] = report
+    
+    # ローカルの旧形式（reports）
+    for report in local.get("reports", []):
+        file_name = report.get("file")
+        if file_name and file_name not in legacy_files:
+            legacy_files[file_name] = report
     
     # 日付でソート（新しい順）
-    merged_reports = sorted(
-        local_files.values(),
-        key=lambda r: r.get("file", ""),
+    merged["legacy_reports"] = sorted(
+        legacy_files.values(),
+        key=lambda r: r.get("datetime", r.get("file", "")),
         reverse=True
     )
     
-    return {"reports": merged_reports}
+    return merged
 
 
 def sync_reports() -> None:

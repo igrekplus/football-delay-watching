@@ -459,38 +459,84 @@
                 }
 
                 const manifest = await response.json();
-                const reports = manifest.reports || [];
-
-                if (reports.length === 0) {
+                
+                // 新構造（reports_by_date）と旧構造（reports/legacy_reports）の両方に対応
+                const reportsByDate = manifest.reports_by_date || {};
+                const legacyReports = manifest.legacy_reports || manifest.reports || [];
+                
+                let html = '';
+                let totalCount = 0;
+                
+                // 1. 新形式: 日付グループで表示
+                const sortedDates = Object.keys(reportsByDate).sort().reverse();
+                
+                if (sortedDates.length > 0) {
+                    html += '<h3 style="color:#feca57;margin:15px 0 10px 0;font-size:1.2rem;">📅 試合別レポート</h3>';
+                    
+                    sortedDates.forEach(date => {
+                        const dateData = reportsByDate[date];
+                        const matches = dateData.matches || [];
+                        if (matches.length === 0) return;
+                        
+                        // 日付ヘッダー
+                        let dateBadge = '';
+                        if (dateData.is_mock) {
+                            dateBadge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">MOCK</span>';
+                        } else if (dateData.is_debug) {
+                            dateBadge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
+                        }
+                        
+                        html += `<div style="margin:10px 0 5px 0;font-weight:bold;color:#74b9ff;font-size:0.95rem;">${date}${dateBadge}</div>`;
+                        
+                        // 各試合
+                        matches.forEach(match => {
+                            const title = `${match.home_team} vs ${match.away_team}`;
+                            const meta = `${match.competition || ''} / ${match.kickoff_jst || ''}`;
+                            html += `
+                                <div class="report-item">
+                                    <a href="/reports/${match.file}">${title}</a>
+                                    <span class="report-meta">${meta}</span>
+                                </div>
+                            `;
+                            totalCount++;
+                        });
+                    });
+                }
+                
+                // 2. 旧形式: 既存レポート表示
+                if (legacyReports.length > 0) {
+                    html += '<h3 style="color:#feca57;margin:25px 0 10px 0;font-size:1.2rem;border-top:1px solid #444;padding-top:15px;">📋 過去のレポート</h3>';
+                    
+                    legacyReports.forEach(report => {
+                        const displayDate = report.datetime || report.date || '不明';
+                        let badge = '';
+                        if (report.is_mock) {
+                            badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">MOCK</span>';
+                        } else if (report.is_debug) {
+                            badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">DEBUG</span>';
+                        }
+                        html += `
+                            <div class="report-item">
+                                <a href="/reports/${report.file}">${displayDate} のレポート${badge}</a>
+                                <span class="report-meta">生成: ${report.generated || '不明'}</span>
+                            </div>
+                        `;
+                        totalCount++;
+                    });
+                }
+                
+                if (totalCount === 0) {
                     container.innerHTML = '<div class="no-reports">レポートがまだありません。</div>';
                     return;
                 }
-
-                let html = '';
-                reports.forEach(report => {
-                    const displayDate = report.datetime || report.date || '不明';
-                    // MOCKとDEBUGバッジを分けて表示
-                    let badge = '';
-                    if (report.is_mock) {
-                        badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">MOCK</span>';
-                    } else if (report.is_debug) {
-                        badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">DEBUG</span>';
-                    }
-                    html += `
-                        <div class="report-item">
-                            <a href="/reports/${report.file}">${displayDate} のレポート${badge}</a>
-                            <span class="report-meta">生成: ${report.generated || '不明'}</span>
-                        </div>
-                    `;
-                });
 
                 container.innerHTML = html;
 
                 // デバッグ情報表示
                 debugInfo.style.display = 'block';
                 debugContent.innerHTML = `
-                    <p>総レポート数: ${reports.length}</p>
-                    <p>最新レポート: ${reports[0]?.datetime || reports[0]?.date || 'なし'}</p>
+                    <p>試合数: ${Object.values(reportsByDate).reduce((sum, d) => sum + (d.matches?.length || 0), 0)} / 日付数: ${sortedDates.length}</p>
+                    <p>過去レポート数: ${legacyReports.length}</p>
                 `;
 
             } catch (e) {
