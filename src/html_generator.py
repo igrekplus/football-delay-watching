@@ -630,10 +630,14 @@ def update_manifest_with_matches(match_entries: list, generation_datetime: str, 
                 "matches": []
             }
         
-        # 重複チェック（fixture_idベース）
-        existing_ids = {m.get("fixture_id") for m in reports_by_date[match_date]["matches"]}
-        if entry["fixture_id"] not in existing_ids:
-            reports_by_date[match_date]["matches"].append(entry)
+        # 重複チェック（fixture_idベース） - 同じfixtureがあれば上書き
+        existing_matches = reports_by_date[match_date]["matches"]
+        existing_idx = next((i for i, m in enumerate(existing_matches) if m.get("fixture_id") == entry["fixture_id"]), None)
+        if existing_idx is not None:
+            # 既存エントリを最新で上書き
+            existing_matches[existing_idx] = entry
+        else:
+            existing_matches.append(entry)
     
     # 3. 旧形式レポート（reports）をlegacy_reportsに移行
     legacy_reports = existing_manifest.get("legacy_reports", [])
