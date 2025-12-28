@@ -6,6 +6,7 @@
 
 from dataclasses import dataclass
 from typing import List, Optional
+import re
 
 
 @dataclass
@@ -21,6 +22,9 @@ class MatchData:
     selection_reason: str = ""
     is_target: bool = False
     
+    # Match date in local time (YYYY-MM-DD format)
+    match_date_local: str = ""  # 試合開催日（現地時間）
+    
     # Facts Data (populated by FactsService)
     venue: str = ""
     home_lineup: List[str] = None
@@ -29,8 +33,8 @@ class MatchData:
     away_bench: List[str] = None
     home_formation: str = ""
     away_formation: str = ""
-    referee: str = ""
-    home_recent_form: str = "" # W-L-D
+    referee: str = "" # W-L-D
+    home_recent_form: str = ""
     away_recent_form: str = ""
     
     # Player Nationalities (name -> nationality mapping)
@@ -88,3 +92,39 @@ class MatchData:
         if self.player_birthdates is None: self.player_birthdates = {}
         if self.player_positions is None: self.player_positions = {}
         if self.injuries_list is None: self.injuries_list = []
+    
+    @staticmethod
+    def _normalize_team_name(team_name: str) -> str:
+        """
+        チーム名をファイル名用に正規化
+        - スペースを削除
+        - 特殊文字を削除（英数字とハイフンのみ許可）
+        """
+        # スペースを削除
+        normalized = team_name.replace(" ", "")
+        # 特殊文字を削除（英数字とハイフンのみ許可）
+        normalized = re.sub(r'[^a-zA-Z0-9\-]', '', normalized)
+        return normalized
+    
+    def get_report_filename(self, generation_datetime: str) -> str:
+        """
+        レポートファイル名を生成
+        
+        Args:
+            generation_datetime: レポート生成日時（YYYYMMDD_HHMMSS形式）
+        
+        Returns:
+            ファイル名（拡張子なし）
+            例: "2025-12-27_ManchesterCity_vs_Arsenal_20251228_072100"
+        """
+        home_normalized = self._normalize_team_name(self.home_team)
+        away_normalized = self._normalize_team_name(self.away_team)
+        
+        # match_date_local が空の場合は kickoff_local から抽出を試みる
+        match_date = self.match_date_local
+        if not match_date and self.kickoff_local:
+            # "2025-12-27 20:00 GMT" のような形式から日付部分を抽出
+            match_date = self.kickoff_local.split()[0] if self.kickoff_local else ""
+        
+        filename = f"{match_date}_{home_normalized}_vs_{away_normalized}_{generation_datetime}"
+        return filename
