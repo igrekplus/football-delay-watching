@@ -13,6 +13,7 @@ Issue #69: 責務分離のためのサブ構造
 
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict
+from datetime import datetime
 import re
 
 
@@ -33,6 +34,8 @@ class MatchCore:
     selection_reason: str = ""
     is_target: bool = False
     match_date_local: str = ""  # 試合開催日（現地時間）YYYY-MM-DD
+    # Issue #70: timezone-aware datetime (UTC)
+    kickoff_at_utc: Optional[datetime] = None
 
 
 @dataclass
@@ -153,6 +156,11 @@ class MatchAggregate:
     @property
     def match_date_local(self) -> str:
         return self.core.match_date_local
+    
+    # Issue #70: kickoff_at_utc プロパティを追加
+    @property
+    def kickoff_at_utc(self) -> Optional[datetime]:
+        return self.core.kickoff_at_utc
 
 
 # =============================================================================
@@ -192,6 +200,9 @@ class MatchData:
     
     # Match date in local time (YYYY-MM-DD format)
     match_date_local: str = ""  # 試合開催日（現地時間）
+    
+    # Issue #70: timezone-aware datetime (UTC)
+    kickoff_at_utc: Optional[datetime] = None
     
     # Facts Data (populated by FactsService)
     venue: str = ""
@@ -388,6 +399,7 @@ class MatchData:
             selection_reason=self.selection_reason,
             is_target=self.is_target,
             match_date_local=self.match_date_local,
+            kickoff_at_utc=self.kickoff_at_utc,
         )
     
     def to_aggregate(self) -> 'MatchAggregate':

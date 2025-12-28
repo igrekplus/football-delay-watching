@@ -565,20 +565,22 @@ class YouTubeService:
         home_manager = getattr(match, 'home_manager', '')
         away_manager = getattr(match, 'away_manager', '')
         
-        # kickoff_jstは "2025/12/21 00:00 JST" 形式の文字列
-        # JSTとしてパースしてUTCに変換
+        # Issue #70: kickoff_at_utc を優先使用
+        # フォールバック: DateTimeUtil で複数フォーマット対応パース
         import pytz
-        try:
-            jst = pytz.timezone('Asia/Tokyo')
-            kickoff_naive = datetime.strptime(
-                match.kickoff_jst.replace(" JST", ""), "%Y/%m/%d %H:%M"
-            )
-            # JSTとしてタイムゾーンを設定してUTCに変換
-            kickoff_time = jst.localize(kickoff_naive).astimezone(pytz.UTC)
-            logger.info(f"Kickoff time: {match.kickoff_jst} -> UTC: {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
-        except (ValueError, AttributeError) as e:
-            logger.warning(f"Failed to parse kickoff_jst: {e}")
-            kickoff_time = datetime.now(pytz.UTC)
+        from src.utils.datetime_util import DateTimeUtil
+        
+        if hasattr(match, 'kickoff_at_utc') and match.kickoff_at_utc is not None:
+            kickoff_time = match.kickoff_at_utc
+            logger.info(f"Kickoff time (from kickoff_at_utc): {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
+        else:
+            # フォールバック: kickoff_jst 文字列をパース
+            kickoff_time = DateTimeUtil.parse_kickoff_jst(match.kickoff_jst)
+            if kickoff_time:
+                logger.info(f"Kickoff time (parsed from kickoff_jst): {match.kickoff_jst} -> UTC: {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
+            else:
+                logger.warning(f"Failed to parse kickoff_jst: {match.kickoff_jst}, using current time")
+                kickoff_time = datetime.now(pytz.UTC)
         
         logger.info(f"Fetching YouTube videos for {home_team} vs {away_team}")
         if home_manager:
