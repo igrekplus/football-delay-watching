@@ -551,7 +551,9 @@ def generate_html_reports(report_list: list) -> list:
             "kickoff_local": match.kickoff_local,
             "kickoff_jst": match.kickoff_jst,
             "file": html_filename,
-            "match_date": match.match_date_local
+            "match_date": match.match_date_local,
+            "is_mock": config.USE_MOCK_DATA,
+            "is_debug": config.DEBUG_MODE
         })
     
     # manifest更新（日付グループ構造）

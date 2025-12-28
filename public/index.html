@@ -478,16 +478,9 @@
                         const matches = dateData.matches || [];
                         if (matches.length === 0) return;
 
-                        // 日付ヘッダー
-                        let dateBadge = '';
-                        if (dateData.is_mock) {
-                            dateBadge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">MOCK</span>';
-                        } else if (dateData.is_debug) {
-                            dateBadge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
-                        }
-
-                        html += `<div style="margin:10px 0 5px 0;font-weight:bold;color:#74b9ff;font-size:0.95rem;">${date}${dateBadge}</div>`;
-
+                        // 日付ヘッダー（バッジは各レポートに表示するため削除）
+                        html += `<div style="margin:10px 0 5px 0;font-weight:bold;color:#74b9ff;font-size:0.95rem;">${date}</div>`;
+                        
                         // ファイル名の実行時刻で降順ソート（新しい順）
                         const sortedMatches = [...matches].sort((a, b) => {
                             const timeA = a.file.match(/_(\d{8})_(\d{6})\.html$/);
@@ -506,11 +499,18 @@
                                 const t = timeMatch[2];
                                 timeDisplay = ` (${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)})`;
                             }
+                            // レポートごとにMOCK/DEBUGバッジを表示
+                            let badge = '';
+                            if (match.is_mock) {
+                                badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">MOCK</span>';
+                            } else if (match.is_debug) {
+                                badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
+                            }
                             const title = `${match.home_team} vs ${match.away_team}${timeDisplay}`;
                             const meta = `${match.competition || ''} / ${match.kickoff_jst || ''}`;
                             html += `
                                 <div class="report-item">
-                                    <a href="/reports/${match.file}">${title}</a>
+                                    <a href="/reports/${match.file}">${title}${badge}</a>
                                     <span class="report-meta">${meta}</span>
                                 </div>
                             `;
