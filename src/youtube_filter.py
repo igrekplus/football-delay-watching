@@ -2,7 +2,7 @@
 YouTubePostFilter - YouTube動画のpost-filterを提供するクラス
 
 YouTubeServiceから分離されたフィルタリングロジック。
-各検索メソッドで適用するフィルターを選択的に呼び出す設計。
+各検索カテゴリで適用するフィルターを選択的に組み合わせる設計。
 """
 
 import logging
@@ -16,67 +16,159 @@ logger = logging.getLogger(__name__)
 class YouTubePostFilter:
     """YouTube動画のpost-filterを提供するクラス"""
 
-    # exclude_highlights() で除外するキーワードルール
-    EXCLUDE_RULES = [
-        ("match_highlights", ["match highlights", "extended highlights"]),
-        ("highlights", ["highlights"]),
-        ("full_match", ["full match", "full game", "full replay"]),
-        ("live_stream", ["live", "livestream", "watch live", "streaming"]),
-        ("matchday", ["matchday"]),
-        ("press_conference", ["press conference"]),
-        ("reaction", ["reaction"]),
-    ]
+    # ========== 個別フィルタメソッド ==========
 
-    def exclude_highlights(self, videos: List[Dict], skip_rules: List[str] = None) -> Dict[str, List[Dict]]:
+    def filter_match_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
         """
-        ハイライト/フルマッチ/ライブ配信を除外
-        
-        Args:
-            videos: 動画リスト
-            skip_rules: スキップするルール名のリスト（例: ["press_conference"]）
-        
-        Returns:
-            {"kept": [...], "removed": [...]}
+        試合ハイライトを除外（highlights + vs/v パターン）
         """
-        if skip_rules is None:
-            skip_rules = []
-        
-        kept: List[Dict] = []
-        removed: List[Dict] = []
-
+        kept, removed = [], []
         for v in videos:
             text = f"{v.get('title', '')} {v.get('description', '')}".lower()
-            reason = None
-
-            # highlights + vs/v パターン（試合ハイライト）
             if "highlights" in text and (" vs " in text or " v " in text or " vs." in text):
-                reason = "match_highlights_vs"
-            else:
-                for rule_name, keywords in self.EXCLUDE_RULES:
-                    # スキップ対象のルールは無視
-                    if rule_name in skip_rules:
-                        continue
-                    if any(kw in text for kw in keywords):
-                        reason = rule_name
-                        break
-
-            if reason:
                 vv = dict(v)
-                vv["filter_reason"] = reason
+                vv["filter_reason"] = "match_highlights"
                 removed.append(vv)
             else:
                 kept.append(v)
-
-        if removed:
-            logger.info(f"exclude_highlights: removed {len(removed)} videos")
-
         return {"kept": kept, "removed": removed}
+
+    def filter_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """
+        単独ハイライトを除外（highlights, match highlights, extended highlights）
+        """
+        keywords = ["highlights", "match highlights", "extended highlights"]
+        kept, removed = [], []
+        for v in videos:
+            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
+            if any(kw in text for kw in keywords):
+                vv = dict(v)
+                vv["filter_reason"] = "highlights"
+                removed.append(vv)
+            else:
+                kept.append(v)
+        return {"kept": kept, "removed": removed}
+
+    def filter_full_match(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """
+        フルマッチを除外（full match, full game, full replay）
+        """
+        keywords = ["full match", "full game", "full replay"]
+        kept, removed = [], []
+        for v in videos:
+            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
+            if any(kw in text for kw in keywords):
+                vv = dict(v)
+                vv["filter_reason"] = "full_match"
+                removed.append(vv)
+            else:
+                kept.append(v)
+        return {"kept": kept, "removed": removed}
+
+    def filter_live_stream(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """
+        ライブ配信を除外（live, livestream, watch live, streaming）
+        """
+        keywords = ["live", "livestream", "watch live", "streaming"]
+        kept, removed = [], []
+        for v in videos:
+            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
+            if any(kw in text for kw in keywords):
+                vv = dict(v)
+                vv["filter_reason"] = "live_stream"
+                removed.append(vv)
+            else:
+                kept.append(v)
+        return {"kept": kept, "removed": removed}
+
+    def filter_press_conference(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """
+        記者会見を除外（press conference）
+        """
+        keywords = ["press conference"]
+        kept, removed = [], []
+        for v in videos:
+            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
+            if any(kw in text for kw in keywords):
+                vv = dict(v)
+                vv["filter_reason"] = "press_conference"
+                removed.append(vv)
+            else:
+                kept.append(v)
+        return {"kept": kept, "removed": removed}
+
+    def filter_reaction(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+        """
+        リアクション動画を除外（reaction）
+        """
+        keywords = ["reaction"]
+        kept, removed = [], []
+        for v in videos:
+            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
+            if any(kw in text for kw in keywords):
+                vv = dict(v)
+                vv["filter_reason"] = "reaction"
+                removed.append(vv)
+            else:
+                kept.append(v)
+        return {"kept": kept, "removed": removed}
+
+    # ========== 組み合わせAPI ==========
+
+    def apply_filters(self, videos: List[Dict], filters: List[str]) -> Dict[str, List[Dict]]:
+        """
+        複数フィルタをまとめて適用
+
+        Args:
+            videos: 動画リスト
+            filters: 適用するフィルタ名のリスト
+                     例: ["match_highlights", "highlights", "full_match", "live_stream", "reaction"]
+
+        Returns:
+            {"kept": [...], "removed": [...]}
+        """
+        filter_methods = {
+            "match_highlights": self.filter_match_highlights,
+            "highlights": self.filter_highlights,
+            "full_match": self.filter_full_match,
+            "live_stream": self.filter_live_stream,
+            "press_conference": self.filter_press_conference,
+            "reaction": self.filter_reaction,
+        }
+
+        all_removed = []
+        current = videos
+
+        for filter_name in filters:
+            if filter_name in filter_methods:
+                result = filter_methods[filter_name](current)
+                current = result["kept"]
+                all_removed.extend(result["removed"])
+
+        if all_removed:
+            logger.info(f"apply_filters: removed {len(all_removed)} videos")
+
+        return {"kept": current, "removed": all_removed}
+
+    # ========== 後方互換性: 旧メソッド ==========
+
+    def exclude_highlights(self, videos: List[Dict], skip_rules: List[str] = None) -> Dict[str, List[Dict]]:
+        """
+        [後方互換] ハイライト/フルマッチ/ライブ配信を除外
+        
+        新しいコードでは apply_filters() を使用してください。
+        """
+        # 全フィルタのリスト（skip_rulesで除外するもの以外）
+        all_filters = ["match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"]
+        if skip_rules:
+            all_filters = [f for f in all_filters if f not in skip_rules]
+        return self.apply_filters(videos, all_filters)
+
+    # ========== その他のフィルタ ==========
 
     def sort_trusted(self, videos: List[Dict]) -> List[Dict]:
         """
         信頼チャンネル優先でソート + バッジ付与
-        
-        チューニング中は全件出力、信頼チャンネルにはバッジを付与
         """
         for v in videos:
             channel_id = v.get("channel_id", "")

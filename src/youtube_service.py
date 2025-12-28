@@ -350,8 +350,10 @@ class YouTubeService:
             v["category"] = "press_conference"
             v["query_label"] = manager_name or team_name
         
-        # フィルター適用: exclude_highlights（press_conferenceルールはスキップ）
-        filter_result = self.filter.exclude_highlights(videos, skip_rules=["press_conference"])
+        # フィルター適用（press_conferenceは除外）
+        filter_result = self.filter.apply_filters(videos, [
+            "match_highlights", "highlights", "full_match", "live_stream", "reaction"
+        ])
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -393,8 +395,15 @@ class YouTubeService:
         for v in videos:
             v["category"] = "historic"
         
-        # フィルター適用: sort_trustedのみ（クエリ自体がhighlights含む）
-        kept = self.filter.sort_trusted(videos)
+        # フィルター適用（highlightsは除外、live/press_conference/reactionは除外）
+        filter_result = self.filter.apply_filters(videos, [
+            "live_stream", "press_conference", "reaction"
+        ])
+        kept = filter_result["kept"]
+        removed = filter_result["removed"]
+        
+        # sort_trusted適用
+        kept = self.filter.sort_trusted(kept)
         
         # 表示件数制限
         overflow = kept[max_display:] if len(kept) > max_display else []
@@ -430,8 +439,10 @@ class YouTubeService:
             v["category"] = "tactical"
             v["query_label"] = team_name
         
-        # フィルター適用: exclude_highlights
-        filter_result = self.filter.exclude_highlights(videos)
+        # フィルター適用
+        filter_result = self.filter.apply_filters(videos, [
+            "match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"
+        ])
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -476,8 +487,10 @@ class YouTubeService:
             v["category"] = "player_highlight"
             v["query_label"] = player_name
         
-        # フィルター適用: exclude_highlights
-        filter_result = self.filter.exclude_highlights(videos)
+        # フィルター適用
+        filter_result = self.filter.apply_filters(videos, [
+            "match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"
+        ])
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -519,8 +532,10 @@ class YouTubeService:
             v["category"] = "training"
             v["query_label"] = team_name
         
-        # フィルター適用: exclude_highlights
-        filter_result = self.filter.exclude_highlights(videos)
+        # フィルター適用
+        filter_result = self.filter.apply_filters(videos, [
+            "match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"
+        ])
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         

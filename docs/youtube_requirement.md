@@ -193,25 +193,46 @@ for player in reversed(match.home_lineup):
 
 ---
 
-## exclude_highlights() ルール
+## 除外フィルタ
 
-`YouTubePostFilter.exclude_highlights()` で適用されるルール。
+`YouTubePostFilter` クラスで提供される除外フィルタ群。
 
-**適用カテゴリ**: 記者会見、戦術分析、選手紹介、練習風景  
-**除外カテゴリ**: 過去対戦ハイライト（クエリ自体が `highlights` を含むため）
+### フィルタメソッド一覧
 
-| ルール名 | 除外キーワード | 説明 |
-|---------|---------------|------|
-| `match_highlights_vs` | `highlights` + (`vs` or `v` or `vs.`) | 試合ハイライト（対戦形式） |
-| `match_highlights` | `match highlights`, `extended highlights` | 試合ハイライト（単独） |
-| `highlights` | `highlights` | 単独の「highlights」 |
-| `full_match` | `full match`, `full game`, `full replay` | フルマッチ |
-| `live_stream` | `live`, `livestream`, `watch live`, `streaming` | ライブ配信 |
-| `matchday` | `matchday` | マッチデー |
-| `press_conference` | `press conference` | 記者会見（選手紹介向け） |
-| `reaction` | `reaction` | リアクション動画 |
+| メソッド名 | 除外キーワード | 説明 |
+|-----------|---------------|------|
+| `filter_match_highlights()` | `highlights` + (`vs`/`v`/`vs.`) | 試合ハイライト（対戦形式） |
+| `filter_highlights()` | `highlights`, `match highlights`, `extended highlights` | 単独ハイライト |
+| `filter_full_match()` | `full match`, `full game`, `full replay` | フルマッチ |
+| `filter_live_stream()` | `live`, `livestream`, `watch live`, `streaming` | ライブ配信 |
+| `filter_press_conference()` | `press conference` | 記者会見 |
+| `filter_reaction()` | `reaction` | リアクション動画 |
 
-> **Note**: フィルタはタイトル + 説明文に対して適用（小文字変換後）
+> **Note**: 
+> - フィルタはタイトル + 説明文に対して適用（小文字変換後）
+> - スペース含むキーワード（例: `press conference`）はそのまま部分一致検索
+
+### 組み合わせAPI
+
+```python
+# 複数フィルタをまとめて適用
+apply_filters(videos, filters=["match_highlights", "full_match", ...])
+# -> {"kept": [...], "removed": [...]}
+```
+
+### カテゴリ別フィルタ適用
+
+| カテゴリ | 適用フィルタ |
+|---------|-------------|
+| 記者会見 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `reaction` |
+| 過去対戦 | `live_stream`, `press_conference`, `reaction` |
+| 戦術分析 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
+| 選手紹介 | 同上 |
+| 練習風景 | 同上 |
+
+> **Design Note**: 
+> - 記者会見カテゴリでは `press_conference` フィルタを適用しない（クエリ自体がpress conferenceを検索）
+> - 過去対戦カテゴリでは `highlights` フィルタを適用しない（クエリ自体がhighlightsを検索）
 
 ---
 
