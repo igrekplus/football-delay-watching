@@ -2,399 +2,61 @@ from datetime import datetime
 from typing import List, Dict
 from src.domain.models import MatchData
 import logging
-from src.utils.spoiler_filter import SpoilerFilter
 from src.utils.formation_image import generate_formation_image
 from src.utils.nationality_flags import format_player_with_flag
+from src.formatters import DateFormatter, PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter
 from config import config
 
 logger = logging.getLogger(__name__)
 
 class ReportGenerator:
     def __init__(self):
-        pass
+        self.date_formatter = DateFormatter()
+        self.player_formatter = PlayerFormatter()
+        self.match_info_formatter = MatchInfoFormatter()
+        self.youtube_formatter = YouTubeSectionFormatter(self.date_formatter)
     
-    def _format_relative_date(self, iso_date: str) -> str:
-        """ISO日付を「3日前」のような相対表示に変換"""
-        if not iso_date:
-            return "不明"
-        try:
-            import pytz
-            # ISO形式をパース（2025-12-19T14:00:00Z）
-            pub_date = datetime.fromisoformat(iso_date.replace('Z', '+00:00'))
-            jst = pytz.timezone('Asia/Tokyo')
-            now = datetime.now(jst)
-            diff = now - pub_date.astimezone(jst)
-            
-            days = diff.days
-            if days == 0:
-                hours = diff.seconds // 3600
-                if hours == 0:
-                    return "数分前"
-                return f"{hours}時間前"
-            elif days == 1:
-                return "1日前"
-            elif days < 7:
-                return f"{days}日前"
-            elif days < 30:
-                weeks = days // 7
-                return f"{weeks}週間前"
-            elif days < 365:
-                months = days // 30
-                return f"{months}ヶ月前"
-            else:
-                return pub_date.strftime("%Y/%m/%d")
-        except Exception:
-            return iso_date[:10] if len(iso_date) >= 10 else iso_date
-
-    def _format_lineup_by_position(self, lineup: List[str], formation: str, team_name: str, 
-                                     nationalities: Dict[str, str] = None, 
-                                     player_numbers: Dict[str, int] = None,
-                                     player_birthdates: Dict[str, str] = None) -> str:
+    def generate(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None, youtube_stats: Dict[str, int] = None) -> tuple:
         """
-        フォーメーション情報を元に選手をポジション別に振り分けて表示
-        例: 4-3-3 -> GK:1, DF:4, MF:3, FW:3
-        国籍情報がある場合は国旗絵文字を追加
-        背番号がある場合は先頭に表示
-        生年月日がある場合は (YYYY/MM/DD) 形式で表示
-        """
-        if nationalities is None:
-            nationalities = {}
-        if player_numbers is None:
-            player_numbers = {}
-        if player_birthdates is None:
-            player_birthdates = {}
-            
-        def format_birthdate(date_str: str) -> str:
-            """YYYY-MM-DD を YYYY/MM/DD に変換"""
-            if not date_str:
-                return ""
-            try:
-                return date_str.replace('-', '/')
-            except Exception:
-                return ""
-            
-        def format_player(name: str) -> str:
-            nationality = nationalities.get(name, "")
-            number = player_numbers.get(name)
-            birthdate = player_birthdates.get(name, "")
-            formatted = format_player_with_flag(name, nationality)
-            if number is not None:
-                formatted = f"#{number} {formatted}"
-            if birthdate:
-                formatted = f"{formatted} ({format_birthdate(birthdate)})"
-            return formatted
-        
-        if not lineup or len(lineup) != 11:
-            formatted = [format_player(p) for p in lineup] if lineup else []
-            return ', '.join(formatted) if formatted else "不明"
-        
-        # フォーメーションをパース (例: "4-3-3" -> [4, 3, 3])
-        try:
-            parts = [int(x) for x in formation.split('-')]
-        except (ValueError, AttributeError):
-            # パース失敗時はカンマ区切りにフォールバック
-            formatted = [format_player(p) for p in lineup]
-            return ', '.join(formatted)
-        
-        # GK は常に1人、残りをフォーメーションで振り分け
-        gk = format_player(lineup[0])
-        outfield = lineup[1:]
-        
-        positions = []
-        idx = 0
-        position_names = ['DF', 'MF', 'FW']
-        
-        for i, count in enumerate(parts):
-            if idx + count <= len(outfield):
-                players = [format_player(p) for p in outfield[idx:idx + count]]
-                pos_name = position_names[i] if i < len(position_names) else 'FW'
-                positions.append(f"{pos_name}: {', '.join(players)}")
-                idx += count
-        
-        # 残りの選手がいれば FW に追加
-        if idx < len(outfield):
-            remaining = [format_player(p) for p in outfield[idx:]]
-            positions.append(f"FW: {', '.join(remaining)}")
-        
-        lines = [f"GK: {gk}"]
-        lines.extend(positions)
-        return '\n    - '.join(lines)
-
-    def _calculate_age(self, birthdate_str: str) -> int:
-        """生年月日から年齢を計算"""
-        if not birthdate_str:
-            return None
-        try:
-            from datetime import datetime
-            import pytz
-            birth = datetime.strptime(birthdate_str, "%Y-%m-%d")
-            jst = pytz.timezone('Asia/Tokyo')
-            today = datetime.now(jst).replace(tzinfo=None)
-            age = today.year - birth.year
-            if (today.month, today.day) < (birth.month, birth.day):
-                age -= 1
-            return age
-        except Exception:
-            return None
-
-    def _get_player_position(self, index: int, lineup_size: int, formation: str) -> str:
-        """選手のインデックスとフォーメーションからポジションを決定"""
-        if index == 0:
-            return "GK"
-        
-        # フォーメーションをパース（例: "4-3-3" -> [4, 3, 3]）
-        try:
-            parts = [int(x) for x in formation.split('-')]
-        except (ValueError, AttributeError):
-            return "FW"  # パース失敗時
-        
-        position_names = ['DF', 'MF', 'FW']
-        outfield_index = index - 1  # GKを除いたインデックス
-        
-        cumulative = 0
-        for i, count in enumerate(parts):
-            cumulative += count
-            if outfield_index < cumulative:
-                return position_names[i] if i < len(position_names) else 'FW'
-        
-        return 'FW'
-
-    def _format_player_cards(self, lineup: List[str], formation: str, team_name: str,
-                             nationalities: Dict[str, str] = None,
-                             player_numbers: Dict[str, int] = None,
-                             player_birthdates: Dict[str, str] = None,
-                             player_photos: Dict[str, str] = None,
-                             position_label: str = None,
-                             player_positions: Dict[str, str] = None) -> str:
-        """
-        選手リストをカード形式のHTMLに変換
-        
-        Args:
-            position_label: 全選手に使用するポジションラベル（例: "SUB"）。
-                           Noneの場合はフォーメーションから計算
-            player_positions: 選手名 -> ポジションのマッピング（ベンチ用）
-        """
-        if nationalities is None:
-            nationalities = {}
-        if player_numbers is None:
-            player_numbers = {}
-        if player_birthdates is None:
-            player_birthdates = {}
-        if player_photos is None:
-            player_photos = {}
-        if player_positions is None:
-            player_positions = {}
-        
-        if not lineup:
-            return '<div class="player-cards"><p>選手情報なし</p></div>'
-        
-        # ポジション略称からフル名への変換
-        pos_map = {'G': 'GK', 'D': 'DF', 'M': 'MF', 'F': 'FW'}
-        
-        cards_html = []
-        for idx, name in enumerate(lineup):
-            # ベンチ選手の場合: player_positionsから取得、なければposition_labelを使用
-            if position_label:
-                api_pos = player_positions.get(name, '')
-                position = pos_map.get(api_pos, api_pos) if api_pos else position_label
-            else:
-                position = self._get_player_position(idx, len(lineup), formation)
-            
-            number = player_numbers.get(name)
-            nationality = nationalities.get(name, "")
-            birthdate = player_birthdates.get(name, "")
-            photo_url = player_photos.get(name, "")
-            age = self._calculate_age(birthdate)
-            
-            # 国旗を取得
-            flag = format_player_with_flag("", nationality).strip() if nationality else ""
-            
-            # Issue #51: カードHTML構造を改善
-            number_display = f"#{number}" if number is not None else ""
-            photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
-            # 年齢と生年月日を併記
-            birthdate_formatted = birthdate.replace('-', '/') if birthdate else ""
-            age_display = f"{age}歳" if age else ""
-            if birthdate_formatted and age_display:
-                age_display = f"{age_display} ({birthdate_formatted})"
-            # 国籍に国旗を追加
-            nationality_display = f"{flag} {nationality}" if nationality else ""
-            
-            card = f'''<div class="player-card">
-<div class="player-card-header"><span>{name}</span></div>
-<div class="player-card-body">
-{photo_html}
-<div class="player-card-info">
-<div class="player-card-position">{position} {number_display}</div>
-<div class="player-card-nationality">{nationality_display}</div>
-<div class="player-card-age">{age_display}</div>
-</div>
-</div>
-</div>'''
-            cards_html.append(card)
-        
-        return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
-
-    def _format_injury_cards(self, injuries_list: list, player_photos: Dict[str, str] = None) -> str:
-        """
-        怪我人・出場停止リストをカード形式のHTMLに変換
-        """
-        if not injuries_list:
-            return '<div class="player-cards"><p>なし</p></div>'
-        
-        if player_photos is None:
-            player_photos = {}
-        
-        cards_html = []
-        for injury in injuries_list:
-            name = injury.get("name", "Unknown")
-            team = injury.get("team", "")
-            reason = injury.get("reason", "")
-            # injuries_list 内の photo を優先、なければ player_photos から取得
-            photo_url = injury.get("photo", "") or player_photos.get(name, "")
-            
-            photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
-            
-            card = f'''<div class="player-card injury-card">
-<div class="player-card-header"><span>{name}</span></div>
-<div class="player-card-body">
-{photo_html}
-<div class="player-card-info">
-<div class="player-card-position">🏥 OUT</div>
-<div class="player-card-nationality">{team}</div>
-<div class="player-card-age injury-reason">⚠️ {reason}</div>
-</div>
-</div>
-</div>'''
-            cards_html.append(card)
-        
-        return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
-
-    def generate_all(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None, 
-                     youtube_stats: Dict[str, int] = None) -> List[Dict]:
-        """
-        全試合レポートを生成（1試合=1レポート）
-        
-        Args:
-            matches: 試合データリスト
-            youtube_videos: YouTube動画データ（試合ごと）
-            youtube_stats: YouTube API使用統計
+        Generates markdown report string
         
         Returns:
-            List[Dict]: 各試合のレポート情報
-            [
-                {
-                    "match": MatchData,
-                    "markdown_content": str,
-                    "image_paths": List[str],
-                    "filename": str  # "2025-12-27_City_vs_Arsenal_20251228_072100"
-                },
-                ...
-            ]
+            tuple: (report_content: str, image_paths: List[str])
         """
         if youtube_videos is None:
             youtube_videos = {}
         if youtube_stats is None:
             youtube_stats = {"api_calls": 0, "cache_hits": 0}
+            
+        lines = []
+        image_paths = []  # 生成された画像パスを収集
         
-        # 共通セクションを生成
-        excluded_section = self._generate_excluded_section(matches, youtube_stats)
+        lines.append(self._write_header(matches))
+        report_lines, report_images = self._write_match_reports(matches, youtube_videos)
+        lines.append(report_lines)
+        image_paths.extend(report_images)
+        lines.append(self._write_excluded_list(matches, youtube_stats))
         
-        # 各試合のレポートを生成
+        report = "\n".join(lines)
+        
+        # Determine filename based on current date (run date)
         from datetime import datetime
         import pytz
+        import os
         
         jst = pytz.timezone('Asia/Tokyo')
-        generation_datetime = datetime.now(jst).strftime('%Y%m%d_%H%M%S')
+        today_str = datetime.now(jst).strftime('%Y-%m-%d')
+        output_dir = config.OUTPUT_DIR # Changed to use config.OUTPUT_DIR
+        filename = f"{output_dir}/{today_str}.md" # Corrected filename construction
         
-        report_list = []
-        target_matches = [m for m in matches if m.is_target]
+        # Ensure directory exists
+        os.makedirs(output_dir, exist_ok=True)
         
-        for match in target_matches:
-            markdown_content, image_paths = self.generate_single_match(
-                match, youtube_videos, excluded_section
-            )
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(report)
             
-            filename = match.get_report_filename(generation_datetime)
-            
-            report_list.append({
-                "match": match,
-                "markdown_content": markdown_content,
-                "image_paths": image_paths,
-                "filename": filename
-            })
-            
-            logger.info(f"Generated report for: {match.home_team} vs {match.away_team}")
-        
-        return report_list
-    
-    def generate_single_match(self, match: MatchData, youtube_videos: Dict[str, List[Dict]], 
-                              excluded_section: str) -> tuple:
-        """
-        1試合分のMarkdownレポートを生成
-        
-        Args:
-            match: 試合データ
-            youtube_videos: YouTube動画データ
-            excluded_section: 選外試合リスト・API使用状況のセクション
-        
-        Returns:
-            tuple: (markdown_content: str, image_paths: List[str])
-        """
-        lines = []
-        image_paths = []
-        
-        # ヘッダー（試合タイトル）
-        lines.append(f"# {match.home_team} vs {match.away_team}\n")
-        lines.append(f"**{match.competition}** / {match.rank}\n")
-        
-        # 試合レポート本文
-        match_report, match_images = self._write_single_match_report(match, youtube_videos)
-        lines.append(match_report)
-        image_paths.extend(match_images)
-        
-        # 末尾に選外試合リスト・API使用状況を追加
-        lines.append("\n---\n")
-        lines.append(excluded_section)
-        
-        return "\n".join(lines), image_paths
-    
-    def _generate_excluded_section(self, matches: List[MatchData], youtube_stats: Dict[str, int]) -> str:
-        """
-        選外試合リストとAPI使用状況のセクションを生成
-        
-        Args:
-            matches: 全試合データ
-            youtube_stats: YouTube API使用統計
-        
-        Returns:
-            選外試合リスト・API使用状況のMarkdownテキスト
-        """
-        lines = ["## 選外試合リスト\n"]
-        excluded = [m for m in matches if not m.is_target]
-        if not excluded:
-            lines.append("- なし\n")
-        else:
-            for match in excluded:
-                lines.append(f"- {match.home_team} vs {match.away_team} （{match.competition}）… {match.selection_reason}\n")
-        
-        # API使用状況
-        lines.append("\n## API使用状況\n")
-        if config.QUOTA_INFO:
-            for key, info in config.QUOTA_INFO.items():
-                lines.append(f"- {key}: {info}\n")
-        else:
-            lines.append("- API-Football: (キャッシュから取得のため情報なし)\n")
-        
-        lines.append("- Google Custom Search API: Check Cloud Console (Quota: 100/day free)\n")
-        
-        # YouTube API Stats
-        api_calls = youtube_stats.get("api_calls", 0)
-        cache_hits = youtube_stats.get("cache_hits", 0)
-        total_requests = api_calls + cache_hits
-        lines.append(f"- YouTube Data API: {api_calls}回呼び出し (キャッシュ: {cache_hits}件, 合計リクエスト: {total_requests}件)\n")
-        
-        return "".join(lines)
+        logger.info(f"Report generated: {filename}")
+        return report, image_paths
 
     def _write_header(self, matches: List[MatchData]) -> str:
         target_matches = [m for m in matches if m.is_target]
@@ -404,297 +66,12 @@ class ReportGenerator:
         lines.append("\n")
         return "\n".join(lines)
 
-    def _write_single_match_report(self, match: MatchData, youtube_videos: Dict[str, List[Dict]] = None) -> tuple:
+    def _write_match_reports(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None) -> tuple:
         """
-        1試合分のレポート本文を生成
+        試合レポートを生成
         
         Returns:
             tuple: (report_string: str, image_paths: List[str])
-        """
-        if youtube_videos is None:
-            youtube_videos = {}
-            
-        lines = []
-        image_paths = []
-        
-        # Issue #55: 基本情報をカード形式で表示
-        lines.append("### ■ 基本情報")
-        match_info_html = f'''\u003cdiv class="match-info-grid"\u003e
-\u003cdiv class="match-info-item match-info-small"\u003e
-\u003cdiv class="match-info-icon"\u003e🏆\u003c/div\u003e
-\u003cdiv class="match-info-content"\u003e
-\u003cdiv class="match-info-label"\u003e大会\u003c/div\u003e
-\u003cdiv class="match-info-value"\u003e{match.competition}\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e
-\u003cdiv class="match-info-item match-info-wide"\u003e
-\u003cdiv class="match-info-icon"\u003e📅\u003c/div\u003e
-\u003cdiv class="match-info-content"\u003e
-\u003cdiv class="match-info-label"\u003e日時\u003c/div\u003e
-\u003cdiv class="match-info-value"\u003e{match.kickoff_jst}\u003cbr\u003e\u003cspan class="match-info-subtext"\u003e{match.kickoff_local}\u003c/span\u003e\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e
-\u003cdiv class="match-info-item"\u003e
-\u003cdiv class="match-info-icon"\u003e🏟️\u003c/div\u003e
-\u003cdiv class="match-info-content"\u003e
-\u003cdiv class="match-info-label"\u003e会場\u003c/div\u003e
-\u003cdiv class="match-info-value"\u003e{match.venue}\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e'''
-        lines.append(match_info_html)
-        
-        # スタメン選手カード表示（HTML直接出力）
-        home_cards_html = self._format_player_cards(
-            match.home_lineup, match.home_formation, match.home_team,
-            match.player_nationalities, match.player_numbers,
-            match.player_birthdates, match.player_photos
-        )
-        away_cards_html = self._format_player_cards(
-            match.away_lineup, match.away_formation, match.away_team,
-            match.player_nationalities, match.player_numbers,
-            match.player_birthdates, match.player_photos
-        )
-        # ベンチ選手もカード形式で表示（APIポジションを使用）
-        home_bench_html = self._format_player_cards(
-            match.home_bench, "", match.home_team,
-            match.player_nationalities, match.player_numbers,
-            match.player_birthdates, match.player_photos,
-            position_label="SUB",
-            player_positions=match.player_positions
-        )
-        away_bench_html = self._format_player_cards(
-            match.away_bench, "", match.away_team,
-            match.player_nationalities, match.player_numbers,
-            match.player_birthdates, match.player_photos,
-            position_label="SUB",
-            player_positions=match.player_positions
-        )
-        
-        # Issue #52: チームロゴ付きヘッダー
-        home_logo_html = f'\u003cimg src="{match.home_logo}" alt="{match.home_team}" class="team-logo"\u003e' if match.home_logo else ''
-        away_logo_html = f'\u003cimg src="{match.away_logo}" alt="{match.away_team}" class="team-logo"\u003e' if match.away_logo else ''
-        
-        # 負傷者をチーム別にフィルタリング
-        home_injuries = [i for i in match.injuries_list if i.get("team", "") == match.home_team]
-        away_injuries = [i for i in match.injuries_list if i.get("team", "") == match.away_team]
-        home_injury_html = self._format_injury_cards(home_injuries, match.player_photos)
-        away_injury_html = self._format_injury_cards(away_injuries, match.player_photos)
-        
-        # チーム別にスタメン・サブ・負傷者をグループ化
-        # ホームチーム
-        lines.append(f'\u003ch3 class="lineup-header"\u003e{home_logo_html} {match.home_team}（{match.home_formation}）\u003c/h3\u003e')
-        lines.append("#### Starting XI")
-        lines.append(home_cards_html)
-        lines.append("#### Substitutes")
-        lines.append(home_bench_html)
-        lines.append("#### Injuries / Suspended")
-        lines.append(home_injury_html)
-        
-        # アウェイチーム
-        lines.append(f'\u003ch3 class="lineup-header"\u003e{away_logo_html} {match.away_team}（{match.away_formation}）\u003c/h3\u003e')
-        lines.append("#### Starting XI")
-        lines.append(away_cards_html)
-        lines.append("#### Substitutes")
-        lines.append(away_bench_html)
-        lines.append("#### Injuries / Suspended")
-        lines.append(away_injury_html)
-        
-        # Format form with icons (W=✅, D=➖, L=❌)
-        def format_form_with_icons(form: str) -> str:
-            if not form:
-                return ""
-            icons = {"W": "✅", "D": "➖", "L": "❌"}
-            icon_str = "".join(icons.get(c, c) for c in form)
-            return f"{form} ({icon_str})"
-        
-        home_form = format_form_with_icons(match.home_recent_form)
-        away_form = format_form_with_icons(match.away_recent_form)
-        lines.append(f"- 直近フォーム：Home {home_form} / Away {away_form}")
-        lines.append(f"- 過去の対戦成績：{match.h2h_summary}")
-        lines.append(f"- 主審：{match.referee}")
-        lines.append("")
-        
-        # Generate formation diagrams - Firebase Hosting用にpublic/reports/に保存
-        lines.append("### ■ フォーメーション図")
-        web_image_dir = "public/reports"  # Firebase用の出力先
-        
-        home_img = generate_formation_image(
-            match.home_formation, match.home_lineup, match.home_team,
-            is_home=True, output_dir=web_image_dir, match_id=match.id,
-            player_numbers=match.player_numbers
-        )
-        away_img = generate_formation_image(
-            match.away_formation, match.away_lineup, match.away_team,
-            is_home=False, output_dir=web_image_dir, match_id=match.id,
-            player_numbers=match.player_numbers
-        )
-        # Markdown用は相対パス、HTML変換時に/reports/images/xxx.pngに
-        if home_img:
-            lines.append(f"![{match.home_team}](/reports/{home_img})")
-            image_paths.append(f"public/reports/{home_img}")
-        if away_img:
-            lines.append(f"![{match.away_team}](/reports/{away_img})")
-            image_paths.append(f"public/reports/{away_img}")
-        lines.append("")
-        
-        # 選手画像はカードに統合済みのため、このセクションは削除
-        
-        lines.append("### ■ ニュース要約（600〜1,000字）")
-        lines.append(f"- {match.news_summary}")
-        lines.append("")
-        
-        lines.append("### ■ 戦術プレビュー")
-        lines.append(f"- {match.tactical_preview}")
-        # Issue #30: 有効なURLがある場合のみ出力（プレースホルダは除外）
-        if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
-            lines.append(f"- URL: {match.preview_url}")
-        lines.append("")
-        
-        # Issue #53: 監督セクション（画像付き）
-        lines.append("### ■ 監督プレビュー")
-        home_manager_photo_html = f'\u003cimg src="{match.home_manager_photo}" alt="{match.home_manager}" class="manager-photo"\u003e' if match.home_manager_photo else '\u003cdiv class="manager-photo manager-photo-placeholder"\u003e👤\u003c/div\u003e'
-        away_manager_photo_html = f'\u003cimg src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo"\u003e' if match.away_manager_photo else '\u003cdiv class="manager-photo manager-photo-placeholder"\u003e👤\u003c/div\u003e'
-        
-        manager_section_html = f'''\u003cdiv class="manager-section"\u003e
-\u003cdiv class="manager-card"\u003e
-{home_manager_photo_html}
-\u003cdiv class="manager-info"\u003e
-\u003cdiv class="manager-team"\u003e{match.home_team}\u003c/div\u003e
-\u003cdiv class="manager-name"\u003e{match.home_manager}\u003c/div\u003e
-\u003cdiv class="manager-comment"\u003e{match.home_interview}\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e
-\u003cdiv class="manager-card"\u003e
-{away_manager_photo_html}
-\u003cdiv class="manager-info"\u003e
-\u003cdiv class="manager-team"\u003e{match.away_team}\u003c/div\u003e
-\u003cdiv class="manager-name"\u003e{match.away_manager}\u003c/div\u003e
-\u003cdiv class="manager-comment"\u003e{match.away_interview}\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e
-\u003c/div\u003e'''
-        lines.append(manager_section_html)
-        lines.append("")
-        
-        # YouTube Videos Section
-        match_key = f"{match.home_team} vs {match.away_team}"
-        video_data = youtube_videos.get(match_key, {})
-        
-        # 新形式（{kept, removed, overflow}）と旧形式（リスト）の両方に対応
-        if isinstance(video_data, dict):
-            videos = video_data.get("kept", [])
-            removed_videos = video_data.get("removed", [])
-            overflow_videos = video_data.get("overflow", [])
-        else:
-            videos = video_data  # 旧形式（リスト）
-            removed_videos = []
-            overflow_videos = []
-        
-        if videos or removed_videos or overflow_videos:
-            lines.append("### ■ 📹 試合前の見どころ動画")
-            lines.append("")
-            
-            # カテゴリ別にグループ化
-            category_labels = {
-                "press_conference": "🎤 記者会見",
-                "historic": "⚔️ 因縁",
-                "tactical": "📊 戦術分析",
-                "player_highlight": "⭐ 選手紹介",
-                "training": "🏃 練習風景",
-            }
-            
-            # 動画表示用ヘルパー関数
-            def render_video_table(video_list: list, show_reason: bool = False, show_thumbnail: bool = True) -> list:
-                table_lines = []
-                
-                if show_thumbnail:
-                    # サムネイル付きテーブル（メイン表示用）
-                    table_lines.append('\u003ctable class="youtube-table"\u003e')
-                    table_lines.append('\u003cthead\u003e\u003ctr\u003e\u003cth style="text-align:center"\u003eサムネイル\u003c/th\u003e\u003cth style="text-align:left"\u003e動画情報\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e')
-                    table_lines.append('\u003ctbody\u003e')
-                    
-                    for v in video_list:
-                        title = v.get('title', 'No Title')
-                        if len(title) > 40:
-                            title = title[:37] + "..."
-                        url = v.get('url', '')
-                        thumbnail = v.get('thumbnail_url', '')
-                        channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
-                        published_at = v.get('published_at', '')
-                        query_label = v.get('query_label', '')
-                        filter_reason = v.get('filter_reason', '') if show_reason else ''
-                        
-                        relative_date = self._format_relative_date(published_at)
-                        
-                        thumb_cell = f'\u003ca href="{url}" target="_blank"\u003e\u003cimg src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"\u003e\u003c/a\u003e' if thumbnail else "-"
-                        label_prefix = f'【{query_label}】 ' if query_label else ''
-                        reason_suffix = f' \u003cspan style="color:#f44336"\u003e[除外: {filter_reason}]\u003c/span\u003e' if filter_reason else ''
-                        info_html = f'\u003cstrong\u003e\u003ca href="{url}" target="_blank"\u003e{label_prefix}{title}\u003c/a\u003e\u003c/strong\u003e{reason_suffix}\u003cbr/\u003e'
-                        info_html += f'📺 \u003cstrong\u003e{channel_display}\u003c/strong\u003e ・ 🕐 {relative_date}'
-                        
-                        table_lines.append(f'\u003ctr\u003e\u003ctd style="text-align:center"\u003e{thumb_cell}\u003c/td\u003e\u003ctd style="text-align:left"\u003e{info_html}\u003c/td\u003e\u003c/tr\u003e')
-                    
-                    table_lines.append('\u003c/tbody\u003e')
-                    table_lines.append('\u003c/table\u003e')
-                else:
-                    # サムネイルなしリスト（ソート落ち/除外用）
-                    table_lines.append('\u003cul style="font-size:0.85em;margin:0;padding-left:1.5em;"\u003e')
-                    for v in video_list:
-                        title = v.get('title', 'No Title')
-                        if len(title) > 50:
-                            title = title[:47] + "..."
-                        url = v.get('url', '')
-                        channel = v.get('channel_name', 'Unknown')
-                        query_label = v.get('query_label', '')
-                        filter_reason = v.get('filter_reason', '') if show_reason else ''
-                        
-                        label_prefix = f'【{query_label}】 ' if query_label else ''
-                        reason_suffix = f' \u003cspan style="color:#f44336"\u003e[{filter_reason}]\u003c/span\u003e' if filter_reason else ''
-                        table_lines.append(f'\u003cli\u003e\u003ca href="{url}" target="_blank"\u003e{label_prefix}{title}\u003c/a\u003e - {channel}{reason_suffix}\u003c/li\u003e')
-                    table_lines.append('\u003c/ul\u003e')
-                
-                return table_lines
-            
-            for cat_key, cat_label in category_labels.items():
-                cat_videos = [v for v in videos if v.get("category") == cat_key]
-                cat_overflow = [v for v in overflow_videos if v.get("category") == cat_key]
-                cat_removed = [v for v in removed_videos if v.get("category") == cat_key]
-                
-                if cat_videos or cat_overflow or cat_removed:
-                    # メインセクション（表示件数）
-                    lines.append(f"\u003cdetails open\u003e")
-                    lines.append(f"\u003csummary\u003e\u003cstrong\u003e{cat_label} ({len(cat_videos)}件)\u003c/strong\u003e\u003c/summary\u003e")
-                    
-                    if cat_videos:
-                        lines.extend(render_video_table(cat_videos))
-                    else:
-                        lines.append("\u003cp\u003e表示する動画がありません\u003c/p\u003e")
-                    
-                    # ソート落ち動画（overflow）の折りたたみ（サムネイルなし）
-                    if cat_overflow:
-                        lines.append(f"\u003cdetails\u003e")
-                        lines.append(f"\u003csummary\u003e📋 ソートで落ちた動画 ({len(cat_overflow)}件)\u003c/summary\u003e")
-                        lines.extend(render_video_table(cat_overflow, show_thumbnail=False))
-                        lines.append("\u003c/details\u003e")
-                    
-                    # 除外動画（removed）の折りたたみ（サムネイルなし、理由付き）
-                    if cat_removed:
-                        lines.append(f"\u003cdetails\u003e")
-                        lines.append(f"\u003csummary\u003e🚫 除外された動画 ({len(cat_removed)}件)\u003c/summary\u003e")
-                        lines.extend(render_video_table(cat_removed, show_reason=True, show_thumbnail=False))
-                        lines.append("\u003c/details\u003e")
-                    
-                    lines.append("\u003c/details\u003e")
-                    lines.append("")
-            
-        
-        lines.append("### ■ エラーステータス")
-        lines.append(f"- {match.error_status}")
-        lines.append("\n")
-        
-        return "\n".join(lines), image_paths
-
         """
         if youtube_videos is None:
             youtube_videos = {}
@@ -708,51 +85,28 @@ class ReportGenerator:
             
             # Issue #55: 基本情報をカード形式で表示
             lines.append("### ■ 基本情報")
-            match_info_html = f'''<div class="match-info-grid">
-<div class="match-info-item match-info-small">
-<div class="match-info-icon">🏆</div>
-<div class="match-info-content">
-<div class="match-info-label">大会</div>
-<div class="match-info-value">{match.competition}</div>
-</div>
-</div>
-<div class="match-info-item match-info-wide">
-<div class="match-info-icon">📅</div>
-<div class="match-info-content">
-<div class="match-info-label">日時</div>
-<div class="match-info-value">{match.kickoff_jst}<br><span class="match-info-subtext">{match.kickoff_local}</span></div>
-</div>
-</div>
-<div class="match-info-item">
-<div class="match-info-icon">🏟️</div>
-<div class="match-info-content">
-<div class="match-info-label">会場</div>
-<div class="match-info-value">{match.venue}</div>
-</div>
-</div>
-</div>'''
-            lines.append(match_info_html)
+            lines.append(self.match_info_formatter.format_match_info_html(match))
             
             # スタメン選手カード表示（HTML直接出力）
-            home_cards_html = self._format_player_cards(
+            home_cards_html = self.player_formatter.format_player_cards(
                 match.home_lineup, match.home_formation, match.home_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos
             )
-            away_cards_html = self._format_player_cards(
+            away_cards_html = self.player_formatter.format_player_cards(
                 match.away_lineup, match.away_formation, match.away_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos
             )
             # ベンチ選手もカード形式で表示（APIポジションを使用）
-            home_bench_html = self._format_player_cards(
+            home_bench_html = self.player_formatter.format_player_cards(
                 match.home_bench, "", match.home_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos,
                 position_label="SUB",
                 player_positions=match.player_positions
             )
-            away_bench_html = self._format_player_cards(
+            away_bench_html = self.player_formatter.format_player_cards(
                 match.away_bench, "", match.away_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos,
@@ -767,8 +121,8 @@ class ReportGenerator:
             # 負傷者をチーム別にフィルタリング
             home_injuries = [i for i in match.injuries_list if i.get("team", "") == match.home_team]
             away_injuries = [i for i in match.injuries_list if i.get("team", "") == match.away_team]
-            home_injury_html = self._format_injury_cards(home_injuries, match.player_photos)
-            away_injury_html = self._format_injury_cards(away_injuries, match.player_photos)
+            home_injury_html = self.player_formatter.format_injury_cards(home_injuries, match.player_photos)
+            away_injury_html = self.player_formatter.format_injury_cards(away_injuries, match.player_photos)
             
             # チーム別にスタメン・サブ・負傷者をグループ化
             # ホームチーム
@@ -789,16 +143,8 @@ class ReportGenerator:
             lines.append("#### Injuries / Suspended")
             lines.append(away_injury_html)
             
-            # Format form with icons (W=✅, D=➖, L=❌)
-            def format_form_with_icons(form: str) -> str:
-                if not form:
-                    return ""
-                icons = {"W": "✅", "D": "➖", "L": "❌"}
-                icon_str = "".join(icons.get(c, c) for c in form)
-                return f"{form} ({icon_str})"
-            
-            home_form = format_form_with_icons(match.home_recent_form)
-            away_form = format_form_with_icons(match.away_recent_form)
+            home_form = self.match_info_formatter.format_form_with_icons(match.home_recent_form)
+            away_form = self.match_info_formatter.format_form_with_icons(match.away_recent_form)
             lines.append(f"- 直近フォーム：Home {home_form} / Away {away_form}")
             lines.append(f"- 過去の対戦成績：{match.h2h_summary}")
             lines.append(f"- 主審：{match.referee}")
@@ -869,113 +215,7 @@ class ReportGenerator:
             # YouTube Videos Section
             match_key = f"{match.home_team} vs {match.away_team}"
             video_data = youtube_videos.get(match_key, {})
-            
-            # 新形式（{kept, removed, overflow}）と旧形式（リスト）の両方に対応
-            if isinstance(video_data, dict):
-                videos = video_data.get("kept", [])
-                removed_videos = video_data.get("removed", [])
-                overflow_videos = video_data.get("overflow", [])
-            else:
-                videos = video_data  # 旧形式（リスト）
-                removed_videos = []
-                overflow_videos = []
-            
-            if videos or removed_videos or overflow_videos:
-                lines.append("### ■ 📹 試合前の見どころ動画")
-                lines.append("")
-                
-                # カテゴリ別にグループ化
-                category_labels = {
-                    "press_conference": "🎤 記者会見",
-                    "historic": "⚔️ 因縁",
-                    "tactical": "📊 戦術分析",
-                    "player_highlight": "⭐ 選手紹介",
-                    "training": "🏃 練習風景",
-                }
-                
-                # 動画表示用ヘルパー関数
-                def render_video_table(video_list: list, show_reason: bool = False, show_thumbnail: bool = True) -> list:
-                    table_lines = []
-                    
-                    if show_thumbnail:
-                        # サムネイル付きテーブル（メイン表示用）
-                        table_lines.append('<table class="youtube-table">')
-                        table_lines.append('<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>')
-                        table_lines.append('<tbody>')
-                        
-                        for v in video_list:
-                            title = v.get('title', 'No Title')
-                            if len(title) > 40:
-                                title = title[:37] + "..."
-                            url = v.get('url', '')
-                            thumbnail = v.get('thumbnail_url', '')
-                            channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
-                            published_at = v.get('published_at', '')
-                            query_label = v.get('query_label', '')
-                            filter_reason = v.get('filter_reason', '') if show_reason else ''
-                            
-                            relative_date = self._format_relative_date(published_at)
-                            
-                            thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
-                            label_prefix = f'【{query_label}】 ' if query_label else ''
-                            reason_suffix = f' <span style="color:#f44336">[除外: {filter_reason}]</span>' if filter_reason else ''
-                            info_html = f'<strong><a href="{url}" target="_blank">{label_prefix}{title}</a></strong>{reason_suffix}<br/>'
-                            info_html += f'📺 <strong>{channel_display}</strong> ・ 🕐 {relative_date}'
-                            
-                            table_lines.append(f'<tr><td style="text-align:center">{thumb_cell}</td><td style="text-align:left">{info_html}</td></tr>')
-                        
-                        table_lines.append('</tbody>')
-                        table_lines.append('</table>')
-                    else:
-                        # サムネイルなしリスト（ソート落ち/除外用）
-                        table_lines.append('<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">')
-                        for v in video_list:
-                            title = v.get('title', 'No Title')
-                            if len(title) > 50:
-                                title = title[:47] + "..."
-                            url = v.get('url', '')
-                            channel = v.get('channel_name', 'Unknown')
-                            query_label = v.get('query_label', '')
-                            filter_reason = v.get('filter_reason', '') if show_reason else ''
-                            
-                            label_prefix = f'【{query_label}】 ' if query_label else ''
-                            reason_suffix = f' <span style="color:#f44336">[{filter_reason}]</span>' if filter_reason else ''
-                            table_lines.append(f'<li><a href="{url}" target="_blank">{label_prefix}{title}</a> - {channel}{reason_suffix}</li>')
-                        table_lines.append('</ul>')
-                    
-                    return table_lines
-                
-                for cat_key, cat_label in category_labels.items():
-                    cat_videos = [v for v in videos if v.get("category") == cat_key]
-                    cat_overflow = [v for v in overflow_videos if v.get("category") == cat_key]
-                    cat_removed = [v for v in removed_videos if v.get("category") == cat_key]
-                    
-                    if cat_videos or cat_overflow or cat_removed:
-                        # メインセクション（表示件数）
-                        lines.append(f"<details open>")
-                        lines.append(f"<summary><strong>{cat_label} ({len(cat_videos)}件)</strong></summary>")
-                        
-                        if cat_videos:
-                            lines.extend(render_video_table(cat_videos))
-                        else:
-                            lines.append("<p>表示する動画がありません</p>")
-                        
-                        # ソート落ち動画（overflow）の折りたたみ（サムネイルなし）
-                        if cat_overflow:
-                            lines.append(f"<details>")
-                            lines.append(f"<summary>📋 ソートで落ちた動画 ({len(cat_overflow)}件)</summary>")
-                            lines.extend(render_video_table(cat_overflow, show_thumbnail=False))
-                            lines.append("</details>")
-                        
-                        # 除外動画（removed）の折りたたみ（サムネイルなし、理由付き）
-                        if cat_removed:
-                            lines.append(f"<details>")
-                            lines.append(f"<summary>🚫 除外された動画 ({len(cat_removed)}件)</summary>")
-                            lines.extend(render_video_table(cat_removed, show_reason=True, show_thumbnail=False))
-                            lines.append("</details>")
-                        
-                        lines.append("</details>")
-                        lines.append("")
+            lines.append(self.youtube_formatter.format_youtube_section(video_data, match_key))
                 
             
             lines.append("### ■ エラーステータス")
