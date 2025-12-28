@@ -188,8 +188,14 @@ def sync_reports() -> None:
     remote_manifest = fetch_remote_manifest()
     local_manifest = fetch_local_manifest()
     
+    # 新形式対応: reports_by_dateとlegacy_reportsから件数を取得
     remote_reports = remote_manifest.get("reports", [])
-    logger.info(f"Remote reports: {len(remote_reports)}")
+    remote_legacy = remote_manifest.get("legacy_reports", [])
+    remote_by_date = remote_manifest.get("reports_by_date", {})
+    remote_total = len(remote_reports) + len(remote_legacy) + sum(
+        len(d.get("matches", [])) for d in remote_by_date.values()
+    )
+    logger.info(f"Remote reports: {remote_total}")
     
     # ローカルファイル確認
     local_files = get_local_files()
@@ -197,12 +203,31 @@ def sync_reports() -> None:
     
     # 不足しているレポートをダウンロード
     downloaded_count = 0
+    
+    # 旧形式のreportsから
     for report in remote_reports:
         file_name = report.get("file")
         if file_name and file_name not in local_files:
             local_path = LOCAL_REPORTS_DIR / file_name
             if download_file(file_name, local_path):
                 downloaded_count += 1
+    
+    # legacy_reportsから
+    for report in remote_legacy:
+        file_name = report.get("file")
+        if file_name and file_name not in local_files:
+            local_path = LOCAL_REPORTS_DIR / file_name
+            if download_file(file_name, local_path):
+                downloaded_count += 1
+    
+    # reports_by_dateから
+    for date_key, date_data in remote_by_date.items():
+        for match in date_data.get("matches", []):
+            file_name = match.get("file")
+            if file_name and file_name not in local_files:
+                local_path = LOCAL_REPORTS_DIR / file_name
+                if download_file(file_name, local_path):
+                    downloaded_count += 1
     
     logger.info(f"Downloaded {downloaded_count} new reports")
     
@@ -213,7 +238,10 @@ def sync_reports() -> None:
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(merged, f, ensure_ascii=False, indent=4)
     
-    logger.info(f"Manifest updated: {len(merged['reports'])} reports total")
+    # 新構造対応のログ出力
+    match_count = sum(len(d.get("matches", [])) for d in merged.get("reports_by_date", {}).values())
+    legacy_count = len(merged.get("legacy_reports", []))
+    logger.info(f"Manifest updated: {match_count} matches, {legacy_count} legacy reports")
     logger.info("=== Sync Complete ===")
 
 
