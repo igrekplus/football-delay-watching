@@ -587,10 +587,6 @@ class ReportGenerator:
         total_requests = api_calls + cache_hits
         lines.append(f"- YouTube Data API: {api_calls}回呼び出し (キャッシュ: {cache_hits}件, 合計リクエスト: {total_requests}件)")
         
-        # Append execution timestamp
-        import pytz
-        jst = pytz.timezone('Asia/Tokyo')
-        now_jst = datetime.now(jst).strftime('%Y-%m-%d %H:%M:%S')
-        lines.append(f"\n---\n*レポート生成日時: {now_jst} JST*")
+        # Note: レポート生成日時はhtml_generator.pyのテンプレート側で表示するため、ここでは追加しない
             
         return "\n".join(lines)

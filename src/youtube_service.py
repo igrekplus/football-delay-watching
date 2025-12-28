@@ -26,6 +26,7 @@ from settings.channels import (
     TACTICS_CHANNELS,  # 後方互換性のため残す（将来削除予定）
 )
 from src.domain.models import MatchData
+from src.youtube_filter import YouTubePostFilter
 
 logger = logging.getLogger(__name__)
 
@@ -40,15 +41,14 @@ class YouTubeService:
     API_BASE = "https://www.googleapis.com/youtube/v3"
     
     # チューニング可能なパラメータ
-    HISTORIC_SEARCH_DAYS = 730      # 過去ハイライト検索期間（2年）
-    RECENT_SEARCH_HOURS = 48        # 公式動画検索期間（48時間）
-    TRAINING_SEARCH_HOURS = 168     # 練習動画検索期間（1週間）
-    TACTICAL_SEARCH_DAYS = 180      # 戦術動画検索期間（6ヶ月）
-    PLAYER_SEARCH_DAYS = 180        # 選手紹介動画検索期間（6ヶ月）
+    HISTORIC_SEARCH_DAYS = 730               # 過去ハイライト検索期間（2年）
+    PRESS_CONFERENCE_SEARCH_HOURS = 48       # 記者会見検索期間（48時間）
+    TRAINING_SEARCH_HOURS = 168              # 練習動画検索期間（1週間）
+    TACTICAL_SEARCH_DAYS = 180               # 戦術動画検索期間（6ヶ月）
+    PLAYER_SEARCH_DAYS = 180                 # 選手紹介動画検索期間（6ヶ月）
     
-    # post-fetch用: 取得件数（フィルタ後に絞り込む）
-    FETCH_MAX_RESULTS = 10
-    PLAYER_FETCH_MAX_RESULTS = 50  # 選手紹介は50件取得してフィルター後に10件に絞る
+    # 全カテゴリ共通: 取得件数（フィルタ後に絞り込む）
+    FETCH_MAX_RESULTS = 50
     
     def __init__(
         self,
@@ -64,6 +64,9 @@ class YouTubeService:
         self._search_override = search_override
         # allow forcing cache behavior for healthcheck/mocks
         self._cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
+        
+        # フィルターインスタンス
+        self.filter = YouTubePostFilter()
         
         # API呼び出しカウンター
         self.api_call_count = 0
@@ -258,71 +261,21 @@ class YouTubeService:
         """
         信頼チャンネル優先でソート + バッジ付与
         
-        チューニング中は全件出力、信頼チャンネルにはバッジを付与
+        後方互換性のため残す（内部ではself.filter.sort_trustedを使用）
         """
-        for v in videos:
-            channel_id = v.get("channel_id", "")
-            v["is_trusted"] = is_trusted_channel(channel_id)
-            
-            if v["is_trusted"]:
-                info = get_channel_info(channel_id)
-                v["channel_display"] = f"✅ {info['name']}"
-                logger.info(f"YouTube result: \"{v['title'][:30]}...\" by {info['name']} (✅ trusted)")
-            else:
-                v["channel_display"] = f"⚠️ {v.get('channel_name', 'Unknown')}"
-                logger.info(f"YouTube result: \"{v['title'][:30]}...\" by {v.get('channel_name', 'Unknown')} (⚠️ not trusted)")
-        
-        # ソート: 信頼チャンネル優先、その中ではrelevance順維持
-        videos.sort(key=lambda v: (
-            0 if v["is_trusted"] else 1,
-            v.get("original_index", 0)
-        ))
-        
-        return videos
+        return self.filter.sort_trusted(videos)
 
     def apply_trusted_channel_sort(self, videos: List[Dict]) -> List[Dict]:
-        """healthcheck等から使うための信頼チャンネル優先ソート"""
-        return self._apply_trusted_channel_filter(videos)
+        """healthcheck等から使うための信頼チャンネル優先ソート（公開API）"""
+        return self.filter.sort_trusted(videos)
 
     def apply_player_post_filter(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
         """
-        選手紹介向けのpost-filter
-        - 試合ハイライト/フルマッチ/ライブ/会見/反応系を除外
-        - highlights + vs/v を含む場合は試合ハイライト扱いで除外
+        選手紹介向けのpost-filter（公開API）
+        
+        後方互換性のため残す（内部ではself.filter.exclude_highlightsを使用）
         """
-        rules = [
-            ("match_highlights", ["match highlights", "extended highlights"]),
-            ("highlights", ["highlights"]),  # 単体のhighlightsも除外
-            ("full_match", ["full match", "full game", "full replay"]),
-            ("live_stream", ["live", "livestream", "watch live", "streaming"]),
-            ("matchday", ["matchday"]),
-            ("press_conference", ["press conference"]),
-            ("reaction", ["reaction"]),
-        ]
-
-        kept: List[Dict] = []
-        removed: List[Dict] = []
-
-        for v in videos:
-            text = f"{v.get('title', '')} {v.get('description', '')}".lower()
-            reason = None
-
-            if "highlights" in text and (" vs " in text or " v " in text or " vs." in text):
-                reason = "match_highlights_vs"
-            else:
-                for rule_name, keywords in rules:
-                    if any(kw in text for kw in keywords):
-                        reason = rule_name
-                        break
-
-            if reason:
-                vv = dict(v)
-                vv["filter_reason"] = reason
-                removed.append(vv)
-            else:
-                kept.append(v)
-
-        return {"kept": kept, "removed": removed}
+        return self.filter.exclude_highlights(videos)
 
     # ========== 公開API（healthcheck等から使用） ==========
     
@@ -377,7 +330,7 @@ class YouTubeService:
         クエリ数: 1クエリ/チーム
         """
         # 48時間前〜キックオフ
-        published_after = kickoff_time - timedelta(hours=self.RECENT_SEARCH_HOURS)
+        published_after = kickoff_time - timedelta(hours=self.PRESS_CONFERENCE_SEARCH_HOURS)
         
         # 監督名がある場合は含める
         if manager_name:
@@ -395,8 +348,9 @@ class YouTubeService:
         for v in videos:
             v["category"] = "press_conference"
         
-        # post-fetchフィルタ適用
-        return self._apply_trusted_channel_filter(videos)
+        # フィルター適用: exclude_highlights + sort_trusted
+        videos = self.filter.exclude_highlights(videos)["kept"]
+        return self.filter.sort_trusted(videos)
     
     def _search_historic_clashes(
         self,
@@ -426,8 +380,8 @@ class YouTubeService:
         for v in videos:
             v["category"] = "historic"
         
-        # post-fetchフィルタ適用
-        return self._apply_trusted_channel_filter(videos)
+        # フィルター適用: sort_trustedのみ（クエリ自体がhighlights含む）
+        return self.filter.sort_trusted(videos)
     
     def _search_tactical(
         self,
@@ -455,8 +409,9 @@ class YouTubeService:
         for v in videos:
             v["category"] = "tactical"
         
-        # post-fetchフィルタ適用
-        return self._apply_trusted_channel_filter(videos)
+        # フィルター適用: exclude_highlights + sort_trusted
+        videos = self.filter.exclude_highlights(videos)["kept"]
+        return self.filter.sort_trusted(videos)
     
     def _search_player_highlight(
         self,
@@ -482,14 +437,15 @@ class YouTubeService:
             query=query,
             published_after=published_after,
             published_before=kickoff_time,
-            max_results=self.PLAYER_FETCH_MAX_RESULTS,
+            max_results=self.FETCH_MAX_RESULTS,
         )
         
         for v in videos:
             v["category"] = "player_highlight"
         
-        # post-fetchフィルタ適用
-        return self._apply_trusted_channel_filter(videos)
+        # フィルター適用: exclude_highlights + sort_trusted
+        videos = self.filter.exclude_highlights(videos)["kept"]
+        return self.filter.sort_trusted(videos)
     
     def _search_training(
         self,
@@ -518,18 +474,13 @@ class YouTubeService:
         for v in videos:
             v["category"] = "training"
         
-        # post-fetchフィルタ適用
-        return self._apply_trusted_channel_filter(videos)
+        # フィルター適用: exclude_highlights + sort_trusted
+        videos = self.filter.exclude_highlights(videos)["kept"]
+        return self.filter.sort_trusted(videos)
     
     def _deduplicate(self, videos: List[Dict]) -> List[Dict]:
-        """重複を排除"""
-        seen = set()
-        unique = []
-        for v in videos:
-            if v["video_id"] not in seen:
-                seen.add(v["video_id"])
-                unique.append(v)
-        return unique
+        """重複を排除（後方互換性のため、内部ではself.filter.deduplicateを使用）"""
+        return self.filter.deduplicate(videos)
     
     def _get_key_players(self, match: MatchData) -> Tuple[List[str], List[str]]:
         """
@@ -609,27 +560,12 @@ class YouTubeService:
         for player in away_players:
             all_videos.extend(self._search_player_highlight(player, away_team, kickoff_time))
         
-        # 選手紹介だけpost-filterを適用 + 最大10件に制限
-        player_videos = [v for v in all_videos if v.get("category") == "player_highlight"]
-        non_player_videos = [v for v in all_videos if v.get("category") != "player_highlight"]
-        if player_videos:
-            filtered = self.apply_player_post_filter(player_videos)
-            removed_count = len(filtered["removed"])
-            if removed_count:
-                logger.info(f"Player post-filter removed {removed_count} videos")
-            # 選手動画は最大10件に制限
-            player_kept = filtered["kept"][:10]
-            all_videos = non_player_videos + player_kept
-
         # 5. 練習風景（2クエリ = 1クエリ × 2チーム）
         all_videos.extend(self._search_training(home_team, kickoff_time))
         all_videos.extend(self._search_training(away_team, kickoff_time))
         
         # 重複排除
-        unique_videos = self._deduplicate(all_videos)
-        
-        # 最終ソート（信頼チャンネル優先）
-        unique_videos = self._apply_trusted_channel_filter(unique_videos)
+        unique_videos = self.filter.deduplicate(all_videos)
         
         logger.info(f"Found {len(unique_videos)} unique videos for {home_team} vs {away_team}")
         

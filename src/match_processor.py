@@ -77,10 +77,13 @@ class MatchProcessor:
                     teams = item['teams']
                     league = item['league']
                     
-                    # Check status (Finished only?) - テスト用に無効化
+                    # Check status
+                    # 試合前（NS）も含めて処理（プレビュー目的のため）
                     # status = fixture['status']['short']
-                    # if status not in ["FT", "AET", "PEN"]:
-                    #     continue # Skip non-finished matches
+                    # キャンセル・延期のみスキップ
+                    status = fixture['status']['short']
+                    if status in ["CANC", "PST", "ABD", "AWD", "WO"]:
+                        continue  # Skip cancelled/postponed matches
                     
                     # Convert match time to JST string (from UTC timestamp or string)
                     jst = pytz.timezone('Asia/Tokyo')
