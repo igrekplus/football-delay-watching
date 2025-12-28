@@ -111,12 +111,14 @@ class YouTubePostFilter:
 | メソッド | `_search_historic_clashes()` |
 | クエリ | `{home} vs {away} highlights` |
 | クエリ数 | **1クエリ/試合** |
-| 検索期間 | キックオフ - 730日 ～ キックオフ |
+| 検索期間 | キックオフ - 730日 ～ **キックオフ - 24時間**（ネタバレ防止） |
 | maxResults | **50** |
 | 除外フィルタ | `live_stream`, `press_conference`, `reaction` |
 | ソートフィルタ | `sort_trusted()` |
 
-> **Note**: クエリ自体が `highlights` を含むため、ハイライト除外フィルタは適用しない
+> **Note**: 
+> - クエリ自体が `highlights` を含むため、ハイライト除外フィルタは適用しない
+> - キックオフ24時間前までに制限することで、試合直前の予想動画などネタバレを防止
 
 ---
 

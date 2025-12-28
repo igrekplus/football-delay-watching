@@ -373,9 +373,9 @@ class YouTubeService:
         Returns:
             {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        # 過去2年〜キックオフまでの動画を検索
+        # 過去2年〜キックオフ24時間前までの動画を検索（ネタバレ防止）
         published_after = kickoff_time - timedelta(days=self.HISTORIC_SEARCH_DAYS)
-        published_before = kickoff_time
+        published_before = kickoff_time - timedelta(hours=24)
         
         query = f"{home_team} vs {away_team} highlights"
         
