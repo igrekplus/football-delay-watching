@@ -48,5 +48,34 @@ python healthcheck/check_gmail.py
 | 12/26 (木) | **12/27** |
 | 12/28 (土) | **12/29** |
 
+## 4. 選手SNSリンクのメンテナンス
+
+選手カードに表示されるInstagramアイコン（リンク）は、CSVファイルで管理されています。
+選手の移籍やURLの変更があった場合は、以下の手順で更新してください。
+
+### 管理ファイル
+- パス: `data/player_instagram_50.csv`
+- フォーマット: CSV (ヘッダーあり)
+
+> 現状はマンチェスター・シティ（TeamID: 50）のみ対応していますが、ファイルを追加することで他チームも対応可能です。
+
+### 手動追加・更新の手順
+1. `data/player_instagram_50.csv` をエディタで開きます。
+2. 以下の形式で行を追加または修正します。
+    - **name**: API-Football上の登録名（完全一致またはエイリアスが必要）
+    - **instagram_url**: プロフィールページの完全なURL
+    - ※ `player_id`, `position`, `number` は必須ではありませんが、管理のために記述推奨。
+
+例:
+```csv
+player_id,name,position,number,instagram_url
+...,...,...,...,...
+567,Rúben Dias,Defender,3,https://www.instagram.com/rubendias/
+999,New Player,Forward,99,https://www.instagram.com/newplayer/
+```
+
+3. 変更をコミットし、GitHubにプッシュ・デプロイすることで反映されます。
+
+
 ---
 ※ 開発フロー・デプロイ手順などの詳細については [GEMINI.md](../GEMINI.md) を参照してください。
