@@ -270,6 +270,26 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
             color: #888;
             font-size: 0.75rem;
         }}
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }}
+        .player-instagram-link:hover {{
+            opacity: 1;
+            transform: scale(1.1);
+        }}
+        .player-instagram-icon {{
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
+        }}
         /* Injury Card Styles */
         .injury-card {{
             border-color: rgba(255, 107, 107, 0.4);
@@ -611,10 +631,14 @@ def update_manifest_with_matches(match_entries: list, generation_datetime: str, 
                 if date_key not in existing_manifest["reports_by_date"]:
                     existing_manifest["reports_by_date"][date_key] = date_data
                 else:
-                    # 試合のマージ（重複除去）
-                    existing_ids = {m.get("fixture_id") for m in existing_manifest["reports_by_date"][date_key].get("matches", [])}
+                    # 試合のマージ（fixture_idとfileで重複除去）
+                    existing_keys = {
+                        f"{m.get('fixture_id')}_{m.get('file')}" 
+                        for m in existing_manifest["reports_by_date"][date_key].get("matches", [])
+                    }
                     for match in date_data.get("matches", []):
-                        if match.get("fixture_id") not in existing_ids:
+                        key = f"{match.get('fixture_id')}_{match.get('file')}"
+                        if key not in existing_keys:
                             existing_manifest["reports_by_date"][date_key]["matches"].append(match)
             
             existing_manifest["legacy_reports"].extend(local_manifest.get("legacy_reports", []))
@@ -819,6 +843,26 @@ def _get_html_template(title: str, html_body: str, timestamp: str) -> str:
         .player-card-age {{
             color: #888;
             font-size: 0.75rem;
+        }}
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }}
+        .player-instagram-link:hover {{
+            opacity: 1;
+            transform: scale(1.1);
+        }}
+        .player-instagram-icon {{
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
         }}
         .injury-card {{
             border-color: rgba(255, 107, 107, 0.4);

@@ -136,6 +136,19 @@ class MockProvider:
         match.player_nationalities = facts.get("player_nationalities", {})
         match.player_birthdates = facts.get("player_birthdates", {})
         match.player_photos = facts.get("player_photos", {})
+        
+        # Issue #40: Instagram URL設定（CSVから読み込み）
+        from settings.player_instagram import get_player_instagram_urls
+        instagram_urls = get_player_instagram_urls()
+        
+        all_players = (
+            match.home_lineup + match.home_bench +
+            match.away_lineup + match.away_bench
+        )
+        
+        for player_name in all_players:
+            if player_name in instagram_urls:
+                match.player_instagram[player_name] = instagram_urls[player_name]
     
     @classmethod
     def get_youtube_videos(cls, home_team: str, away_team: str) -> List[Dict]:

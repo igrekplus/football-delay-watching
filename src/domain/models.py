@@ -73,6 +73,9 @@ class MatchFacts:
     player_birthdates: Dict[str, str] = field(default_factory=dict)
     player_positions: Dict[str, str] = field(default_factory=dict)
     
+    # Issue #40: Player Social Media
+    player_instagram: Dict[str, str] = field(default_factory=dict)  # name -> Instagram URL
+    
     # Injuries and Suspensions
     injuries_list: List[Dict] = field(default_factory=list)
     injuries_info: str = "不明"
@@ -231,6 +234,9 @@ class MatchData:
     # Player Positions (name -> position mapping, for bench players)
     player_positions: dict = None  # {"Player Name": "G", ...} (G=GK, D=DF, M=MF, F=FW)
     
+    # Issue #40: Player Social Media
+    player_instagram: dict = None  # {"Player Name": "https://instagram.com/...", ...}
+    
     # Injuries and Suspensions (structured data)
     injuries_list: list = None  # [{"name": "Player", "team": "Team", "reason": "Injury"}, ...]
     injuries_info: str = "不明"  # 負傷者・出場停止情報（フォールバック用テキスト）
@@ -270,6 +276,7 @@ class MatchData:
         if self.player_photos is None: self.player_photos = {}
         if self.player_birthdates is None: self.player_birthdates = {}
         if self.player_positions is None: self.player_positions = {}
+        if self.player_instagram is None: self.player_instagram = {}
         if self.injuries_list is None: self.injuries_list = []
     
     @staticmethod
@@ -337,6 +344,7 @@ class MatchData:
             player_photos=self.player_photos,
             player_birthdates=self.player_birthdates,
             player_positions=self.player_positions,
+            player_instagram=self.player_instagram,
             injuries_list=self.injuries_list,
             injuries_info=self.injuries_info,
         )
@@ -365,6 +373,7 @@ class MatchData:
         self.player_photos = facts.player_photos
         self.player_birthdates = facts.player_birthdates
         self.player_positions = facts.player_positions
+        self.player_instagram = facts.player_instagram
         self.injuries_list = facts.injuries_list
         self.injuries_info = facts.injuries_info
     

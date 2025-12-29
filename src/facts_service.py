@@ -11,6 +11,7 @@ from typing import List
 from config import config
 from src.domain.models import MatchData
 from src.clients.api_football_client import ApiFootballClient
+from settings.player_instagram import get_player_instagram_urls
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +146,26 @@ class FactsService:
             except Exception as e:
                 logger.warning(f"Error fetching details for player {player_id}: {e}")
                 continue
+        
+        # Issue #40: Instagram URL設定（CSVから）
+        self._set_instagram_urls(match)
+    
+    def _set_instagram_urls(self, match: MatchData):
+        """選手のInstagram URLをCSVから設定"""
+        instagram_urls = get_player_instagram_urls()
+        
+        # 両チームの全選手に対してInstagram URLを設定
+        all_players = (
+            match.home_lineup + match.home_bench +
+            match.away_lineup + match.away_bench
+        )
+        
+        for player_name in all_players:
+            if player_name in instagram_urls:
+                match.player_instagram[player_name] = instagram_urls[player_name]
+        
+        if match.player_instagram:
+            logger.debug(f"Set Instagram URLs for {len(match.player_instagram)} players")
     
     def _fetch_injuries(self, match: MatchData):
         """怪我人情報を取得・加工"""

@@ -127,7 +127,8 @@ class PlayerFormatter:
                              player_birthdates: Dict[str, str] = None,
                              player_photos: Dict[str, str] = None,
                              position_label: str = None,
-                             player_positions: Dict[str, str] = None) -> str:
+                             player_positions: Dict[str, str] = None,
+                             player_instagram: Dict[str, str] = None) -> str:
         """
         選手リストをカード形式のHTMLに変換
         
@@ -135,6 +136,7 @@ class PlayerFormatter:
             position_label: 全選手に使用するポジションラベル（例: "SUB"）。
                            Noneの場合はフォーメーションから計算
             player_positions: 選手名 -> ポジションのマッピング（ベンチ用）
+            player_instagram: 選手名 -> Instagram URLのマッピング
         """
         if nationalities is None:
             nationalities = {}
@@ -146,12 +148,17 @@ class PlayerFormatter:
             player_photos = {}
         if player_positions is None:
             player_positions = {}
+        if player_instagram is None:
+            player_instagram = {}
         
         if not lineup:
             return '<div class="player-cards"><p>選手情報なし</p></div>'
         
         # ポジション略称からフル名への変換
         pos_map = {'G': 'GK', 'D': 'DF', 'M': 'MF', 'F': 'FW'}
+        
+        # Instagram SVGアイコン
+        instagram_svg = '''<svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>'''
         
         cards_html = []
         for idx, name in enumerate(lineup):
@@ -166,6 +173,7 @@ class PlayerFormatter:
             nationality = nationalities.get(name, "")
             birthdate = player_birthdates.get(name, "")
             photo_url = player_photos.get(name, "")
+            instagram_url = player_instagram.get(name, "")
             age = self.calculate_age(birthdate)
             
             # 国旗を取得
@@ -182,8 +190,13 @@ class PlayerFormatter:
             # 国籍に国旗を追加
             nationality_display = f"{flag} {nationality}" if nationality else ""
             
+            # Issue #40: Instagramリンク
+            instagram_html = ""
+            if instagram_url:
+                instagram_html = f'<a href="{instagram_url}" target="_blank" rel="noopener noreferrer" class="player-instagram-link" title="Instagram">{instagram_svg}</a>'
+            
             card = f'''<div class="player-card">
-<div class="player-card-header"><span>{name}</span></div>
+<div class="player-card-header"><span>{name}</span>{instagram_html}</div>
 <div class="player-card-body">
 {photo_html}
 <div class="player-card-info">

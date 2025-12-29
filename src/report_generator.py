@@ -174,24 +174,28 @@ class ReportGenerator:
         home_cards_html = self.player_formatter.format_player_cards(
             match.home_lineup, match.home_formation, match.home_team,
             match.player_nationalities, match.player_numbers,
-            match.player_birthdates, match.player_photos
+            match.player_birthdates, match.player_photos,
+            player_instagram=match.player_instagram
         )
         away_cards_html = self.player_formatter.format_player_cards(
             match.away_lineup, match.away_formation, match.away_team,
             match.player_nationalities, match.player_numbers,
-            match.player_birthdates, match.player_photos
+            match.player_birthdates, match.player_photos,
+            player_instagram=match.player_instagram
         )
         home_bench_html = self.player_formatter.format_player_cards(
             match.home_bench, "", match.home_team,
             match.player_nationalities, match.player_numbers,
             match.player_birthdates, match.player_photos,
-            position_label="SUB", player_positions=match.player_positions
+            position_label="SUB", player_positions=match.player_positions,
+            player_instagram=match.player_instagram
         )
         away_bench_html = self.player_formatter.format_player_cards(
             match.away_bench, "", match.away_team,
             match.player_nationalities, match.player_numbers,
             match.player_birthdates, match.player_photos,
-            position_label="SUB", player_positions=match.player_positions
+            position_label="SUB", player_positions=match.player_positions,
+            player_instagram=match.player_instagram
         )
         
         home_logo_html = f'<img src="{match.home_logo}" alt="{match.home_team}" class="team-logo">' if match.home_logo else ''
@@ -331,12 +335,14 @@ class ReportGenerator:
             home_cards_html = self.player_formatter.format_player_cards(
                 match.home_lineup, match.home_formation, match.home_team,
                 match.player_nationalities, match.player_numbers,
-                match.player_birthdates, match.player_photos
+                match.player_birthdates, match.player_photos,
+                player_instagram=match.player_instagram
             )
             away_cards_html = self.player_formatter.format_player_cards(
                 match.away_lineup, match.away_formation, match.away_team,
                 match.player_nationalities, match.player_numbers,
-                match.player_birthdates, match.player_photos
+                match.player_birthdates, match.player_photos,
+                player_instagram=match.player_instagram
             )
             # ベンチ選手もカード形式で表示（APIポジションを使用）
             home_bench_html = self.player_formatter.format_player_cards(
@@ -344,14 +350,16 @@ class ReportGenerator:
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos,
                 position_label="SUB",
-                player_positions=match.player_positions
+                player_positions=match.player_positions,
+                player_instagram=match.player_instagram
             )
             away_bench_html = self.player_formatter.format_player_cards(
                 match.away_bench, "", match.away_team,
                 match.player_nationalities, match.player_numbers,
                 match.player_birthdates, match.player_photos,
                 position_label="SUB",
-                player_positions=match.player_positions
+                player_positions=match.player_positions,
+                player_instagram=match.player_instagram
             )
             
             # Issue #52: チームロゴ付きヘッダー

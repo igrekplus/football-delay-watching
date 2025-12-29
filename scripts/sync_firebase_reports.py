@@ -132,10 +132,14 @@ def merge_manifests(local: Dict, remote: Dict) -> Dict:
         if date_key not in merged["reports_by_date"]:
             merged["reports_by_date"][date_key] = date_data
         else:
-            # 試合のマージ（fixture_idで重複除去）
-            existing_ids = {m.get("fixture_id") for m in merged["reports_by_date"][date_key].get("matches", [])}
+            # 試合のマージ（fixture_idとfileで重複除去）
+            existing_keys = {
+                f"{m.get('fixture_id')}_{m.get('file')}" 
+                for m in merged["reports_by_date"][date_key].get("matches", [])
+            }
             for match in date_data.get("matches", []):
-                if match.get("fixture_id") not in existing_ids:
+                key = f"{match.get('fixture_id')}_{match.get('file')}"
+                if key not in existing_keys:
                     merged["reports_by_date"][date_key]["matches"].append(match)
     
     # --- legacy_reports のマージ ---

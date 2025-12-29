@@ -9,7 +9,7 @@
         "home_lineup": [
             "G. Donnarumma",
             "M. Nunes",
-            "R. Dias",
+            "Rúben Dias",
             "J. Gvardiol",
             "N. O'Reilly",
             "T. Reijnders",
@@ -92,7 +92,7 @@
         "player_numbers": {
             "G. Donnarumma": 25,
             "M. Nunes": 27,
-            "R. Dias": 3,
+            "Rúben Dias": 3,
             "J. Gvardiol": 24,
             "N. O'Reilly": 33,
             "T. Reijnders": 4,
@@ -116,7 +116,7 @@
         "player_nationalities": {
             "G. Donnarumma": "Italy",
             "M. Nunes": "Portugal",
-            "R. Dias": "Portugal",
+            "Rúben Dias": "Portugal",
             "J. Gvardiol": "Croatia",
             "N. O'Reilly": "England",
             "T. Reijnders": "Netherlands",
@@ -154,7 +154,7 @@
         "player_birthdates": {
             "G. Donnarumma": "1999-02-25",
             "M. Nunes": "1998-08-27",
-            "R. Dias": "1997-05-14",
+            "Rúben Dias": "1997-05-14",
             "J. Gvardiol": "2002-01-23",
             "N. O'Reilly": "2003-07-15",
             "T. Reijnders": "1998-07-29",
@@ -192,7 +192,7 @@
         "player_photos": {
             "G. Donnarumma": "https://media.api-sports.io/football/players/1622.png",
             "M. Nunes": "https://media.api-sports.io/football/players/41621.png",
-            "R. Dias": "https://media.api-sports.io/football/players/567.png",
+            "Rúben Dias": "https://media.api-sports.io/football/players/567.png",
             "J. Gvardiol": "https://media.api-sports.io/football/players/129033.png",
             "N. O'Reilly": "https://media.api-sports.io/football/players/307123.png",
             "T. Reijnders": "https://media.api-sports.io/football/players/36902.png",
