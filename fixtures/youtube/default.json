@@ -1,0 +1,95 @@
+{
+    "default": [
+        {
+            "video_id": "FYuyWxcX604",
+            "title": "Manager's Preview | Pep Guardiola press conference",
+            "url": "https://www.youtube.com/watch?v=FYuyWxcX604",
+            "channel_id": "UCkzCjdRMrW2vXLx8mvPVLdQ",
+            "channel_name": "Man City",
+            "thumbnail_url": "https://i.ytimg.com/vi/FYuyWxcX604/mqdefault.jpg",
+            "published_at": "2025-12-19T14:00:00Z",
+            "description": "Pep Guardiola speaks ahead of...",
+            "category": "press_conference",
+            "is_trusted": true,
+            "channel_display": "✅ Man City"
+        },
+        {
+            "video_id": "qmsEeXaoBu8",
+            "title": "Pep Guardiola Speaks On His Future At Man City",
+            "url": "https://www.youtube.com/watch?v=qmsEeXaoBu8",
+            "channel_id": "UC7gFIlP3YVcY5gYhPdQ0jNA",
+            "channel_name": "DAZN Football",
+            "thumbnail_url": "https://i.ytimg.com/vi/qmsEeXaoBu8/mqdefault.jpg",
+            "published_at": "2025-12-19T16:30:00Z",
+            "description": "Exclusive interview with Pep...",
+            "category": "press_conference",
+            "is_trusted": true,
+            "channel_display": "✅ DAZN Football"
+        },
+        {
+            "video_id": "sAewmh-Lu8U",
+            "title": "EXTENDED HIGHLIGHTS | 4-IN-A-ROW | Man City 3-1 West Ham",
+            "url": "https://www.youtube.com/watch?v=sAewmh-Lu8U",
+            "channel_id": "UCkzCjdRMrW2vXLx8mvPVLdQ",
+            "channel_name": "Man City",
+            "thumbnail_url": "https://i.ytimg.com/vi/sAewmh-Lu8U/mqdefault.jpg",
+            "published_at": "2024-05-19T22:00:00Z",
+            "description": "City secure fourth consecutive title...",
+            "category": "historic",
+            "is_trusted": true,
+            "channel_display": "✅ Man City"
+        },
+        {
+            "video_id": "rPmUSbkSl34",
+            "title": "Man City Win The Premier League! | Man City 3-1 West Ham",
+            "url": "https://www.youtube.com/watch?v=rPmUSbkSl34",
+            "channel_id": "UCG5qGW...",
+            "channel_name": "Premier League",
+            "thumbnail_url": "https://i.ytimg.com/vi/rPmUSbkSl34/mqdefault.jpg",
+            "published_at": "2024-05-19T23:00:00Z",
+            "description": "Premier League champions crowned...",
+            "category": "historic",
+            "is_trusted": true,
+            "channel_display": "✅ Premier League"
+        },
+        {
+            "video_id": "B6RgCAiLg44",
+            "title": "【試合総括】マンチェスターCvsナポリを解説！",
+            "url": "https://www.youtube.com/watch?v=B6RgCAiLg44",
+            "channel_id": "UCxxxxx",
+            "channel_name": "GOAT理論【切り抜き】",
+            "thumbnail_url": "https://i.ytimg.com/vi/B6RgCAiLg44/mqdefault.jpg",
+            "published_at": "2025-12-10T10:00:00Z",
+            "description": "ナポリの守備を攻略したペップの戦略...",
+            "category": "tactical",
+            "is_trusted": false,
+            "channel_display": "⚠️ GOAT理論【切り抜き】"
+        },
+        {
+            "video_id": "VPgwGN9kGpI",
+            "title": "Erling Haaland's First 100 Premier League Goals!",
+            "url": "https://www.youtube.com/watch?v=VPgwGN9kGpI",
+            "channel_id": "UCG5qGW...",
+            "channel_name": "Premier League",
+            "thumbnail_url": "https://i.ytimg.com/vi/VPgwGN9kGpI/mqdefault.jpg",
+            "published_at": "2025-11-30T15:00:00Z",
+            "description": "Watch all 100 of Haaland's goals...",
+            "category": "player_highlight",
+            "is_trusted": true,
+            "channel_display": "✅ Premier League"
+        },
+        {
+            "video_id": "Hv2IXyyAgBQ",
+            "title": "HIGHLIGHTS! Haaland and Foden help power City to victory",
+            "url": "https://www.youtube.com/watch?v=Hv2IXyyAgBQ",
+            "channel_id": "UCkzCjdRMrW2vXLx8mvPVLdQ",
+            "channel_name": "Man City",
+            "thumbnail_url": "https://i.ytimg.com/vi/Hv2IXyyAgBQ/mqdefault.jpg",
+            "published_at": "2025-12-14T22:00:00Z",
+            "description": "Crystal Palace 0-3 Man City...",
+            "category": "training",
+            "is_trusted": true,
+            "channel_display": "✅ Man City"
+        }
+    ]
+}

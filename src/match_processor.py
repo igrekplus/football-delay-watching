@@ -21,11 +21,13 @@ class MatchProcessor:
             return self._fetch_matches_from_api()
 
     def _fetch_matches_from_api(self) -> List[MatchData]:
-        # import requests # Removed requests import
-        from src.clients.cache import get_with_cache
+        from src.clients.caching_http_client import create_caching_client
         from datetime import datetime, timedelta
         import pytz
 
+        # HTTPクライアント初期化
+        http_client = create_caching_client()
+        
         # API-Football logic
         # Targeted Leagues: 39 (Premier League), 2 (Champions League)
         # Dates: Yesterday
@@ -60,7 +62,7 @@ class MatchProcessor:
             }
             
             try:
-                response = get_with_cache(url, headers=headers, params=querystring)
+                response = http_client.get(url, headers=headers, params=querystring)
                 
                 # Capture Rate Limit Info
                 if "x-ratelimit-requests-remaining" in response.headers:
@@ -168,36 +170,9 @@ class MatchProcessor:
         match.rank = "None"
     
     def _get_mock_matches(self) -> List[MatchData]:
-        # Mock data based on real match: Manchester City vs West Ham (2025-12-21)
-        import pytz
-        from datetime import datetime
-        utc = pytz.UTC
-        # モック用キックオフ時刻: 2025-12-20 15:00 UTC
-        mock_kickoff_utc = utc.localize(datetime(2025, 12, 20, 15, 0, 0))
-        
-        return [
-            MatchData(
-                id="1379135", home_team="Manchester City", away_team="West Ham",
-                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 Local",
-                rank="S", venue="Etihad Stadium, Manchester", referee="Paul Tierney, England",
-                kickoff_at_utc=mock_kickoff_utc,
-            ),
-            MatchData(
-                id="m2", home_team="Newcastle", away_team="Chelsea",
-                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 GMT",
-                rank="A", kickoff_at_utc=mock_kickoff_utc,
-            ),
-            MatchData(
-                id="m3", home_team="Everton", away_team="Arsenal",
-                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 GMT",
-                rank="A", kickoff_at_utc=mock_kickoff_utc,
-            ),
-            MatchData(
-                id="m4", home_team="Brighton", away_team="Sunderland",
-                competition="EPL", kickoff_jst="2025/12/21 00:00 JST", kickoff_local="2025-12-20 15:00 GMT",
-                rank="None", kickoff_at_utc=mock_kickoff_utc,
-            )
-        ]
+        """モック試合データを取得"""
+        from src.mock_provider import MockProvider
+        return MockProvider.get_matches()
 
     def select_matches(self, matches: List[MatchData]) -> List[MatchData]:
         """

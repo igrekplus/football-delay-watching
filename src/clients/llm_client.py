@@ -212,28 +212,10 @@ class LLMClient:
     # ========== モック用メソッド ==========
     
     def _get_mock_news_summary(self, home_team: str, away_team: str) -> str:
-        return f"""プレミアリーグの注目カード、{home_team}対{away_team}の一戦が間近に迫り、多くのサッカーメディアやファンが試合のプレビューを発信し、期待感を高めている。
-
-昨シーズンの王者である{home_team}は、今季もその圧倒的な攻撃力と組織的な守備でリーグを席巻している。ホームで迎えるこの一戦でも、盤石の試合運びで確実に勝ち点を狙ってくるだろう。
-
-対する{away_team}は、強敵シティにアウェイで挑む形となる。チームの創造性の中心を担うのは、ブラジル代表のルーカス・パケタだ。彼の卓越したテクニックとパスセンスが、シティの堅固な守備陣をこじ開ける鍵となることは間違いない。
-
-試合の焦点は、シティが誇るボール支配に対し、{away_team}がいかにして効果的なカウンターを仕掛けられるかという点にある。王者シティがその強さを見せつけるのか、それとも{away_team}がキーマン・パケタを中心に一矢報いるのか。"""
+        from src.mock_provider import MockProvider
+        return MockProvider.get_news_summary(home_team, away_team)
     
     def _get_mock_tactical_preview(self, home_team: str, away_team: str) -> str:
-        return f"""### {home_team} vs {away_team}：戦術分析プレビュー
+        from src.mock_provider import MockProvider
+        return MockProvider.get_tactical_preview(home_team, away_team)
 
-プレミアリーグ屈指の戦術的な対決となるこの一戦は、対照的なスタイルを持つ両チームの激突が予想される。
-
-**{home_team}の予想フォーメーション: 4-2-3-1**
-- グアルディオラ監督のチームは、圧倒的なボールポゼッションで試合を支配することを目指す
-- 最前線のハーランドをターゲットに、両翼のウインガーがハーフスペースを利用
-
-**{away_team}の予想フォーメーション: 4-5-1**
-- 自陣でコンパクトな守備ブロックを形成し、シティの攻撃スペースを消す
-- ボーウェンのスピードとパケタの創造性がカウンターの起点
-
-**注目のマッチアップ:**
-1. ハーランド vs ウェストハムのCB - フィジカルとポジショニングの攻防
-2. ロドリ vs パケタ - 中盤の主導権争い
-3. シティのウインガー vs サイドバック - 1対1の勝負"""
