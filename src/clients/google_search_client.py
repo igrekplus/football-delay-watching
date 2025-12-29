@@ -196,26 +196,6 @@ class GoogleSearchClient:
     # ========== モック用メソッド ==========
     
     def _get_mock_news(self, home_team: str, away_team: str) -> List[Dict[str, str]]:
-        return [
-            {
-                "content": f"Premier League preview: {home_team} host {away_team} at Etihad Stadium. Guardiola's side looking to continue their dominance.",
-                "title": f"{home_team} vs {away_team}: Premier League Preview",
-                "source": "www.bbc.com",
-                "url": "https://www.bbc.com/sport",
-                "relevance_score": 2
-            },
-            {
-                "content": f"Lucas Paqueta will be key for {away_team}. His creativity and passing could unlock City's defense.",
-                "title": "Paqueta's role vital for West Ham",
-                "source": "www.skysports.com",
-                "url": "https://www.skysports.com",
-                "relevance_score": 1
-            },
-            {
-                "content": "Haaland has scored in his last 5 Premier League games. The Norwegian striker is in phenomenal form.",
-                "title": "Haaland's scoring streak continues",
-                "source": "www.goal.com",
-                "url": "https://www.goal.com",
-                "relevance_score": 0
-            }
-        ]
+        from src.mock_provider import MockProvider
+        return MockProvider.get_news(home_team, away_team)
+
