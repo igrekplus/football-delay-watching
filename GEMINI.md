@@ -30,26 +30,35 @@
 
 ```
 .
-├── main.py              # エントリーポイント
+├── main.py              # エントリーポイント（軽量化済み）
 ├── config.py            # 設定管理（環境変数読み込み）
 ├── src/
 │   ├── domain/          # ドメインモデル
-│   │   └── models.py    # MatchDataクラス
+│   │   ├── models.py        # MatchDataクラス
+│   │   ├── match_ranker.py  # 試合ランク付けロジック
+│   │   └── match_selector.py # 試合選定ロジック
 │   ├── clients/         # 外部APIクライアント
-│   │   └── cache.py     # APIキャッシュ（ローカル/GCS対応）
+│   │   ├── api_football_client.py  # API-Football統合クライアント
+│   │   ├── caching_http_client.py  # キャッシュ付きHTTPクライアント
+│   │   └── cache_store.py          # キャッシュストア（Local/GCS）
 │   ├── utils/           # ユーティリティ
 │   │   ├── formation_image.py   # フォーメーション図生成
 │   │   ├── nationality_flags.py # 国名→国旗絵文字
-│   │   └── spoiler_filter.py    # ネタバレフィルター
-│   ├── match_processor.py   # 試合データ取得・選定
+│   │   ├── spoiler_filter.py    # ネタバレフィルター
+│   │   └── execution_policy.py  # 実行制御（時間/クォータ）
+│   ├── workflows/       # ワークフロー
+│   │   └── generate_guide_workflow.py  # メインワークフロー
+│   ├── match_processor.py   # 試合データ取得・オーケストレーション
 │   ├── facts_service.py     # スタメン・フォーメーション・国籍取得
 │   ├── news_service.py      # ニュース収集・Gemini要約
 │   ├── youtube_service.py   # YouTube動画検索
 │   ├── report_generator.py  # Markdownレポート生成
 │   ├── html_generator.py    # HTML変換・Firebase manifest管理
+│   ├── cache_warmer.py      # キャッシュプリフェッチ
 │   └── email_service.py     # Gmail APIメール送信
 ├── settings/            # 設定ファイル
-│   └── channels.py      # YouTubeチャンネル優先度設定
+│   ├── channels.py          # YouTubeチャンネル優先度設定
+│   └── cache_config.py      # キャッシュTTL/バックエンド設定
 ├── healthcheck/         # APIヘルスチェック
 │   ├── check_football_api.py  # API-Football
 │   ├── check_google_search.py # Google Custom Search
@@ -62,6 +71,7 @@
 ├── tests/                   # API検証スクリプト
 └── .github/workflows/       # GitHub Actions
 ```
+
 
 ## 🔧 開発コマンド
 
@@ -91,16 +101,32 @@ python main.py
 
 ```bash
 # 同期 + デプロイ（必ずセットで実行）
-python scripts/sync_firebase_reports.py && firebase deploy --only hosting
+# ⚠️ firebaseコマンドが見つからない場合は source ~/.zshrc を先に実行
+source ~/.zshrc && python scripts/sync_firebase_reports.py && firebase deploy --only hosting
 ```
 
 または `/debug-run` ワークフローを使用（実行→デプロイまで自動）
 
 > **📢 AI向け指示**: デプロイ完了後は、**必ずユーザーにレポートURLを連携すること**。
 > 
-> **レポートURL形式**: `https://football-delay-watching-a8830.web.app/reports/report_YYYY-MM-DD_HHMMSS.html`
+> **レポートURL形式**: `https://football-delay-watching-a8830.web.app/reports/{試合日}_{ホーム}_vs_{アウェイ}_{実行日時}.html`
 > 
 > ログから生成されたレポートファイル名を確認して連携する。
+
+### ⚠️ モード選択に関する重要注意
+
+> **📢 AI向け指示**: ユーザーから「デバッグモードで確認して」と言われた場合、**必ず`USE_MOCK_DATA=False`で実行すること**。
+> 
+> モックモード（`USE_MOCK_DATA=True`）とデバッグモード（`DEBUG_MODE=True`）は**全く異なる目的**：
+
+| モード | 目的 | データソース | 試合選定 |
+|--------|------|-------------|----------|
+| **モック** | UI/レイアウト確認 | 固定のフェイクデータ | 常に同じ3試合 |
+| **デバッグ** | 実データでの動作確認 | 実API (API-Football等) | 直近土曜の試合 |
+
+**NG例**: ユーザーが「デバッグで確認して」と言ったのに、APIエラー回避のためにモックで実行する → ❌ 不正解
+**OK例**: デバッグで試合が0件の場合、ユーザーに報告して対応を確認 → ✅ 正解
+
 
 ### 📅 デバッグモードの日付処理
 
@@ -279,4 +305,18 @@ gh issue comment <NUMBER> --body "## 実装完了 ✅
 - **デバッグモード**: 1試合のみ処理でクォータ節約
 - **コミットメッセージ**: `Closes #N` でIssue自動クローズ
 - **Issue対応後**: 必ずコメントで修正内容を記録
+- **Instagram CSV**: `data/player_instagram_50.csv` の選手名は **API-Footballの返却名と完全一致** が必要（例: `E. Haaland` ではなく `Erling Haaland`）
 
+### リファクタリング時の注意
+
+> **📢 AI向け指示**: 既存のサービスクラスが参照しているメソッド名を変更する場合、**依存先が正しく動作するか必ず確認すること**。
+
+**例**: `ApiFootballClient` に新メソッドを追加する際、`FactsService` が `fetch_lineups()` を期待しているなら、そのメソッドも実装する必要がある。
+
+### ghコマンドのパス
+
+> **📢 AI向け指示**: `gh` コマンドが見つからない場合は `/opt/homebrew/bin/gh` を使用すること。
+
+```bash
+/opt/homebrew/bin/gh issue list
+```
