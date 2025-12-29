@@ -11,6 +11,11 @@ from typing import Dict, List
 import requests
 
 from config import config
+from settings.search_specs import (
+    GOOGLE_SEARCH_SPECS,
+    build_google_query,
+    get_google_search_params,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -92,14 +97,17 @@ class GoogleSearchClient:
         if self.use_mock:
             return self._get_mock_news(home_team, away_team)
         
-        # Issue #34: 女子チームを除外し、対戦関連記事を優先
-        query = f'"{home_team}" "{away_team}" match preview -women -WFC -WSL -女子'
-        gl = "jp" if "Japan" in competition else "us"
+        # スペックからクエリを生成
+        query = build_google_query("news", home_team=home_team, away_team=away_team)
+        
+        # スペックから検索パラメータを取得
+        spec = GOOGLE_SEARCH_SPECS["news"]
+        gl = spec["gl_japan"] if "Japan" in competition else spec["gl_default"]
         
         items = self.search(
             query=query,
             num=config.NEWS_SEARCH_LIMIT,
-            date_restrict="d2",
+            date_restrict=spec["date_restrict"],
             gl=gl
         )
         
@@ -148,20 +156,20 @@ class GoogleSearchClient:
         if self.use_mock:
             return []  # モック時はインタビュー記事なし
         
-        # 複数のクエリで検索
-        queries = [
-            f'"{team_name}" manager "said" OR "says" OR "quotes" press conference Premier League -result -score -twitter.com -x.com -women -WFC -WSL',
-            f'"{team_name}" player interview "said" OR "reveals" OR "admits" Premier League -result -score -twitter.com -x.com -women -WFC -WSL'
-        ]
+        # スペックからクエリ・パラメータを生成
+        search_types = ["interview_manager", "interview_player"]
         
         all_articles = []
         
-        for query in queries:
+        for search_type in search_types:
+            query = build_google_query(search_type, team_name=team_name)
+            params = get_google_search_params(search_type)
+            
             items = self.search(
                 query=query,
-                num=5,
-                date_restrict="d7",
-                gl="uk"
+                num=params["num"],
+                date_restrict=params["date_restrict"],
+                gl=params["gl"]
             )
             
             if not items:

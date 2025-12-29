@@ -25,6 +25,12 @@ from settings.channels import (
     get_channel_info,
     TACTICS_CHANNELS,  # 後方互換性のため残す（将来削除予定）
 )
+from settings.search_specs import (
+    YOUTUBE_SEARCH_SPECS,
+    build_youtube_query,
+    get_youtube_time_window,
+    get_youtube_exclude_filters,
+)
 from src.domain.models import MatchData
 from src.youtube_filter import YouTubePostFilter
 
@@ -40,13 +46,7 @@ class YouTubeService:
     
     API_BASE = "https://www.googleapis.com/youtube/v3"
     
-    # チューニング可能なパラメータ
-    HISTORIC_SEARCH_DAYS = 730               # 過去ハイライト検索期間（2年）
-    PRESS_CONFERENCE_SEARCH_HOURS = 48       # 記者会見検索期間（48時間）
-    TRAINING_SEARCH_HOURS = 168              # 練習動画検索期間（1週間）
-    TACTICAL_SEARCH_DAYS = 180               # 戦術動画検索期間（6ヶ月）
-    PLAYER_SEARCH_DAYS = 180                 # 選手紹介動画検索期間（6ヶ月）
-    
+    # 検索パラメータは settings/search_specs.py で管理
     # 全カテゴリ共通: 取得件数（フィルタ後に絞り込む）
     FETCH_MAX_RESULTS = 50
     
@@ -56,6 +56,7 @@ class YouTubeService:
         http_get: Optional[Callable] = None,
         search_override: Optional[Callable[[Dict], List[Dict]]] = None,
         cache_enabled: Optional[bool] = None,
+        youtube_client = None,  # YouTubeSearchClient (DI用)
     ):
         # YOUTUBE_API_KEY を優先、なければ GOOGLE_API_KEY にフォールバック
         self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
@@ -64,6 +65,10 @@ class YouTubeService:
         self._search_override = search_override
         # allow forcing cache behavior for healthcheck/mocks
         self._cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
+        
+        # YouTubeSearchClient (DI対応)
+        # 将来的にはClientに統一し、既存ロジックは削除予定
+        self._youtube_client = youtube_client
         
         # フィルターインスタンス
         self.filter = YouTubePostFilter()
@@ -149,6 +154,22 @@ class YouTubeService:
         Args:
             relevance_language: 結果の言語優先度（ISO 639-1、例: "ja"）
         """
+        
+        # YouTubeSearchClientが注入されている場合はそちらを使用
+        if self._youtube_client is not None:
+            results = self._youtube_client.search(
+                query=query,
+                published_after=published_after,
+                published_before=published_before,
+                max_results=max_results,
+                relevance_language=relevance_language,
+                region_code=region_code,
+                channel_id=channel_id,
+            )
+            # 統計を同期
+            self.api_call_count = self._youtube_client.api_call_count
+            self.cache_hit_count = self._youtube_client.cache_hit_count
+            return results
         
         # モック/テスト用の上書きがある場合はここで返す
         if self._search_override:
@@ -329,30 +350,28 @@ class YouTubeService:
         Returns:
             {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        # 48時間前〜キックオフ
-        published_after = kickoff_time - timedelta(hours=self.PRESS_CONFERENCE_SEARCH_HOURS)
+        category = "press_conference"
         
-        # 監督名がある場合は含める
-        if manager_name:
-            query = f"{team_name} {manager_name} press conference"
-        else:
-            query = f"{team_name} press conference"
+        # スペックから時間ウィンドウを取得
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
+        
+        # スペックからクエリを生成
+        query = build_youtube_query(category, team_name=team_name, manager_name=manager_name)
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
-            published_before=kickoff_time,
+            published_before=published_before,
             max_results=self.FETCH_MAX_RESULTS,
         )
         
         for v in videos:
-            v["category"] = "press_conference"
+            v["category"] = category
             v["query_label"] = manager_name or team_name
         
-        # フィルター適用（press_conferenceは除外）
-        filter_result = self.filter.apply_filters(videos, [
-            "match_highlights", "highlights", "full_match", "live_stream", "reaction"
-        ])
+        # スペックからフィルタを取得して適用
+        exclude_filters = get_youtube_exclude_filters(category)
+        filter_result = self.filter.apply_filters(videos, exclude_filters)
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -373,11 +392,13 @@ class YouTubeService:
         Returns:
             {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        # 過去2年〜キックオフ24時間前までの動画を検索（念のためネタバレ防止）
-        published_after = kickoff_time - timedelta(days=self.HISTORIC_SEARCH_DAYS)
-        published_before = kickoff_time - timedelta(hours=24)
+        category = "historic"
         
-        query = f"{home_team} vs {away_team} highlights"
+        # スペックから時間ウィンドウを取得
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
+        
+        # スペックからクエリを生成
+        query = build_youtube_query(category, home_team=home_team, away_team=away_team)
         
         videos = self._search_videos(
             query=query,
@@ -387,12 +408,11 @@ class YouTubeService:
         )
         
         for v in videos:
-            v["category"] = "historic"
+            v["category"] = category
         
-        # フィルター適用（highlightsは除外、live/press_conference/reactionは除外）
-        filter_result = self.filter.apply_filters(videos, [
-            "live_stream", "press_conference", "reaction"
-        ])
+        # スペックからフィルタを取得して適用
+        exclude_filters = get_youtube_exclude_filters(category)
+        filter_result = self.filter.apply_filters(videos, exclude_filters)
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -412,26 +432,28 @@ class YouTubeService:
         Returns:
             {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        published_after = kickoff_time - timedelta(days=self.TACTICAL_SEARCH_DAYS)
+        category = "tactical"
         
-        # 日本語のみで検索
-        query = f"{team_name} 戦術 分析"
+        # スペックから時間ウィンドウを取得
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
+        
+        # スペックからクエリを生成
+        query = build_youtube_query(category, team_name=team_name)
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
-            published_before=kickoff_time,
+            published_before=published_before,
             max_results=self.FETCH_MAX_RESULTS,
         )
         
         for v in videos:
-            v["category"] = "tactical"
+            v["category"] = category
             v["query_label"] = team_name
         
-        # フィルター適用
-        filter_result = self.filter.apply_filters(videos, [
-            "match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"
-        ])
+        # スペックからフィルタを取得して適用
+        exclude_filters = get_youtube_exclude_filters(category)
+        filter_result = self.filter.apply_filters(videos, exclude_filters)
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -452,29 +474,28 @@ class YouTubeService:
         Returns:
             {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        published_after = kickoff_time - timedelta(days=self.PLAYER_SEARCH_DAYS)
+        category = "player_highlight"
         
-        # 英語名 + カタカナの「プレー」で検索
-        if team_name:
-            query = f"{player_name} {team_name} プレー"
-        else:
-            query = f"{player_name} プレー"
+        # スペックから時間ウィンドウを取得
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
+        
+        # スペックからクエリを生成
+        query = build_youtube_query(category, player_name=player_name, team_name=team_name)
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
-            published_before=kickoff_time,
+            published_before=published_before,
             max_results=self.FETCH_MAX_RESULTS,
         )
         
         for v in videos:
-            v["category"] = "player_highlight"
+            v["category"] = category
             v["query_label"] = player_name
         
-        # フィルター適用
-        filter_result = self.filter.apply_filters(videos, [
-            "match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"
-        ])
+        # スペックからフィルタを取得して適用
+        exclude_filters = get_youtube_exclude_filters(category)
+        filter_result = self.filter.apply_filters(videos, exclude_filters)
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
@@ -494,27 +515,28 @@ class YouTubeService:
         Returns:
             {"kept": [...], "removed": [...], "overflow": [...]}
         """
-        # 1週間前〜キックオフ
-        published_after = kickoff_time - timedelta(hours=self.TRAINING_SEARCH_HOURS)
+        category = "training"
         
-        # 英語クエリ（training）
-        query = f"{team_name} training"
+        # スペックから時間ウィンドウを取得
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
+        
+        # スペックからクエリを生成
+        query = build_youtube_query(category, team_name=team_name)
         
         videos = self._search_videos(
             query=query,
             published_after=published_after,
-            published_before=kickoff_time,
+            published_before=published_before,
             max_results=self.FETCH_MAX_RESULTS,
         )
         
         for v in videos:
-            v["category"] = "training"
+            v["category"] = category
             v["query_label"] = team_name
         
-        # フィルター適用
-        filter_result = self.filter.apply_filters(videos, [
-            "match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"
-        ])
+        # スペックからフィルタを取得して適用
+        exclude_filters = get_youtube_exclude_filters(category)
+        filter_result = self.filter.apply_filters(videos, exclude_filters)
         kept = filter_result["kept"]
         removed = filter_result["removed"]
         
