@@ -180,6 +180,23 @@ now_jst = datetime.now(jst)  # JSTで現在時刻を取得
 now_utc = datetime.now()  # システムローカル時刻 = UTC
 ```
 
+### 5.4 config.TARGET_DATE の仕様
+
+`config.TARGET_DATE` は **timezone-aware な datetime オブジェクト** を返す。
+
+```python
+# config.TARGET_DATE の戻り値例
+# datetime.datetime(2025, 12, 28, 7, 0, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)
+
+# ❌ NG: 既にtimezone情報がある場合エラー
+window_end = tz.localize(target_date.replace(hour=7, ...))
+
+# ✅ OK: tzinfo がある場合はそのまま replace
+if target_date.tzinfo is not None:
+    window_end = target_date.replace(hour=7, ...)
+```
+
+
 ## 6. 参考情報：AIモデル選定比較
 (Reference: AI Model Comparison)
 

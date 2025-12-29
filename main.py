@@ -4,13 +4,9 @@ import logging
 from datetime import datetime
 import os
 from config import config
-from src.match_processor import MatchProcessor
-from src.facts_service import FactsService
-from src.news_service import NewsService
-from src.report_generator import ReportGenerator
+from src.workflows.generate_guide_workflow import GenerateGuideWorkflow
 
 # Configure Logging
-# Setup Logging with File Output
 log_dir = "logs/execution"
 os.makedirs(log_dir, exist_ok=True)
 
@@ -40,132 +36,10 @@ fh.setLevel(logging.INFO)
 logger.addHandler(fh)
 
 def main(dry_run=False):
-    # The original instruction used `args.dry_run`, but the existing code passes `dry_run` directly.
-    # We'll use the `dry_run` parameter for consistency with the existing `main` function signature.
-    logger.info(f"Starting viewing guide generation... (Dry Run: {dry_run}, Mock: {config.USE_MOCK_DATA})")
     logger.info(f"Log file created at: {log_file}")
     
-    # 1. Match Extraction & Selection
-    processor = MatchProcessor()
-    matches = processor.run()
-    
-    if not matches:
-        logger.info("No target matches found for today.")
-    
-    # 2. Facts Acquisition
-    facts_service = FactsService()
-    facts_service.enrich_matches(matches)
-    
-    # 3. News Collection & Summarization
-    news_service = NewsService()
-    news_service.process_news(matches)
-    
-    # 3.5 YouTube Videos (optional, no error on failure)
-    youtube_videos = {}
-    youtube_stats = {"api_calls": 0, "cache_hits": 0}
-    try:
-        from src.youtube_service import YouTubeService
-        youtube_service = YouTubeService()
-        youtube_videos = youtube_service.process_matches(matches)
-        youtube_stats = {
-            "api_calls": youtube_service.api_call_count,
-            "cache_hits": youtube_service.cache_hit_count,
-        }
-        logger.info(f"YouTube videos fetched for {len(youtube_videos)} matches (API calls: {youtube_stats['api_calls']}, Cache hits: {youtube_stats['cache_hits']})")
-    except Exception as e:
-        logger.warning(f"YouTube video fetch failed (continuing without videos): {e}")
-    
-    # 4. Report Generation
-    generator = ReportGenerator()
-    
-    # 試合別レポート生成（1試合=1レポート）
-    logger.info("Generating per-match reports")
-    report_list = generator.generate_all(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
-    logger.info(f"Generated {len(report_list)} individual match reports")
-    
-    image_paths = []
-    for r in report_list:
-        image_paths.extend(r.get("image_paths", []))
-        logger.info(f"  - {r['filename']}")
-    
-    # メール送信用: 全試合のMarkdownを結合
-    report = "\n\n---\n\n".join([r.get("content", "") for r in report_list])
-    
-    # 4.5 HTML Generation for Web (Firebase Hosting)
-    html_path = None
-    html_paths = []
-    try:
-        from src.html_generator import generate_html_reports, sync_from_firebase
-        # モックモード以外は既存HTMLファイルをFirebaseからダウンロード（ファイル消失防止）
-        if not config.USE_MOCK_DATA:
-            sync_from_firebase()
-        else:
-            logger.info("Mock mode: Skipping Firebase sync")
-        
-        # 試合別HTMLファイル生成
-        html_paths = generate_html_reports(report_list)
-        logger.info(f"Generated {len(html_paths)} HTML files")
-    except Exception as e:
-        logger.warning(f"HTML generation failed (continuing): {e}")
-    
-    # 5. Email Notification (if enabled)
-    if config.GMAIL_ENABLED and config.NOTIFY_EMAIL:
-        from src.email_service import send_daily_report
-        logger.info(f"Sending email notification to {config.NOTIFY_EMAIL}...")
-        if send_daily_report(report, image_paths):
-            logger.info("Email sent successfully!")
-        else:
-            logger.warning("Failed to send email notification.")
-    
-    # 6. Write API quota to /tmp/quota.txt
-    if config.QUOTA_INFO:
-        quota_file = "/tmp/quota.txt"
-        with open(quota_file, "w", encoding="utf-8") as f:
-            for key, info in config.QUOTA_INFO.items():
-                f.write(f"{key}: {info}\n")
-        logger.info(f"Quota info written to {quota_file}")
-    
-    # 7. Cache Warming (if quota available and GCS enabled)
-    remaining_quota = 0
-    
-    # Get remaining quota from QUOTA_INFO or by checking API
-    if "API-Football" in config.QUOTA_INFO:
-        quota_str = config.QUOTA_INFO.get("API-Football", "")
-        if "Remaining:" in quota_str:
-            try:
-                remaining_quota = int(quota_str.split("Remaining:")[1].split("/")[0].strip())
-            except (ValueError, IndexError):
-                pass
-    
-    # If no quota info (all cache hits), check directly via API
-    if remaining_quota == 0 and not config.USE_MOCK_DATA:
-        import requests
-        try:
-            url = "https://v3.football.api-sports.io/status"
-            headers = {
-                "x-apisports-key": config.API_FOOTBALL_KEY
-            }
-            response = requests.get(url, headers=headers)
-            if response.status_code == 200:
-                data = response.json()
-                account = data.get("response", {}).get("subscription", {})
-                requests_info = data.get("response", {}).get("requests", {})
-                limit = requests_info.get("limit_day", 100)
-                current = requests_info.get("current", 0)
-                remaining_quota = limit - current
-                logger.info(f"API-Football quota check: {remaining_quota}/{limit} remaining")
-        except Exception as e:
-            logger.warning(f"Failed to check API quota: {e}")
-    
-    if remaining_quota > 0:
-        from src.cache_warmer import run_cache_warming
-        logger.info(f"Starting cache warming with {remaining_quota} remaining quota...")
-        result = run_cache_warming(remaining_quota)
-        logger.info(f"Cache warming result: {result}")
-    else:
-        logger.info("Skipping cache warming: no quota info available")
-    
-    logger.info("Done.")
+    workflow = GenerateGuideWorkflow()
+    workflow.run(dry_run=dry_run)
 
 if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv

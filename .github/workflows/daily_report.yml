@@ -5,7 +5,17 @@ on:
     # Runs at 22:00 UTC every day (07:00 JST)
     - cron: '0 22 * * *'
   workflow_dispatch:
-    # Allows manual triggering from GitHub Actions tab
+    inputs:
+      use_mock_data:
+        description: 'Use Mock Data'
+        required: false
+        default: 'False'
+        type: boolean
+      debug_mode:
+        description: 'Enable Debug Mode'
+        required: false
+        default: 'False'
+        type: boolean
 
 permissions:
   contents: write
@@ -40,7 +50,8 @@ jobs:
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         GOOGLE_SEARCH_ENGINE_ID: ${{ secrets.GOOGLE_SEARCH_ENGINE_ID }}
         GOOGLE_SEARCH_API_KEY: ${{ secrets.GOOGLE_SEARCH_API_KEY }}
-        USE_MOCK_DATA: "False"
+        USE_MOCK_DATA: ${{ inputs.use_mock_data || 'False' }}
+        DEBUG_MODE: ${{ inputs.debug_mode || 'False' }}
         # GCS Cache Settings
         USE_API_CACHE: "True"
         CACHE_BACKEND: "gcs"
@@ -60,11 +71,14 @@ jobs:
     - name: Verify Report Generated
       run: |
         echo "=== Report Generation Check ==="
-        # 新形式: public/reports/ 配下にHTMLファイルを生成
         HTML_COUNT=$(ls -1 public/reports/*.html 2>/dev/null | wc -l)
         
         if [ "$HTML_COUNT" -eq 0 ]; then
           echo "❌ ERROR: No HTML report files found!"
+          # Check if we are in mock mode, usually should produce something
+          # If real mode and no matches, this is expected behavior but CI fails?
+          # Let's verify logs.
+          # For verification purpose, failing is fine if no reports.
           exit 1
         fi
         
@@ -94,4 +108,3 @@ jobs:
         firebase deploy --only hosting --token "$FIREBASE_TOKEN"
         echo "✅ Deployed to Firebase Hosting"
         echo "URL: https://football-delay-watching-a8830.web.app"
-
