@@ -20,7 +20,7 @@
     | `/teams/statistics` | チームフォーム（直近5試合 W/D/L） |
     | `/fixtures/headtohead` | 過去の対戦成績（H2H） |
 
-> 各エンドポイントで実際に送っているパラメータと、実装が参照しているレスポンス項目の詳細は `docs/api_endpoints.md` を参照。
+> 各エンドポイントで実際に送っているパラメータと、実装が参照しているレスポンス項目の詳細は [api_endpoints.md](./api_endpoints.md) を参照。
 
 #### 2.1.5 APIキャッシュ方針
 
@@ -28,7 +28,7 @@ API呼び出し回数を削減し、クォータ消費を抑制するための�
 
 - **実装**: `src/clients/cache.py`
 - **バックエンド**: Google Cloud Storage (GCS)
-- **詳細**: [キャッシュ設計書](./architecture/cache_design.md) を参照
+- **詳細**: [キャッシュ設計書](./cache_design.md) を参照
 
 ##### GitHub Actions での設定
 ```yaml
