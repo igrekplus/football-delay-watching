@@ -28,7 +28,7 @@ API呼び出し回数を削減し、クォータ消費を抑制するための�
 
 - **実装**: `src/clients/cache.py`
 - **バックエンド**: Google Cloud Storage (GCS)
-- **詳細**: [キャッシュ設計書 (cache_design.md)](cache_design.md) を参照
+- **詳細**: [キャッシュ設計書](./architecture/cache_design.md) を参照
 
 ##### GitHub Actions での設定
 ```yaml
