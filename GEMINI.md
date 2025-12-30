@@ -67,7 +67,15 @@
 │   └── check_gcs_cache.py     # GCSキャッシュ状況
 ├── docs/
 │   ├── requirement.md       # 詳細要件定義書
-│   └── system_design.md     # システム設計書
+│   ├── system_design.md     # システム設計書
+│   ├── youtube_requirement.md # YouTube動画取得仕様
+│   ├── api_quota.md         # APIクォータ管理
+│   ├── cache_design.md      # キャッシュ設計
+│   ├── deploy_design.md     # デプロイ設計
+│   └── llm_guides/          # LLM向け指示書
+│       ├── raw_acquisition_llm_instructions.md  # raw取得指示
+│       ├── reviewer.md      # レビューアーモード
+│       └── commentary_investigation.md  # 実況解説調査
 ├── tests/                   # API検証スクリプト
 └── .github/workflows/       # GitHub Actions
 ```
