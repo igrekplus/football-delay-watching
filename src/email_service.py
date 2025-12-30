@@ -261,13 +261,24 @@ class EmailService:
             return False
 
 
-def send_daily_report(report_content: str, image_paths: List[str] = None) -> bool:
+def send_debug_summary(
+    report_urls: List[str],
+    matches_summary: List[dict],
+    quota_info: dict,
+    youtube_stats: dict = None,
+    is_mock: bool = False,
+    is_debug: bool = False
+) -> bool:
     """
-    デイリーレポートをメール送信するヘルパー関数
+    デバッグ用サマリをメール送信するヘルパー関数
     
     Args:
-        report_content: Markdown形式のレポート内容
-        image_paths: 添付画像のパスリスト
+        report_urls: 生成されたレポートのURLリスト
+        matches_summary: 試合のサマリ情報リスト [{"home": str, "away": str, "competition": str, "kickoff": str, "rank": str}, ...]
+        quota_info: API消費状況 {"API-Football": str, ...}
+        youtube_stats: YouTube API統計 {"api_calls": int, "cache_hits": int}
+        is_mock: モックモードかどうか
+        is_debug: デバッグモードかどうか
         
     Returns:
         送信成功時True
@@ -284,15 +295,77 @@ def send_daily_report(report_content: str, image_paths: List[str] = None) -> boo
         logger.warning("NOTIFY_EMAIL not set. Skipping email notification.")
         return False
     
-    # 件名に日付を含める
     jst = pytz.timezone('Asia/Tokyo')
-    today_str = datetime.now(jst).strftime('%Y-%m-%d')
-    subject = f"⚽ サッカー観戦ガイド - {today_str}"
+    now = datetime.now(jst)
+    today_str = now.strftime('%Y-%m-%d')
+    time_str = now.strftime('%H:%M:%S')
+    
+    # モード表示
+    mode_label = ""
+    if is_mock:
+        mode_label = " [MOCK]"
+    elif is_debug:
+        mode_label = " [DEBUG]"
+    
+    subject = f"⚽ サッカー観戦ガイド 実行通知 - {today_str}{mode_label}"
+    
+    # Markdown形式でサマリを作成
+    lines = []
+    lines.append(f"# 実行完了通知\n")
+    lines.append(f"**実行日時**: {today_str} {time_str} JST\n")
+    if mode_label:
+        lines.append(f"**モード**: {mode_label.strip()}\n")
+    lines.append("")
+    
+    # レポートURL
+    lines.append("## 📋 生成レポート\n")
+    if report_urls:
+        for url in report_urls:
+            lines.append(f"- {url}")
+    else:
+        lines.append("- レポートなし")
+    lines.append("")
+    
+    # 試合サマリ
+    lines.append("## ⚽ 試合サマリ\n")
+    if matches_summary:
+        lines.append("| 試合 | 大会 | キックオフ | ランク |")
+        lines.append("|------|------|-----------|--------|")
+        for m in matches_summary:
+            match_name = f"{m.get('home', '?')} vs {m.get('away', '?')}"
+            comp = m.get('competition', '-')
+            kickoff = m.get('kickoff', '-')
+            rank = m.get('rank', '-')
+            lines.append(f"| {match_name} | {comp} | {kickoff} | {rank} |")
+    else:
+        lines.append("- 対象試合なし")
+    lines.append("")
+    
+    # API消費状況
+    lines.append("## 📊 API消費状況\n")
+    if quota_info:
+        for key, value in quota_info.items():
+            lines.append(f"- **{key}**: {value}")
+    else:
+        lines.append("- 情報なし（キャッシュから取得）")
+    
+    if youtube_stats:
+        api_calls = youtube_stats.get("api_calls", 0)
+        cache_hits = youtube_stats.get("cache_hits", 0)
+        lines.append(f"- **YouTube Data API**: {api_calls}回呼び出し（キャッシュ: {cache_hits}件）")
+    lines.append("")
+    
+    # Webリンク
+    lines.append("## 🔗 Webサイト\n")
+    lines.append("- [観戦ガイド一覧](https://football-delay-watching-a8830.web.app/)")
+    lines.append("")
+    
+    markdown_content = "\n".join(lines)
     
     service = EmailService()
     return service.send_report(
         to_email=config.NOTIFY_EMAIL,
         subject=subject,
-        markdown_content=report_content,
-        image_paths=image_paths
+        markdown_content=markdown_content,
+        image_paths=None  # 画像添付は不要
     )

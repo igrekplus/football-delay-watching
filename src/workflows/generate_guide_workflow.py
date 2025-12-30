@@ -9,6 +9,9 @@ from src.cache_warmer import run_cache_warming
 
 logger = logging.getLogger(__name__)
 
+# Firebase Hosting URL
+FIREBASE_BASE_URL = "https://football-delay-watching-a8830.web.app"
+
 class GenerateGuideWorkflow:
     """
     Workflow for generating the Football Delay Watching Guide.
@@ -59,18 +62,11 @@ class GenerateGuideWorkflow:
         report_list = generator.generate_all(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
         logger.info(f"Generated {len(report_list)} individual match reports")
         
-        image_paths = []
-        for r in report_list:
-            image_paths.extend(r.get("image_paths", []))
-            
-        # Email body (concatenated)
-        report_text = "\n\n---\n\n".join([r.get("content", "") for r in report_list])
-        
         # 4.5 HTML Generation
-        self._generate_html(report_list)
+        html_paths = self._generate_html(report_list)
         
-        # 5. Email Notification
-        self._send_email(report_text, image_paths)
+        # 5. Email Notification (シンプルなデバッグサマリ)
+        self._send_debug_email(matches, report_list, youtube_stats)
         
         # 6. Write Quota Info
         self._write_quota_info()
@@ -81,6 +77,7 @@ class GenerateGuideWorkflow:
         logger.info("Workflow completed.")
 
     def _generate_html(self, report_list):
+        html_paths = []
         try:
             from src.html_generator import generate_html_reports, sync_from_firebase
             
@@ -93,18 +90,52 @@ class GenerateGuideWorkflow:
             logger.info(f"Generated {len(html_paths)} HTML files")
         except Exception as e:
             logger.warning(f"HTML generation failed (continuing): {e}")
+        return html_paths
 
-    def _send_email(self, report_text, image_paths):
+    def _send_debug_email(self, matches, report_list, youtube_stats):
+        """シンプルなデバッグサマリをメール送信"""
         if config.GMAIL_ENABLED and config.NOTIFY_EMAIL:
             try:
-                from src.email_service import send_daily_report
-                logger.info(f"Sending email notification to {config.NOTIFY_EMAIL}...")
-                if send_daily_report(report_text, image_paths):
+                from src.email_service import send_debug_summary
+                
+                # レポートURLを構築
+                report_urls = []
+                for r in report_list:
+                    filename = r.get("filename", "")
+                    if filename:
+                        url = f"{FIREBASE_BASE_URL}/reports/{filename}.html"
+                        report_urls.append(url)
+                
+                # 試合サマリを構築
+                matches_summary = []
+                target_matches = [m for m in matches if m.is_target]
+                for match in target_matches:
+                    matches_summary.append({
+                        "home": match.home_team,
+                        "away": match.away_team,
+                        "competition": match.competition,
+                        "kickoff": match.kickoff_jst,
+                        "rank": match.rank
+                    })
+                
+                # モード判定
+                is_mock = config.USE_MOCK_DATA
+                is_debug = config.DEBUG_MODE
+                
+                logger.info(f"Sending debug summary email to {config.NOTIFY_EMAIL}...")
+                if send_debug_summary(
+                    report_urls=report_urls,
+                    matches_summary=matches_summary,
+                    quota_info=config.QUOTA_INFO or {},
+                    youtube_stats=youtube_stats,
+                    is_mock=is_mock,
+                    is_debug=is_debug
+                ):
                     logger.info("Email sent successfully!")
                 else:
                     logger.warning("Failed to send email notification.")
             except ImportError:
-                 logger.warning("Email service not available.")
+                logger.warning("Email service not available.")
 
     def _write_quota_info(self):
         if config.QUOTA_INFO:
