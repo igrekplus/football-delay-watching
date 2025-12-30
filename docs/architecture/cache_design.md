@@ -55,7 +55,66 @@ USE_API_CACHE = DEBUG_MODE and not USE_MOCK_DATA
 - **本番モード**: キャッシュ有効
 - **モックモード**: キャッシュ無効（API呼び出しなし）
 
----
+### 2.3 モード別キャッシュ動作一覧
+
+> [!IMPORTANT]
+> 本番/Debug/Mockでキャッシュの動作が異なります。以下の表を参照してください。
+
+| 環境変数 | 本番 (Actions) | Debug (ローカル) | Mock |
+|----------|---------------|-----------------|------|
+| `DEBUG_MODE` | `False` | `True` | `True` |
+| `USE_MOCK_DATA` | `False` | `False` | `True` |
+| `USE_API_CACHE` | `True` | `True` | `False` |
+| `CACHE_BACKEND` | `gcs` | `gcs` | - |
+
+#### 本番モード (GitHub Actions)
+
+```bash
+# 環境変数設定（.github/workflows/daily_report.yml）
+DEBUG_MODE: "False"
+USE_MOCK_DATA: "False"
+USE_API_CACHE: "True"
+CACHE_BACKEND: "gcs"
+```
+
+- **API呼び出し**: 実API
+- **キャッシュ**: GCSを使用
+- **データソース**: APIまたはGCSキャッシュ
+
+#### デバッグモード (ローカル開発)
+
+```bash
+DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+```
+
+- **API呼び出し**: 実API
+- **キャッシュ**: GCSを使用（クォータ節約）
+- **データソース**: APIまたはGCSキャッシュ
+- **試合選定**: 直近土曜日の1試合のみ
+
+#### モックモード (UI確認用)
+
+```bash
+DEBUG_MODE=True USE_MOCK_DATA=True python main.py
+```
+
+- **API呼び出し**: なし（モックデータ使用）
+- **キャッシュ**: 無効（API呼び出しがないため不要）
+- **データソース**: `fixtures/mock_*.json`
+- **用途**: UI/レイアウト確認
+
+### 2.4 YouTube API のキャッシュ
+
+YouTube Data API のキャッシュは API-Football とは別系統で管理される。
+
+| 項目 | 値 |
+|------|-----|
+| バックエンド | ローカルファイル (`api_cache/youtube/`) |
+| TTL | 1週間（168時間） |
+| キャッシュキー | クエリ + パラメータ の MD5ハッシュ |
+| 有効化条件 | `config.USE_API_CACHE` |
+
+> **Note**: YouTube API は GCS 対応が未実装（Issue #63）
 
 ## 3. ファイル構造
 

@@ -66,15 +66,21 @@
 │   ├── check_gmail.py         # Gmail API
 │   └── check_gcs_cache.py     # GCSキャッシュ状況
 ├── docs/
-│   ├── requirement.md       # 詳細要件定義書
-│   ├── system_design.md     # システム設計書
-│   ├── youtube_requirement.md # YouTube動画取得仕様
-│   ├── api_quota.md         # APIクォータ管理
-│   ├── cache_design.md      # キャッシュ設計
-│   ├── deploy_design.md     # デプロイ設計
-│   └── llm_guides/          # LLM向け指示書
+│   ├── functional_requirements.md   # 機能要件定義書
+│   ├── non_functional_requirements.md # 非機能要件・データ定義
+│   ├── system_design.md             # システム設計書
+│   ├── user_utilities.md            # ユーザーユーティリティ
+│   ├── architecture/                # アーキテクチャ設計
+│   │   ├── youtube_integration.md       # YouTube動画取得仕様
+│   │   ├── cache_design.md              # キャッシュ設計
+│   │   ├── login_design.md              # ログイン設計
+│   │   └── api_endpoints.md             # APIエンドポイント詳細
+│   ├── operations/                  # 運用設計
+│   │   ├── api_quota.md                 # APIクォータ管理
+│   │   └── deploy_design.md             # デプロイ設計
+│   └── llm_guides/                  # LLM向け指示書
 │       ├── raw_acquisition_llm_instructions.md  # raw取得指示
-│       ├── reviewer.md      # レビューアーモード
+│       ├── reviewer.md                  # レビューアーモード
 │       └── commentary_investigation.md  # 実況解説調査
 ├── tests/                   # API検証スクリプト
 └── .github/workflows/       # GitHub Actions
