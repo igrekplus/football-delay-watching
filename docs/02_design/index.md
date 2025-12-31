@@ -9,12 +9,14 @@
 | ドキュメント | 概要 | 対応機能 |
 |-------------|------|----------|
 | [system_overview.md](./system_overview.md) | システム全体設計・アーキテクチャ構成図 | 全体 |
+| [implementation_flow.md](./implementation_flow.md) | 実装フロー・責務境界・データフロー | 全体 |
 | [external_apis.md](./external_apis.md) | 外部API連携設計（API-Football, Google Search, Gemini） | Match, Facts, News |
 | [infrastructure.md](./infrastructure.md) | 実行基盤設計（GitHub Actions, 時刻処理） | 全体 |
 | [cache_design.md](./cache_design.md) | キャッシュ設計（GCS, TTL） | Match, Facts, YouTube |
 | [login_design.md](./login_design.md) | ログイン・認証設計（Firebase Auth） | Delivery |
 | [api_endpoints.md](./api_endpoints.md) | API-Football エンドポイント詳細 | Match, Facts |
 | [llm_constraints.md](./llm_constraints.md) | LLM制約仕様（入力条件・禁止事項・失敗時挙動） | News |
+| [domain_models.md](./domain_models.md) | ドメインモデル設計（MatchData） | 全体 |
 
 ---
 
