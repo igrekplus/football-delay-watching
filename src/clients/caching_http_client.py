@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 
 from src.clients.cache_store import CacheStore
 from src.clients.http_client import HttpClient, HttpResponse, CachedResponse
+from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +96,12 @@ class CachingHttpClient:
         if cached_data and self._check_ttl(cached_data, endpoint):
             duration = time.time() - start_time
             logger.info(f"[API] GET {url} (Duration: {duration:.2f}s) - Cache: HIT ({cache_path})")
+            
+            # ApiStatsに記録
+            api_name = self._identify_api_name(url)
+            if api_name:
+                ApiStats.record_cache_hit(api_name)
+                
             return CachedResponse(self._unwrap_metadata(cached_data))
         
         # キャッシュミス → APIリクエスト
@@ -211,6 +218,12 @@ class CachingHttpClient:
         """メタデータを除去して元のデータを返す"""
         result = {k: v for k, v in cached_data.items() if not k.startswith("_")}
         return result if result else cached_data
+    
+    def _identify_api_name(self, url: str) -> Optional[str]:
+        """URLからAPI名を特定"""
+        if "api-sports.io" in url:
+            return "API-Football"
+        return None
 
 
 def create_caching_client(backend: str = None, use_cache: bool = None) -> CachingHttpClient:

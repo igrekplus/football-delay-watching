@@ -10,6 +10,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 from config import config
+from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,8 @@ class LLMClient:
         try:
             model = self._get_model()
             response = model.generate_content(prompt)
+            # API呼び出しを記録
+            ApiStats.record_call("Gemini API")
             return response.text
         except Exception as e:
             logger.error(f"LLM generate_content error: {e}")

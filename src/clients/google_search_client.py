@@ -16,6 +16,7 @@ from settings.search_specs import (
     build_google_query,
     get_google_search_params,
 )
+from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,10 @@ class GoogleSearchClient:
         try:
             response = requests.get(self.API_URL, params=params)
             data = response.json()
-            return data.get('items', [])
+            items = data.get('items', [])
+            # API呼び出しを記録
+            ApiStats.record_call("Google Custom Search")
+            return items
         except Exception as e:
             logger.error(f"Google Search error: {e}")
             return []

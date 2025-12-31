@@ -2,6 +2,7 @@ from typing import Dict, Optional, Any
 import logging
 from config import config
 from src.clients.caching_http_client import create_caching_client
+from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
@@ -126,9 +127,21 @@ class ApiFootballClient:
 
     def _update_quota(self, response):
         """Update quota information from response headers."""
+        # x-ratelimitヘッダーがある場合のみAPI呼び出しを記録（キャッシュヒット時は記録しない）
         if hasattr(response, "headers") and "x-ratelimit-requests-remaining" in response.headers:
+            # API呼び出しを記録
+            ApiStats.record_call("API-Football")
+            
             remaining = response.headers["x-ratelimit-requests-remaining"]
             limit = response.headers.get("x-ratelimit-requests-limit", "Unknown")
             info = f"Remaining: {remaining} / Limit: {limit} (requests/day)"
             config.QUOTA_INFO["API-Football"] = info
             self.quota_info = {"remaining": remaining, "limit": limit}
+            
+            # ApiStatsにクォータ情報を記録
+            try:
+                remaining_int = int(remaining)
+                limit_int = int(limit) if limit != "Unknown" else 7500
+                ApiStats.set_quota("API-Football", remaining_int, limit_int)
+            except (ValueError, TypeError):
+                pass

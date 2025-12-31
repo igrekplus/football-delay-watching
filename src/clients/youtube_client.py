@@ -16,6 +16,7 @@ from typing import Dict, List, Optional, Callable
 import requests
 
 from config import config
+from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +93,7 @@ class YouTubeSearchClient:
             
             logger.info(f"YouTube cache HIT: {cache_key[:8]}...")
             self.cache_hit_count += 1
+            ApiStats.record_cache_hit("YouTube Data API")
             return data.get("results", [])
         except Exception as e:
             logger.warning(f"Failed to read YouTube cache: {e}")
@@ -204,6 +206,7 @@ class YouTubeSearchClient:
                 # キャッシュ保存
                 self._write_cache(cache_key, results)
                 self.api_call_count += 1
+                ApiStats.record_call("YouTube Data API")
                 logger.info(f"YouTube API: '{query}' -> {len(results)} results (API calls: {self.api_call_count})")
                 
                 return results

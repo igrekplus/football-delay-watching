@@ -24,6 +24,8 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+from src.utils.api_stats import ApiStats
+
 logger = logging.getLogger(__name__)
 
 # メール用HTMLテンプレート
@@ -251,6 +253,8 @@ class EmailService:
             ).execute()
             
             logger.info(f"Email sent successfully! Message ID: {result.get('id')}")
+            # Gmail API呼び出しを記録
+            ApiStats.record_call("Gmail API")
             return True
             
         except HttpError as e:
@@ -343,16 +347,9 @@ def send_debug_summary(
     
     # API消費状況
     lines.append("## 📊 API消費状況\n")
-    if quota_info:
-        for key, value in quota_info.items():
-            lines.append(f"- **{key}**: {value}")
-    else:
-        lines.append("- 情報なし（キャッシュから取得）")
-    
-    if youtube_stats:
-        api_calls = youtube_stats.get("api_calls", 0)
-        cache_hits = youtube_stats.get("cache_hits", 0)
-        lines.append(f"- **YouTube Data API**: {api_calls}回呼び出し（キャッシュ: {cache_hits}件）")
+    # ApiStatsから表形式でAPI使用状況を取得
+    api_table = ApiStats.format_table()
+    lines.append(api_table)
     lines.append("")
     
     # Webリンク

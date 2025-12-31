@@ -4,6 +4,7 @@ from src.domain.models import MatchData
 import logging
 from src.utils.formation_image import generate_formation_image
 from src.utils.nationality_flags import format_player_with_flag
+from src.utils.api_stats import ApiStats
 from src.formatters import DateFormatter, PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter
 from config import config
 
@@ -106,18 +107,12 @@ class ReportGenerator:
                 lines.append(f"- {match.home_team} vs {match.away_team} （{match.competition}）… {match.selection_reason}\n")
         
         lines.append("\n## API使用状況\n")
-        if config.QUOTA_INFO:
-            for key, info in config.QUOTA_INFO.items():
-                lines.append(f"- {key}: {info}\n")
-        else:
-            lines.append("- API-Football: (キャッシュから取得のため情報なし)\n")
         
-        lines.append("- Google Custom Search API: Check Cloud Console (Quota: 100/day free)\n")
-        
-        api_calls = youtube_stats.get("api_calls", 0)
-        cache_hits = youtube_stats.get("cache_hits", 0)
-        total_requests = api_calls + cache_hits
-        lines.append(f"- YouTube Data API: {api_calls}回呼び出し (キャッシュ: {cache_hits}件, 合計リクエスト: {total_requests}件)\n")
+        # ApiStatsから表形式でAPI使用状況を取得
+        api_table = ApiStats.format_table()
+        lines.append(api_table)
+        lines.append("\n")
+        lines.append("\n*Gmail API: OAuth認証済みアカウントの送信制限\n")
         
         return "".join(lines)
     
