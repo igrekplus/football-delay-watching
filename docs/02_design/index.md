@@ -14,6 +14,7 @@
 | [cache_design.md](./cache_design.md) | キャッシュ設計（GCS, TTL） | Match, Facts, YouTube |
 | [login_design.md](./login_design.md) | ログイン・認証設計（Firebase Auth） | Delivery |
 | [api_endpoints.md](./api_endpoints.md) | API-Football エンドポイント詳細 | Match, Facts |
+| [llm_constraints.md](./llm_constraints.md) | LLM制約仕様（入力条件・禁止事項・失敗時挙動） | News |
 
 ---
 
