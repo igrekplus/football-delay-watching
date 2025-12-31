@@ -1,384 +1,74 @@
-# YouTube動画取得ロジック仕様書
+# YouTube動画取得要件
 
-> **Last Updated**: 2025-12-28  
-> **Source of Truth**: `src/youtube_service.py`, `src/youtube_filter.py`
-
-## 概要
-
-試合レポートに含めるYouTube動画を取得するロジック。
-**キックオフ前の動画のみを対象**とし、試合結果のネタバレを防ぐ。
+機能要件「YouTube動画取得 (YouTube)」の詳細要件を定義する。
 
 ---
 
-## アーキテクチャ
+## 1. 概要
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    YouTubeService                           │
-├─────────────────────────────────────────────────────────────┤
-│  get_videos_for_match(match)                                │
-│    ├─ _search_press_conference() × 2チーム                  │
-│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
-│    ├─ _search_historic_clashes() × 1                        │
-│    │    └─ filter.sort_trusted() のみ（ハイライト除外なし）  │
-│    ├─ _search_tactical() × 2チーム                          │
-│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
-│    ├─ _search_player_highlight() × 6選手                    │
-│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
-│    ├─ _search_training() × 2チーム                          │
-│    │    └─ filter.exclude_highlights() + filter.sort_trusted()
-│    └─ filter.deduplicate() ← 最後に全結果を統合             │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                 YouTubePostFilter (新規)                    │
-├─────────────────────────────────────────────────────────────┤
-│  exclude_highlights(videos) → 試合ハイライト/ライブ等を除外 │
-│  sort_trusted(videos)       → 信頼チャンネル優先ソート     │
-│  deduplicate(videos)        → 重複排除（video_id ベース）  │
-└─────────────────────────────────────────────────────────────┘
-```
+試合レポートに含めるYouTube動画を取得する。**キックオフ前の動画のみを対象**とし、試合結果のネタバレを防ぐ。
 
 ---
 
-## パラメータ一覧
+## 2. 取得する動画カテゴリ
 
-| パラメータ名 | デフォルト値 | 対応メソッド | 説明 |
-|-------------|-------------|-------------|------|
-| `PRESS_CONFERENCE_SEARCH_HOURS` | **48** | `_search_press_conference()` | 記者会見検索期間 |
-| `HISTORIC_SEARCH_DAYS` | **730**（2年） | `_search_historic_clashes()` | 過去ハイライト検索期間 |
-| `TACTICAL_SEARCH_DAYS` | **180**（6ヶ月） | `_search_tactical()` | 戦術分析検索期間 |
-| `PLAYER_SEARCH_DAYS` | **180**（6ヶ月） | `_search_player_highlight()` | 選手紹介検索期間 |
-| `TRAINING_SEARCH_HOURS` | **168**（1週間） | `_search_training()` | 練習動画検索期間 |
-| `FETCH_MAX_RESULTS` | **50** | 全メソッド | 取得件数（post-filter前） |
-
----
-
-## YouTubePostFilter クラス設計
-
-### ファイル: `src/youtube_filter.py` (新規)
-
-```python
-class YouTubePostFilter:
-    """YouTube動画のpost-filterを提供するクラス"""
-    
-    def exclude_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
-        """試合ハイライト/フルマッチ/ライブ配信を除外"""
-        # returns {"kept": [...], "removed": [...]}
-    
-    def sort_trusted(self, videos: List[Dict]) -> List[Dict]:
-        """信頼チャンネル優先でソート"""
-    
-    def deduplicate(self, videos: List[Dict]) -> List[Dict]:
-        """重複排除（video_id ベース）"""
-```
-
-### 各検索メソッドでのフィルター適用
-
-| カテゴリ | `exclude_highlights()` | `sort_trusted()` | `deduplicate()` |
-|---------|:---------------------:|:----------------:|:---------------:|
-| 記者会見 | ✅ | ✅ | - |
-| 過去対戦 | ❌（クエリがhighlights含む） | ✅ | - |
-| 戦術分析 | ✅ | ✅ | - |
-| 選手紹介 | ✅ | ✅ | - |
-| 練習風景 | ✅ | ✅ | - |
-| **全体** | - | - | ✅（最後に1回） |
+| カテゴリ | 説明 | クエリ数/試合 |
+|---------|------|--------------|
+| 記者会見 | 監督の試合前会見 | 2（各チーム） |
+| 過去対戦ハイライト | 両チームの過去の対戦ハイライト | 1 |
+| 戦術分析 | チームの戦術解説動画 | 2（各チーム） |
+| 選手紹介 | 注目選手のプレー集 | 6（各チーム3選手） |
+| 練習風景 | チームの練習動画 | 2（各チーム） |
 
 ---
 
-## 動画カテゴリ別仕様
+## 3. 要件
 
-### カテゴリ1: 記者会見 (`press_conference`)
+### 3.1 ネタバレ防止
 
-| 項目 | 値 |
-|------|-----|
-| メソッド | `_search_press_conference()` |
-| クエリ | `{team} {manager_name} press conference` |
-| クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
-| 検索期間 | キックオフ - 48時間 ～ キックオフ |
-| maxResults | **50** |
-| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `reaction` |
-| ソートフィルタ | `sort_trusted()` |
+- **必須**: キックオフ前に公開された動画のみを対象とする
+- **必須**: 試合結果を含むハイライト動画を除外する
+- **必須**: ライブ配信・リアクション動画を除外する
 
-> **Note**: 監督名がない場合は `{team} press conference`
+### 3.2 検索期間
 
----
+| カテゴリ | 検索期間 |
+|---------|----------|
+| 記者会見 | キックオフ前 48時間 |
+| 過去対戦ハイライト | キックオフ前 2年（730日） ～ キックオフ24時間前 |
+| 戦術分析 | キックオフ前 6ヶ月（180日） |
+| 選手紹介 | キックオフ前 6ヶ月（180日） |
+| 練習風景 | キックオフ前 1週間（168時間） |
 
-### カテゴリ2: 過去対戦ハイライト (`historic`)
+### 3.3 信頼チャンネル
 
-| 項目 | 値 |
-|------|-----|
-| メソッド | `_search_historic_clashes()` |
-| クエリ | `{home} vs {away} highlights` |
-| クエリ数 | **1クエリ/試合** |
-| 検索期間 | キックオフ - 730日 ～ **キックオフ - 24時間** |
-| maxResults | **50** |
-| 除外フィルタ | `live_stream`, `press_conference`, `reaction` |
-| ソートフィルタ | `sort_trusted()` |
-
-> **Note**: キックオフ24時間前までに制限（念のためネタバレ防止の安全策として）
+- 公式チャンネル（クラブ、リーグ、放送局）を優先表示
+- 非信頼チャンネルは「要確認」として表示
 
 ---
 
-### カテゴリ3: 戦術分析 (`tactical`)
+## 4. 制約
 
-| 項目 | 値 |
-|------|-----|
-| メソッド | `_search_tactical()` |
-| クエリ | `{team} 戦術 分析` **（日本語固定）** |
-| クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
-| 検索期間 | キックオフ - 180日 ～ キックオフ |
-| maxResults | **50** |
-| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
-| ソートフィルタ | `sort_trusted()` |
-
----
-
-### カテゴリ4: 選手紹介 (`player_highlight`)
-
-| 項目 | 値 |
-|------|-----|
-| メソッド | `_search_player_highlight()` |
-| クエリ | `{player_name} {team_name} プレー` **（日本語固定）** |
-| クエリ数 | **6クエリ/試合**（3選手 × 2チーム）、デバッグ: 2クエリ |
-| 検索期間 | キックオフ - 180日 ～ キックオフ |
-| maxResults | **50** |
-| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
-| ソートフィルタ | `sort_trusted()` |
-
-#### 選手選択ロジック
-
-```python
-# スタメンリストの末尾（FW想定）から優先
-player_count = 1 if DEBUG_MODE else 3
-for player in reversed(match.home_lineup):
-    if len(home_players) < player_count:
-        home_players.append(player)
-```
-
----
-
-### カテゴリ5: 練習風景 (`training`)
-
-| 項目 | 値 |
-|------|-----|
-| メソッド | `_search_training()` |
-| クエリ | `{team} training` **（英語固定）** |
-| クエリ数 | **2クエリ/試合**（1クエリ × 2チーム） |
-| 検索期間 | キックオフ - 168時間（1週間） ～ キックオフ |
-| maxResults | **50** |
-| 除外フィルタ | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
-| ソートフィルタ | `sort_trusted()` |
-
----
-
-## 処理フロー
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Step 1: 検索（カテゴリ別）                                  │
-│   YouTubeService._search_videos()                           │
-│   ├─ キャッシュチェック（HIT ならAPI呼び出しスキップ）      │
-│   ├─ YouTube Data API search.list 呼び出し                  │
-│   └─ 結果をキャッシュに保存                                 │
-└─────────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────────┐
-│ Step 2: フィルター適用（カテゴリ別）                        │
-│   YouTubePostFilter.apply_filters() を使用                  │
-│   ├─ 記者会見: [match_highlights, highlights, ...]         │
-│   ├─ 過去対戦: [live_stream, press_conference, reaction]   │
-│   ├─ 戦術分析: [match_highlights, highlights, ..., 全6種]  │
-│   ├─ 選手紹介: [同上]                                       │
-│   └─ 練習風景: [同上]                                       │
-└─────────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────────┐
-│ Step 3: ソート・件数制限（カテゴリ別）                      │
-│   filter.sort_trusted()  ... 信頼チャンネル優先ソート      │
-│   各カテゴリ10件に制限、超過分はoverflow                    │
-└─────────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────────┐
-│ Step 4: 重複排除（全カテゴリ統合後）                        │
-│   filter.deduplicate()                                      │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 除外フィルタ
-
-`YouTubePostFilter` クラスで提供される除外フィルタ群。
-
-### フィルタメソッド一覧
-
-| メソッド名 | 除外キーワード | 説明 |
-|-----------|---------------|------|
-| `filter_match_highlights()` | `highlights` + (`vs`/`v`/`vs.`) | 試合ハイライト（対戦形式） |
-| `filter_highlights()` | `highlights`, `match highlights`, `extended highlights` | 単独ハイライト |
-| `filter_full_match()` | `full match`, `full game`, `full replay` | フルマッチ |
-| `filter_live_stream()` | `live`, `livestream`, `watch live`, `streaming` | ライブ配信 |
-| `filter_press_conference()` | `press conference` | 記者会見 |
-| `filter_reaction()` | `reaction` | リアクション動画 |
-
-> **Note**: 
-> - フィルタはタイトル + 説明文に対して適用（小文字変換後）
-> - スペース含むキーワード（例: `press conference`）はそのまま部分一致検索
-
-### 組み合わせAPI
-
-```python
-# 複数フィルタをまとめて適用
-apply_filters(videos, filters=["match_highlights", "full_match", ...])
-# -> {"kept": [...], "removed": [...]}
-```
-
-### カテゴリ別フィルタ適用
-
-| カテゴリ | 適用フィルタ |
-|---------|-------------|
-| 記者会見 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `reaction` |
-| 過去対戦 | `live_stream`, `press_conference`, `reaction` |
-| 戦術分析 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
-| 選手紹介 | 同上 |
-| 練習風景 | 同上 |
-
-> **Design Note**: 
-> - 記者会見カテゴリでは `press_conference` フィルタを適用しない（クエリ自体がpress conferenceを検索）
-> - 過去対戦カテゴリでは `highlights` フィルタを適用しない（クエリ自体がhighlightsを検索）
-
----
-
-## 信頼チャンネル管理
-
-### ファイル構成
-
-```
-settings/channels.py
-├─ TRUSTED_CHANNELS: Dict[str, Dict]  # チャンネルID → メタデータ
-├─ is_trusted_channel(channel_id)     # 判定関数
-├─ get_channel_info(channel_id)       # メタデータ取得
-└─ get_channel_display_name(...)      # 表示名取得
-```
-
-### TRUSTED_CHANNELS 構造
-
-```python
-TRUSTED_CHANNELS = {
-    "UCkzCjdRMrW2vXLx8mvPVLdQ": {
-        "name": "Man City",
-        "handle": "@mancity",
-        "category": "team",
-    },
-    # ...
-}
-```
-
-### カテゴリ一覧
-
-| category | 説明 | 例 |
-|----------|------|-----|
-| `team` | クラブ公式 | Man City, Arsenal, Liverpool |
-| `league` | リーグ公式 | Premier League, La Liga |
-| `broadcaster` | 放送局 | Sky Sports, DAZN, TNT Sports |
-| `tactics` | 戦術分析 | Tifo Football, レオザフットボール |
-| `media` | メディア | スポルティーバ, PIVOT |
-
----
-
-## ソートロジック
-
-```python
-# 信頼チャンネル優先、その中ではrelevance順維持
-videos.sort(key=lambda v: (
-    0 if v["is_trusted"] else 1,  # 信頼チャンネル優先
-    v.get("original_index", 0)     # relevance順を維持
-))
-```
-
----
-
-## キャッシュ
-
-| 項目 | 値 |
-|------|-----|
-| TTL | **168時間（1週間）** |
-| 保存先 | `api_cache/youtube/{cache_key}.json` |
-| キーの構成 | `query + relevance_language + region_code + channel_id + publishedAfter + publishedBefore` → MD5 |
-| 有効化 | `config.USE_API_CACHE` または `cache_enabled` 引数 |
-
----
-
-## APIクォータ
+### 4.1 APIクォータ
 
 | 項目 | 値 |
 |------|-----|
 | 無料枠 | 10,000ユニット/日 |
-| search.list | **100ユニット/リクエスト** |
-| リセット時間 | 太平洋時間 0:00（JST 17:00） |
+| search.list | 100ユニット/リクエスト |
+| 1試合あたり | 1,300ユニット（通常）、900ユニット（デバッグ） |
 
-### 1試合あたりのコスト
+### 4.2 言語
 
-| カテゴリ | クエリ数 | ユニット |
-|---------|----------|----------|
-| 記者会見 | 2 | 200 |
-| 過去対戦ハイライト | 1 | 100 |
-| 戦術分析 | 2 | 200 |
-| 選手紹介 | 6（デバッグ: 2） | 600（200） |
-| 練習風景 | 2 | 200 |
-| **合計（通常）** | **13** | **1,300** |
-| **合計（デバッグ）** | **9** | **900** |
-
----
-
-## 公開API（healthcheck用）
-
-| メソッド | 用途 |
+| カテゴリ | 言語 |
 |---------|------|
-| `search_videos_raw(...)` | 生検索（フィルタなし） |
-| `apply_trusted_channel_sort(videos)` | 信頼チャンネル優先ソート |
-| `apply_player_post_filter(videos)` | 選手post-filter |
-| `search_training_videos(team, kickoff, max_results)` | 練習動画検索 |
-| `search_player_videos(player, team, kickoff, max_results, apply_post_filter)` | 選手動画検索 |
+| 記者会見 | 英語 |
+| 戦術分析 | 日本語固定 |
+| 選手紹介 | 日本語固定 |
+| 練習風景 | 英語 |
 
 ---
 
-## レポート出力形式
+## 5. 関連ドキュメント
 
-```html
-<details>
-<summary><strong>🎤 記者会見 (3件)</strong></summary>
-<table class="youtube-table">
-<thead><tr><th>サムネイル</th><th>動画情報</th></tr></thead>
-<tbody>
-<tr>
-  <td><a href="..."><img src="..." style="width:120px;height:auto;"></a></td>
-  <td><strong><a href="...">Title...</a></strong><br/>
-      📺 <strong>✅ Man City</strong> ・ 🕐 2日前<br/>
-      <em>Description...</em></td>
-</tr>
-</tbody>
-</table>
-</details>
-```
-
-- **✅**: 信頼チャンネル（TRUSTED_CHANNELS登録済み）
-- **⚠️**: 非信頼チャンネル（要確認）
-
----
-
-## 変更履歴
-
-| 日付 | 内容 |
-|------|------|
-| 2025-12-28 | 全カテゴリ maxResults を 50 に拡張（Issue #45, #46対応） |
-| 2025-12-28 | ハイライト除外post-filterを全カテゴリに適用（過去対戦除く） |
-| 2025-12-27 | 選手クエリを `{player} {team} プレー` に変更 |
-| 2025-12-27 | 選手紹介 maxResults を 50 に拡張 + post-filter追加 |
-| 2025-12-27 | 練習動画検索期間を168時間（1週間）に延長 |
-| 2025-12-27 | 公開API追加（`search_training_videos`, `search_player_videos`） |
-| 2025-12-27 | ヘルスチェックスクリプトのリファクタリング |
-| 2025-12-24 | Issue #27: クエリ削減（20→13）、post-fetchフィルタ方式実装 |
-| 2025-12-24 | キャッシュTTL 24時間→1週間に変更 |
-| 2025-12-24 | 選手紹介カテゴリを戦術から分離 |
+- [設計詳細](../02_design/external_apis.md#4-youtube-data-api)
+- [信頼チャンネル設定](../../settings/channels.py)
