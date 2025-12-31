@@ -3,7 +3,7 @@
 
 試合データやその他のドメインオブジェクトを定義
 
-Issue #69: 責務分離のためのサブ構造
+Issue #95: 責務分離のためのサブ構造
 - MatchCore: 試合の基本情報（MatchProcessorで生成）
 - MatchFacts: API取得データ（FactsServiceで生成）
 - MatchPreview: LLM生成データ（NewsServiceで生成）
@@ -18,7 +18,7 @@ import re
 
 
 # =============================================================================
-# Issue #69: 新しいサブ構造クラス
+# Issue #95: 新しいサブ構造クラス
 # =============================================================================
 
 @dataclass
@@ -34,7 +34,6 @@ class MatchCore:
     selection_reason: str = ""
     is_target: bool = False
     match_date_local: str = ""  # 試合開催日（現地時間）YYYY-MM-DD
-    # Issue #70: timezone-aware datetime (UTC)
     kickoff_at_utc: Optional[datetime] = None
 
 
@@ -73,7 +72,7 @@ class MatchFacts:
     player_birthdates: Dict[str, str] = field(default_factory=dict)
     player_positions: Dict[str, str] = field(default_factory=dict)
     
-    # Issue #40: Player Social Media
+    # Player Social Media
     player_instagram: Dict[str, str] = field(default_factory=dict)  # name -> Instagram URL
     
     # Injuries and Suspensions
@@ -117,7 +116,6 @@ class MatchAggregate:
     
     # =========================================================================
     # 後方互換プロパティ（既存コードからのアクセスをサポート）
-    # Phase 5 で削除予定
     # =========================================================================
     
     @property
@@ -160,7 +158,6 @@ class MatchAggregate:
     def match_date_local(self) -> str:
         return self.core.match_date_local
     
-    # Issue #70: kickoff_at_utc プロパティを追加
     @property
     def kickoff_at_utc(self) -> Optional[datetime]:
         return self.core.kickoff_at_utc
@@ -175,39 +172,41 @@ class MatchData:
     """
     試合データを保持するデータクラス
     
-    Issue #69 により、責務分離のためのサブ構造クラスが導入された:
-    - MatchCore: 試合の基本情報
-    - MatchFacts: API取得データ
-    - MatchPreview: LLM生成データ
-    - MatchMedia: YouTube・画像データ
-    - MatchAggregate: 統合コンテナ
+    このクラスはアプリケーション全体で使用される主要なドメインモデルです。
+    各サービスがこのオブジェクトを更新してデータを追加していきます。
     
-    このクラスは後方互換性のため維持されているが、
-    将来的には MatchAggregate への移行を推奨。
+    生成・更新フロー:
+    1. MatchProcessor: 基本情報（id, home_team, away_team等）を設定して生成
+    2. FactsService: スタメン・フォーメーション・選手情報等を追加
+    3. NewsService: ニュース要約・戦術プレビュー等を追加
+    4. YouTubeService: 動画情報（別途Dictで管理）
+    5. ReportGenerator: レポート出力
     
-    変換メソッド:
-    - to_facts() / set_facts(): MatchFacts との相互変換
-    - to_preview() / set_preview(): MatchPreview との相互変換
-    - to_core(): MatchCore への変換
-    - to_aggregate(): MatchAggregate への変換
+    フィールドの責務:
+    - 試合基本情報: id, home_team, away_team, competition, kickoff_*, rank等
+    - 選手・チーム情報: *_lineup, *_bench, *_formation, player_*等
+    - 追加取得情報: venue, referee, *_manager, h2h_summary等
+    - LLM生成コンテンツ: news_summary, tactical_preview, *_interview等
+    - エラー状態: error_status
     """
+    # =========================================================================
+    # 試合基本情報（MatchProcessorで設定）
+    # =========================================================================
     id: str
     home_team: str
     away_team: str
-    competition: str  # EPL or CL
-    kickoff_jst: str
-    kickoff_local: str
-    rank: str  # Absolute, S, A, or None
+    competition: str  # EPL, CL, LaLiga等
+    kickoff_jst: str  # 表示用（例: "01/01 04:30"）
+    kickoff_local: str  # 現地時間（例: "2025-12-27 20:00 GMT"）
+    rank: str  # Absolute, S, A, or empty
     selection_reason: str = ""
     is_target: bool = False
+    match_date_local: str = ""  # 試合開催日（現地時間）YYYY-MM-DD
+    kickoff_at_utc: Optional[datetime] = None  # UTC datetime（計算用）
     
-    # Match date in local time (YYYY-MM-DD format)
-    match_date_local: str = ""  # 試合開催日（現地時間）
-    
-    # Issue #70: timezone-aware datetime (UTC)
-    kickoff_at_utc: Optional[datetime] = None
-    
-    # Facts Data (populated by FactsService)
+    # =========================================================================
+    # 選手・チーム情報（FactsServiceで設定）
+    # =========================================================================
     venue: str = ""
     home_lineup: List[str] = None
     away_lineup: List[str] = None
@@ -215,58 +214,51 @@ class MatchData:
     away_bench: List[str] = None
     home_formation: str = ""
     away_formation: str = ""
-    referee: str = "" # W-L-D
-    home_recent_form: str = ""
+    referee: str = ""
+    home_recent_form: str = ""  # 直近5試合の結果（W-L-D形式）
     away_recent_form: str = ""
     
-    # Player Nationalities (name -> nationality mapping)
+    # 選手詳細情報（name -> value のマッピング）
     player_nationalities: dict = None  # {"Player Name": "England", ...}
-    
-    # Player Numbers (name -> jersey number mapping)
     player_numbers: dict = None  # {"Player Name": 1, ...}
-    
-    # Player Photos (name -> photo URL mapping)
     player_photos: dict = None  # {"Player Name": "https://...", ...}
-    
-    # Player Birthdates (name -> birth date mapping)
     player_birthdates: dict = None  # {"Player Name": "2000-03-06", ...}
-    
-    # Player Positions (name -> position mapping, for bench players)
     player_positions: dict = None  # {"Player Name": "G", ...} (G=GK, D=DF, M=MF, F=FW)
-    
-    # Issue #40: Player Social Media
     player_instagram: dict = None  # {"Player Name": "https://instagram.com/...", ...}
     
-    # Injuries and Suspensions (structured data)
+    # 負傷者・出場停止情報
     injuries_list: list = None  # [{"name": "Player", "team": "Team", "reason": "Injury"}, ...]
-    injuries_info: str = "不明"  # 負傷者・出場停止情報（フォールバック用テキスト）
+    injuries_info: str = "不明"  # フォールバック用テキスト
     
-    # Head-to-Head History
-    h2h_summary: str = ""  # 過去の対戦成績サマリー（例: "5試合: Home 2勝, Draw 1, Away 2勝"）
+    # 対戦成績
+    h2h_summary: str = ""  # 例: "5試合: Home 2勝, Draw 1, Away 2勝"
     
-    # Manager names (populated from lineups API coach data)
+    # 監督情報
     home_manager: str = ""
     away_manager: str = ""
+    home_manager_photo: str = ""
+    away_manager_photo: str = ""
     
-    # Issue #52: Team logos
-    home_logo: str = ""  # ホームチームロゴURL
-    away_logo: str = ""  # アウェイチームロゴURL
+    # チームロゴ
+    home_logo: str = ""
+    away_logo: str = ""
     
-    # Issue #53: Manager photos
-    home_manager_photo: str = ""  # ホーム監督画像URL
-    away_manager_photo: str = ""  # アウェイ監督画像URL
-    
-    # Generated Content (NewsService)
+    # =========================================================================
+    # LLM生成コンテンツ（NewsServiceで設定）
+    # =========================================================================
     news_summary: str = ""
     tactical_preview: str = ""
     preview_url: str = ""
     home_interview: str = ""  # ホームチーム監督・選手インタビュー要約
     away_interview: str = ""  # アウェイチーム監督・選手インタビュー要約
     
-    # Error Status
-    error_status: str = "Normal" # Normal, E1, E2, E3
+    # =========================================================================
+    # エラー状態
+    # =========================================================================
+    error_status: str = "Normal"  # Normal, E1, E2, E3
     
     def __post_init__(self):
+        """リストや辞書フィールドを初期化"""
         if self.home_lineup is None: self.home_lineup = []
         if self.away_lineup is None: self.away_lineup = []
         if self.home_bench is None: self.home_bench = []
@@ -286,9 +278,7 @@ class MatchData:
         - スペースを削除
         - 特殊文字を削除（英数字とハイフンのみ許可）
         """
-        # スペースを削除
         normalized = team_name.replace(" ", "")
-        # 特殊文字を削除（英数字とハイフンのみ許可）
         normalized = re.sub(r'[^a-zA-Z0-9\-]', '', normalized)
         return normalized
     
@@ -309,114 +299,7 @@ class MatchData:
         # match_date_local が空の場合は kickoff_local から抽出を試みる
         match_date = self.match_date_local
         if not match_date and self.kickoff_local:
-            # "2025-12-27 20:00 GMT" のような形式から日付部分を抽出
             match_date = self.kickoff_local.split()[0] if self.kickoff_local else ""
         
         filename = f"{match_date}_{home_normalized}_vs_{away_normalized}_{generation_datetime}"
         return filename
-    
-    # =========================================================================
-    # Issue #69: MatchFacts/MatchPreview との相互変換メソッド
-    # =========================================================================
-    
-    def to_facts(self) -> 'MatchFacts':
-        """現在のフィールドから MatchFacts オブジェクトを生成"""
-        return MatchFacts(
-            home_lineup=self.home_lineup,
-            away_lineup=self.away_lineup,
-            home_bench=self.home_bench,
-            away_bench=self.away_bench,
-            home_formation=self.home_formation,
-            away_formation=self.away_formation,
-            venue=self.venue,
-            referee=self.referee,
-            home_recent_form=self.home_recent_form,
-            away_recent_form=self.away_recent_form,
-            h2h_summary=self.h2h_summary,
-            home_manager=self.home_manager,
-            away_manager=self.away_manager,
-            home_manager_photo=self.home_manager_photo,
-            away_manager_photo=self.away_manager_photo,
-            home_logo=self.home_logo,
-            away_logo=self.away_logo,
-            player_nationalities=self.player_nationalities,
-            player_numbers=self.player_numbers,
-            player_photos=self.player_photos,
-            player_birthdates=self.player_birthdates,
-            player_positions=self.player_positions,
-            player_instagram=self.player_instagram,
-            injuries_list=self.injuries_list,
-            injuries_info=self.injuries_info,
-        )
-    
-    def set_facts(self, facts: 'MatchFacts') -> None:
-        """MatchFacts オブジェクトから対応フィールドを設定"""
-        self.home_lineup = facts.home_lineup
-        self.away_lineup = facts.away_lineup
-        self.home_bench = facts.home_bench
-        self.away_bench = facts.away_bench
-        self.home_formation = facts.home_formation
-        self.away_formation = facts.away_formation
-        self.venue = facts.venue
-        self.referee = facts.referee
-        self.home_recent_form = facts.home_recent_form
-        self.away_recent_form = facts.away_recent_form
-        self.h2h_summary = facts.h2h_summary
-        self.home_manager = facts.home_manager
-        self.away_manager = facts.away_manager
-        self.home_manager_photo = facts.home_manager_photo
-        self.away_manager_photo = facts.away_manager_photo
-        self.home_logo = facts.home_logo
-        self.away_logo = facts.away_logo
-        self.player_nationalities = facts.player_nationalities
-        self.player_numbers = facts.player_numbers
-        self.player_photos = facts.player_photos
-        self.player_birthdates = facts.player_birthdates
-        self.player_positions = facts.player_positions
-        self.player_instagram = facts.player_instagram
-        self.injuries_list = facts.injuries_list
-        self.injuries_info = facts.injuries_info
-    
-    def to_preview(self) -> 'MatchPreview':
-        """現在のフィールドから MatchPreview オブジェクトを生成"""
-        return MatchPreview(
-            news_summary=self.news_summary,
-            tactical_preview=self.tactical_preview,
-            preview_url=self.preview_url,
-            home_interview=self.home_interview,
-            away_interview=self.away_interview,
-        )
-    
-    def set_preview(self, preview: 'MatchPreview') -> None:
-        """MatchPreview オブジェクトから対応フィールドを設定"""
-        self.news_summary = preview.news_summary
-        self.tactical_preview = preview.tactical_preview
-        self.preview_url = preview.preview_url
-        self.home_interview = preview.home_interview
-        self.away_interview = preview.away_interview
-    
-    def to_core(self) -> 'MatchCore':
-        """現在のフィールドから MatchCore オブジェクトを生成"""
-        return MatchCore(
-            id=self.id,
-            home_team=self.home_team,
-            away_team=self.away_team,
-            competition=self.competition,
-            kickoff_jst=self.kickoff_jst,
-            kickoff_local=self.kickoff_local,
-            rank=self.rank,
-            selection_reason=self.selection_reason,
-            is_target=self.is_target,
-            match_date_local=self.match_date_local,
-            kickoff_at_utc=self.kickoff_at_utc,
-        )
-    
-    def to_aggregate(self) -> 'MatchAggregate':
-        """現在のMatchDataから MatchAggregate を生成"""
-        return MatchAggregate(
-            core=self.to_core(),
-            facts=self.to_facts(),
-            preview=self.to_preview(),
-            error_status=self.error_status,
-        )
-

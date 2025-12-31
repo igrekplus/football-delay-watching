@@ -90,6 +90,31 @@
 └── .github/workflows/       # GitHub Actions
 ```
 
+## 📚 ドキュメント構成と更新ルール
+
+> 詳細は [docs/structure.md](docs/structure.md) を参照。
+
+### ディレクトリの役割
+
+| ディレクトリ | 役割 | 更新タイミング |
+|-------------|------|---------------|
+| `01_requirements/` | WHAT: 何を作るか（要件定義） | 機能追加・変更時 |
+| `02_design/` | HOW: どう実現するか（設計） | 実装前・設計変更時 |
+| `03_operations/` | RUN: どう動かすか（運用） | インフラ変更時 |
+| `04_llm_guides/` | AI: どう指示するか（LLM用） | AI指示改善時 |
+
+### 更新ルール
+
+1.  **Code follows Design**: コード変更時は `02_design` も更新する
+2.  **Single Source of Truth**: 要件は `01_requirements` に書き、設計書からはリンクで参照
+3.  **リンク整合性**: ファイル名変更時はリンク切れを確認する
+
+### 変更時チェックリスト
+
+- [ ] 機能仕様が変わった → `01_requirements` 更新
+- [ ] 実装方針が変わった → `02_design` 更新
+- [ ] 運用手順が変わった → `03_operations` 更新
+- [ ] ファイル名変更 → リンク切れ確認
 
 ## 🔧 開発コマンド
 
@@ -262,7 +287,7 @@ python scripts/sync_firebase_reports.py
 firebase deploy --only hosting
 ```
 
-詳細は [docs/deploy_design.md](docs/deploy_design.md) を参照。
+詳細については [docs/03_operations/deployment.md](docs/03_operations/deployment.md) を参照。
 
 ## 📝 Issue対応フロー
 

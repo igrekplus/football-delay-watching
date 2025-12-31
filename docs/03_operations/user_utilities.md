@@ -78,4 +78,4 @@ player_id,name,position,number,instagram_url
 
 
 ---
-※ 開発フロー・デプロイ手順などの詳細については [GEMINI.md](../GEMINI.md) を参照してください。
+※ 開発フロー・デプロイ手順などの詳細については [../../GEMINI.md](../../GEMINI.md) を参照してください。
