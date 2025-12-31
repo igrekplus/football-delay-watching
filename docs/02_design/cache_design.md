@@ -3,7 +3,7 @@
 ## 1. 概要
 
 外部APIへのリクエスト回数を削減し、クォータ消費を抑制するためのキャッシュ機構。
-Google Cloud Storage (GCS) を唯一のバックエンドとして使用する。
+Google Cloud Storage (GCS) をプライマリバックエンドとして使用する。
 
 ### 1.1 目的
 
@@ -15,50 +15,102 @@ Google Cloud Storage (GCS) を唯一のバックエンドとして使用する�
 
 ### 1.2 対象API
 
-| API | 実装ファイル | キャッシュ対応 |
-|-----|-------------|--------------|
-| API-Football | `src/clients/cache.py` | ✅ GCS対応 |
-| YouTube Data API | `src/youtube_service.py` | ⚠️ ローカルのみ（別Issue #63 で対応予定） |
+| API | 実装クライアント | キャッシュ対応 |
+|-----|-----------------|--------------|
+| API-Football | `CachingHttpClient` | ✅ GCS対応 |
+| YouTube Data API | `YouTubeClient` | ✅ GCS対応 |
+| Google Custom Search | `GoogleSearchClient` | ✅ GCS対応 |
 
 ---
 
 ## 2. アーキテクチャ
 
+### 2.1 レイヤー構成
+
 ```mermaid
 graph TD
-    A[アプリケーション] --> B{get_with_cache}
-    B --> C{キャッシュ確認}
-    C -->|HIT| D[GCSから取得]
-    C -->|MISS| E[API呼び出し]
-    E --> F[レスポンス]
-    F --> G[GCSに保存]
-    D --> H[レスポンス返却]
-    G --> H
+    subgraph "高レベル層"
+        A[ApiFootballClient] --> B[CachingHttpClient]
+        Y[YouTubeClient] --> B
+        G[GoogleSearchClient] --> B
+    end
+    
+    subgraph "キャッシュ層"
+        B --> C[CacheStore]
+        B --> D[HttpClient]
+    end
+    
+    subgraph "低レベル層"
+        C --> E[GcsCacheStore]
+        C --> F[LocalCacheStore]
+        D --> H[RequestsHttpClient]
+    end
 ```
 
-### 2.1 環境変数
+### 2.2 責務分離
+
+| コンポーネント | ファイル | 責務 |
+|--------------|---------|------|
+| **CacheStore** | `src/clients/cache_store.py` | ストレージバックエンド抽象化（GCS/Local） |
+| **HttpClient** | `src/clients/http_client.py` | HTTP通信抽象化 |
+| **CachingHttpClient** | `src/clients/caching_http_client.py` | キャッシュ付きHTTP実行、TTL判定 |
+| **cache_config** | `settings/cache_config.py` | TTL設定、バックエンド設定 |
+
+### 2.3 シーケンス図
+
+```mermaid
+sequenceDiagram
+    participant App as アプリケーション
+    participant CHC as CachingHttpClient
+    participant CS as CacheStore
+    participant HTTP as HttpClient
+    participant API as 外部API
+    
+    App->>CHC: get(url, params)
+    CHC->>CS: read(cache_path)
+    alt キャッシュHIT & TTL有効
+        CS-->>CHC: cached_data
+        CHC-->>App: CachedResponse
+    else キャッシュMISS or TTL期限切れ
+        CHC->>HTTP: get(url, params)
+        HTTP->>API: HTTP GET
+        API-->>HTTP: response
+        HTTP-->>CHC: HttpResponse
+        CHC->>CS: write(cache_path, data)
+        CHC-->>App: HttpResponse
+    end
+```
+
+---
+
+## 3. 設定ファイル
+
+### 3.1 環境変数
 
 | 環境変数 | デフォルト | 説明 |
 |----------|-----------|------|
 | `GCS_CACHE_BUCKET` | `football-delay-watching-cache` | GCSバケット名 |
-| `CACHE_BACKEND` | `local` | `local` or `gcs`（将来的に`gcs`をデフォルトに） |
-| `USE_API_CACHE` | （自動判定） | キャッシュ有効化フラグ |
+| `CACHE_BACKEND` | `gcs` | `local` or `gcs` |
+| `USE_API_CACHE` | `True` | キャッシュ有効化フラグ |
 
-### 2.2 キャッシュ有効化条件
+### 3.2 TTL設定 (`settings/cache_config.py`)
 
 ```python
-# config.py より
-USE_API_CACHE = DEBUG_MODE and not USE_MOCK_DATA
+ENDPOINT_TTL_DAYS = {
+    "players": None,      # 無期限（静的データ）
+    "lineups": None,      # 無期限（試合後確定）
+    "fixtures": 10,       # 10日間
+    "headtohead": 10,     # 10日間
+    "statistics": 10,     # 10日間
+    "injuries": 0,        # キャッシュしない
+    "squads": 7,          # 7日間
+}
 ```
 
-- **デバッグモード（実API）**: キャッシュ有効
-- **本番モード**: キャッシュ有効
-- **モックモード**: キャッシュ無効（API呼び出しなし）
-
-### 2.3 モード別キャッシュ動作一覧
+### 3.3 モード別キャッシュ動作
 
 > [!IMPORTANT]
-> 本番/Debug/Mockでキャッシュの動作が異なります。以下の表を参照してください。
+> 本番/Debug/Mockでキャッシュの動作が異なります。
 
 | 環境変数 | 本番 (Actions) | Debug (ローカル) | Mock |
 |----------|---------------|-----------------|------|
@@ -67,58 +119,70 @@ USE_API_CACHE = DEBUG_MODE and not USE_MOCK_DATA
 | `USE_API_CACHE` | `True` | `True` | `False` |
 | `CACHE_BACKEND` | `gcs` | `gcs` | - |
 
-#### 本番モード (GitHub Actions)
+---
 
-```bash
-# 環境変数設定（.github/workflows/daily_report.yml）
-DEBUG_MODE: "False"
-USE_MOCK_DATA: "False"
-USE_API_CACHE: "True"
-CACHE_BACKEND: "gcs"
+## 4. 実装詳細
+
+### 4.1 CacheStore (抽象基底クラス)
+
+```python
+class CacheStore(ABC):
+    @abstractmethod
+    def read(self, path: str) -> Optional[dict]: ...
+    
+    @abstractmethod
+    def write(self, path: str, data: dict) -> None: ...
+    
+    @abstractmethod
+    def exists(self, path: str) -> bool: ...
 ```
 
-- **API呼び出し**: 実API
-- **キャッシュ**: GCSを使用
-- **データソース**: APIまたはGCSキャッシュ
+**実装クラス**:
+- `LocalCacheStore` - ローカルファイルシステム
+- `GcsCacheStore` - Google Cloud Storage
 
-#### デバッグモード (ローカル開発)
+### 4.2 CachingHttpClient
 
-```bash
-DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+```python
+class CachingHttpClient:
+    def __init__(
+        self,
+        store: CacheStore,
+        http_client: HttpClient,
+        ttl_config: Dict[str, Optional[int]] = None,
+        use_cache: bool = True
+    ): ...
+    
+    def get(
+        self,
+        url: str,
+        headers: Dict[str, str] = None,
+        params: Dict[str, Any] = None
+    ) -> HttpResponse: ...
 ```
 
-- **API呼び出し**: 実API
-- **キャッシュ**: GCSを使用（クォータ節約）
-- **データソース**: APIまたはGCSキャッシュ
-- **試合選定**: 直近土曜日の1試合のみ
+**処理フロー**:
+1. URLとパラメータからキャッシュパスを生成
+2. キャッシュが存在すればTTLをチェック
+3. TTL有効なら `CachedResponse` を返却
+4. TTL切れまたはキャッシュなしなら HTTP リクエスト実行
+5. レスポンスをキャッシュに保存
 
-#### モックモード (UI確認用)
+### 4.3 ファクトリ関数
 
-```bash
-DEBUG_MODE=True USE_MOCK_DATA=True python main.py
+```python
+# CacheStoreの生成
+from src.clients.cache_store import create_cache_store
+store = create_cache_store(backend="gcs")
+
+# CachingHttpClientの生成
+from src.clients.caching_http_client import create_caching_client
+client = create_caching_client(backend="gcs", use_cache=True)
 ```
 
-- **API呼び出し**: なし（モックデータ使用）
-- **キャッシュ**: 無効（API呼び出しがないため不要）
-- **データソース**: `fixtures/mock_*.json`
-- **用途**: UI/レイアウト確認
+---
 
-### 2.4 YouTube API のキャッシュ
-
-YouTube Data API のキャッシュは API-Football とは別系統で管理される。
-
-| 項目 | 値 |
-|------|-----|
-| バックエンド | ローカルファイル (`api_cache/youtube/`) |
-| TTL | 1週間（168時間） |
-| キャッシュキー | クエリ + パラメータ の MD5ハッシュ |
-| 有効化条件 | `config.USE_API_CACHE` |
-
-> **Note**: YouTube API は GCS 対応が未実装（Issue #63）
-
-## 3. ファイル構造
-
-### 3.1 GCSバケット構造
+## 5. GCSバケット構造
 
 ```
 gs://football-delay-watching-cache/
@@ -132,144 +196,69 @@ gs://football-delay-watching-cache/
 │   └── {fixture_id}.json
 ├── statistics/
 │   └── {team_name}_{season}_{league_id}.json
-└── headtohead/
-    └── {team1}_vs_{team2}.json
+├── headtohead/
+│   └── {team1}_vs_{team2}.json
+└── youtube/
+    └── {query_hash}.json
 ```
 
-### 3.2 ファイル命名規則
+### 5.1 ファイル命名規則
 
 | エンドポイント | パターン | 例 |
 |--------------|---------|-----|
 | `/fixtures` | `fixtures/{league_id}_{date}_{home}_vs_{away}.json` | `fixtures/39_2024-12-21_ManCity_vs_WestHam.json` |
 | `/fixtures/lineups` | `lineups/{fixture_id}_{home}_vs_{away}.json` | `lineups/1234567_ManCity_vs_WestHam.json` |
 | `/players` | `players/{team_name}/{player_id}.json` | `players/Manchester_City/123.json` |
-| `/injuries` | `injuries/{fixture_id}.json` | `injuries/1234567.json` |
-| `/teams/statistics` | `statistics/{team_name}_{season}_{league_id}.json` | `statistics/Manchester_City_2024_39.json` |
-| `/fixtures/headtohead` | `headtohead/{team1}_vs_{team2}.json` | `headtohead/ManCity_vs_Arsenal.json` |
-
-> **Note**: チーム名はアルファベット順でソートして一意性を保証（headtohead）
+| YouTube | `youtube/{query_hash}.json` | `youtube/abc123def456.json` |
 
 ---
 
-## 4. TTL方針（キャッシュ有効期限）
+## 6. TTL方針（キャッシュ有効期限）
 
 | データ種別 | TTL | 理由 |
 |-----------|-----|------|
 | **選手データ** (`/players`) | 無期限 | 国籍、ポジション等は年単位で不変 |
 | **スタメン** (`/lineups`) | 無期限 | 試合後は確定データ |
-| **試合一覧** (`/fixtures`) | 10日間 | 開発中の連続実行に対応、日程変更は稀 |
-| **過去対戦** (`/headtohead`) | 10日間 | 試合後に内容が変わるため期限あり |
-| **チーム統計** (`/statistics`) | 10日間 | リーグ進行で更新されるが開発中は同一データ使用 |
-| **負傷者** (`/injuries`) | キャッシュしない | 当日変動あり |
-
-### 4.1 TTLチェック実装状況
-
-| キャッシュ | TTLチェック | 備考 |
-|-----------|------------|------|
-| API-Football (`cache.py`) | ⚠️ **未実装** | Phase 3で実装予定 |
-| YouTube (`youtube_service.py`) | ✅ 実装済み | 1週間TTL |
+| **試合一覧** (`/fixtures`) | 10日間 | 開発中の連続実行に対応 |
+| **過去対戦** (`/headtohead`) | 10日間 | 試合後に内容が変わる |
+| **チーム統計** (`/statistics`) | 10日間 | リーグ進行で更新される |
+| **負傷者** (`/injuries`) | 0 | 当日変動あり |
+| **YouTube検索** | 7日間 | 新着動画の反映 |
 
 ---
 
-## 5. エンドポイント別詳細
-
-### 5.1 `/teams/statistics` - チーム統計
-
-| レスポンス項目 | 説明 | 現在の利用状況 |
-|--------------|------|---------------|
-| `form` | 直近試合結果（例: `"LLWLLDLLLWWDLDDLL"`） | ✅ 使用中（最後5文字を抽出） |
-| `fixtures.played/wins/draws/loses` | 試合数・勝敗数 | ❌ 未使用 |
-| `goals.for/against` | 得点・失点（総数、平均、時間帯別） | ❌ 未使用 |
-
-### 5.2 `/fixtures/headtohead` - 過去対戦
-
-| パラメータ | 値 | 説明 |
-|-----------|-----|------|
-| `h2h` | `{team1_id}-{team2_id}` | チームIDのペア |
-| `last` | `5` | 過去5試合を取得 |
-
-> **Note**: 試合後に過去対戦データの内容が変わるため、TTLは10日間に設定
-
-### 5.3 キャッシュ推奨/非推奨
-
-**推奨**:
-- `/players` - 国籍、ポジション等は静的
-- `/fixtures/lineups` - 試合後は確定
-
-**非推奨**:
-- `/injuries` - 試合当日に変動する可能性あり
-
----
-
-## 6. キャッシュウォーミング
+## 7. キャッシュウォーミング
 
 APIクォータに余裕がある平日に、上位チームの選手データを事前取得する機能。
-
-### 6.1 設定
 
 | 設定項目 | 値 |
 |---------|-----|
 | 実装ファイル | `src/cache_warmer.py` |
 | 対象チーム | EPL上位10チーム + CL上位13チーム |
 | 実行条件 | 残クォータ > 30、09:00 JST前 |
-| 環境変数 | `CACHE_WARMING_ENABLED` (デフォルト: False) |
-
-### 6.2 対象チーム一覧
-
-**EPL上位10チーム** (`config.EPL_CACHE_TEAMS`):
-- Liverpool, Chelsea, Arsenal, Nottingham Forest, Brighton
-- Manchester City, Bournemouth, Newcastle, Aston Villa, Fulham
-
-**CL上位13チーム** (`config.CL_CACHE_TEAMS`):
-- Liverpool, Barcelona, Arsenal, Inter, Bayer Leverkusen
-- Atletico Madrid, AC Milan, Atalanta, Monaco, Sporting CP
-- Bayern Munich, Borussia Dortmund, Real Madrid
+| 制御 | `ExecutionPolicy` クラス |
 
 ---
 
-## 7. 実装詳細
+## 8. 依存性注入 (DI)
 
-### 7.1 主要関数
-
-```python
-# src/clients/cache.py
-
-def get_with_cache(
-    url: str,
-    headers: Dict[str, str],
-    params: Dict[str, Any] = None,
-    team_name: str = None
-) -> requests.Response:
-    """
-    キャッシュ機能付きのGETリクエスト
-    
-    Args:
-        url: APIエンドポイントURL
-        headers: リクエストヘッダー
-        params: クエリパラメータ
-        team_name: チーム名（playersエンドポイント用）
-    
-    Returns:
-        requests.Response または CachedResponse
-    """
-```
-
-### 7.2 CachedResponseクラス
-
-キャッシュから読み込んだデータを `requests.Response` と同じインターフェースで扱うためのラッパー。
+テスト容易性のため、すべてのコンポーネントは依存性注入をサポート:
 
 ```python
-class CachedResponse:
-    status_code = 200
-    ok = True
-    
-    def json(self) -> dict: ...
-    def raise_for_status(self) -> None: ...
+# 本番用
+store = GcsCacheStore(bucket_name="my-bucket")
+http_client = RequestsHttpClient()
+caching_client = CachingHttpClient(store, http_client)
+
+# テスト用（モック注入）
+mock_store = MockCacheStore()
+mock_http = MockHttpClient()
+caching_client = CachingHttpClient(mock_store, mock_http)
 ```
 
 ---
 
-## 8. 確認コマンド
+## 9. 確認コマンド
 
 ```bash
 # GCSキャッシュ状況の確認
@@ -281,7 +270,7 @@ python healthcheck/check_football_api.py
 
 ---
 
-## 9. 関連ドキュメント
+## 10. 関連ドキュメント
 
 - [システム設計書](./system_overview.md) - 全体アーキテクチャ
 - [API-Football エンドポイント詳細](./api_endpoints.md) - 各エンドポイントのパラメータ
