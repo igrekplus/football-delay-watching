@@ -76,6 +76,34 @@ open https://football-delay-watching-a8830.web.app
 
 ---
 
+## デバッグ/モックモードでのデプロイ
+
+ローカルでデバッグやモックモードを実行した後は、**必ず同期→デプロイを行うこと**。
+
+### 実行モード
+
+| モード | コマンド | 用途 |
+|--------|---------|------|
+| **モック** | `DEBUG_MODE=True USE_MOCK_DATA=True python main.py` | UIレイアウト確認 |
+| **デバッグ** | `DEBUG_MODE=True USE_MOCK_DATA=False python main.py` | 機能の動作確認 |
+
+### 実行後のデプロイ
+
+```bash
+# 同期 + デプロイ（必ずセットで実行）
+source ~/.zshrc && python scripts/sync_firebase_reports.py && firebase deploy --only hosting
+```
+
+> [!WARNING]
+> デプロイを忘れると、生成したレポートはローカルにのみ存在し、Webで確認できない。
+
+### /debug-run ワークフロー
+
+AIアシスタント向けに `.agent/workflows/debug-run.md` を用意。
+実行→デプロイまで自動で行う。
+
+---
+
 ## GitHub Actions デプロイ
 
 `.github/workflows/daily_report.yml` で自動実行。
