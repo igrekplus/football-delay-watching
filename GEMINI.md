@@ -71,7 +71,10 @@
 │   │   ├── youtube_integration.md       # YouTube動画取得要件
 │   │   └── non_functional.md            # 非機能要件・データ定義
 │   ├── 02_design/                   # 設計
+│   │   ├── index.md                     # 設計概要・目次
 │   │   ├── system_overview.md           # システム全体設計
+│   │   ├── external_apis.md             # 外部API連携設計
+│   │   ├── infrastructure.md            # 実行基盤設計
 │   │   ├── cache_design.md              # キャッシュ設計
 │   │   ├── login_design.md              # ログイン設計
 │   │   └── api_endpoints.md             # APIエンドポイント詳細
