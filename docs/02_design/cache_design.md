@@ -18,7 +18,7 @@ Google Cloud Storage (GCS) をプライマリバックエンドとして使用�
 | API | 実装クライアント | キャッシュ対応 |
 |-----|-----------------|--------------|
 | API-Football | `CachingHttpClient` | ✅ GCS対応 |
-| YouTube Data API | `YouTubeClient` | ✅ GCS対応 |
+| YouTube Data API | `YouTubeSearchClient` | ✅ GCS対応 |
 | Google Custom Search | `GoogleSearchClient` | ✅ GCS対応 |
 
 ---
@@ -31,7 +31,7 @@ Google Cloud Storage (GCS) をプライマリバックエンドとして使用�
 graph TD
     subgraph "高レベル層"
         A[ApiFootballClient] --> B[CachingHttpClient]
-        Y[YouTubeClient] --> B
+        Y[YouTubeSearchClient] --> B
         G[GoogleSearchClient] --> B
     end
     
@@ -54,6 +54,7 @@ graph TD
 | **CacheStore** | `src/clients/cache_store.py` | ストレージバックエンド抽象化（GCS/Local） |
 | **HttpClient** | `src/clients/http_client.py` | HTTP通信抽象化 |
 | **CachingHttpClient** | `src/clients/caching_http_client.py` | キャッシュ付きHTTP実行、TTL判定 |
+| **YouTubeSearchClient** | `src/clients/youtube_client.py` | YouTube検索・キャッシュ管理 |
 | **cache_config** | `settings/cache_config.py` | TTL設定、バックエンド設定 |
 
 ### 2.3 シーケンス図

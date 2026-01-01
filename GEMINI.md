@@ -40,6 +40,7 @@
 │   ├── clients/         # 外部APIクライアント
 │   │   ├── api_football_client.py  # API-Football統合クライアント
 │   │   ├── caching_http_client.py  # キャッシュ付きHTTPクライアント
+│   │   ├── youtube_client.py       # YouTube検索・キャッシュクライアント
 │   │   └── cache_store.py          # キャッシュストア（Local/GCS）
 │   ├── utils/           # ユーティリティ
 │   │   ├── formation_image.py   # フォーメーション図生成
@@ -51,7 +52,7 @@
 │   ├── match_processor.py   # 試合データ取得・オーケストレーション
 │   ├── facts_service.py     # スタメン・フォーメーション・国籍取得
 │   ├── news_service.py      # ニュース収集・Gemini要約
-│   ├── youtube_service.py   # YouTube動画検索
+│   ├── youtube_service.py   # YouTube動画検索（Clientへ委譲）
 │   ├── report_generator.py  # Markdownレポート生成
 │   ├── html_generator.py    # HTML変換・Firebase manifest管理
 │   ├── cache_warmer.py      # キャッシュプリフェッチ

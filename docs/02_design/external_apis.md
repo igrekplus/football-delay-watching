@@ -121,7 +121,7 @@
 | 項目 | 値 |
 |------|-----|
 | サービス | YouTube Data API v3 |
-| 実装クラス | `YouTubeService` |
+| 実装クラス | `YouTubeSearchClient` (検索・キャッシュ) / `YouTubeService` (ロジック) |
 | 認証 | API Key |
 
 ### 4.2 詳細
