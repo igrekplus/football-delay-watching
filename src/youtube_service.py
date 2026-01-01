@@ -4,19 +4,13 @@ YouTube動画取得サービス
 試合前の関連動画（記者会見、過去の名勝負、戦術解説、練習風景、選手紹介）を
 YouTube Data API v3で取得する。
 
-キャッシュ: 1週間TTLでローカルに保存し、開発中のクォータ消費を抑制。
-
 Issue #27: クエリ削減（20→13/試合）とpost-fetchフィルタ方式への移行
+Issue #102:検索/キャッシュはYouTubeSearchClientに統一
 """
 
 import logging
-import json
-import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Dict, Optional, Tuple, Callable, Union
-from pathlib import Path
-import requests
-import os
 
 from config import config
 from settings.channels import (
@@ -33,12 +27,9 @@ from settings.search_specs import (
 )
 from src.domain.models import MatchData, MatchAggregate
 from src.youtube_filter import YouTubePostFilter
+from src.clients.youtube_client import YouTubeSearchClient
 
 logger = logging.getLogger(__name__)
-
-# YouTube検索結果のキャッシュ設定
-YOUTUBE_CACHE_DIR = Path("api_cache/youtube")
-YOUTUBE_CACHE_TTL_HOURS = 168  # キャッシュ有効期限（1週間）
 
 
 class YouTubeService:
@@ -56,85 +47,39 @@ class YouTubeService:
         http_get: Optional[Callable] = None,
         search_override: Optional[Callable[[Dict], List[Dict]]] = None,
         cache_enabled: Optional[bool] = None,
-        youtube_client = None,  # YouTubeSearchClient (DI用)
+        youtube_client: Optional[YouTubeSearchClient] = None,
     ):
-        # YOUTUBE_API_KEY を優先、なければ GOOGLE_API_KEY にフォールバック
-        self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
-        self._channel_id_cache: Dict[str, str] = {}
-        self._http_get = http_get or requests.get
+        # モック/テスト用の上書き関数
         self._search_override = search_override
-        # allow forcing cache behavior for healthcheck/mocks
-        self._cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
         
-        # YouTubeSearchClient (DI対応)
-        # 将来的にはClientに統一し、既存ロジックは削除予定
-        self._youtube_client = youtube_client
+        # キャッシュ設定（clientに渡す）
+        effective_cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
+        
+        # YouTubeSearchClient（DI or 自動生成）
+        # Issue #102: 検索/キャッシュはClientに統一
+        if youtube_client is not None:
+            self._youtube_client = youtube_client
+        else:
+            self._youtube_client = YouTubeSearchClient(
+                api_key=api_key,
+                http_get=http_get,
+                cache_enabled=effective_cache_enabled,
+            )
         
         # フィルターインスタンス
         self.filter = YouTubePostFilter()
-        
-        # API呼び出しカウンター
-        self.api_call_count = 0
-        self.cache_hit_count = 0
     
-    def _get_cache_key(self, query: str, channel_id: Optional[str], 
-                       published_after: Optional[datetime], 
-                       published_before: Optional[datetime]) -> str:
-        """検索条件からキャッシュキーを生成"""
-        key_parts = [
-            query,
-            channel_id or "",
-            published_after.strftime("%Y%m%d") if published_after else "",
-            published_before.strftime("%Y%m%d") if published_before else "",
-        ]
-        key_str = "|".join(key_parts)
-        return hashlib.md5(key_str.encode()).hexdigest()
+    # ========== 統計プロパティ（後方互換性のため維持） ==========
     
-    def _read_cache(self, cache_key: str) -> Optional[List[Dict]]:
-        """キャッシュから読み込み（TTLチェック付き）"""
-        if not self._cache_enabled:
-            return None
-        cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
-        
-        if not cache_file.exists():
-            return None
-        
-        try:
-            with open(cache_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            
-            # TTLチェック
-            cached_at = datetime.fromisoformat(data.get("cached_at", "2000-01-01"))
-            if datetime.now() - cached_at > timedelta(hours=YOUTUBE_CACHE_TTL_HOURS):
-                logger.debug(f"Cache expired: {cache_key}")
-                return None
-            
-            logger.info(f"YouTube cache HIT: {cache_key[:8]}...")
-            self.cache_hit_count += 1
-            return data.get("results", [])
-        except Exception as e:
-            logger.warning(f"Failed to read YouTube cache: {e}")
-            return None
+    @property
+    def api_call_count(self) -> int:
+        """API呼び出し回数（YouTubeSearchClientから取得）"""
+        return self._youtube_client.api_call_count
     
-    def _write_cache(self, cache_key: str, results: List[Dict]):
-        """キャッシュに書き込み"""
-        if not self._cache_enabled:
-            return
-        try:
-            YOUTUBE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-            cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
-            
-            data = {
-                "cached_at": datetime.now().isoformat(),
-                "results": results,
-            }
-            
-            with open(cache_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            
-            logger.debug(f"YouTube cache saved: {cache_key[:8]}...")
-        except Exception as e:
-            logger.warning(f"Failed to write YouTube cache: {e}")
+    @property
+    def cache_hit_count(self) -> int:
+        """キャッシュヒット回数（YouTubeSearchClientから取得）"""
+        return self._youtube_client.cache_hit_count
     
     def _search_videos(
         self,
@@ -147,30 +92,13 @@ class YouTubeService:
         channel_id: Optional[str] = None,
     ) -> List[Dict]:
         """
-        YouTube検索を実行（1週間キャッシュ付き）
+        YouTube検索を実行（YouTubeSearchClient経由、1週間キャッシュ付き）
         
         post-fetch方式: チャンネル指定なしで検索し、後からフィルタ
         
         Args:
             relevance_language: 結果の言語優先度（ISO 639-1、例: "ja"）
         """
-        
-        # YouTubeSearchClientが注入されている場合はそちらを使用
-        if self._youtube_client is not None:
-            results = self._youtube_client.search(
-                query=query,
-                published_after=published_after,
-                published_before=published_before,
-                max_results=max_results,
-                relevance_language=relevance_language,
-                region_code=region_code,
-                channel_id=channel_id,
-            )
-            # 統計を同期
-            self.api_call_count = self._youtube_client.api_call_count
-            self.cache_hit_count = self._youtube_client.cache_hit_count
-            return results
-        
         # モック/テスト用の上書きがある場合はここで返す
         if self._search_override:
             try:
@@ -186,76 +114,17 @@ class YouTubeService:
             except Exception as e:
                 logger.warning(f"YouTube search override failed: {e}")
                 return []
-
-        # キャッシュチェック（チャンネルIDなしで検索するため、channel_id=None）
-        # relevance_language/region_codeもキャッシュキーに含める
-        cache_key = self._get_cache_key(
-            query + (relevance_language or "") + (region_code or ""),
-            channel_id,
-            published_after,
-            published_before,
+        
+        # Issue #102: YouTubeSearchClient経由で検索（キャッシュ/API統一）
+        return self._youtube_client.search(
+            query=query,
+            published_after=published_after,
+            published_before=published_before,
+            max_results=max_results,
+            relevance_language=relevance_language,
+            region_code=region_code,
+            channel_id=channel_id,
         )
-        cached = self._read_cache(cache_key)
-        if cached is not None:
-            return cached[:max_results]
-        
-        # API呼び出し
-        try:
-            url = f"{self.API_BASE}/search"
-            params = {
-                "key": self.api_key,
-                "q": query,
-                "part": "snippet",
-                "type": "video",
-                "maxResults": max_results,
-                "order": "relevance",
-            }
-            
-            if published_after:
-                params["publishedAfter"] = published_after.strftime("%Y-%m-%dT%H:%M:%SZ")
-            
-            if published_before:
-                params["publishedBefore"] = published_before.strftime("%Y-%m-%dT%H:%M:%SZ")
-            
-            if relevance_language:
-                params["relevanceLanguage"] = relevance_language
-            if region_code:
-                params["regionCode"] = region_code
-            if channel_id:
-                params["channelId"] = channel_id
-            
-            response = self._http_get(url, params=params)
-            
-            if response.status_code == 200:
-                data = response.json()
-                results = []
-                for i, item in enumerate(data.get("items", [])):
-                    video_id = item["id"].get("videoId")
-                    if video_id:
-                        results.append({
-                            "video_id": video_id,
-                            "title": item["snippet"]["title"],
-                            "url": f"https://www.youtube.com/watch?v={video_id}",
-                            "channel_id": item["snippet"]["channelId"],
-                            "channel_name": item["snippet"]["channelTitle"],
-                            "thumbnail_url": item["snippet"]["thumbnails"]["medium"]["url"],
-                            "published_at": item["snippet"]["publishedAt"],
-                            "description": item["snippet"].get("description", ""),
-                            "original_index": i,  # relevance順を保持
-                        })
-                
-                # キャッシュ保存
-                self._write_cache(cache_key, results)
-                self.api_call_count += 1
-                logger.info(f"YouTube API: '{query}' -> {len(results)} results (API calls: {self.api_call_count})")
-                
-                return results
-            else:
-                logger.warning(f"YouTube search failed: {response.status_code} - {response.text}")
-        except Exception as e:
-            logger.error(f"YouTube search error: {e}")
-        
-        return []
 
     def search_videos_raw(
         self,
