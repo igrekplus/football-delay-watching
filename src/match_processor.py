@@ -116,28 +116,15 @@ class MatchProcessor:
 
     def _is_within_time_window(self, match_date_jst: datetime, target_date: datetime) -> bool:
         """Checks if the match is within the target time window."""
-        # Standard Window: D-1 07:00 JST to D 07:00 JST
         now_jst = DateTimeUtil.now_jst()
         
-        # By default, use current time for window calculation reference in production behavior
-        # But for 'target_date' logic (debug mode), we use target_date.
-        
         if config.DEBUG_MODE and not config.USE_MOCK_DATA:
-            target_next_day = target_date + timedelta(days=1)
-            # Ensure timezone awareness
-            # target_date is already aware (JST) from config
-            # target_date is already aware (JST) from config
-            if target_next_day.tzinfo is None:
-                window_end = DateTimeUtil.to_jst(target_next_day.replace(hour=7, minute=0, second=0, microsecond=0))
-            else:
-                window_end = target_next_day.replace(hour=7, minute=0, second=0, microsecond=0)
+            # Debug mode: 過去24時間以内の試合を対象
+            window_end = now_jst
+            window_start = now_jst - timedelta(hours=24)
         else:
-             # Original logic: window_end = now_jst.replace(hour=7, ...)
-             # This means "Today at 7am".
-             # If run at 8am, window ends at 7am (1 hour ago).
-             # It effectively looks for matches in the *previous* 24h cycle ending this morning.
-             window_end = now_jst.replace(hour=7, minute=0, second=0, microsecond=0)
-             
-        window_start = window_end - timedelta(days=1)
+            # Production mode: D-1 07:00 JST to D 07:00 JST
+            window_end = now_jst.replace(hour=7, minute=0, second=0, microsecond=0)
+            window_start = window_end - timedelta(days=1)
         
         return window_start <= match_date_jst < window_end
