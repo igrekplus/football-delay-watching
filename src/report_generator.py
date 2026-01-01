@@ -5,6 +5,7 @@ import logging
 from src.utils.formation_image import generate_formation_image
 from src.utils.nationality_flags import format_player_with_flag
 from src.utils.api_stats import ApiStats
+from src.utils.datetime_util import DateTimeUtil
 from src.formatters import DateFormatter, PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter
 from config import config
 
@@ -45,9 +46,7 @@ class ReportGenerator:
         excluded_section = self._generate_excluded_section(matches, youtube_stats)
         
         # 各試合のレポートを生成
-        import pytz
-        jst = pytz.timezone('Asia/Tokyo')
-        generation_datetime = datetime.now(jst).strftime('%Y%m%d_%H%M%S')
+        generation_datetime = DateTimeUtil.format_filename_datetime()
         
         report_list = []
         target_matches = [m for m in matches if m.is_target]

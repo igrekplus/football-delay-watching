@@ -139,3 +139,116 @@ class DateTimeUtil:
         """
         utc_dt = DateTimeUtil.to_utc(dt)
         return utc_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    
+    # --- Issue #88: 追加メソッド ---
+    
+    @staticmethod
+    def now_jst() -> datetime:
+        """
+        現在時刻をJSTで取得
+        
+        Returns:
+            timezone-aware datetime (JST)
+        """
+        return datetime.now(JST)
+    
+    @staticmethod
+    def format_filename_datetime(dt: datetime = None) -> str:
+        """
+        ファイル名用フォーマット
+        
+        Args:
+            dt: timezone-aware datetime（省略時は現在時刻）
+            
+        Returns:
+            ファイル名用文字列（例: "20251228_072100"）
+        """
+        if dt is None:
+            dt = DateTimeUtil.now_jst()
+        jst_dt = DateTimeUtil.to_jst(dt)
+        return jst_dt.strftime('%Y%m%d_%H%M%S')
+    
+    @staticmethod
+    def format_date_str(dt: datetime) -> str:
+        """
+        API用日付文字列
+        
+        Args:
+            dt: timezone-aware datetime
+            
+        Returns:
+            日付文字列（例: "2025-12-28"）
+        """
+        jst_dt = DateTimeUtil.to_jst(dt)
+        return jst_dt.strftime('%Y-%m-%d')
+    
+    @staticmethod
+    def format_display_timestamp(dt: datetime = None) -> str:
+        """
+        表示用タイムスタンプ
+        
+        Args:
+            dt: timezone-aware datetime（省略時は現在時刻）
+            
+        Returns:
+            表示用文字列（例: "2025-12-28 07:21:00 JST"）
+        """
+        if dt is None:
+            dt = DateTimeUtil.now_jst()
+        jst_dt = DateTimeUtil.to_jst(dt)
+        return jst_dt.strftime('%Y-%m-%d %H:%M:%S JST')
+    
+    @staticmethod
+    def get_weekday_ja(dt: datetime) -> str:
+        """
+        日本語曜日を取得
+        
+        Args:
+            dt: timezone-aware datetime
+            
+        Returns:
+            日本語曜日（例: "土"）
+        """
+        jst_dt = DateTimeUtil.to_jst(dt)
+        return ['月', '火', '水', '木', '金', '土', '日'][jst_dt.weekday()]
+    
+    @staticmethod
+    def format_relative_date(iso_date: str) -> str:
+        """
+        ISO日付を「3日前」のような相対表示に変換
+        
+        Args:
+            iso_date: ISO形式の日付文字列（例: "2025-12-19T14:00:00Z"）
+            
+        Returns:
+            相対日付文字列（例: "3日前", "1週間前"）
+        """
+        if not iso_date:
+            return "不明"
+        try:
+            # ISO形式をパース（2025-12-19T14:00:00Z）
+            pub_date = datetime.fromisoformat(iso_date.replace('Z', '+00:00'))
+            now = DateTimeUtil.now_jst()
+            diff = now - pub_date.astimezone(JST)
+            
+            days = diff.days
+            if days == 0:
+                hours = diff.seconds // 3600
+                if hours == 0:
+                    return "数分前"
+                return f"{hours}時間前"
+            elif days == 1:
+                return "1日前"
+            elif days < 7:
+                return f"{days}日前"
+            elif days < 30:
+                weeks = days // 7
+                return f"{weeks}週間前"
+            elif days < 365:
+                months = days // 30
+                return f"{months}ヶ月前"
+            else:
+                return pub_date.strftime("%Y/%m/%d")
+        except Exception:
+            return iso_date[:10] if len(iso_date) >= 10 else iso_date
+

@@ -7,10 +7,8 @@ MarkdownレポートをHTMLに変換してpublic/reports/に配置する。
 
 import os
 import logging
-from datetime import datetime
 from pathlib import Path
 
-import pytz
 import markdown
 from typing import Union
 
@@ -18,6 +16,7 @@ from config import config
 from src.domain.models import MatchData, MatchAggregate
 from src.clients.firebase_sync_client import FirebaseSyncClient
 from src.manifest_manager import ManifestManager
+from src.utils.datetime_util import DateTimeUtil
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +47,14 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
     Returns:
         生成されたHTMLファイルのパス
     """
-    jst = pytz.timezone('Asia/Tokyo')
-    now_jst = datetime.now(jst)
+    now_jst = DateTimeUtil.now_jst()
     
     if report_datetime is None:
         report_datetime = now_jst.strftime('%Y-%m-%d_%H%M%S')
     
     # 表示用（日付部分を抽出）
     report_date = report_datetime.split('_')[0] if '_' in report_datetime else report_datetime
-    timestamp = now_jst.strftime('%Y-%m-%d %H:%M:%S JST')
+    timestamp = DateTimeUtil.format_display_timestamp(now_jst)
     
     # デバッグ/モックモード判定（タイトル表示用）
     if config.USE_MOCK_DATA:
@@ -134,10 +132,9 @@ def generate_html_reports(report_list: list) -> list:
     Returns:
         生成されたHTMLファイルパスのリスト
     """
-    jst = pytz.timezone('Asia/Tokyo')
-    now_jst = datetime.now(jst)
-    timestamp = now_jst.strftime('%Y-%m-%d %H:%M:%S JST')
-    generation_datetime = now_jst.strftime('%Y%m%d_%H%M%S')
+    now_jst = DateTimeUtil.now_jst()
+    timestamp = DateTimeUtil.format_display_timestamp(now_jst)
+    generation_datetime = DateTimeUtil.format_filename_datetime(now_jst)
     
     # デバッグ/モックモード判定
     if config.USE_MOCK_DATA:

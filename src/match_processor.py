@@ -9,6 +9,7 @@ from src.clients.api_football_client import ApiFootballClient
 from src.domain.match_ranker import MatchRanker
 from src.domain.match_selector import MatchSelector
 from src.mock_provider import MockProvider
+from src.utils.datetime_util import DateTimeUtil
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class MatchProcessor:
         """Fetch and parse matches from API-Football."""
         matches = []
         target_date = config.TARGET_DATE
-        date_str = target_date.strftime('%Y-%m-%d')
+        date_str = DateTimeUtil.format_date_str(target_date)
         logger.info(f"Fetching matches for date: {date_str}")
         
         # Calculate Season
@@ -89,7 +90,7 @@ class MatchProcessor:
         venue_full = f"{venue_name}, {venue_city}" if venue_city else venue_name
 
         # Japanese Weekday
-        weekday_ja = ['月', '火', '水', '木', '金', '土', '日'][match_date_jst.weekday()]
+        weekday_ja = DateTimeUtil.get_weekday_ja(match_date_jst)
         
         # Team Logos
         home_logo_url = teams['home'].get('logo', '')
@@ -101,7 +102,7 @@ class MatchProcessor:
             home_team=teams['home']['name'],
             away_team=teams['away']['name'],
             competition=league_name,
-            kickoff_jst=match_date_jst.strftime(f'%Y/%m/%d({weekday_ja}) %H:%M JST'),
+            kickoff_jst=DateTimeUtil.format_jst_display(match_date_jst, include_weekday=True),
             kickoff_local=match_date_local.strftime('%Y-%m-%d %H:%M Local'),
             rank="None",  # Calculated later by MatchRanker
             venue=venue_full,

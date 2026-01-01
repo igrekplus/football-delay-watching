@@ -119,8 +119,7 @@ def send_debug_summary(
         送信成功時True
     """
     from config import config
-    from datetime import datetime
-    import pytz
+    from src.utils.datetime_util import DateTimeUtil
     
     if not config.GMAIL_ENABLED:
         logger.info("Gmail notification disabled (GMAIL_ENABLED=False)")
@@ -130,9 +129,8 @@ def send_debug_summary(
         logger.warning("NOTIFY_EMAIL not set. Skipping email notification.")
         return False
     
-    jst = pytz.timezone('Asia/Tokyo')
-    now = datetime.now(jst)
-    today_str = now.strftime('%Y-%m-%d')
+    now = DateTimeUtil.now_jst()
+    today_str = DateTimeUtil.format_date_str(now)
     time_str = now.strftime('%H:%M:%S')
     
     # モード表示

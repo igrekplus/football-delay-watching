@@ -111,11 +111,10 @@ ENDPOINT_TTL_DAYS = {
 
 > [!IMPORTANT]
 > 本番/Debug/Mockでキャッシュの動作が異なります。
+> 詳細は [実行モード設計書](./execution_mode.md) を参照。
 
 | 環境変数 | 本番 (Actions) | Debug (ローカル) | Mock |
 |----------|---------------|-----------------|------|
-| `DEBUG_MODE` | `False` | `True` | `True` |
-| `USE_MOCK_DATA` | `False` | `False` | `True` |
 | `USE_API_CACHE` | `True` | `True` | `False` |
 | `CACHE_BACKEND` | `gcs` | `gcs` | - |
 

@@ -82,6 +82,8 @@ open https://football-delay-watching-a8830.web.app
 
 ### 実行モード
 
+> 詳細は [実行モード設計書](../02_design/execution_mode.md) を参照。
+
 | モード | コマンド | 用途 |
 |--------|---------|------|
 | **モック** | `DEBUG_MODE=True USE_MOCK_DATA=True python main.py` | UIレイアウト確認 |

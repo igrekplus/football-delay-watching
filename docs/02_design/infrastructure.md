@@ -76,10 +76,7 @@ now_utc = datetime.now()  # NG
 
 `config.TARGET_DATE` は **timezone-aware な datetime オブジェクト** を返す。
 
-```python
-# 戻り値例
-# datetime.datetime(2025, 12, 28, 7, 0, tzinfo=<DstTzInfo 'Asia/Tokyo' JST+9:00:00 STD>)
-```
+本番モードとデバッグモードで計算ロジックが異なる。詳細は [実行モード設計書](./execution_mode.md#3-時間ウィンドウ計算) を参照。
 
 ---
 

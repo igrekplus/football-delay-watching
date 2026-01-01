@@ -19,6 +19,8 @@
 | [data_model.md](./data_model.md) | データモデル設計・責務境界・生成物スキーマ | 全体 |
 | [domain_models.md](./domain_models.md) | ドメインモデル設計（MatchData） | 全体 |
 | [search_design.md](./search_design.md) | 検索設計（YouTube, Google Custom Search） | YouTube, News |
+| [execution_mode.md](./execution_mode.md) | 実行モード設計（環境変数、モード別動作、時間ウィンドウ、MockProvider） | 全体 |
+| [common_utilities.md](./common_utilities.md) | 共通ユーティリティ設計（DateTimeUtil, http_utils） | 全体 |
 
 ---
 

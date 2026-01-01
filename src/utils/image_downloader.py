@@ -9,7 +9,8 @@ import os
 import hashlib
 import logging
 from typing import Dict, Optional
-import requests
+
+from src.utils.http_utils import safe_get
 
 logger = logging.getLogger(__name__)
 
@@ -55,9 +56,11 @@ def download_player_images(
                 local_paths[player_name] = filepath
                 continue
             
-            # 画像をダウンロード
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
+            # 画像をダウンロード（共通ユーティリティ使用）
+            response = safe_get(url, timeout=10)
+            if response is None:
+                logger.warning(f"Failed to download image for {player_name}")
+                continue
             
             with open(filepath, "wb") as f:
                 f.write(response.content)
@@ -71,3 +74,4 @@ def download_player_images(
     
     logger.info(f"Downloaded {len(local_paths)}/{len(player_photos)} player images")
     return local_paths
+
