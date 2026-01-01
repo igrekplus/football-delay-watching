@@ -26,12 +26,9 @@ class GenerateGuideWorkflow:
         matches = processor.run()
         
         if not matches:
-            logger.info("No target matches found for today.")
-            # Even if no matches, we might want to check cache warming? Use original logic flow.
-            # Original flow: continues safely as facts_service etc handle empty lists usually?
-            # Original code:
-            # if not matches: logger.info...
-            # then it proceeds to facts_service.enrich_matches(matches) which does nothing if empty.
+            logger.info("対象試合なし。処理をスキップします。")
+            self._log_skip_summary()
+            return  # 正常終了
         
         # 2. Facts Acquisition
         facts_service = FactsService()
@@ -189,3 +186,18 @@ class GenerateGuideWorkflow:
             logger.info(f"Cache warming result: {result}")
         else:
             logger.info("Skipping cache warming: no quota info available or quota exhausted")
+
+    def _log_skip_summary(self):
+        """試合スキップ時のサマリログを出力"""
+        from src.utils.datetime_util import DateTimeUtil
+        
+        target_date = config.TARGET_DATE
+        date_str = DateTimeUtil.format_date_str(target_date)
+        
+        logger.info("=" * 50)
+        logger.info("スキップサマリ")
+        logger.info(f"  対象日: {date_str}")
+        logger.info(f"  モード: {'モック' if config.USE_MOCK_DATA else 'デバッグ' if config.DEBUG_MODE else '本番'}")
+        logger.info(f"  結果: 対象試合なし")
+        logger.info("=" * 50)
+
