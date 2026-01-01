@@ -41,25 +41,35 @@ class MatchProcessor:
         """Fetch and parse matches from API-Football."""
         matches = []
         target_date = config.TARGET_DATE
-        date_str = DateTimeUtil.format_date_str(target_date)
-        logger.info(f"Fetching matches for date: {date_str}")
+        
+        # デバッグモード: 過去24時間の試合を取得するため、今日と昨日の両方を検索
+        if config.DEBUG_MODE and not config.USE_MOCK_DATA:
+            dates_to_search = [
+                DateTimeUtil.format_date_str(target_date),
+                DateTimeUtil.format_date_str(target_date - timedelta(days=1))
+            ]
+        else:
+            dates_to_search = [DateTimeUtil.format_date_str(target_date)]
+        
+        logger.info(f"Fetching matches for dates: {dates_to_search}")
         
         # Calculate Season
         season_year = target_date.year if target_date.month >= 6 else target_date.year - 1
         
         target_league_ids = config.LEAGUE_IDS
         
-        for league_name, league_id in target_league_ids.items():
-            if league_name not in config.TARGET_LEAGUES:
-                continue
+        for date_str in dates_to_search:
+            for league_name, league_id in target_league_ids.items():
+                if league_name not in config.TARGET_LEAGUES:
+                    continue
+                    
+                data = self.client.get_fixtures(league_id, season_year, date_str)
                 
-            data = self.client.get_fixtures(league_id, season_year, date_str)
-            
-            # Parse response
-            for item in data.get('response', []):
-                match_data = self._parse_match_data(item, league_name, target_date)
-                if match_data:
-                    matches.append(match_data)
+                # Parse response
+                for item in data.get('response', []):
+                    match_data = self._parse_match_data(item, league_name, target_date)
+                    if match_data:
+                        matches.append(match_data)
                     
         return matches
 

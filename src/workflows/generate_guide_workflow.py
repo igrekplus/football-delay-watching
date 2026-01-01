@@ -23,11 +23,11 @@ class GenerateGuideWorkflow:
     def run(self, dry_run: bool = False):
         logger.info(f"Starting workflow... (Dry Run: {dry_run}, Mock: {config.USE_MOCK_DATA})")
         
-        # 0. 未済チェック（本番・デバッグモードのみ）
+        # 0. 未済チェック（本番モードのみ、デバッグ時はスキップ）
         status_client = None
         target_date_str = DateTimeUtil.format_date_str(config.TARGET_DATE)
         
-        if not config.USE_MOCK_DATA:
+        if not config.USE_MOCK_DATA and not config.DEBUG_MODE:
             try:
                 status_client = ScheduleStatusClient()
                 if status_client.is_processed(target_date_str):
