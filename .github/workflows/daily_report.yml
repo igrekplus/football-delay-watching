@@ -2,8 +2,8 @@ name: Daily Soccer Viewing Guide
 
 on:
   schedule:
-    # Runs at 22:00 UTC every day (07:00 JST)
-    - cron: '0 22 * * *'
+    # Runs every 3 hours (0, 3, 6, 9, 12, 15, 18, 21 JST)
+    - cron: '0 */3 * * *'
   workflow_dispatch:
     inputs:
       use_mock_data:
