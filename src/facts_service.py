@@ -6,10 +6,10 @@ API呼び出しはClientに委譲し、データ加工ロジックに専念す�
 """
 
 import logging
-from typing import List
+from typing import List, Union
 
 from config import config
-from src.domain.models import MatchData
+from src.domain.models import MatchData, MatchAggregate
 from src.clients.api_football_client import ApiFootballClient
 from settings.player_instagram import get_player_instagram_urls
 
@@ -26,20 +26,20 @@ class FactsService:
         """
         self.api = api_client or ApiFootballClient()
 
-    def enrich_matches(self, matches: List[MatchData]):
+    def enrich_matches(self, matches: List[Union[MatchData, MatchAggregate]]):
         """試合リストにデータを付加"""
         for match in matches:
             if match.is_target:
                 self._get_facts(match)
 
-    def _get_facts(self, match: MatchData):
+    def _get_facts(self, match: Union[MatchData, MatchAggregate]):
         """試合データを取得"""
         if config.USE_MOCK_DATA:
             self._get_mock_facts(match)
         else:
             self._fetch_facts_from_api(match)
 
-    def _fetch_facts_from_api(self, match: MatchData):
+    def _fetch_facts_from_api(self, match: Union[MatchData, MatchAggregate]):
         """APIから試合データを取得"""
         # 1. Fetch Lineups
         self._fetch_lineups(match)
@@ -53,7 +53,7 @@ class FactsService:
         # 4. Fetch Head-to-Head History
         self._fetch_h2h(match)
     
-    def _fetch_lineups(self, match: MatchData):
+    def _fetch_lineups(self, match: Union[MatchData, MatchAggregate]):
         """スタメン情報を取得・加工"""
         data = self.api.fetch_lineups(match.id)
         
@@ -119,7 +119,7 @@ class FactsService:
         if not config.USE_MOCK_DATA and player_id_name_pairs:
             self._fetch_player_details(match, player_id_name_pairs)
     
-    def _fetch_player_details(self, match: MatchData, player_id_name_pairs: list):
+    def _fetch_player_details(self, match: Union[MatchData, MatchAggregate], player_id_name_pairs: list):
         """選手詳細情報を取得"""
         for player_id, lineup_name, team_name in player_id_name_pairs:
             try:
@@ -150,7 +150,7 @@ class FactsService:
         # Issue #40: Instagram URL設定（CSVから）
         self._set_instagram_urls(match)
     
-    def _set_instagram_urls(self, match: MatchData):
+    def _set_instagram_urls(self, match: Union[MatchData, MatchAggregate]):
         """選手のInstagram URLをCSVから設定"""
         instagram_urls = get_player_instagram_urls()
         
@@ -167,7 +167,7 @@ class FactsService:
         if match.player_instagram:
             logger.debug(f"Set Instagram URLs for {len(match.player_instagram)} players")
     
-    def _fetch_injuries(self, match: MatchData):
+    def _fetch_injuries(self, match: Union[MatchData, MatchAggregate]):
         """怪我人情報を取得・加工"""
         data = self.api.fetch_injuries(match.id)
         
@@ -197,7 +197,7 @@ class FactsService:
             match.injuries_list = []
             match.injuries_info = "なし"
     
-    def _fetch_team_form(self, match: MatchData):
+    def _fetch_team_form(self, match: Union[MatchData, MatchAggregate]):
         """チームフォームを取得"""
         # Get fixture details for team IDs
         fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
@@ -224,7 +224,7 @@ class FactsService:
             return form[-5:] if form else ""
         return ""
     
-    def _fetch_h2h(self, match: MatchData):
+    def _fetch_h2h(self, match: Union[MatchData, MatchAggregate]):
         """対戦履歴を取得・加工"""
         # Get fixture details for team IDs
         fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
@@ -272,7 +272,7 @@ class FactsService:
         total = home_wins + draws + away_wins
         match.h2h_summary = f"過去{total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
 
-    def _get_mock_facts(self, match: MatchData):
+    def _get_mock_facts(self, match: Union[MatchData, MatchAggregate]):
         """モックデータを設定"""
         from src.mock_provider import MockProvider
         MockProvider.apply_facts(match)

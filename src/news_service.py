@@ -5,11 +5,11 @@
 API呼び出しはClientに委譲し、ビジネスロジックに専念する。
 """
 
-from typing import List, Dict
+from typing import List, Dict, Union
 import logging
 
 from config import config
-from src.domain.models import MatchData
+from src.domain.models import MatchData, MatchAggregate
 from src.utils.spoiler_filter import SpoilerFilter
 from src.clients.llm_client import LLMClient
 from src.clients.google_search_client import GoogleSearchClient
@@ -34,7 +34,7 @@ class NewsService:
         self.llm = llm_client or LLMClient()
         self.search = search_client or GoogleSearchClient()
 
-    def process_news(self, matches: List[MatchData]):
+    def process_news(self, matches: List[Union[MatchData, MatchAggregate]]):
         """試合リストに対してニュース処理を実行"""
         for match in matches:
             if match.is_target:
@@ -75,7 +75,7 @@ class NewsService:
                 # 6. Process Interviews
                 self._process_interviews(match)
 
-    def _collect_news(self, match: MatchData) -> List[Dict[str, str]]:
+    def _collect_news(self, match: Union[MatchData, MatchAggregate]) -> List[Dict[str, str]]:
         """ニュース記事を収集"""
         articles = self.search.search_news(
             home_team=match.home_team,
@@ -98,7 +98,7 @@ class NewsService:
         
         return safe_articles
 
-    def _generate_summary(self, match: MatchData, articles: List[Dict[str, str]]) -> str:
+    def _generate_summary(self, match: Union[MatchData, MatchAggregate], articles: List[Dict[str, str]]) -> str:
         """ニュース要約を生成"""
         return self.llm.generate_news_summary(
             home_team=match.home_team,
@@ -106,7 +106,7 @@ class NewsService:
             articles=articles
         )
 
-    def _generate_tactical_preview(self, match: MatchData, articles: List[Dict[str, str]]) -> str:
+    def _generate_tactical_preview(self, match: Union[MatchData, MatchAggregate], articles: List[Dict[str, str]]) -> str:
         """戦術プレビューを生成"""
         return self.llm.generate_tactical_preview(
             home_team=match.home_team,
@@ -114,7 +114,7 @@ class NewsService:
             articles=articles
         )
 
-    def _process_interviews(self, match: MatchData):
+    def _process_interviews(self, match: Union[MatchData, MatchAggregate]):
         """インタビュー記事を検索・要約"""
         for is_home in [True, False]:
             team_name = match.home_team if is_home else match.away_team

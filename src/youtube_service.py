@@ -13,7 +13,7 @@ import logging
 import json
 import hashlib
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Tuple, Callable
+from typing import List, Dict, Optional, Tuple, Callable, Union
 from pathlib import Path
 import requests
 import os
@@ -31,7 +31,7 @@ from settings.search_specs import (
     get_youtube_time_window,
     get_youtube_exclude_filters,
 )
-from src.domain.models import MatchData
+from src.domain.models import MatchData, MatchAggregate
 from src.youtube_filter import YouTubePostFilter
 
 logger = logging.getLogger(__name__)
@@ -549,7 +549,7 @@ class YouTubeService:
         """重複を排除（後方互換性のため、内部ではself.filter.deduplicateを使用）"""
         return self.filter.deduplicate(videos)
     
-    def _get_key_players(self, match: MatchData) -> Tuple[List[str], List[str]]:
+    def _get_key_players(self, match: Union[MatchData, MatchAggregate]) -> Tuple[List[str], List[str]]:
         """
         各チームのキープレイヤーを取得（FW/MF優先）
         
@@ -576,7 +576,7 @@ class YouTubeService:
         
         return home_players, away_players
     
-    def get_videos_for_match(self, match: MatchData) -> Dict[str, List[Dict]]:
+    def get_videos_for_match(self, match: Union[MatchData, MatchAggregate]) -> Dict[str, List[Dict]]:
         """試合に関連する動画を取得（kept/removed/overflowを含む辞書を返す）"""
         all_kept = []
         all_removed = []
@@ -667,7 +667,7 @@ class YouTubeService:
             "overflow": final_overflow
         }
     
-    def process_matches(self, matches: List[MatchData]) -> Dict[str, List[Dict]]:
+    def process_matches(self, matches: List[Union[MatchData, MatchAggregate]]) -> Dict[str, List[Dict]]:
         """全試合の動画を取得"""
         # モックモード: APIアクセスなしでリアルなダミーデータを返却
         if config.USE_MOCK_DATA:
@@ -682,7 +682,7 @@ class YouTubeService:
         
         return results
     
-    def _get_mock_videos(self, matches: List[MatchData]) -> Dict[str, List[Dict]]:
+    def _get_mock_videos(self, matches: List[Union[MatchData, MatchAggregate]]) -> Dict[str, List[Dict]]:
         """モック用YouTube動画データを取得"""
         from src.mock_provider import MockProvider
         return MockProvider.get_youtube_videos_for_matches(matches)

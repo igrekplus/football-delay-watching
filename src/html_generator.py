@@ -12,8 +12,10 @@ from pathlib import Path
 
 import pytz
 import markdown
+from typing import Union
 
 from config import config
+from src.domain.models import MatchData, MatchAggregate
 from src.clients.firebase_sync_client import FirebaseSyncClient
 from src.manifest_manager import ManifestManager
 
@@ -123,7 +125,7 @@ def generate_html_reports(report_list: list) -> list:
     Args:
         report_list: ReportGenerator.generate_all()の戻り値
             [{
-                "match": MatchData,
+                "match": Union[MatchData, MatchAggregate],
                 "markdown_content": str,
                 "image_paths": List[str],
                 "filename": str  # "2025-12-27_ManchesterCity_vs_Arsenal_20251228_072100"

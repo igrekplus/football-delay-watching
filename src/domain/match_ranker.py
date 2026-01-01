@@ -1,14 +1,15 @@
 import logging
 from typing import List
 from config import config
-from src.domain.models import MatchData
+from typing import Union
+from src.domain.models import MatchData, MatchAggregate
 
 logger = logging.getLogger(__name__)
 
 class MatchRanker:
     """Domain service for ranking matches."""
 
-    def assign_rank(self, match: MatchData) -> None:
+    def assign_rank(self, match: Union[MatchData, MatchAggregate]) -> None:
         """Assigns a rank (S, A, None) to a match based on configuration rules."""
         
         # 1. S Rank - Highest priority teams (e.g. Manchester City)

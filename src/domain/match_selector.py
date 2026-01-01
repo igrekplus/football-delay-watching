@@ -1,14 +1,14 @@
 import logging
-from typing import List
+from typing import List, Union
 from config import config
-from src.domain.models import MatchData
+from src.domain.models import MatchData, MatchAggregate
 
 logger = logging.getLogger(__name__)
 
 class MatchSelector:
     """Domain service for selecting matches to report on."""
 
-    def select(self, matches: List[MatchData]) -> List[MatchData]:
+    def select(self, matches: List[Union[MatchData, MatchAggregate]]) -> List[Union[MatchData, MatchAggregate]]:
         """
         Selects matches based on rank and configured limits.
         
@@ -20,7 +20,7 @@ class MatchSelector:
         rank_order = {"Absolute": 0, "S": 1, "A": 2, "None": 3}
         
         # Sort logic
-        def sort_key(m: MatchData):
+        def sort_key(m: Union[MatchData, MatchAggregate]):
             r_score = rank_order.get(m.rank, 99)
             # Competition priority: CL > LALIGA > EPL > COPA > FA > EFL
             comp_priority = {"CL": 0, "LALIGA": 1, "EPL": 2, "COPA": 3, "FA": 4, "EFL": 5}

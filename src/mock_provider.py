@@ -10,7 +10,7 @@ Issue #73: モックデータの外部化
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 
 import pytz
@@ -46,14 +46,14 @@ class MockProvider:
             return None
     
     @classmethod
-    def get_matches(cls) -> List["MatchData"]:
+    def get_matches(cls) -> List["MatchAggregate"]:
         """
         試合データを取得
         
         Returns:
-            MatchData オブジェクトのリスト
+            MatchAggregate オブジェクトのリスト
         """
-        from src.domain.models import MatchData
+        from src.domain.models import MatchCore, MatchAggregate, MatchData
         
         data = cls._load_json("matches.json")
         if not data or "default" not in data:
@@ -73,7 +73,8 @@ class MockProvider:
                 except (ValueError, AttributeError):
                     kickoff_utc = utc.localize(datetime(2025, 12, 20, 15, 0, 0))
             
-            matches.append(MatchData(
+            # Create MatchCore
+            core = MatchCore(
                 id=item["id"],
                 home_team=item["home_team"],
                 away_team=item["away_team"],
@@ -84,12 +85,13 @@ class MockProvider:
                 venue=item.get("venue", ""),
                 referee=item.get("referee", ""),
                 kickoff_at_utc=kickoff_utc,
-            ))
+            )
+            matches.append(MatchAggregate(core=core))
         
         return matches
     
     @classmethod
-    def apply_facts(cls, match: "MatchData") -> None:
+    def apply_facts(cls, match: Union["MatchData", "MatchAggregate"]) -> None:
         """
         試合データにモックファクトを適用
         
@@ -167,7 +169,7 @@ class MockProvider:
     @classmethod
     def get_youtube_videos_for_matches(
         cls, 
-        matches: List["MatchData"]
+        matches: List[Union["MatchData", "MatchAggregate"]]
     ) -> Dict[str, List[Dict]]:
         """
         複数試合のYouTube動画データを取得

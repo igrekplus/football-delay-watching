@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import List, Dict
-from src.domain.models import MatchData
+from typing import List, Dict, Union
+from src.domain.models import MatchData, MatchAggregate
 import logging
 from src.utils.formation_image import generate_formation_image
 from src.utils.nationality_flags import format_player_with_flag
@@ -19,7 +19,7 @@ class ReportGenerator:
         self.match_info_formatter = MatchInfoFormatter()
         self.youtube_formatter = YouTubeSectionFormatter(self.date_formatter)
     
-    def generate_all(self, matches: List[MatchData], youtube_videos: Dict[str, List[Dict]] = None, 
+    def generate_all(self, matches: List[Union[MatchData, MatchAggregate]], youtube_videos: Dict[str, List[Dict]] = None, 
                      youtube_stats: Dict[str, int] = None) -> List[Dict]:
         """
         全試合レポートを生成（新方式: 1試合=1レポート）
@@ -70,7 +70,7 @@ class ReportGenerator:
         
         return report_list
     
-    def generate_single_match(self, match: MatchData, youtube_videos: Dict[str, List[Dict]], 
+    def generate_single_match(self, match: Union[MatchData, MatchAggregate], youtube_videos: Dict[str, List[Dict]], 
                               excluded_section: str) -> tuple:
         """
         1試合分のMarkdownレポートを生成
@@ -96,7 +96,7 @@ class ReportGenerator:
         
         return "\n".join(lines), image_paths
     
-    def _generate_excluded_section(self, matches: List[MatchData], youtube_stats: Dict[str, int]) -> str:
+    def _generate_excluded_section(self, matches: List[Union[MatchData, MatchAggregate]], youtube_stats: Dict[str, int]) -> str:
         """選外試合リストとAPI使用状況のセクションを生成"""
         lines = ["## 選外試合リスト\n"]
         excluded = [m for m in matches if not m.is_target]
@@ -116,7 +116,7 @@ class ReportGenerator:
         
         return "".join(lines)
     
-    def _write_single_match_content(self, match: MatchData, youtube_videos: Dict[str, List[Dict]]) -> tuple:
+    def _write_single_match_content(self, match: Union[MatchData, MatchAggregate], youtube_videos: Dict[str, List[Dict]]) -> tuple:
         """1試合分のレポート本文を生成"""
         lines = []
         image_paths = []

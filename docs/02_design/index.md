@@ -16,6 +16,7 @@
 | [login_design.md](./login_design.md) | ログイン・認証設計（Firebase Auth） | Delivery |
 | [api_endpoints.md](./api_endpoints.md) | API-Football エンドポイント詳細 | Match, Facts |
 | [llm_constraints.md](./llm_constraints.md) | LLM制約仕様（入力条件・禁止事項・失敗時挙動） | News |
+| [data_model.md](./data_model.md) | データモデル設計・責務境界・生成物スキーマ | 全体 |
 | [domain_models.md](./domain_models.md) | ドメインモデル設計（MatchData） | 全体 |
 
 ---
