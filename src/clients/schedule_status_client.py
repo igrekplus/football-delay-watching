@@ -10,7 +10,6 @@ import logging
 from typing import Optional, List, Dict
 from datetime import datetime
 
-from config import config
 from src.utils.datetime_util import DateTimeUtil
 
 logger = logging.getLogger(__name__)
@@ -28,7 +27,8 @@ class ScheduleStatusClient:
     STATUS_SKIPPED = "skipped"
     
     def __init__(self, bucket_name: str = None):
-        self.bucket_name = bucket_name or config.GCS_CACHE_BUCKET
+        from settings.cache_config import GCS_BUCKET_NAME
+        self.bucket_name = bucket_name or GCS_BUCKET_NAME
         self._bucket = None
         self._client = None
     
