@@ -252,3 +252,35 @@ class DateTimeUtil:
         except Exception:
             return iso_date[:10] if len(iso_date) >= 10 else iso_date
 
+    @staticmethod
+    def format_report_datetime(dt: datetime = None) -> str:
+        """
+        レポート用日時文字列
+        
+        Args:
+            dt: timezone-aware datetime（省略時は現在時刻）
+            
+        Returns:
+            日時文字列（例: "2025-12-28_072100"）
+        """
+        if dt is None:
+            dt = DateTimeUtil.now_jst()
+        jst_dt = DateTimeUtil.to_jst(dt)
+        return jst_dt.strftime('%Y-%m-%d_%H%M%S')
+
+    @staticmethod
+    def format_time_only(dt: datetime = None) -> str:
+        """
+        時刻のみ文字列
+        
+        Args:
+            dt: timezone-aware datetime（省略時は現在時刻）
+            
+        Returns:
+            時刻文字列（例: "07:21:00"）
+        """
+        if dt is None:
+            dt = DateTimeUtil.now_jst()
+        jst_dt = DateTimeUtil.to_jst(dt)
+        return jst_dt.strftime('%H:%M:%S')
+

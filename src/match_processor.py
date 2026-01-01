@@ -1,7 +1,6 @@
 from typing import List, Optional, Dict, Any
 import logging
 from datetime import datetime, timedelta
-import pytz
 
 from config import config
 from src.domain.models import MatchData, MatchCore, MatchAggregate
@@ -74,14 +73,14 @@ class MatchProcessor:
         if status in ["CANC", "PST", "ABD", "AWD", "WO"]:
             return None
         
+        
         # Timezone conversion
-        jst = pytz.timezone('Asia/Tokyo')
         match_date_utc = datetime.fromisoformat(fixture['date'].replace("Z", "+00:00"))
-        match_date_jst = match_date_utc.astimezone(jst)
+        match_date_jst = DateTimeUtil.to_jst(match_date_utc)
         match_date_local = match_date_utc # Placeholder for local time (could be improved)
         
         # Time window filter
-        if not self._is_within_time_window(match_date_jst, target_date, jst):
+        if not self._is_within_time_window(match_date_jst, target_date):
             return None
         
         # Extract Venue
@@ -115,10 +114,10 @@ class MatchProcessor:
         # Wrap in MatchAggregate and return
         return MatchAggregate(core=core)
 
-    def _is_within_time_window(self, match_date_jst: datetime, target_date: datetime, tz) -> bool:
+    def _is_within_time_window(self, match_date_jst: datetime, target_date: datetime) -> bool:
         """Checks if the match is within the target time window."""
         # Standard Window: D-1 07:00 JST to D 07:00 JST
-        now_jst = datetime.now(tz)
+        now_jst = DateTimeUtil.now_jst()
         
         # By default, use current time for window calculation reference in production behavior
         # But for 'target_date' logic (debug mode), we use target_date.
@@ -127,8 +126,9 @@ class MatchProcessor:
             target_next_day = target_date + timedelta(days=1)
             # Ensure timezone awareness
             # target_date is already aware (JST) from config
+            # target_date is already aware (JST) from config
             if target_next_day.tzinfo is None:
-                window_end = tz.localize(target_next_day.replace(hour=7, minute=0, second=0, microsecond=0))
+                window_end = DateTimeUtil.to_jst(target_next_day.replace(hour=7, minute=0, second=0, microsecond=0))
             else:
                 window_end = target_next_day.replace(hour=7, minute=0, second=0, microsecond=0)
         else:

@@ -50,7 +50,7 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
     now_jst = DateTimeUtil.now_jst()
     
     if report_datetime is None:
-        report_datetime = now_jst.strftime('%Y-%m-%d_%H%M%S')
+        report_datetime = DateTimeUtil.format_report_datetime(now_jst)
     
     # 表示用（日付部分を抽出）
     report_date = report_datetime.split('_')[0] if '_' in report_datetime else report_datetime

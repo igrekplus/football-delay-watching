@@ -23,6 +23,10 @@ Issue #88 で整理された共通ユーティリティの設計を文書化す�
 | `format_display_timestamp(datetime)` | 表示用タイムスタンプ | `"2025-12-27 21:30:00 JST"` |
 | `get_weekday_ja(datetime)` | 日本語曜日 | `"土"` |
 | `format_relative_date(iso_str)` | 相対日付 | `"3日前"` |
+| `format_report_datetime(datetime)` | レポート用日時 | `"2025-12-28_072100"` |
+| `format_time_only(datetime)` | 時刻のみ | `"07:21:00"` |
+
+> **Note**: `DateFormatter` クラスは廃止され、機能はすべて `DateTimeUtil` に統合されました。
 
 ### 使用ガイドライン
 

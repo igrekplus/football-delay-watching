@@ -2,7 +2,7 @@
 YouTube section formatting utilities for report generation.
 """
 from typing import List, Dict
-from src.formatters.date_formatter import DateFormatter
+from src.utils.datetime_util import DateTimeUtil
 
 
 class YouTubeSectionFormatter:
@@ -17,8 +17,8 @@ class YouTubeSectionFormatter:
         "training": "🏃 練習風景",
     }
 
-    def __init__(self, date_formatter: DateFormatter = None):
-        self.date_formatter = date_formatter or DateFormatter()
+    def __init__(self):
+        pass
 
     def format_youtube_section(self, video_data: Dict, match_key: str) -> str:
         """YouTube動画セクション全体のHTML/Markdownを生成"""
@@ -92,7 +92,7 @@ class YouTubeSectionFormatter:
                 query_label = v.get('query_label', '')
                 filter_reason = v.get('filter_reason', '') if show_reason else ''
                 
-                relative_date = self.date_formatter.format_relative_date(published_at)
+                relative_date = DateTimeUtil.format_relative_date(published_at)
                 
                 thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
                 label_prefix = f'【{query_label}】 ' if query_label else ''

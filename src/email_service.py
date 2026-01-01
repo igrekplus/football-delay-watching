@@ -131,7 +131,7 @@ def send_debug_summary(
     
     now = DateTimeUtil.now_jst()
     today_str = DateTimeUtil.format_date_str(now)
-    time_str = now.strftime('%H:%M:%S')
+    time_str = DateTimeUtil.format_time_only(now)
     
     # モード表示
     mode_label = ""

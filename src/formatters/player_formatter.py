@@ -88,10 +88,11 @@ class PlayerFormatter:
         if not birthdate_str:
             return None
         try:
-            import pytz
             birth = datetime.strptime(birthdate_str, "%Y-%m-%d")
-            jst = pytz.timezone('Asia/Tokyo')
-            today = datetime.now(jst).replace(tzinfo=None)
+            # DateTimeUtilを使って現在時刻(JST)を取得し、tzinfoを削除して比較（生年月日がnaiveなため）
+            from src.utils.datetime_util import DateTimeUtil
+            today = DateTimeUtil.now_jst().replace(tzinfo=None)
+            
             age = today.year - birth.year
             if (today.month, today.day) < (birth.month, birth.day):
                 age -= 1

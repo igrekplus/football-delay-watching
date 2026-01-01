@@ -6,7 +6,7 @@ from src.utils.formation_image import generate_formation_image
 from src.utils.nationality_flags import format_player_with_flag
 from src.utils.api_stats import ApiStats
 from src.utils.datetime_util import DateTimeUtil
-from src.formatters import DateFormatter, PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter
+from src.formatters import PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -15,10 +15,9 @@ class ReportGenerator:
     WEB_IMAGE_DIR = "public/reports"
 
     def __init__(self):
-        self.date_formatter = DateFormatter()
         self.player_formatter = PlayerFormatter()
         self.match_info_formatter = MatchInfoFormatter()
-        self.youtube_formatter = YouTubeSectionFormatter(self.date_formatter)
+        self.youtube_formatter = YouTubeSectionFormatter()
     
     def generate_all(self, matches: List[Union[MatchData, MatchAggregate]], youtube_videos: Dict[str, List[Dict]] = None, 
                      youtube_stats: Dict[str, int] = None) -> List[Dict]:

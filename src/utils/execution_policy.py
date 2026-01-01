@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
-import pytz
 from config import config
+from src.utils.datetime_util import DateTimeUtil
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,6 @@ class ExecutionPolicy:
     def __init__(self, time_limit_hour: int = 9, time_limit_minute: int = 0):
         self.limit_hour = time_limit_hour
         self.limit_minute = time_limit_minute
-        self.tz = pytz.timezone('Asia/Tokyo')
 
     def should_continue(self, remaining_quota: int) -> bool:
         """
@@ -30,7 +29,7 @@ class ExecutionPolicy:
 
     def is_within_time_limit(self) -> bool:
         """Checks if current time is before the limit (with 5 min buffer)."""
-        now = datetime.now(self.tz)
+        now = DateTimeUtil.now_jst()
         
         # Buffer: stop 5 minutes before the limit
         buffer_minutes = 5
