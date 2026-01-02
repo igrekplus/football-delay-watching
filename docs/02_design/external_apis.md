@@ -8,7 +8,7 @@
 
 機能要件「試合抽出・選定 (Match)」「固定情報取得 (Facts)」を実現する。
 
-> 詳細は [api_football_design.md](./api_football_design.md) を参照。
+> 詳細は [api_football.md](./api_football.md) を参照。
 
 ---
 

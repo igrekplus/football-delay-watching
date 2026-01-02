@@ -122,5 +122,5 @@
 ## 6. 関連ドキュメント
 
 - [外部API連携設計](./external_apis.md) - 他のAPI概要
-- [キャッシュ設計](./cache_design.md) - GCSキャッシュ
+- [キャッシュ設計](./cache.md) - GCSキャッシュ
 - [APIクォータ管理](../03_operations/api_quota.md) - クォータ・レート制限

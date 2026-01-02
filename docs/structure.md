@@ -1,45 +1,57 @@
-# ドキュメント構成と更新ルール
+# ドキュメントガイド
 
-本ディレクトリ（`docs/`）の役割分担、および開発運用におけるドキュメント更新ルールを定義する。
-
-## 1. ディレクトリ構成と役割（Role Boundary）
-
-ドキュメントは「誰が」「何のために」読むかに応じて、以下の分類で管理する。
-
-### `01_requirements/` (WHAT: 何を作るか)
-- **概要**: システムが満たすべき機能要件・非機能要件を定義する。
-- **対象読者**: プロダクトオーナー、ユーザー、開発者
-- **主な内容**:
-  - `index.md`: 機能要件一覧
-  - `non_functional.md`: 非機能要件（可用性、エラー処理方針など）
-- **更新タイミング**: 機能の追加・変更・廃止が決定した時。
-
-### `02_design/` (HOW: どう実現するか)
-- **概要**: 要件を実現するための具体的な設計、データ構造、クラス設計、データフローを定義する。
-- **対象読者**: 開発者、アーキテクト
-- **主な内容**:
-  - `system_overview.md`: アーキテクチャ概略
-  - `cache_design.md`: キャッシュ設計
-- **更新タイミング**: 実装に着手する前、または実装方針を変更した時。
-
-### `03_operations/` (RUN: どう動かすか)
-- **概要**: システムのデプロイ、監視、APIクォータ管理、手動運用手順を定義する。
-- **対象読者**: 開発者、運用担当
-- **主な内容**:
-  - `deployment.md`: デプロイ手順
-  - `api_quota.md`: APIクォータ管理
-  - `execution_mode.md`: 実行モード設計
-  - `infrastructure.md`: 実行基盤設計
-- **更新タイミング**: インフラ変更、運用フロー変更時。
-
-### `GEMINI.md` (AI Guide)
-- **概要**: AIアシスタント（Claude, Gemini等）向けの指示書、ガイドライン、ユーティリティ。
-- **配置**: プロジェクトルート
-- **主な内容**: レビュー規範、Rawデータ取得手順、開発コマンド
-- **更新タイミング**: AIへの指示改善、開発ワークフロー変更時。
+本ページは `docs/` の入口として、目的別の読み方と主要ドキュメントの地図を提供する。
 
 ---
 
-## 2. 更新ルール
+## 🗺️ 目的別ガイド
 
-> 更新ルールとチェックリストの詳細は [GEMINI.md](../GEMINI.md#-ドキュメント構成と更新ルール) を参照。
+### 「このシステムは何をするの？」 → 要件理解
+1. [01_requirements/index.md](./01_requirements/index.md) - 機能要件一覧
+2. [01_requirements/non_functional.md](./01_requirements/non_functional.md) - 非機能要件
+
+### 「どう実装されてるの？」 → 実装理解
+1. [02_design/system_overview.md](./02_design/system_overview.md) - 全体アーキテクチャ
+2. [02_design/implementation_flow.md](./02_design/implementation_flow.md) - 処理フロー・責務境界
+3. 詳細設計は [02_design/index.md](./02_design/index.md) を参照
+
+### 「どう動かすの？」 → 運用理解
+1. [03_operations/deployment.md](./03_operations/deployment.md) - デプロイ手順
+2. [03_operations/execution_mode.md](./03_operations/execution_mode.md) - 実行モード（本番/デバッグ/モック）
+3. [03_operations/api_quota.md](./03_operations/api_quota.md) - APIクォータ管理
+
+### 「AIと一緒に開発したい」 → AI協業
+1. [GEMINI.md](../GEMINI.md) - AI向けガイド・開発コマンド・Issue対応フロー
+
+---
+
+## 📂 ディレクトリ構成
+
+| ディレクトリ | 役割 | 主なファイル |
+|-------------|------|-------------|
+| `01_requirements/` | WHAT: 何を作るか | `index.md`, `non_functional.md` |
+| `02_design/` | HOW: どう実現するか | `system_overview.md`, `api_football.md`, `cache.md` |
+| `03_operations/` | RUN: どう動かすか | `deployment.md`, `api_quota.md`, `execution_mode.md` |
+| `GEMINI.md` | AI: 開発ガイド | (ルート配置) |
+
+---
+
+## 🔄 更新頻度の高い文書
+
+開発中に頻繁に更新される文書の一覧。
+
+| 文書 | 更新タイミング | 理由 |
+|------|--------------|------|
+| [GEMINI.md](../GEMINI.md) | 頻繁 | 開発コマンド・Issue対応フローが都度追記される |
+| [03_operations/api_quota.md](./03_operations/api_quota.md) | 月次 | API料金・クォータの変更に追従 |
+| [02_design/tuning_workflow.md](./02_design/tuning_workflow.md) | Issue対応時 | チューニングパラメータの変更 |
+
+---
+
+## 📝 更新ルール
+
+1. **Code follows Design**: コード変更時は `02_design` も更新
+2. **Single Source of Truth**: 要件は `01_requirements`、設計は `02_design`
+3. **リンク整合性**: ファイル名変更時はリンク切れを確認
+
+> 詳細は [GEMINI.md](../GEMINI.md#-ドキュメント構成と更新ルール) を参照。

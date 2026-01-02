@@ -153,7 +153,7 @@ sequenceDiagram
 
 ## 5. 関連ドキュメント
 
-- [キャッシュ設計書](./cache_design.md) - モード別キャッシュ動作
+- [キャッシュ設計書](./cache.md) - モード別キャッシュ動作
 - [実行基盤設計](./infrastructure.md) - GitHub Actions、時刻処理
 - [デプロイプロセス設計書](./deployment_process.md) - デプロイ手順
 - [config.py](file:///Users/nagataryou/football-delay-watching/config.py) - 環境変数定義

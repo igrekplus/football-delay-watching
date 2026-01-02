@@ -216,4 +216,4 @@ videos.sort(key=lambda v: (
 
 - [YouTube動画取得要件](../01_requirements/youtube_integration.md) - 機能要件定義
 - [外部API連携設計](./external_apis.md) - API概要
-- [キャッシュ設計](./cache_design.md) - GCSキャッシュ
+- [キャッシュ設計](./cache.md) - GCSキャッシュ

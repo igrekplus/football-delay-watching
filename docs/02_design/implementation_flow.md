@@ -216,6 +216,6 @@ flowchart TD
 
 - [システム全体設計](./system_overview.md) - アーキテクチャ概要
 - [外部API連携設計](./external_apis.md) - API呼び出し仕様
-- [キャッシュ設計](./cache_design.md) - キャッシュ戦略
+- [キャッシュ設計](./cache.md) - キャッシュ戦略
 - [LLM制約仕様](./llm_constraints.md) - LLM入出力制約
 - [非機能要件](../01_requirements/non_functional.md) - エラーハンドリング方針

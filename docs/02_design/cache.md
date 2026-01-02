@@ -273,4 +273,4 @@ python healthcheck/check_football_api.py
 ## 10. 関連ドキュメント
 
 - [システム設計書](./system_overview.md) - 全体アーキテクチャ
-- [API-Football設計](./api_football_design.md) - 各エンドポイントのパラメータ
+- [API-Football設計](./api_football.md) - 各エンドポイントのパラメータ

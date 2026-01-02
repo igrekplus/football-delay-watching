@@ -66,4 +66,4 @@ graph LR
 
 - [外部API連携設計](./external_apis.md) - Google Search / Gemini API概要
 - [LLM制約仕様](./llm_constraints.md) - 要約・検閲の制約
-- [キャッシュ設計](./cache_design.md) - GCSキャッシュ
+- [キャッシュ設計](./cache.md) - GCSキャッシュ

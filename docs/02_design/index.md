@@ -11,14 +11,14 @@
 | [system_overview.md](./system_overview.md) | システム全体設計・アーキテクチャ構成図 | 全体 |
 | [implementation_flow.md](./implementation_flow.md) | 実装フロー・責務境界・データフロー | 全体 |
 | [external_apis.md](./external_apis.md) | 外部API連携設計（概要・リンク集） | 全体 |
-| [api_football_design.md](./api_football_design.md) | API-Football設計・エンドポイント詳細 | Match, Facts |
-| [cache_design.md](./cache_design.md) | キャッシュ設計（GCS, TTL） | Match, Facts, YouTube |
-| [login_design.md](./login_design.md) | ログイン・認証設計（Firebase Auth） | Delivery |
+| [api_football.md](./api_football.md) | API-Football設計・エンドポイント詳細 | Match, Facts |
+| [cache.md](./cache.md) | キャッシュ設計（GCS, TTL） | Match, Facts, YouTube |
+| [login.md](./login.md) | ログイン・認証設計（Firebase Auth） | Delivery |
 | [llm_constraints.md](./llm_constraints.md) | LLM制約仕様（入力条件・禁止事項・失敗時挙動） | News |
-| [data_model.md](./data_model.md) | データモデル設計・責務境界・生成物スキーマ | 全体 |
+| [data_models.md](./data_models.md) | データモデル設計・責務境界・生成物スキーマ | 全体 |
 | [domain_models.md](./domain_models.md) | ドメインモデル設計（MatchData） | 全体 |
-| [youtube_search_design.md](./youtube_search_design.md) | YouTube検索設計（カテゴリ・フィルタ・ソート） | YouTube |
-| [news_search_design.md](./news_search_design.md) | ニュース検索設計（Google Custom Search） | News |
+| [youtube_search.md](./youtube_search.md) | YouTube検索設計（カテゴリ・フィルタ・ソート） | YouTube |
+| [news_search.md](./news_search.md) | ニュース検索設計（Google Custom Search） | News |
 | [common_utilities.md](./common_utilities.md) | 共通ユーティリティ設計（DateTimeUtil, http_utils） | 全体 |
 
 > **Note**: 運用関連ドキュメントは [03_operations/](../03_operations/) を参照。
