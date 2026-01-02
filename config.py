@@ -140,7 +140,7 @@ class Config:
         """
         Returns the target date for match extraction.
         - Normal mode: Yesterday (JST)
-        - Debug mode with real API: Most recent Saturday (past)
+        - Debug mode with real API: Today (過去24時間以内の試合を取得)
         """
         from datetime import datetime, timedelta
         import pytz
@@ -149,11 +149,9 @@ class Config:
         now_jst = datetime.now(jst)
         
         if self.DEBUG_MODE and not self.USE_MOCK_DATA:
-            # Debug mode with real API: Most recent Saturday (for testing)
-            days_since_saturday = (now_jst.weekday() - 5) % 7
-            if days_since_saturday == 0:
-                days_since_saturday = 7  # If today is Saturday, go to last Saturday
-            return now_jst - timedelta(days=days_since_saturday)
+            # Debug mode: 過去24時間以内の最近キックオフ試合を対象
+            # TARGET_DATEは現在時刻を返し、match_processorで過去24時間を検索
+            return now_jst
         else:
             # Normal mode: yesterday
             return now_jst - timedelta(days=1)

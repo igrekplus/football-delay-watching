@@ -6,6 +6,8 @@ from src.facts_service import FactsService
 from src.news_service import NewsService
 from src.report_generator import ReportGenerator
 from src.cache_warmer import run_cache_warming
+from src.clients.schedule_status_client import ScheduleStatusClient
+from src.utils.datetime_util import DateTimeUtil
 
 logger = logging.getLogger(__name__)
 
@@ -20,18 +22,29 @@ class GenerateGuideWorkflow:
 
     def run(self, dry_run: bool = False):
         logger.info(f"Starting workflow... (Dry Run: {dry_run}, Mock: {config.USE_MOCK_DATA})")
+        
+        # 0. 未済チェック（本番モードのみ、デバッグ時はスキップ）
+        status_client = None
+        target_date_str = DateTimeUtil.format_date_str(config.TARGET_DATE)
+        
+        if not config.USE_MOCK_DATA and not config.DEBUG_MODE:
+            try:
+                status_client = ScheduleStatusClient()
+                if status_client.is_processed(target_date_str):
+                    logger.info(f"日付 {target_date_str} は処理済み。スキップします。")
+                    return
+            except Exception as e:
+                logger.warning(f"ステータスチェック失敗（続行）: {e}")
 
         # 1. Match Extraction & Selection
         processor = MatchProcessor()
         matches = processor.run()
         
         if not matches:
-            logger.info("No target matches found for today.")
-            # Even if no matches, we might want to check cache warming? Use original logic flow.
-            # Original flow: continues safely as facts_service etc handle empty lists usually?
-            # Original code:
-            # if not matches: logger.info...
-            # then it proceeds to facts_service.enrich_matches(matches) which does nothing if empty.
+            logger.info("対象試合なし。処理をスキップします。")
+            self._log_skip_summary()
+            self._mark_status_skipped(status_client, target_date_str)
+            return  # 正常終了
         
         # 2. Facts Acquisition
         facts_service = FactsService()
@@ -73,6 +86,10 @@ class GenerateGuideWorkflow:
         
         # 7. Cache Warming
         self._run_cache_warming()
+        
+        # 8. ステータス更新（処理完了）
+        match_count = len([m for m in matches if m.is_target])
+        self._mark_status_complete(status_client, target_date_str, match_count)
         
         logger.info("Workflow completed.")
 
@@ -189,3 +206,37 @@ class GenerateGuideWorkflow:
             logger.info(f"Cache warming result: {result}")
         else:
             logger.info("Skipping cache warming: no quota info available or quota exhausted")
+
+    def _log_skip_summary(self):
+        """試合スキップ時のサマリログを出力"""
+        from src.utils.datetime_util import DateTimeUtil
+        
+        target_date = config.TARGET_DATE
+        date_str = DateTimeUtil.format_date_str(target_date)
+        
+        logger.info("=" * 50)
+        logger.info("スキップサマリ")
+        logger.info(f"  対象日: {date_str}")
+        logger.info(f"  モード: {'モック' if config.USE_MOCK_DATA else 'デバッグ' if config.DEBUG_MODE else '本番'}")
+        logger.info(f"  結果: 対象試合なし")
+        logger.info("=" * 50)
+
+    def _mark_status_complete(self, status_client, date_str: str, match_count: int):
+        """処理完了をマーク"""
+        if status_client and not config.USE_MOCK_DATA:
+            try:
+                status_client.mark_complete(date_str, match_count)
+                logger.info(f"ステータス更新: {date_str} → complete ({match_count}試合)")
+            except Exception as e:
+                logger.warning(f"ステータス更新失敗: {e}")
+    
+    def _mark_status_skipped(self, status_client, date_str: str):
+        """スキップをマーク"""
+        if status_client and not config.USE_MOCK_DATA:
+            try:
+                status_client.mark_skipped(date_str)
+                logger.info(f"ステータス更新: {date_str} → skipped")
+            except Exception as e:
+                logger.warning(f"ステータス更新失敗: {e}")
+
+

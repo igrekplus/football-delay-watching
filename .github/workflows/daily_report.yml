@@ -2,8 +2,8 @@ name: Daily Soccer Viewing Guide
 
 on:
   schedule:
-    # Runs at 22:00 UTC every day (07:00 JST)
-    - cron: '0 22 * * *'
+    # Runs every 3 hours (0, 3, 6, 9, 12, 15, 18, 21 JST)
+    - cron: '0 */3 * * *'
   workflow_dispatch:
     inputs:
       use_mock_data:
@@ -74,27 +74,24 @@ jobs:
         HTML_COUNT=$(ls -1 public/reports/*.html 2>/dev/null | wc -l)
         
         if [ "$HTML_COUNT" -eq 0 ]; then
-          echo "❌ ERROR: No HTML report files found!"
-          # Check if we are in mock mode, usually should produce something
-          # If real mode and no matches, this is expected behavior but CI fails?
-          # Let's verify logs.
-          # For verification purpose, failing is fine if no reports.
-          exit 1
+          echo "ℹ️ 対象試合なし。レポート生成をスキップしました。"
+          echo "SKIP_DEPLOY=true" >> $GITHUB_ENV
+        else
+          echo "✅ Generated $HTML_COUNT HTML report(s)"
+          echo ""
+          echo "=== Generated Files ==="
+          ls -la public/reports/*.html | tail -10
+          echo ""
+          echo "=== Manifest Summary ==="
+          if [ -f "public/reports/manifest.json" ]; then
+            cat public/reports/manifest.json | head -30
+          fi
+          echo ""
+          echo "=== End of Summary ==="
         fi
-        
-        echo "✅ Generated $HTML_COUNT HTML report(s)"
-        echo ""
-        echo "=== Generated Files ==="
-        ls -la public/reports/*.html | tail -10
-        echo ""
-        echo "=== Manifest Summary ==="
-        if [ -f "public/reports/manifest.json" ]; then
-          cat public/reports/manifest.json | head -30
-        fi
-        echo ""
-        echo "=== End of Summary ==="
         
     - name: Deploy to Firebase Hosting
+      if: env.SKIP_DEPLOY != 'true'
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
@@ -108,3 +105,10 @@ jobs:
         firebase deploy --only hosting --token "$FIREBASE_TOKEN"
         echo "✅ Deployed to Firebase Hosting"
         echo "URL: https://football-delay-watching-a8830.web.app"
+
+    - name: Summary (No Deploy)
+      if: env.SKIP_DEPLOY == 'true'
+      run: |
+        echo "ℹ️ 対象試合なし。デプロイをスキップしました。"
+        echo "次回の実行をお待ちください。"
+

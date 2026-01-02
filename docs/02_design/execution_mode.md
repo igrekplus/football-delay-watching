@@ -63,37 +63,30 @@ return self.DEBUG_MODE and not self.USE_MOCK_DATA
 | モード | 対象期間 |
 |--------|---------|
 | **本番** | `昨日 07:00 JST` ～ `今日 07:00 JST` |
-| **デバッグ** | `直近土曜日 07:00 JST` ～ `翌日曜日 07:00 JST` |
+| **デバッグ** | `現在時刻 - 24時間` ～ `現在時刻` |
 
-### 3.2 実装詳細
+### 3.2 GitHub Actions スケジュール
 
-```python
-# config.py: TARGET_DATE プロパティ
-from datetime import datetime, timedelta
-import pytz
+| 項目 | 旧 | 新 |
+|------|-----|-----|
+| cron | `0 22 * * *` (7時固定) | `0 */3 * * *` (3時間毎) |
+| 試合なし時 | エラー終了 | 正常終了（スキップ） |
 
-jst = pytz.timezone('Asia/Tokyo')
-now_jst = datetime.now(jst)
+### 3.3 未済管理
 
-if self.DEBUG_MODE and not self.USE_MOCK_DATA:
-    # Debug mode with real API: Most recent Saturday (for testing)
-    days_since_saturday = (now_jst.weekday() - 5) % 7
-    if days_since_saturday == 0:
-        days_since_saturday = 7  # If today is Saturday, go to last Saturday
-    return now_jst - timedelta(days=days_since_saturday)
-else:
-    # Normal mode: yesterday
-    return now_jst - timedelta(days=1)
-```
+レポート作成状況を GCS 上の CSV で管理し、重複処理を防止する。
 
-### 3.3 デバッグ実行時の確認
+**保存先**: `gs://football-delay-watching-cache/schedule/report_status.csv`
 
-デバッグ実行時は、対象試合の時間ウィンドウをログ等で確認すること:
+| カラム | 説明 |
+|--------|------|
+| `date` | 対象日付 (YYYY-MM-DD) |
+| `status` | `pending` / `complete` / `skipped` |
+| `processed_at` | 処理完了日時 (ISO8601) |
+| `match_count` | 処理した試合数 |
 
-```
-対象時間ウィンドウ: 2025-12-28 07:00 JST ～ 2025-12-29 07:00 JST
-この時間にキックオフした試合が取得されます。
-```
+> [!NOTE]
+> 直近30日分のみ保持。古いデータは自動削除される。
 
 ---
 
