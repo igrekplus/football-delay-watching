@@ -118,9 +118,10 @@ class NewsService:
         """インタビュー記事を検索・要約"""
         for is_home in [True, False]:
             team_name = match.home_team if is_home else match.away_team
+            manager_name = match.home_manager if is_home else match.away_manager
             
             # 検索
-            interview_articles = self.search.search_interviews(team_name)
+            interview_articles = self.search.search_interviews(team_name, manager_name=manager_name)
             
             # フィルタリング
             safe_articles = [

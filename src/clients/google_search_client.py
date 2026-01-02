@@ -150,7 +150,7 @@ class GoogleSearchClient:
         
         return articles
     
-    def search_interviews(self, team_name: str) -> List[Dict[str, str]]:
+    def search_interviews(self, team_name: str, manager_name: str = None) -> List[Dict[str, str]]:
         """
         監督・選手インタビュー記事を検索
         
@@ -166,7 +166,7 @@ class GoogleSearchClient:
         all_articles = []
         
         for search_type in search_types:
-            query = build_google_query(search_type, team_name=team_name)
+            query = build_google_query(search_type, team_name=team_name, manager_name=manager_name)
             params = get_google_search_params(search_type)
             
             items = self.search(

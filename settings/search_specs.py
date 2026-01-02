@@ -91,6 +91,7 @@ GOOGLE_SEARCH_SPECS: Dict[str, Dict[str, Any]] = {
     "interview_manager": {
         "label": "監督インタビュー",
         "query_template": '"{team_name}" manager "said" OR "says" OR "quotes" press conference Premier League -result -score -twitter.com -x.com -women -WFC -WSL',
+        "query_template_with_name": '"{team_name}" manager "{manager_name}" "said" OR "says" OR "quotes" press conference Premier League -result -score -twitter.com -x.com -women -WFC -WSL',
         "date_restrict": "d7",
         "gl": "uk",
         "num": 5,
@@ -205,6 +206,10 @@ def build_google_query(
     spec = GOOGLE_SEARCH_SPECS.get(search_type)
     if not spec:
         raise ValueError(f"Unknown Google search type: {search_type}")
+    
+    # manager_name が指定され、かつ専用テンプレートがある場合
+    if "manager_name" in kwargs and kwargs["manager_name"] and "query_template_with_name" in spec:
+        return spec["query_template_with_name"].format(**kwargs)
     
     return spec["query_template"].format(**kwargs)
 
