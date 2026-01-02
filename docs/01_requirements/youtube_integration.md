@@ -70,5 +70,5 @@
 
 ## 5. 関連ドキュメント
 
-- [設計詳細](../02_design/external_apis.md#4-youtube-data-api)
+- [設計詳細](../02_architecture/external_apis.md#4-youtube-data-api)
 - [信頼チャンネル設定](../../settings/channels.py)
