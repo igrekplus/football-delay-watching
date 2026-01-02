@@ -107,6 +107,8 @@ def cmd_query(args):
                 "source": item.get("displayLink", "Unknown"),
                 "url": item.get("link", ""),
                 "relevance_score": item.get("relevance_score", 0),
+                "type": args.type,
+                "team": args.home if args.home else "",
             })
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(articles, f, ensure_ascii=False, indent=2)
@@ -232,7 +234,8 @@ def main():
     query_parser.add_argument("--date-restrict", default="d2", help="日付制限 (default: d2)")
     query_parser.add_argument("--gl", default="us", help="地域コード (default: us)")
     query_parser.add_argument("--num", type=int, default=10, help="取得件数 (default: 10)")
-    query_parser.add_argument("--home", help="ホームチーム（relevance計算用）")
+    query_parser.add_argument("--type", default="manual", help="メタデータ用タイプ (default: manual)")
+    query_parser.add_argument("--home", help="ホームチーム（relevance計算/メタデータ用）")
     query_parser.add_argument("--away", help="アウェイチーム（relevance計算用）")
     query_parser.add_argument("--save", help="結果をJSONに保存")
     

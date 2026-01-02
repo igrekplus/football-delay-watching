@@ -61,11 +61,7 @@ def cmd_summary(args):
     print(f"Input: {len(articles)} articles from {args.articles_file}")
     
     # プロンプト表示
-    context_preview = "\n".join([a.get("content", "")[:100] for a in articles[:3]])
-    print(f"\nContext preview (first 3 articles):")
-    print("-" * 40)
-    print(context_preview[:500] + "...")
-    print("-" * 40)
+    print_articles_context(articles)
     
     print("\nPrompt template (from llm_client.py):")
     print("  Task: Summarize news snippets into Japanese pre-match summary (600-1000 chars)")
@@ -223,11 +219,7 @@ def cmd_interview(args):
     print_header(f"GEMINI INTERVIEW SUMMARY | {target_team}")
     print(f"Input: {len(articles)} articles")
     
-    context_preview = "\n".join([a.get("content", "")[:100] for a in articles[:3]])
-    print(f"\nContext preview:")
-    print("-" * 40)
-    print(context_preview[:500] + "...")
-    print("-" * 40)
+    print_articles_context(articles)
     
     print("\nPrompt template (from llm_client.py):")
     print("  Task: Summarize manager/player comments (200-300 chars)")

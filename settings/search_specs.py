@@ -207,10 +207,6 @@ def build_google_query(
     if not spec:
         raise ValueError(f"Unknown Google search type: {search_type}")
     
-    # manager_name が指定され、かつ専用テンプレートがある場合
-    if "manager_name" in kwargs and kwargs["manager_name"] and "query_template_with_name" in spec:
-        return spec["query_template_with_name"].format(**kwargs)
-    
     return spec["query_template"].format(**kwargs)
 
 
