@@ -21,6 +21,8 @@
 | [search_design.md](./search_design.md) | 検索設計（YouTube, Google Custom Search） | YouTube, News |
 | [execution_mode.md](./execution_mode.md) | 実行モード設計（環境変数、モード別動作、時間ウィンドウ、MockProvider） | 全体 |
 | [common_utilities.md](./common_utilities.md) | 共通ユーティリティ設計（DateTimeUtil, http_utils） | 全体 |
+| [deployment_process.md](./deployment_process.md) | デプロイプロセス設計（GitHub Actions, Firebase Hosting） | 全体 |
+| [api_management.md](./api_management.md) | APIクォータ管理・レート制限仕様 | 全体 |
 
 ---
 
