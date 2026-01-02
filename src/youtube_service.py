@@ -52,6 +52,9 @@ class YouTubeService:
         # モック/テスト用の上書き関数
         self._search_override = search_override
         
+        # Issue #107: search_override呼び出し回数
+        self._override_call_count = 0
+        
         # キャッシュ設定（clientに渡す）
         effective_cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
         
@@ -81,6 +84,11 @@ class YouTubeService:
         """キャッシュヒット回数（YouTubeSearchClientから取得）"""
         return self._youtube_client.cache_hit_count
     
+    @property
+    def override_call_count(self) -> int:
+        """search_override呼び出し回数（Issue #107）"""
+        return self._override_call_count
+    
     def _search_videos(
         self,
         query: str,
@@ -99,10 +107,11 @@ class YouTubeService:
         Args:
             relevance_language: 結果の言語優先度（ISO 639-1、例: "ja"）
         """
-        # モック/テスト用の上書きがある場合はここで返す
+        # モック/テスト用の上書きがある場合はここで返す（Issue #107: 統計も更新）
         if self._search_override:
             try:
-                return self._search_override({
+                self._override_call_count += 1
+                result = self._search_override({
                     "query": query,
                     "published_after": published_after,
                     "published_before": published_before,
@@ -111,6 +120,8 @@ class YouTubeService:
                     "region_code": region_code,
                     "channel_id": channel_id,
                 })[:max_results]
+                logger.info(f"YouTube [OVERRIDE]: '{query}' -> {len(result)} results (override calls: {self._override_call_count})")
+                return result
             except Exception as e:
                 logger.warning(f"YouTube search override failed: {e}")
                 return []

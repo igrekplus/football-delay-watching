@@ -212,8 +212,32 @@ videos.sort(key=lambda v: (
 
 ---
 
-## 5. 関連ドキュメント
+## 5. 統計・モニタリング
+
+### 5.1 統計カウンター
+
+| プロパティ | 取得元 | 説明 |
+|-----------|--------|------|
+| `api_call_count` | `YouTubeSearchClient` | 実APIリクエスト回数 |
+| `cache_hit_count` | `YouTubeSearchClient` | キャッシュヒット回数 |
+| `override_call_count` | `YouTubeService` | `search_override` 呼び出し回数 (Issue #107) |
+
+### 5.2 search_override使用時の挙動
+
+`search_override` はテスト・デバッグ用のモック関数注入機構。使用時の統計挙動：
+
+- **`api_call_count`**: 変化なし（`YouTubeSearchClient` を経由しないため）
+- **`cache_hit_count`**: 変化なし
+- **`override_call_count`**: 呼び出しごとにインクリメント
+- **ログ出力**: `YouTube [OVERRIDE]: 'query' -> N results (override calls: M)`
+
+> 実装: [src/youtube_service.py](../../src/youtube_service.py) の `YouTubeService._search_videos()`
+
+---
+
+## 6. 関連ドキュメント
 
 - [YouTube動画取得要件](../01_requirements/youtube_integration.md) - 機能要件定義
 - [外部API連携設計](./external_apis.md) - API概要
 - [キャッシュ設計](./cache.md) - GCSキャッシュ
+
