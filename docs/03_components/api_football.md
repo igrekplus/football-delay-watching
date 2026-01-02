@@ -119,8 +119,12 @@
 
 ---
 
-## 6. 関連ドキュメント
+---
 
-- [外部API連携設計](./external_apis.md) - 他のAPI概要
-- [キャッシュ設計](./cache.md) - GCSキャッシュ
-- [APIクォータ管理](../04_operations/api_quota.md) - クォータ・レート制限
+## 7. 運用・保守
+
+### 7.1 クォータ統計の記録
+- `ApiFootballClient` は `_fetch` メソッドを通じて `_update_quota` を呼び出し、`ApiStats` と `config.QUOTA_INFO` を更新する。
+- レスポンスヘッダー内の `x-ratelimit-requests-remaining` を監視し、キャッシュヒット以外（実リクエスト発生時）に統計を記録する。
+- 低レベルクライアントの `RequestsHttpClient` は、レスポンスヘッダーを `HttpResponse` オブジェクトに正しく引き渡す責務を持つ（Issue #104 で修正済み）。
+
