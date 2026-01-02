@@ -1,91 +1,167 @@
-# API Tuning Workflow Design
+# APIチューニングワークフロー設計
 
-This document outlines the design for the API tuning workflow, intended to optimize the performance of YouTube, Google Custom Search, and Gemini (LLM) integrations.
+YouTube / Google Custom Search / Gemini の各APIに対して、クエリやプロンプトをチューニングするための設計。
 
-## 1. Objectives
+## 1. パラメータ階層
 
--   **Efficiency**: Minimize API quota usage while maximizing relevance.
--   **Quality**: Ensure search results and generated content are accurate, relevant, and spoiler-free.
--   **Maintainability**: Separate tuning tools from production code, but ensure they test the *actual* production logic.
--   **Workflow**: Provide a structured way for developers (and agents) to iterate on tuning.
+各APIのパラメータは以下の3層で管理される。
 
-## 2. Directory Structure
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 1: CLI引数（チューニングスクリプトで変更可能）          │
+│   → 試合情報、表示件数など、実行ごとに変える値              │
+├─────────────────────────────────────────────────────────────┤
+│ Layer 2: 設定ファイル（settings/*.py で管理）               │
+│   → クエリテンプレート、時間ウィンドウなど、チューニング対象  │
+├─────────────────────────────────────────────────────────────┤
+│ Layer 3: ハードコード（src/内で固定）                       │
+│   → API URL、最大取得件数など、通常変更しない値             │
+└─────────────────────────────────────────────────────────────┘
+```
 
-We will create a new directory `scripts/tuning/` to house the tuning scripts. This separates them from simple healthchecks and core functionality.
+---
+
+## 2. YouTube Data API
+
+### Layer 1: CLI引数
+
+| パラメータ | 説明 | デフォルト |
+|-----------|------|-----------|
+| `--home` | ホームチーム名 | Manchester City |
+| `--away` | アウェイチーム名 | West Ham |
+| `--kickoff-jst` | キックオフ時刻 (JST) | 翌日 00:00 |
+| `--mode` | 検索カテゴリ | `all` |
+| `--max-results` | 表示件数 | 10 |
+| `--show-removed` | 除外動画も表示 | False |
+
+### Layer 2: 設定ファイル (`settings/search_specs.py`)
+
+| パラメータ | 説明 | 現在値 |
+|-----------|------|-------|
+| `query_template` | 検索クエリテンプレート | カテゴリ別 (下表参照) |
+| `window.hours_before` | 検索開始時刻 (kickoff基準) | 48〜730日 |
+| `window.offset_hours` | 検索終了時刻 (kickoff基準) | 0〜24時間 |
+| `exclude_filters` | 除外キーワードリスト | `["match_highlights", ...]` |
+
+**カテゴリ別クエリテンプレート:**
+
+| カテゴリ | テンプレート | 時間ウィンドウ |
+|---------|-------------|---------------|
+| `press_conference` | `{team_name} {manager_name} press conference` | 48時間前〜kickoff |
+| `historic` | `{home_team} vs {away_team} highlights` | 730日前〜24時間前 |
+| `tactical` | `{team_name} 戦術 分析` | 180日前〜kickoff |
+| `player_highlight` | `{player_name} {team_name} プレー` | 180日前〜kickoff |
+| `training` | `{team_name} training` | 168時間前〜kickoff |
+
+### Layer 3: ハードコード
+
+| パラメータ | 場所 | 値 |
+|-----------|------|-----|
+| `API_BASE` | `youtube_client.py` | `https://www.googleapis.com/youtube/v3` |
+| `FETCH_MAX_RESULTS` | `youtube_service.py` | 50 |
+| `CACHE_TTL_HOURS` | `youtube_client.py` | 168 (1週間) |
+| `MAX_PER_CATEGORY` | `youtube_service.py` | 10 |
+
+---
+
+## 3. Google Custom Search API
+
+### Layer 1: CLI引数
+
+| パラメータ | 説明 | デフォルト |
+|-----------|------|-----------|
+| `--home` | ホームチーム名 | Manchester City |
+| `--away` | アウェイチーム名 | West Ham |
+| `--type` | 検索タイプ (`news`/`interview`/`all`) | `all` |
+| `--save` | 結果保存先JSONファイル | なし |
+
+### Layer 2: 設定ファイル (`settings/search_specs.py`)
+
+| パラメータ | 説明 | 現在値 |
+|-----------|------|-------|
+| `query_template` | 検索クエリテンプレート | 種別ごと (下表参照) |
+| `date_restrict` | 日付制限 | `d2` 〜 `d7` |
+| `gl` | 地域コード | `us`, `uk`, `jp` |
+| `num` | 取得件数 | 5〜10 |
+
+**種別ごとのクエリテンプレート:**
+
+| 種別 | テンプレート | 日付制限 |
+|------|-------------|---------|
+| `news` | `"{home_team}" "{away_team}" match preview -women...` | d2 |
+| `interview_manager` | `"{team_name}" manager "said" OR "says"...` | d7 |
+| `interview_player` | `"{team_name}" player interview "said"...` | d7 |
+
+### Layer 3: ハードコード
+
+| パラメータ | 場所 | 値 |
+|-----------|------|-----|
+| `API_URL` | `google_search_client.py` | `https://www.googleapis.com/customsearch/v1` |
+| インタビュー最大件数 | `google_search_client.py` | 4件/チーム |
+
+---
+
+## 4. Gemini API
+
+### Layer 1: CLI引数
+
+| パラメータ | 説明 | デフォルト |
+|-----------|------|-----------|
+| `--home` | ホームチーム名 | Manchester City |
+| `--away` | アウェイチーム名 | West Ham |
+| `--mode` | モード (`summary`/`preview`/`spoiler`) | 必須 |
+| `--articles-file` | 入力記事JSON | なし |
+| `--text` | ネタバレチェック対象テキスト | なし |
+
+### Layer 2: 設定ファイル
+
+現在はプロンプトが `llm_client.py` 内にハードコードされている。
+将来的に `settings/prompts.py` への外部化を検討。
+
+| プロンプト種別 | 現在の場所 | 文字数制限 |
+|--------------|-----------|-----------|
+| ニュース要約 | `llm_client.py` L86-95 | 600-1000文字 |
+| 戦術プレビュー | `llm_client.py` L120-130 | なし |
+| ネタバレチェック | `llm_client.py` L153-165 | 入力1500文字まで |
+
+### Layer 3: ハードコード
+
+| パラメータ | 場所 | 値 |
+|-----------|------|-----|
+| `MODEL_NAME` | `llm_client.py` | `gemini-pro-latest` |
+
+---
+
+## 5. ディレクトリ構成
 
 ```
 scripts/tuning/
-├── tune_youtube.py       # Refactored from healthcheck/check_youtube_queries.py
-├── tune_news_search.py   # Test news search queries (Google Custom Search)
-└── tune_gemini.py        # Test LLM prompts (Summary, Preview, Spoiler Check)
+├── tune_youtube.py       # YouTube検索チューニング
+├── tune_news_search.py   # ニュース検索チューニング
+└── tune_gemini.py        # Geminiプロンプトチューニング
+
+settings/
+├── search_specs.py       # 検索クエリ・パラメータ定義 (Layer 2)
+└── channels.py           # 信頼チャンネルリスト
+
+.agent/workflows/
+└── tune-api.md           # チューニングワークフロー
 ```
 
-## 3. Tuning Scripts Design
+---
 
-### 3.1. YouTube Tuning (`tune_youtube.py`)
+## 6. ワークフロー
 
-*   **Purpose**: Verify that YouTube search queries return relevant videos (Highlights, Full Match, Training, etc.) and that filters work correctly.
-*   **Logic**:
-    *   Import `src.youtube_service.YouTubeService`.
-    *   Accept CLI arguments for Match (Team A vs Team B), Date, and Mode (Training/Highlights).
-    *   Use `YouTubeService.search_videos_raw` or specific methods to fetch results.
-    *   Apply `YouTubePostFilter` explicitly to show what *would* be kept vs removed.
-    *   Display "Flagged" keywords (e.g. "HIGHLIGHTS", "FULL MATCH") to help visual verification.
-*   **Configurability**:
-    *   Target logic: `settings/search_specs.py` and `src/youtube_filter.py`.
+```bash
+# Step 1: YouTube検索のチューニング
+python scripts/tuning/tune_youtube.py --home "Manchester City" --away "West Ham"
+# → 結果確認後、settings/search_specs.py を編集
 
-### 3.2. News Search Tuning (`tune_news_search.py`)
+# Step 2: ニュース検索のチューニング（結果をJSONに保存）
+python scripts/tuning/tune_news_search.py --home "Manchester City" --away "West Ham" --save /tmp/articles.json
+# → 結果確認後、settings/search_specs.py を編集
 
-*   **Purpose**: Verify that Google Custom Search returns pre-match news articles relevant to the specific match.
-*   **Logic**:
-    *   Import `src.clients.google_search_client.GoogleSearchClient`.
-    *   Accept CLI arguments for Teams and Competition.
-    *   Execute `search_news` and `search_interviews`.
-    *   Print Title, URL, Snippet, and Published Date.
-    *   Highlight keywords that might indicate "post-match" (spoilers) or "irrelevant".
-*   **Configurability**:
-    *   Target logic: `src/clients/google_search_client.py` (Query building).
-
-### 3.3. Gemini Tuning (`tune_gemini.py`)
-
-*   **Purpose**: Verify prompts for News Summary, Tactical Preview, and Spoiler Checking.
-*   **Logic**:
-    *   Import `src.clients.llm_client.LLMClient`.
-    *   **Modes**:
-        *   `summary`: Generate pre-match summary.
-        *   `preview`: Generate tactical preview.
-        *   `spoiler`: Check specific text for spoilers.
-    *   **Data Source**:
-        *   To save Search API quota and ensure reproducibility, this script should support:
-            *   `--articles-file <json_path>`: Load articles from a local JSON file (captured from `tune_news_search.py` or manually created).
-            *   `--fetch-live`: (Optional) Call Search API live (chains with Search Client).
-*   **Configurability**:
-    *   Target logic: `src/clients/llm_client.py` (Propmpts).
-
-## 4. Agent Workflow (.agent/workflows/api-tuning.md)
-
-A workflow file to guide the agent (and user) through the tuning process.
-
-**Steps:**
-1.  **YouTube Tuning**: Run `tune_youtube.py`, check results, edit `settings/search_specs.py`.
-2.  **Search Tuning**: Run `tune_news_search.py`, check results, edit `src/clients/google_search_client.py`.
-3.  **Data Capture**: Run `tune_news_search.py --save articles.json` to capture test data.
-4.  **Prompts Tuning**: Run `tune_gemini.py --articles-file articles.json`, check output, edit `src/clients/llm_client.py`.
-
-## 5. Roles & Responsibilities
-
-| Component | Responsibility | Location |
-| (Script) | Run tuning, Print formatted output, Mock/Load data | `scripts/tuning/` |
-| (Main Code) | Define Queries, Prompts, Business Logic | `src/`, `settings/` |
-| (Workflow) | Guide the process | `.agent/workflows/` |
-
-**Note**: The scripts should *never* contain the query/prompt logic itself. They must import it from the Main Code. If the Main Code currently buries logic inside large methods, refactoring to expose that logic (or allow dependency injection) is part of the implementation.
-
-## 6. Implementation Steps
-
-1.  Create `scripts/tuning/` directory.
-2.  Implement `tune_youtube.py` (based on `check_youtube_queries.py` but cleaner imports).
-3.  Implement `tune_news_search.py` (making sure `GoogleSearchClient` exposes necessary methods).
-4.  Implement `tune_gemini.py` (adding `--articles-file` support).
-5.  Create `.agent/workflows/api-tuning.md`.
-6.  Verify by running each script.
+# Step 3: Geminiプロンプトのチューニング
+python scripts/tuning/tune_gemini.py --mode summary --articles-file /tmp/articles.json
+# → 出力確認後、src/clients/llm_client.py のプロンプトを編集
+```

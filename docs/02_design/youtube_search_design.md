@@ -1,12 +1,10 @@
-# 検索設計
+# YouTube検索設計
 
-YouTube検索とGoogle Custom Searchの設計詳細を定義する。
+YouTube Data API v3を使用した動画検索の設計。キックオフ前の関連動画を取得し、ネタバレを防止する。
 
 ---
 
-## 1. YouTube検索カテゴリ別仕様
-
-YouTube Data API v3を使用した動画検索の設計。キックオフ前の関連動画を取得し、ネタバレを防止する。
+## 1. 検索カテゴリ別仕様
 
 ### 1.1 検索カテゴリ一覧
 
@@ -78,50 +76,11 @@ YouTube動画の信頼性を判定し、優先表示するための設計。
 
 ---
 
-## 3. Google Custom Search設計
-
-ニュース記事の収集に使用するGoogle Custom Search APIの設計。
-
-### 3.1 検索スペック
-
-| 種別 | クエリテンプレート | 期間制限 | 地域 |
-|------|-------------------|---------|------|
-| ニュース | `"{home}" "{away}" match preview` | 2日 | US/JP |
-| 監督インタビュー | `"{team}" manager "said" press conference` | 7日 | UK |
-| 選手インタビュー | `"{team}" player interview "said"` | 7日 | UK |
-
-> 実装: [settings/search_specs.py](../../settings/search_specs.py) の `GOOGLE_SEARCH_SPECS`
-
-### 3.2 ネタバレ防止の除外キーワード
-
-すべてのクエリに以下の除外キーワードを付与:
-
-```
--women -WFC -WSL -女子
-```
-
-| 除外対象 | 理由 |
-|---------|------|
-| `-women`, `-WFC`, `-WSL` | 女子サッカーの結果混入防止 |
-| `-女子` | 日本語検索時の混入防止 |
-| `-result`, `-score` | スコア結果の混入防止 |
-| `-twitter.com`, `-x.com` | SNS投稿の除外（更新性が低い） |
-
-### 3.3 検索制限
-
-| 項目 | 値 |
-|------|-----|
-| 日次クォータ | 100リクエスト/日 |
-| 1検索あたり結果数 | 5-10件 |
-| キャッシュTTL | 2時間 |
-
----
-
-## 4. YouTubePostFilter設計
+## 3. YouTubePostFilter設計
 
 YouTube検索結果のフィルタリングを担当するクラスの設計。
 
-### 4.1 除外ルール一覧
+### 3.1 除外ルール一覧
 
 | フィルタ名 | 除外対象キーワード | 適用カテゴリ |
 |-----------|------------------|-------------|
@@ -134,7 +93,7 @@ YouTube検索結果のフィルタリングを担当するクラスの設計。
 
 > 実装: [src/youtube_filter.py](../../src/youtube_filter.py) の `YouTubePostFilter`
 
-### 4.2 フィルタ適用フロー
+### 3.2 フィルタ適用フロー
 
 ```mermaid
 graph LR
@@ -145,7 +104,7 @@ graph LR
     E --> F[最終結果]
 ```
 
-### 4.3 カテゴリ別適用フィルタ
+### 3.3 カテゴリ別適用フィルタ
 
 | カテゴリ | 適用フィルタ |
 |---------|-------------|
@@ -155,7 +114,7 @@ graph LR
 | 選手紹介 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
 | 練習風景 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
 
-### 4.4 フィルタ結果の返却形式
+### 3.4 フィルタ結果の返却形式
 
 ```python
 {
@@ -167,13 +126,13 @@ graph LR
 
 ---
 
-## 5. 件数制限・ソートロジック
+## 4. 件数制限・ソートロジック
 
 YouTube検索結果の件数制限とソート処理の設計。
 
 > 実装: [src/youtube_service.py](../../src/youtube_service.py) の `YouTubeService`
 
-### 5.1 取得件数の設計
+### 4.1 取得件数の設計
 
 | 項目 | 値 | 説明 |
 |------|-----|------|
@@ -184,9 +143,7 @@ YouTube検索結果の件数制限とソート処理の設計。
 - APIからは多めに取得（50件）し、post-fetchフィルタで除外した後も十分な候補を確保
 - 最終的にカテゴリ別に10件まで絞り込み、レポートの可読性を維持
 
-### 5.2 処理パイプライン
-
-各カテゴリの検索結果は以下の順序で処理される:
+### 4.2 処理パイプライン
 
 ```mermaid
 graph TD
@@ -201,11 +158,9 @@ graph TD
     I --> J[overflow分離]
 ```
 
-### 5.3 ソートロジック詳細
+### 4.3 ソートロジック詳細
 
-#### 5.3.1 信頼チャンネルソート
-
-信頼チャンネル判定後にソートする。ソートキーは2段階:
+#### 4.3.1 信頼チャンネルソート
 
 ```python
 videos.sort(key=lambda v: (
@@ -219,52 +174,30 @@ videos.sort(key=lambda v: (
 | 第1キー | 信頼 > 非信頼 | 信頼チャンネルを上位に |
 | 第2キー | original_index | 同一信頼レベル内ではAPI検索結果の順序を維持（relevance順） |
 
-#### 5.3.2 ソート適用タイミング
-
-ソートは2回適用される:
+#### 4.3.2 ソート適用タイミング
 
 | タイミング | 対象 | 目的 |
 |-----------|------|------|
 | ソート① | 各カテゴリ検索直後 | チーム単位で信頼チャンネルを優先 |
 | ソート② | 2チーム分マージ後 | カテゴリ全体で再度信頼チャンネルを優先 |
 
-### 5.4 重複排除ロジック
+### 4.4 重複排除ロジック
 
 2チーム分の検索結果をマージした後、`video_id` ベースで重複を排除する。
-
-```python
-def deduplicate(videos: List[Dict]) -> List[Dict]:
-    seen = set()
-    unique = []
-    for v in videos:
-        video_id = v.get("video_id")
-        if video_id and video_id not in seen:
-            seen.add(video_id)
-            unique.append(v)
-    return unique
-```
 
 **重複が発生するケース**:
 - 両チームに関連する動画（例: 過去対戦ハイライト）
 - 複数選手の検索クエリで同一動画がヒット
 
-### 5.5 Overflow処理
+### 4.5 Overflow処理
 
 件数制限を超えた動画は `overflow` として保持される。
-
-```python
-if len(cat_videos) > MAX_PER_CATEGORY:
-    final_kept.extend(cat_videos[:MAX_PER_CATEGORY])     # 表示対象
-    final_overflow.extend(cat_videos[MAX_PER_CATEGORY:]) # 切り捨て
-```
 
 **Overflowの用途**:
 - ログ出力でフィルタリング状況を確認
 - 将来の「もっと見る」機能への拡張余地
 
-### 5.6 カテゴリ別クエリ数
-
-デバッグモードと通常モードでクエリ数が異なる:
+### 4.6 カテゴリ別クエリ数
 
 | カテゴリ | 通常モード | デバッグモード |
 |---------|-----------|--------------|
@@ -279,9 +212,8 @@ if len(cat_videos) > MAX_PER_CATEGORY:
 
 ---
 
-## 6. 関連ドキュメント
+## 5. 関連ドキュメント
 
 - [YouTube動画取得要件](../01_requirements/youtube_integration.md) - 機能要件定義
 - [外部API連携設計](./external_apis.md) - API概要
 - [キャッシュ設計](./cache_design.md) - GCSキャッシュ
-

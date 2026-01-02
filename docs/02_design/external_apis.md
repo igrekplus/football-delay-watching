@@ -8,54 +8,7 @@
 
 機能要件「試合抽出・選定 (Match)」「固定情報取得 (Facts)」を実現する。
 
-### 1.1 概要
-
-| 項目 | 値 |
-|------|-----|
-| サービス | API-Football (RapidAPI) |
-| 実装クラス | `ApiFootballClient` |
-| 認証 | `X-RapidAPI-Key` ヘッダー |
-
-### 1.2 エンドポイント
-
-| エンドポイント | 用途 | 対応機能 |
-|--------------|------|----------|
-| `/fixtures` | 試合一覧・基本情報 | Match |
-| `/fixtures/lineups` | スタメン・フォーメーション | Facts |
-| `/injuries` | 負傷者・出場停止情報 | Facts |
-| `/teams/statistics` | チームフォーム（直近5試合） | Facts |
-| `/fixtures/headtohead` | 過去の対戦成績 | Facts |
-
-> 各エンドポイントの詳細パラメータは [api_endpoints.md](./api_endpoints.md) を参照。
-
-### 1.3 制限事項
-
-- 非EPLチーム（例：CL出場のアタランタ）のフォーム取得には、そのチームが所属するリーグID指定が必要
-- 現状は EPL (league=39) 固定のため、非EPLチームのフォームは空欄になる
-
-### 1.4 データ仕様の特記事項
-
-#### Injuriesエンドポイントの仕様 (Issue #87)
-
-| 項目 | 内容 |
-|------|------|
-| 定義 | 「試合に参加しない**可能性のある**選手」をリストアップ |
-| Missing Fixture | 確実に不参加 |
-| **Questionable** | 出場するかもしれないが不確実 |
-
-> [!NOTE]
-> Questionableステータスの選手は、実際にはベンチ入りしているケースがある。
-> そのため、**Substitutes（ベンチ）と Injuries/Suspended に同一選手が表示される場合がある**が、これはAPI仕様通りの動作であり、仕様として許容する。
-
-#### 選手名形式の違い
-
-| エンドポイント | 選手名形式 | 例 |
-|--------------|-----------|-----|
-| `/fixtures/lineups` | フルネーム | `Kai Havertz` |
-| `/injuries` | 略称形式 | `K. Havertz` |
-
-> [!NOTE]
-> エンドポイントによって返される選手名の形式が異なる。現状は仕様として許容し、表示上の重複除外等は行わない。
+> 詳細は [api_football_design.md](./api_football_design.md) を参照。
 
 ---
 

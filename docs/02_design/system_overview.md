@@ -75,4 +75,4 @@ graph TD
 - [実行基盤設計](./infrastructure.md)
 - [キャッシュ設計](./cache_design.md)
 - [ログイン設計](./login_design.md)
-- [APIエンドポイント詳細](./api_endpoints.md)
+- [API-Football設計](./api_football_design.md)
