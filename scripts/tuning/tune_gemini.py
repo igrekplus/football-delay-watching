@@ -189,6 +189,74 @@ def cmd_spoiler(args):
     return 0
 
 
+def cmd_interview(args):
+    """interviewサブコマンド: インタビュー要約をテスト"""
+    load_dotenv()
+    
+    if not args.articles_file:
+        print("ERROR: --articles-file is required")
+        return 1
+    
+    # ファイルから記事を読み込む
+    with open(args.articles_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    # インタビュー記事のみ抽出（tune_news_search.pyの出力形式に対応）
+    # type="interview_manager" または type="interview_player"
+    # かつ team が args.home (Sunderland等) と一致するもの
+    target_team = args.home  # --home で指定されたチームを対象とする
+    
+    articles = [
+        a for a in data 
+        if (a.get("type", "").startswith("interview_") and 
+            a.get("team", "").lower() == target_team.lower())
+    ]
+    
+    if not articles:
+        print(f"ERROR: No interview articles found for team '{target_team}' in file")
+        # デバッグ用に全件表示
+        print(f"Debug: Found {len(data)} total articles.")
+        for i, a in enumerate(data[:3]):
+            print(f"  {i}: type={a.get('type')}, team={a.get('team')}")
+        return 1
+    
+    print_header(f"GEMINI INTERVIEW SUMMARY | {target_team}")
+    print(f"Input: {len(articles)} articles")
+    
+    context_preview = "\n".join([a.get("content", "")[:100] for a in articles[:3]])
+    print(f"\nContext preview:")
+    print("-" * 40)
+    print(context_preview[:500] + "...")
+    print("-" * 40)
+    
+    print("\nPrompt template (from llm_client.py):")
+    print("  Task: Summarize manager/player comments (200-300 chars)")
+    print("  Format: 【Team】...")
+    print("-" * 40)
+    
+    # 生成実行
+    client = LLMClient(use_mock=args.mock)
+    
+    print("\n--- Generated Output ---")
+    try:
+        result = client.summarize_interview(
+            team_name=target_team,
+            articles=articles,
+        )
+        print(result)
+        print(f"\n(Length: {len(result)} chars)")
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return 1
+    print("--- End ---")
+    
+    print("\n" + "=" * 80)
+    print("Tip: プロンプトを変更するには src/clients/llm_client.py の summarize_interview を編集")
+    print("=" * 80)
+    
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Geminiプロンプトチューニングツール",
@@ -198,7 +266,7 @@ def main():
     
     # 共通引数
     common_args = argparse.ArgumentParser(add_help=False)
-    common_args.add_argument("--home", default="Manchester City", help="ホームチーム")
+    common_args.add_argument("--home", default="Manchester City", help="ホームチーム (interviewでは対象チームとして使用)")
     common_args.add_argument("--away", default="West Ham", help="アウェイチーム")
     common_args.add_argument("--mock", action="store_true", help="モックモードで実行")
     
@@ -210,6 +278,10 @@ def main():
     preview_parser = subparsers.add_parser("preview", parents=[common_args], help="戦術プレビューをテスト")
     preview_parser.add_argument("--articles-file", help="記事JSONファイル")
     
+    # interview サブコマンド
+    interview_parser = subparsers.add_parser("interview", parents=[common_args], help="インタビュー要約をテスト")
+    interview_parser.add_argument("--articles-file", help="記事JSONファイル")
+    
     # spoiler サブコマンド
     spoiler_parser = subparsers.add_parser("spoiler", parents=[common_args], help="ネタバレチェックをテスト")
     spoiler_parser.add_argument("--text", help="チェック対象テキスト")
@@ -220,6 +292,8 @@ def main():
         return cmd_summary(args)
     elif args.command == "preview":
         return cmd_preview(args)
+    elif args.command == "interview":
+        return cmd_interview(args)
     elif args.command == "spoiler":
         return cmd_spoiler(args)
     else:
