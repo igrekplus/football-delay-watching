@@ -83,32 +83,16 @@ class ApiFootballClient:
         params = {"id": player_id, "season": season}
         return self._fetch(url, params=params, label=f"player {player_id}")
 
-    # Aliases for compatibility or explicit naming (CacheWarmer uses get_player)
-    def get_player(self, player_id: int, season: int, team_name: str = "") -> Optional[Any]:
-        """Fetch player alias returning raw response object for CacheWarmer backward compat check."""
-        # CacheWarmer expected the raw response object to check status code?
-        # My previous implementation returned requests.Response.
-        # New implementation `_fetch` returns JSON dict.
-        # CacheWarmer needs to know if it succeeded (status 200).
-        # JSON dict usually has 'errors' or empty 'response' if failed.
-        # But `CacheWarmer._cache_player` checks `response.status_code == 200`.
-        # I need to support that interface OR update CacheWarmer.
-        # Let's update this method to be flexible.
+    def get_player(self, player_id: int, season: int, team_name: str = "") -> Dict[str, Any]:
+        """Fetch player data. Returns JSON dict (unified with other methods).
         
-        # Actually, `CacheWarmer` uses `self.client.get_player(...)`.
-        # My previous implementation of `get_player` returned `response` object.
-        # `FactsService` uses `fetch_player_details` which expects JSON.
-        
-        # Implementation for CacheWarmer support:
+        Note: Previously returned raw Response object, now returns parsed JSON
+        to ensure quota statistics are properly tracked via _fetch/_update_quota.
+        """
         url = f"{self.base_url}/players"
         params = {"id": player_id, "season": season}
-        try:
-             # Direct call to http_client to get raw response object
-             return self.http_client.get(url, headers=self.headers, params=params)
-             # Note: _update_quota handles headers, so we should call it.
-        except Exception as e:
-            logger.error(f"Error in get_player: {e}")
-            return None
+        label = f"player {player_id}" + (f" ({team_name})" if team_name else "")
+        return self._fetch(url, params=params, label=label)
 
     def _fetch(self, url: str, params: Dict[str, Any], label: str) -> Dict[str, Any]:
         """Internal fetch helper."""

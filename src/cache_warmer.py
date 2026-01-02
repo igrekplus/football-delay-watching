@@ -99,10 +99,14 @@ class CacheWarmer:
                     
                 player_id = player.get("id")
                 if player_id:
-                    self.client.get_player(player_id, 2024, team_name)
+                    result = self.client.get_player(player_id, 2024, team_name)
                     available_quota -= 1
+                    # self.requests_made is now tracked in ApiStats primarily, 
+                    # but keeping local counter for return dict consistency if needed, 
+                    # though arguably we could rely on ApiStats.
                     self.requests_made += 1
-                    players_processed += 1
+                    if result:
+                        players_processed += 1
         
         result = {
             "skipped": False,
