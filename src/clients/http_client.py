@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 class HttpResponse:
     """HTTPレスポンスの抽象化"""
     
-    def __init__(self, status_code: int, json_data: dict, ok: bool = True):
+    def __init__(self, status_code: int, json_data: dict, ok: bool = True, headers: dict = None):
         self.status_code = status_code
         self._json_data = json_data
         self.ok = ok
-        self.headers = {}
+        self.headers = headers or {}
     
     def json(self) -> dict:
         return self._json_data
@@ -75,5 +75,7 @@ class RequestsHttpClient(HttpClient):
         return HttpResponse(
             status_code=response.status_code,
             json_data=response.json() if response.ok else {},
-            ok=response.ok
+            ok=response.ok,
+            headers=dict(response.headers)
         )
+
