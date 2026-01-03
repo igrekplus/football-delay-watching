@@ -117,14 +117,29 @@ def cmd_preview(args):
     print_header(f"GEMINI TACTICAL PREVIEW | {args.home} vs {args.away}")
     print(f"Input: {len(articles)} articles from {args.articles_file}")
     
-    print("\n" + "=" * 80)
-    print("⚠️  WARNING: 現在のプロンプトは「いない選手を含む妄想」を生成する問題あり")
-    print("    プロンプトに「記事に記載された情報のみを使用せよ」を強制する必要がある")
-    print("=" * 80)
+    # Sample formation/lineup data for testing (実際の選手名を使用)
+    sample_home_formation = "4-3-3"
+    sample_away_formation = "4-4-2"
+    sample_home_lineup = [
+        "Ederson", "Kyle Walker", "Ruben Dias", "Manuel Akanji", "Josko Gvardiol",
+        "Rodri", "Bernardo Silva", "Kevin De Bruyne", 
+        "Phil Foden", "Erling Haaland", "Jack Grealish"
+    ]
+    sample_away_lineup = [
+        "Alphonse Areola", "Vladimir Coufal", "Kurt Zouma", "Konstantinos Mavropanos", "Aaron Cresswell",
+        "Jarrod Bowen", "Lucas Paqueta", "Tomas Soucek", "Mohammed Kudus",
+        "Michail Antonio", "Danny Ings"
+    ]
+    sample_competition = "Premier League"
     
-    print("\nPrompt template (from llm_client.py):")
-    print("  Task: Extract tactical analysis (Japanese)")
-    print("  Constraints: Focus on formations/matchups, do NOT reveal results")
+    print(f"\nSample Formation Data:")
+    print(f"  Home: {sample_home_formation} | Away: {sample_away_formation}")
+    print(f"  Competition: {sample_competition}")
+    print("-" * 40)
+    
+    print("\nPrompt template (from settings/gemini_prompts.py):")
+    print("  Task: Structured tactical preview with 5 sections")
+    print("  Constraints: Use input formation data, no hallucination")
     print("-" * 40)
     
     # 生成実行
@@ -136,6 +151,11 @@ def cmd_preview(args):
             home_team=args.home,
             away_team=args.away,
             articles=articles,
+            home_formation=sample_home_formation,
+            away_formation=sample_away_formation,
+            home_lineup=sample_home_lineup,
+            away_lineup=sample_away_lineup,
+            competition=sample_competition
         )
         print(result)
         print(f"\n(Length: {len(result)} chars)")
@@ -145,7 +165,7 @@ def cmd_preview(args):
     print("--- End ---")
     
     print("\n" + "=" * 80)
-    print("Tip: プロンプトを変更するには src/clients/llm_client.py の generate_tactical_preview を編集")
+    print("Tip: プロンプトを変更するには settings/gemini_prompts.py を編集")
     print("=" * 80)
     
     return 0
@@ -195,11 +215,62 @@ def cmd_spoiler(args):
 
 
 def cmd_interview(args):
-    """interviewサブコマンド: インタビュー要約をテスト"""
+    """interviewサブコマンド: インタビュー要約をテスト
+    
+    2つのモードをサポート:
+    1. Groundingモード (推奨): --team と --opponent を指定
+       例: python tune_gemini.py interview --team "Arsenal" --opponent "Bournemouth"
+    2. Legacyモード: --articles-file を指定（旧式）
+    """
     load_dotenv()
     
+    # Groundingモード: --team と --opponent を使用
+    if args.team and args.opponent:
+        target_team = args.team
+        opponent_team = args.opponent
+        
+        print_header(f"GEMINI INTERVIEW SUMMARY (Grounding) | {target_team} vs {opponent_team}")
+        print(f"Mode: Grounding (LLM will search for relevant information)")
+        print(f"Target Team: {target_team}")
+        print(f"Opponent Team: {opponent_team}")
+        print("-" * 40)
+        
+        print("\nPrompt template (from settings/gemini_prompts.py):")
+        print("  Task: Search and summarize manager press conference (1500-2000 chars)")
+        print("  Constraints: No meta-intro, dynamic subheaders, opponent-focused")
+        print("-" * 40)
+        
+        # 生成実行
+        client = LLMClient(use_mock=args.mock)
+        
+        print("\n--- Generated Output ---")
+        try:
+            result = client.summarize_interview(
+                team_name=target_team,
+                articles=[],  # Groundingモードでは空
+                opponent_team=opponent_team
+            )
+            print(result)
+            print(f"\n(Length: {len(result)} chars)")
+        except Exception as e:
+            print(f"ERROR: {e}")
+            import traceback
+            traceback.print_exc()
+            return 1
+        print("--- End ---")
+        
+        print("\n" + "=" * 80)
+        print("Tip: プロンプトを変更するには settings/gemini_prompts.py の interview を編集")
+        print("=" * 80)
+        
+        return 0
+    
+    # Legacyモード: --articles-file を使用
     if not args.articles_file:
-        print("ERROR: --articles-file is required")
+        print("ERROR: Either --team/--opponent OR --articles-file is required")
+        print("\nUsage:")
+        print("  Grounding mode: python tune_gemini.py interview --team 'Arsenal' --opponent 'Bournemouth'")
+        print("  Legacy mode:    python tune_gemini.py interview --articles-file articles.json --home 'Arsenal'")
         return 1
     
     # ファイルから記事を読み込む
@@ -207,8 +278,6 @@ def cmd_interview(args):
         data = json.load(f)
     
     # インタビュー記事のみ抽出（tune_news_search.pyの出力形式に対応）
-    # type="interview_manager" または type="interview_player"
-    # かつ team が args.home (Sunderland等) と一致するもの
     target_team = args.home  # --home で指定されたチームを対象とする
     
     articles = [
@@ -219,20 +288,18 @@ def cmd_interview(args):
     
     if not articles:
         print(f"ERROR: No interview articles found for team '{target_team}' in file")
-        # デバッグ用に全件表示
         print(f"Debug: Found {len(data)} total articles.")
         for i, a in enumerate(data[:3]):
             print(f"  {i}: type={a.get('type')}, team={a.get('team')}")
         return 1
     
-    print_header(f"GEMINI INTERVIEW SUMMARY | {target_team}")
+    print_header(f"GEMINI INTERVIEW SUMMARY (Legacy) | {target_team}")
     print(f"Input: {len(articles)} articles")
     
     print_articles_context(articles)
     
-    print("\nPrompt template (from llm_client.py):")
-    print("  Task: Summarize manager/player comments (200-300 chars)")
-    print("  Format: 【Team】...")
+    print("\nPrompt template (from settings/gemini_prompts.py):")
+    print("  Task: Summarize manager/player comments (1500-2000 chars)")
     print("-" * 40)
     
     # 生成実行
@@ -243,6 +310,7 @@ def cmd_interview(args):
         result = client.summarize_interview(
             team_name=target_team,
             articles=articles,
+            opponent_team=args.opponent  # オプショナル
         )
         print(result)
         print(f"\n(Length: {len(result)} chars)")
@@ -252,7 +320,7 @@ def cmd_interview(args):
     print("--- End ---")
     
     print("\n" + "=" * 80)
-    print("Tip: プロンプトを変更するには src/clients/llm_client.py の summarize_interview を編集")
+    print("Tip: プロンプトを変更するには settings/gemini_prompts.py の interview を編集")
     print("=" * 80)
     
     return 0
@@ -281,7 +349,9 @@ def main():
     
     # interview サブコマンド
     interview_parser = subparsers.add_parser("interview", parents=[common_args], help="インタビュー要約をテスト")
-    interview_parser.add_argument("--articles-file", help="記事JSONファイル")
+    interview_parser.add_argument("--articles-file", help="記事JSONファイル（Legacyモード用）")
+    interview_parser.add_argument("--team", help="対象チーム（Groundingモード用）")
+    interview_parser.add_argument("--opponent", help="対戦相手チーム（Groundingモード用）")
     
     # spoiler サブコマンド
     spoiler_parser = subparsers.add_parser("spoiler", parents=[common_args], help="ネタバレチェックをテスト")
