@@ -1,6 +1,6 @@
 # APIチューニングワークフロー設計
 
-YouTube / Google Custom Search / Gemini の各APIに対して、クエリやプロンプトをチューニングするための設計。
+YouTube / Gemini (Grounding) / Google Custom Search (Legacy) の各APIに対して、クエリやプロンプトをチューニングするための設計。
 
 ## 1. 背景と課題
 
@@ -107,6 +107,11 @@ Tip: フィルタを調整するには settings/search_specs.py の exclude_filt
 ---
 
 ## 4. ニュース検索チューニング (`tune_news_search.py`)
+
+> [!WARNING]
+> 本ツールは **Legacy (旧Google Custom Search)** 用です。
+> 現在、ニュース検索はGemini Groundingに移行済みのため、本ツールの使用は推奨されません。
+> Groundingのプロンプト調整には `tune_gemini.py` を使用してください。
 
 ### サブコマンド
 

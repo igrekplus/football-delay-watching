@@ -79,9 +79,20 @@ class ReportGenerator:
         lines = []
         image_paths = []
         
-        # ヘッダー（試合タイトル）
-        lines.append(f"# {match.home_team} vs {match.away_team}\n")
-        lines.append(f"**{match.competition}** / {match.rank}\n")
+        # ヘッダー（試合タイトル） - Issue #116: ロゴ付きヘッダー
+        if match.competition_logo:
+            header_html = f'''<div class="match-header-container">
+    <img src="{match.competition_logo}" class="competition-logo-header" alt="{match.competition}">
+    <div class="match-header-info">
+        <h1>{match.home_team} vs {match.away_team}</h1>
+        <div class="match-rank">Importance: {match.rank}</div>
+    </div>
+</div>'''
+            lines.append(header_html)
+        else:
+            # フォールバック: ロゴがない場合は従来の表示
+            lines.append(f"# {match.home_team} vs {match.away_team}\n")
+            lines.append(f"**{match.competition}** / {match.rank}\n")
         
         # 試合レポート本文
         match_report, match_images = self._write_single_match_content(match, youtube_videos)

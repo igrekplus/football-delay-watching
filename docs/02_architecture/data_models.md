@@ -13,9 +13,8 @@
 ```mermaid
 flowchart LR
     subgraph Input["外部入力"]
-        API[("API-Football")]
-        GS[("Google Search")]
-        LLM[("Gemini API")]
+        API[("​API-Football")]
+        LLM[("Gemini API + Grounding")]
         YT[("YouTube API")]
         CSV[("Instagram CSV")]
     end
@@ -37,7 +36,6 @@ flowchart LR
     
     API --> MC
     API --> MF
-    GS --> MP
     LLM --> MP
     YT --> MM
     CSV --> MF
@@ -119,8 +117,7 @@ flowchart TD
 | API-Football `/players` | 選手詳細情報 | 24時間 |
 | API-Football `/injuries` | 怪我人情報 | 1時間 |
 | API-Football `/fixtures/headtohead` | 対戦成績 | 24時間 |
-| Google Custom Search | 記事URL・スニペット | 30分 |
-| Gemini API | 要約テキスト | キャッシュなし |
+| Gemini API (Grounding) | 要約テキスト, ニュース取得 | キャッシュなし |
 | YouTube Data API | 動画リスト | 24時間 |
 | Instagram CSV | Instagramリンク | ファイル読込 |
 

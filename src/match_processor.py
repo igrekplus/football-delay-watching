@@ -105,6 +105,9 @@ class MatchProcessor:
         home_logo_url = teams['home'].get('logo', '')
         away_logo_url = teams['away'].get('logo', '')
         
+        # League Logo (Issue #116)
+        league_logo_url = item.get('league', {}).get('logo', '')
+        
         # Create MatchCore
         core = MatchCore(
             id=str(fixture['id']),
@@ -118,6 +121,7 @@ class MatchProcessor:
             referee=fixture.get('referee', 'Unknown'),
             home_logo=home_logo_url,
             away_logo=away_logo_url,
+            competition_logo=league_logo_url,
             kickoff_at_utc=match_date_utc,
         )
         

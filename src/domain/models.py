@@ -32,6 +32,7 @@ class MatchCore:
     is_target: bool = False
     match_date_local: str = ""  # 試合開催日（現地時間）YYYY-MM-DD
     kickoff_at_utc: Optional[datetime] = None  # UTC datetime（計算用）
+    competition_logo: str = ""  # 大会ロゴURL
     venue: str = ""
     referee: str = ""
     home_logo: str = ""
@@ -254,6 +255,14 @@ class MatchAggregate:
     @away_logo.setter
     def away_logo(self, value: str):
         self.core.away_logo = value
+    
+    @property
+    def competition_logo(self) -> str:
+        return self.core.competition_logo
+    
+    @competition_logo.setter
+    def competition_logo(self, value: str):
+        self.core.competition_logo = value
     
     # --- Facts プロパティ ---
     @property
@@ -584,6 +593,9 @@ class MatchData:
     # チームロゴ
     home_logo: str = ""
     away_logo: str = ""
+    
+    # 大会ロゴ
+    competition_logo: str = ""
     
     # =========================================================================
     # LLM生成コンテンツ（NewsServiceで設定）

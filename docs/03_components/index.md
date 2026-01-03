@@ -11,7 +11,6 @@
 | [api_football.md](../03_components/api_football.md) | API-Football設計・エンドポイント詳細 | Match, Facts |
 | [cache.md](./cache.md) | キャッシュ設計（GCS, TTL） | Match, Facts, YouTube |
 | [youtube_search.md](./youtube_search.md) | YouTube検索設計（カテゴリ・フィルタ・ソート） | YouTube |
-| [news_search.md](./news_search.md) | ニュース検索設計（Google Custom Search） | News |
 | [login.md](./login.md) | ログイン・認証設計（Firebase Auth） | Delivery |
 | [gemini_tasks/common.md](./gemini_tasks/common.md) | Gemini共通仕様（入力条件・共通制約・禁止事項） | News, Facts |
 | [gemini_tasks/generation.md](./gemini_tasks/generation.md) | ニュース要約・戦術プレビュー仕様 (Standard) | News |
