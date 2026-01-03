@@ -84,6 +84,7 @@ class MockProvider:
                 rank=item.get("rank", "None"),
                 venue=item.get("venue", ""),
                 referee=item.get("referee", ""),
+                competition_logo=item.get("competition_logo", ""),
                 kickoff_at_utc=kickoff_utc,
             )
             matches.append(MatchAggregate(core=core))

@@ -72,19 +72,15 @@ class YouTubeSectionFormatter:
         return "\n".join(lines)
 
     def render_video_table(self, video_list: list, show_reason: bool = False, show_thumbnail: bool = True) -> list:
-        """動画リストをテーブルまたはリスト形式のHTMLに変換"""
-        table_lines = []
+        """動画リストをグリッドまたはリスト形式のHTMLに変換"""
+        grid_lines = []
         
         if show_thumbnail:
-            # サムネイル付きテーブル（メイン表示用）
-            table_lines.append('<table class="youtube-table">')
-            table_lines.append('<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>')
-            table_lines.append('<tbody>')
+            # サムネイル付きグリッド（メイン表示用）
+            grid_lines.append('<div class="youtube-grid">')
             
             for v in video_list:
                 title = v.get('title', 'No Title')
-                if len(title) > 40:
-                    title = title[:37] + "..."
                 url = v.get('url', '')
                 thumbnail = v.get('thumbnail_url', '')
                 channel_display = v.get('channel_display', v.get('channel_name', 'Unknown'))
@@ -94,19 +90,31 @@ class YouTubeSectionFormatter:
                 
                 relative_date = DateTimeUtil.format_relative_date(published_at)
                 
-                thumb_cell = f'<a href="{url}" target="_blank"><img src="{thumbnail}" alt="thumb" style="width:120px;height:auto;"></a>' if thumbnail else "-"
-                label_prefix = f'【{query_label}】 ' if query_label else ''
-                reason_suffix = f' <span style="color:#f44336">[除外: {filter_reason}]</span>' if filter_reason else ''
-                info_html = f'<strong><a href="{url}" target="_blank">{label_prefix}{title}</a></strong>{reason_suffix}<br/>'
-                info_html += f'📺 <strong>{channel_display}</strong> ・ 🕐 {relative_date}'
+                # カード形式で表示
+                label_badge = f'<span class="youtube-card-label">{query_label}</span>' if query_label else ''
+                reason_badge = f'<span class="youtube-card-reason">除外: {filter_reason}</span>' if filter_reason else ''
                 
-                table_lines.append(f'<tr><td style="text-align:center">{thumb_cell}</td><td style="text-align:left">{info_html}</td></tr>')
+                card_html = f'''<div class="youtube-card">
+    <a href="{url}" target="_blank" class="youtube-card-thumbnail">
+        <img src="{thumbnail}" alt="thumbnail">
+    </a>
+    <div class="youtube-card-content">
+        {label_badge}{reason_badge}
+        <div class="youtube-card-title">
+            <a href="{url}" target="_blank">{title}</a>
+        </div>
+        <div class="youtube-card-meta">
+            <span class="youtube-card-channel">📺 {channel_display}</span>
+            <span class="youtube-card-date">🕐 {relative_date}</span>
+        </div>
+    </div>
+</div>'''
+                grid_lines.append(card_html)
             
-            table_lines.append('</tbody>')
-            table_lines.append('</table>')
+            grid_lines.append('</div>')
         else:
             # サムネイルなしリスト（ソート落ち/除外用）
-            table_lines.append('<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">')
+            grid_lines.append('<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">')
             for v in video_list:
                 title = v.get('title', 'No Title')
                 if len(title) > 50:
@@ -118,7 +126,7 @@ class YouTubeSectionFormatter:
                 
                 label_prefix = f'【{query_label}】 ' if query_label else ''
                 reason_suffix = f' <span style="color:#f44336">[{filter_reason}]</span>' if filter_reason else ''
-                table_lines.append(f'<li><a href="{url}" target="_blank">{label_prefix}{title}</a> - {channel}{reason_suffix}</li>')
-            table_lines.append('</ul>')
+                grid_lines.append(f'<li><a href="{url}" target="_blank">{label_prefix}{title}</a> - {channel}{reason_suffix}</li>')
+            grid_lines.append('</ul>')
         
-        return table_lines
+        return grid_lines
