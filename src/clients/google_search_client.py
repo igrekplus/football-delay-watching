@@ -90,16 +90,9 @@ class GoogleSearchClient:
         """
         試合関連のニュース記事を検索
         
-        Args:
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-            competition: 大会名
-            
-        Returns:
-            記事リスト（content, title, source, url, relevance_score）
+        ※ Grounding機能への移行のため、一時的にエラー化（後で削除予定）
         """
-        if self.use_mock:
-            return self._get_mock_news(home_team, away_team)
+        raise NotImplementedError("Google Search API is deprecated. Use Gemini Grounding instead.")
         
         # スペックからクエリを生成
         query = build_google_query("news", home_team=home_team, away_team=away_team)
@@ -154,11 +147,9 @@ class GoogleSearchClient:
         """
         監督・選手インタビュー記事を検索
         
-        Returns:
-            記事リスト（content, title, source）
+        ※ Grounding機能への移行のため、一時的にエラー化（後で削除予定）
         """
-        if self.use_mock:
-            return []  # モック時はインタビュー記事なし
+        raise NotImplementedError("Google Search API is deprecated. Use Gemini Grounding instead.")
         
         # スペックからクエリ・パラメータを生成
         search_types = ["interview_manager", "interview_player"]

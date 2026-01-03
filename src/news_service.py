@@ -35,19 +35,17 @@ class NewsService:
         self.search = search_client or GoogleSearchClient()
 
     def process_news(self, matches: List[Union[MatchData, MatchAggregate]]):
-        """試合リストに対してニュース処理を実行"""
+        """試合リストに対してニュース処理を実行（Grounding使用）"""
         for match in matches:
             if match.is_target:
                 logger.info(f"Processing news for {match.home_team} vs {match.away_team}")
                 
-                # 1. Collect articles
-                articles = self._collect_news(match)
-                
-                # 2. Generate Summary
-                raw_summary = self._generate_summary(match, articles)
+                # 1. Generate Summary (Grounding機能で直接検索)
+                # Google Search API は使用せず、LLM が Grounding で検索
+                raw_summary = self._generate_summary(match, [])
                 match.news_summary = self.filter.check_text(raw_summary)
                 
-                # 3. Spoiler check with LLM (Issue #33)
+                # 2. Spoiler check with LLM (Issue #33)
                 if raw_summary and not config.USE_MOCK_DATA:
                     is_safe, reason = self.llm.check_spoiler(
                         raw_summary, 
@@ -58,21 +56,12 @@ class NewsService:
                         logger.warning(f"  [SPOILER CHECK] {match.home_team} vs {match.away_team}: {reason}")
                         match.news_summary = f"⚠️ 結果言及の可能性あり: {reason}\n\n{match.news_summary}"
                 
-                # 4. Generate Tactical Preview
-                raw_preview = self._generate_tactical_preview(match, articles)
+                # 3. Generate Tactical Preview (Grounding機能で直接検索)
+                raw_preview = self._generate_tactical_preview(match, [])
                 match.tactical_preview = self.filter.check_text(raw_preview)
                 match.preview_url = "https://example.com/tactical-preview"
                 
-                # 5. Append Sources (Issue #54)
-                if articles:
-                    sources_list = "\n".join([
-                        f'<li><a href="{a["url"]}" target="_blank">{a["title"]}</a> ({a["source"]})</li>' 
-                        for a in articles
-                    ])
-                    sources_text = f'\n\n<details>\n<summary><strong>📚 Sources ({len(articles)}件)</strong></summary>\n<ul>\n{sources_list}\n</ul>\n</details>'
-                    match.news_summary += sources_text
-                
-                # 6. Process Interviews
+                # 4. Process Interviews (Grounding機能で直接検索)
                 self._process_interviews(match)
 
     def _collect_news(self, match: Union[MatchData, MatchAggregate]) -> List[Dict[str, str]]:
@@ -115,26 +104,14 @@ class NewsService:
         )
 
     def _process_interviews(self, match: Union[MatchData, MatchAggregate]):
-        """インタビュー記事を検索・要約"""
+        """インタビュー記事を要約（Grounding機能で直接検索）"""
         for is_home in [True, False]:
             team_name = match.home_team if is_home else match.away_team
-            manager_name = match.home_manager if is_home else match.away_manager
             
-            # 検索
-            interview_articles = self.search.search_interviews(team_name, manager_name=manager_name)
-            
-            # フィルタリング
-            safe_articles = [
-                a for a in interview_articles 
-                if self.filter.is_safe_article(a['content'])
-            ]
-            
-            # 要約
-            if safe_articles:
-                summary = self.llm.summarize_interview(team_name, safe_articles)
-                summary = self.filter.check_text(summary)
-            else:
-                summary = "インタビュー記事が見つかりませんでした"
+            # Grounding機能を活用：LLM自身がGoogle検索を行うため
+            # 事前の記事収集は不要。
+            summary = self.llm.summarize_interview(team_name, [])
+            summary = self.filter.check_text(summary)
             
             if is_home:
                 match.home_interview = summary
