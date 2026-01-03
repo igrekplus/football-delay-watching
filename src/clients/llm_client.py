@@ -186,49 +186,57 @@ class LLMClient:
         articles: List[Dict[str, str]]
     ) -> str:
         """
-        インタビュー記事を要約
+        インタビュー記事を要約（Gemini Grounding + REST API使用）
         """
         if self.use_mock:
             return "監督: 『重要な試合になる。選手たちは準備できている。』"
         
-        if not articles:
-            return "関連記事が見つかりませんでした"
+        # Groundingを使用するため、articlesの内容は直接コンテキストとして渡さず、
+        # プロンプト内で検索指示として活用する、または単に検索キーワードの参考にする
+        # 現状のPoCプロンプトに従い、検索クエリ自体をプロンプトに埋め込む形式を採用
         
-        context = "\n".join([a['content'] for a in articles])
-        
+        # 相手チーム名をarticlesから推測するのは難しいため、
+        # 呼び出し元で相手チーム名が渡されていない現状のシグネチャでは完全ではないが、
+        # 検索クエリで "vs opponent" の部分はLLMに推測させるか、
+        # または呼び出し元を変更する必要がある。
+        # いったん、現状の引数 (team_name) だけで最大限努力するプロンプトにする。
+        # ※理想的には相手チーム名も引数に欲しいが、呼び出し元の変更を避けるため
+        # プロンプトで「直近の対戦相手」を探させる。
+
         prompt = f"""
-Task: {team_name}の監督が試合前に語った内容を、**可能な限り原文のまま**日本語で要約してください。
+Task: {team_name}の監督が、直近の試合（または次の試合）に関して語った最新のコメントや記者会見の内容を検索し、日本語で要約してください。
 
-## 優先順位
-1. 監督の直接発言（カギカッコ引用を最優先）
-2. 選手の直接発言
-3. 記事から推測されるチーム状況
+## 検索指示
+- "{team_name} manager press conference quotes latest"
+- "{team_name} vs next opponent manager quotes"
+- などのクエリで最新情報を探してください。
+- 直近（24-48時間以内）の情報を優先してください。
 
-## 引用ルール
-- 発言は必ずカギカッコ「」で囲む
-- 誰の発言かを明記（例: グアルディオラ監督は「〜」と語った）
-- 英語の発言は意訳してよいが、ニュアンスを保つ
-
-## 除外対象
-- 試合結果（スコア、勝敗）
-- 監督の契約・後任問題
-- 女子チームの情報
+## 要約の要件
+- 監督の具体的な発言があれば、可能な限りカギカッコ「」で原文のニュアンスを残して引用してください。
+- 試合結果（スコアなど）が既に判明している場合は、**絶対に結果には触れず**、試合前のコメントとして構成してください。
+- 確実な情報源（BBC, Sky Sports, 公式サイト等）に基づいていることを重視してください。
+- **文字数: 1800-2000字程度（非常に詳細に記述してください）**
+- 以下の点について詳しく記述してください：
+    - 怪我人・復帰選手の詳細な状況
+    - 対戦相手に対する具体的な評価・分析
+    - 今後の過密日程やシーズン全体の展望に対する言及
+    - 記者との質疑応答における興味深いやり取り
 
 ## 出力形式
-- 前置き文（「はい、承知いたしました」等のAI応答文）は不要、本文のみ
-- 【{team_name}】のようなチーム名プレフィックスは不要（UIで表示済み）
-- 1800-2000字
-
-Context:
-{context}
+- 本文のみ
 """
         
         try:
-            return self.generate_content(prompt)
+            # 遅延インポート（循環参照回避のため）
+            from src.clients.gemini_rest_client import GeminiRestClient
+            rest_client = GeminiRestClient(api_key=self.api_key)
+            return rest_client.generate_content_with_grounding(prompt)
+            
         except Exception as e:
             error_type = type(e).__name__
             logger.error(f"Error summarizing interview for {team_name}: {error_type} - {e}")
-            return f"要約エラー（{error_type}）"
+            return "エラーにつき取得不可（情報の取得に失敗しました）"
     
     # ========== モック用メソッド ==========
     

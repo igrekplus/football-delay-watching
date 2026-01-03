@@ -48,40 +48,32 @@ Context:
 
 ## 3. summarize_interview
 
-**目的**: インタビュー記事から監督・選手のコメントを要約
+**目的**: インタビュー記事から監督・選手のコメントを要約（**Grounding機能使用**）
 
-**現行プロンプト**:
-```
-Task: {team_name}の監督が試合前に語った内容を、**可能な限り原文のまま**日本語で要約してください。
+**新プロンプト (Grounding)**:
+```text
+Task: {team_name}の監督が、直近の試合（または次の試合）に関して語った最新のコメントや記者会見の内容を検索し、日本語で要約してください。
 
-## 優先順位
-1. 監督の直接発言（カギカッコ引用を最優先）
-2. 選手の直接発言
-3. 記事から推測されるチーム状況
+## 検索指示
+- "{team_name} manager press conference quotes latest"
+- "{team_name} vs next opponent manager quotes"
+- などのクエリで最新情報を探してください。
+- 直近（24-48時間以内）の情報を優先してください。
 
-## 引用ルール
-- 発言は必ずカギカッコ「」で囲む
-- 誰の発言かを明記（例: グアルディオラ監督は「〜」と語った）
-- 英語の発言は意訳してよいが、ニュアンスを保つ
-
-## 除外対象
-- 試合結果（スコア、勝敗）
-- 監督の契約・後任問題
-- 女子チームの情報
+## 要約の要件
+- 監督の具体的な発言があれば、可能な限りカギカッコ「」で原文のニュアンスを残して引用してください。
+- 試合結果（スコアなど）が既に判明している場合は、**絶対に結果には触れず**、試合前のコメントとして構成してください。
+- 確実な情報源（BBC, Sky Sports, 公式サイト等）に基づいていることを重視してください。
+- **文字数: 1800-2000字程度（非常に詳細に記述してください）**
 
 ## 出力形式
-- 前置き文（「はい、承知いたしました」等のAI応答文）は不要、本文のみ
-- 【{team_name}】のようなチーム名プレフィックスは不要（UIで表示済み）
-- 1800-2000字
+- 本文のみ
 ```
 
 **検証方法**:
 ```bash
-# 記事を取得
-python scripts/tuning/tune_news_search.py match --home "Sunderland" --away "Manchester City" --save /tmp/articles.json
-
-# インタビュー要約をテスト
-python scripts/tuning/tune_gemini.py interview --articles-file /tmp/articles.json --home "Manchester City"
+# REST API経由でのGrounding動作確認
+python scripts/tuning/poc_grounding_rest.py --home "Manchester City" --away "Arsenal"
 ```
 
 ## 4. スポイラー判定（check_spoiler）
