@@ -11,6 +11,7 @@ from typing import List, Union
 from config import config
 from src.domain.models import MatchData, MatchAggregate
 from src.clients.api_football_client import ApiFootballClient
+from src.clients.llm_client import LLMClient
 from settings.player_instagram import get_player_instagram_urls
 
 logger = logging.getLogger(__name__)
@@ -19,12 +20,14 @@ logger = logging.getLogger(__name__)
 class FactsService:
     """試合データ取得・加工サービス"""
     
-    def __init__(self, api_client: ApiFootballClient = None):
+    def __init__(self, api_client: ApiFootballClient = None, llm_client: LLMClient = None):
         """
         Args:
             api_client: API-Footballクライアント（DIで注入可能）
+            llm_client: LLMクライアント（DIで注入可能）
         """
         self.api = api_client or ApiFootballClient()
+        self.llm = llm_client or LLMClient()
 
     def enrich_matches(self, matches: List[Union[MatchData, MatchAggregate]]):
         """試合リストにデータを付加"""
@@ -52,6 +55,9 @@ class FactsService:
         
         # 4. Fetch Head-to-Head History
         self._fetch_h2h(match)
+        
+        # 5. Detect Same Country Matchups (Issue #39)
+        self._detect_and_generate_same_country(match)
     
     def _fetch_lineups(self, match: Union[MatchData, MatchAggregate]):
         """スタメン情報を取得・加工"""
@@ -276,4 +282,56 @@ class FactsService:
         """モックデータを設定"""
         from src.mock_provider import MockProvider
         MockProvider.apply_facts(match)
+        # モックモードでも同国対決を検出・生成
+        self._detect_and_generate_same_country(match)
+    
+    def _detect_same_country_matchups(self, match: Union[MatchData, MatchAggregate]) -> list:
+        """同国対決を検出（Issue #39）"""
+        home_players = match.home_lineup + match.home_bench
+        away_players = match.away_lineup + match.away_bench
+        
+        # 国籍ごとにグループ化
+        home_by_country = {}
+        away_by_country = {}
+        
+        for player in home_players:
+            country = match.player_nationalities.get(player, "")
+            if country:
+                home_by_country.setdefault(country, []).append(player)
+        
+        for player in away_players:
+            country = match.player_nationalities.get(player, "")
+            if country:
+                away_by_country.setdefault(country, []).append(player)
+        
+        # 両チームに存在する国籍を抽出（イングランド以外、注目度が高い国籍のみ）
+        # 注: イングランドはプレミアリーグでは多すぎるので除外
+        excluded_countries = {"England", "Spain", "Germany", "France", "Italy"}
+        common_countries = (set(home_by_country.keys()) & set(away_by_country.keys())) - excluded_countries
+        
+        matchups = []
+        for country in common_countries:
+            matchups.append({
+                "country": country,
+                "home_players": home_by_country[country],
+                "away_players": away_by_country[country]
+            })
+        
+        return matchups
+    
+    def _detect_and_generate_same_country(self, match: Union[MatchData, MatchAggregate]):
+        """同国対決を検出し、関係性テキストを生成（Issue #39）"""
+        matchups = self._detect_same_country_matchups(match)
+        match.same_country_matchups = matchups
+        
+        if matchups:
+            logger.info(f"Detected same country matchups: {[m['country'] for m in matchups]}")
+            # LLMで関係性・小ネタを生成
+            match.same_country_text = self.llm.generate_same_country_trivia(
+                home_team=match.home_team,
+                away_team=match.away_team,
+                matchups=matchups
+            )
+        else:
+            match.same_country_text = ""
 

@@ -205,6 +205,12 @@ class ReportGenerator:
             image_paths.append(f"{self.WEB_IMAGE_DIR}/{away_img}")
         lines.append("")
         
+        # 同国対決（Issue #39）
+        if match.same_country_text:
+            lines.append("### ■ 同国対決")
+            lines.append(f"\n{match.same_country_text}\n")
+            lines.append("")
+        
         # ニュース・戦術
         lines.append("### ■ ニュース要約（600〜1,000字）")
         lines.append(f"- {match.news_summary}")

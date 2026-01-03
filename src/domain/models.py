@@ -72,11 +72,17 @@ class MatchFacts:
     # 対戦成績
     h2h_summary: str = ""
     
+    # 同国対決（Issue #39）
+    same_country_matchups: List[Dict] = field(default_factory=list)
+    # [{"country": "Japan", "home_players": ["三笘薫"], "away_players": ["冨安健洋"]}, ...]
+    same_country_text: str = ""  # Geminiによる関係性・小ネタテキスト
+    
     # 監督情報
     home_manager: str = ""
     away_manager: str = ""
     home_manager_photo: str = ""
     away_manager_photo: str = ""
+
 
 
 @dataclass
@@ -384,6 +390,22 @@ class MatchAggregate:
     @h2h_summary.setter
     def h2h_summary(self, value: str):
         self.facts.h2h_summary = value
+    
+    @property
+    def same_country_matchups(self) -> List[Dict]:
+        return self.facts.same_country_matchups
+    
+    @same_country_matchups.setter
+    def same_country_matchups(self, value: List[Dict]):
+        self.facts.same_country_matchups = value
+    
+    @property
+    def same_country_text(self) -> str:
+        return self.facts.same_country_text
+    
+    @same_country_text.setter
+    def same_country_text(self, value: str):
+        self.facts.same_country_text = value
     
     @property
     def home_manager(self) -> str:
