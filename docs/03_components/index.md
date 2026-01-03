@@ -13,7 +13,9 @@
 | [youtube_search.md](./youtube_search.md) | YouTube検索設計（カテゴリ・フィルタ・ソート） | YouTube |
 | [news_search.md](./news_search.md) | ニュース検索設計（Google Custom Search） | News |
 | [login.md](./login.md) | ログイン・認証設計（Firebase Auth） | Delivery |
-| [llm_constraints.md](./llm_constraints.md) | LLM制約仕様（入力条件・禁止事項・失敗時挙動） | News |
+| [llm_constraints/llm_common.md](./llm_constraints/llm_common.md) | LLM共通仕様（入力条件・共通制約・禁止事項） | News, Facts |
+| [llm_constraints/news_summary.md](./llm_constraints/news_summary.md) | ニュース要因・戦術プレビュー・インタビュー要約仕様 | News |
+| [llm_constraints/same_country_matchup.md](./llm_constraints/same_country_matchup.md) | 同国対決トリビア生成仕様 | Facts |
 | [tuning_workflow.md](./tuning_workflow.md) | チューニングワークフロー設計 | 全体 |
 | [common_utilities.md](./common_utilities.md) | 共通ユーティリティ設計（DateTimeUtil, http_utils） | 全体 |
 
