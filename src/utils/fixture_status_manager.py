@@ -209,7 +209,8 @@ class FixtureStatusManager:
         
         # 直近30日分のみ保持（古いデータを削除）
         # kickoff_jstが空の行は保持
-        cutoff_date = (DateTimeUtil.now_jst() - DateTimeUtil.timedelta(days=30)).strftime("%Y-%m-%d")
+        from datetime import timedelta
+        cutoff_date = (DateTimeUtil.now_jst() - timedelta(days=30)).strftime("%Y-%m-%d")
         rows = [r for r in rows if not r.get("date") or r.get("date") >= cutoff_date]
         
         return self._write_csv(rows)
@@ -230,7 +231,8 @@ class FixtureStatusManager:
         rows = self._read_csv()
         initial_count = len(rows)
         
-        cutoff_date = (DateTimeUtil.now_jst() - DateTimeUtil.timedelta(days=days)).strftime("%Y-%m-%d")
+        from datetime import timedelta
+        cutoff_date = (DateTimeUtil.now_jst() - timedelta(days=days)).strftime("%Y-%m-%d")
         rows = [r for r in rows if not r.get("date") or r.get("date") >= cutoff_date]
         
         deleted_count = initial_count - len(rows)
