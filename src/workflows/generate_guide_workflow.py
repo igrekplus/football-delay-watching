@@ -32,60 +32,89 @@ class GenerateGuideWorkflow:
             self._log_skip_summary()
             return  # 正常終了（ステータスは記録しない：次回も実行可能にする）
         
-        # 2. 時間ベースフィルタリング（本番モードのみ）
+        # 2. 時間ベースフィルタリング + ステータス管理（本番モードのみ）
+        status_manager = None
         if not config.USE_MOCK_DATA and not config.DEBUG_MODE:
+            from src.utils.fixture_status_manager import FixtureStatusManager
+            
+            status_manager = FixtureStatusManager()
             scheduler = MatchScheduler()
-            matches = scheduler.filter_current_matches(all_matches)
+            
+            # 時間窓 + ステータス管理による二段階フィルタ
+            matches = scheduler.filter_processable_matches(all_matches, status_manager)
+            
             if not matches:
-                logger.info("現在処理対象の試合なし（時間外）。次回実行まで待機。")
+                logger.info("現在処理対象の試合なし（時間外 or 処理済み）。次回実行まで待機。")
                 return  # 早期終了（ステータスは記録しない）
-            logger.info(f"時間フィルタ適用: {len(all_matches)} → {len(matches)} 試合")
+            
+            # 処理開始マーク
+            for match in matches:
+                status_manager.mark_processing(match.id, match.core.kickoff_at_utc)
+                logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理開始としてマーク")
         else:
-            # モック・デバッグモードでは全試合を処理
+            # モック・デバッグモードでは全試合を処理（ステータス管理なし）
             matches = all_matches
         
-        # 2. Facts Acquisition
-        facts_service = FactsService()
-        facts_service.enrich_matches(matches)
-        
-        # 3. News Collection & Summarization
-        news_service = NewsService()
-        news_service.process_news(matches)
-        
-        # 3.5 YouTube Videos
-        youtube_videos = {}
-        youtube_stats = {"api_calls": 0, "cache_hits": 0}
         try:
-            from src.youtube_service import YouTubeService
-            youtube_service = YouTubeService()
-            youtube_videos = youtube_service.process_matches(matches)
-            youtube_stats = {
-                "api_calls": youtube_service.api_call_count,
-                "cache_hits": youtube_service.cache_hit_count,
-            }
-            logger.info(f"YouTube videos fetched for {len(youtube_videos)} matches")
+            # 3. Facts Acquisition
+            facts_service = FactsService()
+            facts_service.enrich_matches(matches)
+            
+            # 4. News Collection & Summarization
+            news_service = NewsService()
+            news_service.process_news(matches)
+            
+            # 5. YouTube Videos
+            youtube_videos = {}
+            youtube_stats = {"api_calls": 0, "cache_hits": 0}
+            try:
+                from src.youtube_service import YouTubeService
+                youtube_service = YouTubeService()
+                youtube_videos = youtube_service.process_matches(matches)
+                youtube_stats = {
+                    "api_calls": youtube_service.api_call_count,
+                    "cache_hits": youtube_service.cache_hit_count,
+                }
+                logger.info(f"YouTube videos fetched for {len(youtube_videos)} matches")
+            except Exception as e:
+                logger.warning(f"YouTube video fetch failed (continuing without videos): {e}")
+            
+            # 6. Report Generation
+            generator = ReportGenerator()
+            logger.info("Generating per-match reports")
+            report_list = generator.generate_all(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
+            logger.info(f"Generated {len(report_list)} individual match reports")
+            
+            # 7. HTML Generation
+            html_paths = self._generate_html(report_list)
+            
+            # 8. Email Notification (シンプルなデバッグサマリ)
+            self._send_debug_email(matches, report_list, youtube_stats)
+            
+            # 9. 成功時: GCSステータス更新
+            if status_manager:
+                for match in matches:
+                    status_manager.mark_complete(match.id)
+                    logger.info(f"試合 {match.id} を処理完了としてマーク")
+            
         except Exception as e:
-            logger.warning(f"YouTube video fetch failed (continuing without videos): {e}")
+            logger.error(f"レポート生成に失敗: {e}", exc_info=True)
+            
+            # 10. 失敗時: GCSステータス更新
+            if status_manager:
+                for match in matches:
+                    status_manager.mark_failed(match.id, str(e))
+                    logger.warning(f"試合 {match.id} を失敗としてマーク（再試行可能）")
+            
+            raise  # エラーを再送出
         
-        # 4. Report Generation
-        generator = ReportGenerator()
-        logger.info("Generating per-match reports")
-        report_list = generator.generate_all(matches, youtube_videos=youtube_videos, youtube_stats=youtube_stats)
-        logger.info(f"Generated {len(report_list)} individual match reports")
-        
-        # 4.5 HTML Generation
-        html_paths = self._generate_html(report_list)
-        
-        # 5. Email Notification (シンプルなデバッグサマリ)
-        self._send_debug_email(matches, report_list, youtube_stats)
-        
-        # 6. Write Quota Info
+        # 11. Write Quota Info
         self._write_quota_info()
         
-        # 7. Cache Warming
+        # 12. Cache Warming
         self._run_cache_warming()
         
-        # 8. 処理完了ログ
+        # 13. 処理完了ログ
         match_count = len([m for m in matches if m.is_target])
         logger.info(f"処理完了: {match_count}試合のレポートを生成")
         
