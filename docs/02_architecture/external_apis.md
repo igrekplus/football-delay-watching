@@ -35,33 +35,28 @@
 
 ---
 
-## 3. Google Gemini API
+## 3. Google Gemini API (GenAI)
 
-機能要件「ニュース処理 (News)」の要約・検閲を実現する。
+機能要件「ニュース処理」「検閲」「フィルタリング」を実現する。
+責務により使用するクライアントと参照すべきドキュメントが異なる。
 
-### 3.1 概要
+### 3.1 責務とコンポーネント
 
-| 項目 | 値 |
-|------|-----|
-| サービス | Google Gemini API |
-| 実装クラス | `LLMClient` |
-| モデル | `gemini-pro-latest` |
+| 責務 (Task Category) | 機能 (Task) | クライアント | モデル | 参照ドキュメント |
+|---|---|---|---|---|
+| **Generation (Standard)** | ニュース要約, 戦術プレビュー | SDK / REST | `gemini-pro-latest` / `gemini-2.0-flash-exp` | [generation.md](../03_components/gemini_tasks/generation.md) |
+| **Generation (Grounding)** | インタビュー要約 | REST (`GeminiRestClient`) | `gemini-2.0-flash-exp` | [grounding.md](../03_components/gemini_tasks/grounding.md) |
+| **Validation (Safety)** | ネタバレ検閲 | SDK (`google-generativeai`) | `gemini-pro-latest` | [safety.md](../03_components/gemini_tasks/safety.md) |
+| **Filtering** | YouTube動画選別 | REST (`GeminiRestClient`) | `gemini-2.0-flash-exp` | [filtering.md](../03_components/gemini_tasks/filtering.md) |
 
-### 3.2 役割
+> **共通仕様**: [common.md](../03_components/gemini_tasks/common.md)を参照。
 
-| 役割 | 説明 |
-|------|------|
-| 記事要約 | プレビュー記事を600-1000字に要約 |
-| 戦術プレビュー生成 | 戦術分析記事から見どころを抽出 |
-| ネタバレ検閲 | 禁止表現を検出・除去 |
+### 3.2 モデル選定基準
 
-### 3.3 モデル選定
-
-| モデル名 | 採用理由 |
-|----------|----------|
-| `gemini-pro` | 安定動作、十分なクォータ |
-| `gemini-1.5-flash` | 次点候補（一部リージョンで404エラー） |
-| `gemini-1.5-pro` | 不採用（50 RPD 制限が厳しい） |
+| モデル名 | 用途 | 採用理由 |
+|----------|------|----------|
+| `gemini-2.0-flash-exp` | Grounding, Filtering, Preview | 高速、JSON出力安定、Grounding機能が強力 |
+| `gemini-pro` (latest) | 汎用生成, 検閲 | 安定動作、十分なクォータ (RPM) |
 
 ---
 

@@ -1,6 +1,6 @@
-# LLM共通仕様 (LLM Common Specs)
+# Gemini共通共通仕様 (Common Specs)
 
-本ドキュメントは、Gemini APIを使用したLLM機能全般に適用される共通の制約と仕様を定義する。
+本ドキュメントは、Gemini APIを使用したタスク全般に適用される共通の制約と仕様を定義する。
 
 ## 1. 概要
 

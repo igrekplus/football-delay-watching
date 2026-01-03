@@ -117,28 +117,35 @@ def cmd_preview(args):
     print_header(f"GEMINI TACTICAL PREVIEW | {args.home} vs {args.away}")
     print(f"Input: {len(articles)} articles from {args.articles_file}")
     
-    # Sample formation/lineup data for testing (実際の選手名を使用)
-    sample_home_formation = "4-3-3"
-    sample_away_formation = "4-4-2"
-    sample_home_lineup = [
-        "Ederson", "Kyle Walker", "Ruben Dias", "Manuel Akanji", "Josko Gvardiol",
-        "Rodri", "Bernardo Silva", "Kevin De Bruyne", 
-        "Phil Foden", "Erling Haaland", "Jack Grealish"
-    ]
-    sample_away_lineup = [
-        "Alphonse Areola", "Vladimir Coufal", "Kurt Zouma", "Konstantinos Mavropanos", "Aaron Cresswell",
-        "Jarrod Bowen", "Lucas Paqueta", "Tomas Soucek", "Mohammed Kudus",
-        "Michail Antonio", "Danny Ings"
-    ]
-    sample_competition = "Premier League"
+    # Sample formation/lineup data for testing (defaults)
+    # 実際の選手名を使用 (Sunderland vs Man City sample)
+    home_formation = args.home_formation or "4-2-3-1"
+    away_formation = args.away_formation or "4-3-2-1"
     
-    print(f"\nSample Formation Data:")
-    print(f"  Home: {sample_home_formation} | Away: {sample_away_formation}")
-    print(f"  Competition: {sample_competition}")
+    # Parse lineups from args (comma separated) or use defaults
+    if args.home_lineup:
+        home_lineup = [x.strip() for x in args.home_lineup.split(",")]
+    else:
+        home_lineup = [
+            "Roefs", "Hume", "Mukiele", "Alderete", "Cirkin", "Xhaka", "Geertruida", "Le Fee", "Mayenda", "Adingra", "Brobbey"
+        ]
+        
+    if args.away_lineup:
+        away_lineup = [x.strip() for x in args.away_lineup.split(",")]
+    else:
+        away_lineup = [
+            "Donnarumma", "Nunes", "Dias", "Aké", "O'Reilly", "Nico", "Bernardo", "Foden", "Cherki", "Haaland", "Savinho"
+        ]
+        
+    competition = args.competition or "Premier League"
+    
+    print(f"\nFormation Data:")
+    print(f"  Home: {home_formation} | Away: {away_formation}")
+    print(f"  Competition: {competition}")
     print("-" * 40)
     
     print("\nPrompt template (from settings/gemini_prompts.py):")
-    print("  Task: Structured tactical preview with 5 sections")
+    print("  Task: Structured tactical preview with 3 sections")
     print("  Constraints: Use input formation data, no hallucination")
     print("-" * 40)
     
@@ -151,11 +158,11 @@ def cmd_preview(args):
             home_team=args.home,
             away_team=args.away,
             articles=articles,
-            home_formation=sample_home_formation,
-            away_formation=sample_away_formation,
-            home_lineup=sample_home_lineup,
-            away_lineup=sample_away_lineup,
-            competition=sample_competition
+            home_formation=home_formation,
+            away_formation=away_formation,
+            home_lineup=home_lineup,
+            away_lineup=away_lineup,
+            competition=competition
         )
         print(result)
         print(f"\n(Length: {len(result)} chars)")
@@ -345,7 +352,12 @@ def main():
     
     # preview サブコマンド
     preview_parser = subparsers.add_parser("preview", parents=[common_args], help="戦術プレビューをテスト")
-    preview_parser.add_argument("--articles-file", help="記事JSONファイル")
+    preview_parser.add_argument("--articles-file", help="記事JSONファイル（必須）")
+    preview_parser.add_argument("--home-formation", help="ホームフォーメーション (例: 4-3-3)")
+    preview_parser.add_argument("--away-formation", help="アウェイフォーメーション (例: 4-4-2)")
+    preview_parser.add_argument("--home-lineup", help="ホームスタメン (カンマ区切り)")
+    preview_parser.add_argument("--away-lineup", help="アウェイスタメン (カンマ区切り)")
+    preview_parser.add_argument("--competition", help="大会名 (デフォルト: Premier League)")
     
     # interview サブコマンド
     interview_parser = subparsers.add_parser("interview", parents=[common_args], help="インタビュー要約をテスト")

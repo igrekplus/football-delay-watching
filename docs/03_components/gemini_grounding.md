@@ -68,5 +68,7 @@ Grounding機能が必須のタスク（インタビュー要約等）におい�
 ---
 
 ## 5. 関連ドキュメント
-- [news_summary.md](./llm_constraints/news_summary.md) - プロンプト詳細
-- [llm_common.md](./llm_constraints/llm_common.md) - LLM共通制約
+## 5. 関連ドキュメント
+- [generation.md](./gemini_tasks/generation.md) - プロンプト詳細
+- [grounding.md](./gemini_tasks/grounding.md) - Groundingプロンプト詳細
+- [common.md](./gemini_tasks/common.md) - LLM共通制約

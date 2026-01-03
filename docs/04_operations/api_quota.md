@@ -55,6 +55,9 @@
   - **Gemini 2.5 Flash-Lite**: Input $0.10、Output $0.40。  
   - **Grounding with Google Search**: 500 RPD まで無料（Flash/Flash-Liteで共有）、1,500 RPD まで無料枠、その後 $35 / 1,000 grounded prompts。  
   - **バッチ**: Flash系は入力 $0.15 / 出力 $1.25（Flash）、$0.05 / $0.20（Flash-Lite）。  
+- **無料枠の範囲**:
+  - 上記の「無料ティア／RPD無料枠」は **Gemini API（Google AI Studio / Gemini Developer API）側の無料枠**。  
+  - **GCPのFree Trial/Free Tierとは別**なので混同しないこと。Vertex AI経由で使う場合はVertex AI側の料金・クォータに従う。  
 - **レート制限**: RPM/TPM は契約・ティアで異なる。無料ティアは低め、Vertex/Enterprise で拡張可能。  
 - **請求計算の目安**: 1M tokens ≒ 英文75万語。要実行前のトークン見積もり。
 - **本プロジェクトで使用中のモデル**: `gemini-pro-latest`（ニュース要約・レポート生成で利用）。コード参照: `src/news_service.py`。

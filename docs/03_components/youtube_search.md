@@ -96,7 +96,7 @@ YouTube検索結果のフィルタリングを担当するクラスの設計。
 ### 3.5 LLM Post-Filter (Gemini)
 キーワードだけでは判定が難しい高度なフィルタリング（例: 因縁対決の文脈判定）には、Gemini APIを使用する。
 
-> 詳細: [gemini_filtering.md](./gemini_filtering.md)
+> 詳細: [filtering.md](./gemini_tasks/filtering.md)
 
 | フィルタ名 | 判定ロジック | 適用カテゴリ |
 |-----------|------------|-------------|

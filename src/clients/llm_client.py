@@ -88,15 +88,43 @@ class LLMClient:
         self, 
         home_team: str, 
         away_team: str, 
-        articles: List[Dict[str, str]]
+        articles: List[Dict[str, str]],
+        home_formation: str = "",
+        away_formation: str = "",
+        home_lineup: List[str] = None,
+        away_lineup: List[str] = None,
+        competition: str = ""
     ) -> str:
         """
         戦術プレビューを生成（Grounding機能使用）
+        
+        Args:
+            home_team: ホームチーム名
+            away_team: アウェイチーム名
+            articles: 記事リスト（現在は未使用、Groundingが検索）
+            home_formation: ホームチームのフォーメーション（例: "4-2-3-1"）
+            away_formation: アウェイチームのフォーメーション（例: "4-4-2"）
+            home_lineup: ホームチームのスタメンリスト
+            away_lineup: アウェイチームのスタメンリスト
+            competition: 大会名（例: "Premier League", "La Liga"）
         """
         if self.use_mock:
             return self._get_mock_tactical_preview(home_team, away_team)
         
-        prompt = build_prompt('tactical_preview', home_team=home_team, away_team=away_team)
+        # Format lineups as comma-separated strings
+        home_lineup_str = ", ".join(home_lineup) if home_lineup else "不明"
+        away_lineup_str = ", ".join(away_lineup) if away_lineup else "不明"
+        
+        prompt = build_prompt(
+            'tactical_preview', 
+            home_team=home_team, 
+            away_team=away_team,
+            home_formation=home_formation or "不明",
+            away_formation=away_formation or "不明",
+            home_lineup=home_lineup_str,
+            away_lineup=away_lineup_str,
+            competition=competition or "欧州"
+        )
         
         try:
             from src.clients.gemini_rest_client import GeminiRestClient
