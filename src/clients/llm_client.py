@@ -10,6 +10,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 from config import config
+from settings.gemini_prompts import build_prompt, get_prompt_config
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
@@ -68,37 +69,20 @@ class LLMClient:
         articles: List[Dict[str, str]]
     ) -> str:
         """
-        ニュース記事から試合前サマリーを生成
-        
-        Args:
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-            articles: 記事リスト（content, title, source, url）
+        ニュース記事から試合前サマリーを生成（Grounding機能使用）
         """
         if self.use_mock:
             return self._get_mock_news_summary(home_team, away_team)
         
-        if not articles:
-            return "No articles found to generate content."
-        
-        context = "\n".join([a['content'] for a in articles])
-        
-        prompt = f"""
-        Task: Summarize the following news snippets for '{home_team} vs {away_team}' into a Japanese pre-match summary (600-1000 chars).
-        
-        Constraints:
-        - Do NOT reveal results. Check sources provided in context if needed.
-        - 前置き文（「はい、承知いたしました」「以下に」等のAI応答文）は絶対に含めず、本文のみを出力してください。
-        
-        Context:
-        {context}
-        """
+        prompt = build_prompt('news_summary', home_team=home_team, away_team=away_team)
         
         try:
-            return self.generate_content(prompt)
+            from src.clients.gemini_rest_client import GeminiRestClient
+            rest_client = GeminiRestClient(api_key=self.api_key)
+            return rest_client.generate_content_with_grounding(prompt)
         except Exception as e:
             logger.error(f"Error generating news summary: {e}")
-            return "Error generating summary"
+            return "エラーにつき取得不可（情報の取得に失敗しました）"
     
     def generate_tactical_preview(
         self, 
@@ -107,33 +91,20 @@ class LLMClient:
         articles: List[Dict[str, str]]
     ) -> str:
         """
-        戦術プレビューを生成
+        戦術プレビューを生成（Grounding機能使用）
         """
         if self.use_mock:
             return self._get_mock_tactical_preview(home_team, away_team)
         
-        if not articles:
-            return "No articles found to generate content."
-        
-        context = "\n".join([a['content'] for a in articles])
-        
-        prompt = f"""
-        Task: Extract tactical analysis for '{home_team} vs {away_team}' (Japanese).
-        
-        Constraints:
-        - Focus on likely formations and matchups. Do NOT reveal results.
-        - 前置き文（「はい、承知いたしました」「以下に」等のAI応答文）は絶対に含めず、本文のみを出力してください。
-        - 最初の一文から戦術分析の内容を開始してください。
-        
-        Context:
-        {context}
-        """
+        prompt = build_prompt('tactical_preview', home_team=home_team, away_team=away_team)
         
         try:
-            return self.generate_content(prompt)
+            from src.clients.gemini_rest_client import GeminiRestClient
+            rest_client = GeminiRestClient(api_key=self.api_key)
+            return rest_client.generate_content_with_grounding(prompt)
         except Exception as e:
             logger.error(f"Error generating tactical preview: {e}")
-            return "Error generating preview"
+            return "エラーにつき取得不可（情報の取得に失敗しました）"
     
     def check_spoiler(
         self, 
@@ -150,19 +121,16 @@ class LLMClient:
         if self.use_mock:
             return True, "モックモード"
         
-        prompt = f"""以下のテキストが「{home_team} vs {away_team}」の試合結果を言及しているかを判定してください。
-
-テキスト:
-{text[:1500]}
-
-判定基準:
-- スコア（例: 2-1, 3-0）の記載
-- 勝敗の記載（例: 〇〇が勝利、敗北、won, lost）
-- ゴールを決めた選手名（得点者）
-
-回答は以下のJSON形式のみで（説明不要）:
-{{"is_safe": true, "reason": "なし"}} または {{"is_safe": false, "reason": "理由"}}
-"""
+        # テキストの長さ制限を取得
+        config = get_prompt_config('check_spoiler')
+        text_limit = config.get('text_limit', 1500)
+        
+        prompt = build_prompt(
+            'check_spoiler', 
+            home_team=home_team, 
+            away_team=away_team, 
+            text=text[:text_limit]
+        )
         
         try:
             response_text = self.generate_content(prompt).strip()
@@ -183,52 +151,42 @@ class LLMClient:
     def summarize_interview(
         self, 
         team_name: str, 
-        articles: List[Dict[str, str]]
+        articles: List[Dict[str, str]],
+        opponent_team: str = None
     ) -> str:
         """
         インタビュー記事を要約（Gemini Grounding + REST API使用）
+        
+        Args:
+            team_name: 対象チーム名
+            articles: 記事リスト（現在は未使用、Groundingが検索）
+            opponent_team: 対戦相手チーム名（この試合に限定するため）
         """
         if self.use_mock:
             return "監督: 『重要な試合になる。選手たちは準備できている。』"
         
-        # Groundingを使用するため、articlesの内容は直接コンテキストとして渡さず、
-        # プロンプト内で検索指示として活用する、または単に検索キーワードの参考にする
-        # 現状のPoCプロンプトに従い、検索クエリ自体をプロンプトに埋め込む形式を採用
-        
-        # 相手チーム名をarticlesから推測するのは難しいため、
-        # 呼び出し元で相手チーム名が渡されていない現状のシグネチャでは完全ではないが、
-        # 検索クエリで "vs opponent" の部分はLLMに推測させるか、
-        # または呼び出し元を変更する必要がある。
-        # いったん、現状の引数 (team_name) だけで最大限努力するプロンプトにする。
-        # ※理想的には相手チーム名も引数に欲しいが、呼び出し元の変更を避けるため
-        # プロンプトで「直近の対戦相手」を探させる。
+        # 対戦相手が指定されている場合は明確に指定
+        if opponent_team:
+            match_info = f"{team_name} vs {opponent_team}"
+            search_context = f"この試合（{match_info}）に限定してください。他の試合に関する情報は含めないでください。"
+            search_query = opponent_team
+            opponent_display = opponent_team
+        else:
+            match_info = f"{team_name}"
+            search_context = "直近の試合に限定してください。"
+            search_query = "latest"
+            opponent_display = "直近の相手"
 
-        prompt = f"""
-Task: {team_name}の監督が、直近の試合（または次の試合）に関して語った最新のコメントや記者会見の内容を検索し、日本語で要約してください。
-
-## 検索指示
-- "{team_name} manager press conference quotes latest"
-- "{team_name} vs next opponent manager quotes"
-- などのクエリで最新情報を探してください。
-- 直近（24-48時間以内）の情報を優先してください。
-
-## 要約の要件
-- 監督の具体的な発言があれば、可能な限りカギカッコ「」で原文のニュアンスを残して引用してください。
-- 試合結果（スコアなど）が既に判明している場合は、**絶対に結果には触れず**、試合前のコメントとして構成してください。
-- 確実な情報源（BBC, Sky Sports, 公式サイト等）に基づいていることを重視してください。
-- **文字数: 1800-2000字程度（非常に詳細に記述してください）**
-- 以下の点について詳しく記述してください：
-    - 怪我人・復帰選手の詳細な状況
-    - 対戦相手に対する具体的な評価・分析
-    - 今後の過密日程やシーズン全体の展望に対する言及
-    - 記者との質疑応答における興味深いやり取り
-
-## 出力形式
-- 本文のみ
-"""
+        prompt = build_prompt(
+            'interview',
+            team_name=team_name,
+            match_info=match_info,
+            search_query=search_query,
+            search_context=search_context,
+            opponent_display=opponent_display
+        )
         
         try:
-            # 遅延インポート（循環参照回避のため）
             from src.clients.gemini_rest_client import GeminiRestClient
             rest_client = GeminiRestClient(api_key=self.api_key)
             return rest_client.generate_content_with_grounding(prompt)
@@ -260,76 +218,8 @@ Task: {team_name}の監督が、直近の試合（または次の試合）に関
             lines.append(f"🏳️ **{country}** **{home}** vs **{away}**。[モック: 関係性・小ネタ]")
         return "\\n\\n".join(lines)
     
-    # ========== 同国対決（Issue #39） ==========
-    
-    def generate_same_country_trivia(
-        self,
-        home_team: str,
-        away_team: str,
-        matchups: List[Dict]
-    ) -> str:
-        """
-        同国対決の関係性・小ネタを生成
-        
-        Args:
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-            matchups: 検出されたマッチアップリスト
-                [{"country": "Japan", "home_players": [...], "away_players": [...]}]
-        
-        Returns:
-            関係性・小ネタを含むテキスト（日本語）
-        """
-        if self.use_mock:
-            return self._get_mock_same_country_trivia(matchups)
-        
-        if not matchups:
-            return ""
-        
-        # マッチアップデータを整形
-        matchup_texts = []
-        for m in matchups:
-            text = f"- 国籍: {m['country']}\\n"
-            text += f"  ホームチーム選手 ({home_team}): {', '.join(m['home_players'])}\\n"
-            text += f"  アウェイチーム選手 ({away_team}): {', '.join(m['away_players'])}"
-            matchup_texts.append(text)
-        
-        matchup_context = "\\n".join(matchup_texts)
-        
-        prompt = f"""あなたはサッカー専門のトリビアライターです。
 
-以下の同国対決について、選手間の関係性や興味深い事実（小ネタ）を日本語で記述してください。
-
-対決カード:
-{matchup_context}
-
-Requirements:
-1. 選手同士の関係性を優先的に記載:
-   - 代表チームでの共演
-   - 過去のクラブでの同僚関係
-   - ユース時代の共演
-2. 興味深いトリビアがあれば追加:
-   - 同郷、同年齢
-   - 過去の対戦エピソード
-   - ライバル関係
-3. 字数: 50-150字/国
-4. 試合結果には絶対に言及しない
-5. 確実な事実のみ記載（推測や不確かな情報は避ける）
-6. 前置き文は不要、本文のみ
-
-Output Format:
-🇯🇵 **日本**
-**選手A**（チームA）と**選手B**（チームB）。[関係性・小ネタ]
-"""
-        
-        try:
-            return self.generate_content(prompt)
-        except Exception as e:
-            logger.error(f"Error generating same country trivia: {e}")
-            return ""
-    
-
-    
+    # ========== 同国対決（Issue #39） ==========    
     def generate_same_country_trivia(
         self,
         home_team: str,
@@ -364,31 +254,7 @@ Output Format:
         
         matchup_context = "\n".join(matchup_texts)
         
-        prompt = f"""あなたはサッカー専門のトリビアライターです。
-
-以下の同国対決について、選手間の関係性や興味深い事実（小ネタ）を日本語で記述してください。
-
-対決カード:
-{matchup_context}
-
-Requirements:
-1. 選手同士の関係性を優先的に記載:
-   - 代表チームでの共演
-   - 過去のクラブでの同僚関係
-   - ユース時代の共演
-2. 興味深いトリビアがあれば追加:
-   - 同郷、同年齢
-   - 過去の対戦エピソード
-   - ライバル関係
-3. 字数: 50-150字/国
-4. 試合結果には絶対に言及しない
-5. 確実な事実のみ記載（推測や不確かな情報は避ける）
-6. 前置き文は不要、本文のみ
-
-Output Format:
-🇯🇵 **日本**
-**選手A**（チームA）と**選手B**（チームB）。[関係性・小ネタ]
-"""
+        prompt = build_prompt('same_country_trivia', matchup_context=matchup_context)
         
         try:
             return self.generate_content(prompt)
