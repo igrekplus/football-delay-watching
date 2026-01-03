@@ -3,7 +3,11 @@
  * Generated from html_generator.py
  */
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -11,6 +15,7 @@ body {
     min-height: 100vh;
     color: #e0e0e0;
     line-height: 1.8;
+    font-size: 15px;
 }
 
 .container {
@@ -26,15 +31,71 @@ body {
     text-decoration: none;
     font-size: 0.9rem;
 }
-.back-link:hover { text-decoration: underline; }
 
-h1, h2, h3 {
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Match Header with Competition Logo (Issue #116) */
+.match-header-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 30px 0 20px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.competition-logo-header {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.match-header-info {
+    flex: 1;
+}
+
+.match-header-info h1 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 2rem;
+}
+
+.match-rank {
+    font-size: 0.9rem;
+    color: #74b9ff;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+h1,
+h2,
+h3 {
     color: #feca57;
     margin: 25px 0 15px 0;
 }
-h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
-h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
-h3 { font-size: 1.2rem; color: #74b9ff; }
+
+h1 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 10px;
+}
+
+h2 {
+    font-size: 1.4rem;
+    border-left: 4px solid #ff6b6b;
+    padding-left: 15px;
+}
+
+h3 {
+    font-size: 1.2rem;
+    color: #74b9ff;
+}
 
 /* Team logo and lineup header styles */
 .team-logo {
@@ -44,6 +105,7 @@ h3 { font-size: 1.2rem; color: #74b9ff; }
     vertical-align: middle;
     margin-right: 8px;
 }
+
 .lineup-header {
     display: flex;
     align-items: center;
@@ -52,30 +114,67 @@ h3 { font-size: 1.2rem; color: #74b9ff; }
     margin: 25px 0 15px 0;
 }
 
-p { margin: 10px 0; }
-ul, ol { margin: 15px 0; padding-left: 30px; }
-li { margin: 5px 0; }
+p {
+    margin: 10px 0;
+}
+
+ul,
+ol {
+    margin: 15px 0;
+    padding-left: 30px;
+}
+
+li {
+    margin: 5px 0;
+}
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
-th, td {
+
+th,
+td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #444;
 }
-th { background: rgba(255,255,255,0.1); color: #feca57; }
 
-a { color: #74b9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
+th {
+    background: rgba(255, 255, 255, 0.1);
+    color: #feca57;
+}
 
-img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+a {
+    color: #74b9ff;
+    text-decoration: none;
+}
 
-code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
-pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
 
 .timestamp {
     text-align: right;
@@ -93,18 +192,21 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     gap: 12px;
     margin: 15px 0;
 }
+
 .player-card {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 12px;
     width: 170px;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .player-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+
 .player-card-header {
     display: flex;
     justify-content: space-between;
@@ -114,19 +216,22 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     color: #74b9ff;
     font-weight: bold;
 }
+
 .player-card-body {
     display: flex;
     gap: 10px;
     align-items: flex-start;
 }
+
 .player-card-photo {
     width: 55px;
     height: 55px;
     border-radius: 8px;
     object-fit: cover;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
 }
+
 .player-card-photo-placeholder {
     display: flex;
     align-items: center;
@@ -134,13 +239,16 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     font-size: 1.5rem;
     color: #666;
 }
+
 .player-card-photo-placeholder::before {
     content: '👤';
 }
+
 .player-card-info {
     flex: 1;
     min-width: 0;
 }
+
 .player-card-name {
     font-weight: bold;
     color: #feca57;
@@ -150,16 +258,19 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .player-card-position {
     color: #74b9ff;
     font-size: 0.75rem;
     font-weight: bold;
     margin-bottom: 2px;
 }
+
 .player-card-nationality {
     color: #aaa;
     font-size: 0.75rem;
 }
+
 .player-card-age {
     color: #888;
     font-size: 0.75rem;
@@ -176,10 +287,12 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     opacity: 0.7;
     transition: opacity 0.2s, transform 0.2s;
 }
+
 .player-instagram-link:hover {
     opacity: 1;
     transform: scale(1.1);
 }
+
 .player-instagram-icon {
     width: 16px;
     height: 16px;
@@ -191,9 +304,11 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     border-color: rgba(255, 107, 107, 0.4);
     background: rgba(255, 107, 107, 0.1);
 }
+
 .injury-card .player-card-header {
     color: #ff6b6b;
 }
+
 .injury-reason {
     color: #ff6b6b;
     font-weight: bold;
@@ -206,43 +321,51 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     gap: 15px;
     margin: 15px 0;
 }
+
 .match-info-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 12px 18px;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     min-width: 280px;
     flex: 1;
 }
+
 .match-info-icon {
     font-size: 1.8rem;
 }
+
 .match-info-content {
     display: flex;
     flex-direction: column;
 }
+
 .match-info-label {
     font-size: 0.75rem;
     color: #888;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
 .match-info-value {
     font-size: 1rem;
     color: #feca57;
     font-weight: bold;
 }
+
 .match-info-small {
     flex: 0 0 auto;
     min-width: 120px;
 }
+
 .match-info-wide {
     flex: 2;
     min-width: 280px;
 }
+
 .match-info-subtext {
     font-size: 0.85rem;
     color: #aaa;
@@ -257,23 +380,26 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     gap: 20px;
     margin: 15px 0;
 }
+
 .manager-card {
     display: flex;
     gap: 15px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 15px;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     width: 100%;
 }
+
 .manager-photo {
     width: 70px;
     height: 70px;
     border-radius: 50%;
     object-fit: cover;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
 }
+
 .manager-photo-placeholder {
     display: flex;
     align-items: center;
@@ -281,21 +407,25 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     font-size: 2rem;
     color: #666;
 }
+
 .manager-info {
     flex: 1;
 }
+
 .manager-team {
     font-size: 0.75rem;
     color: #888;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
 .manager-name {
     font-size: 1.1rem;
     color: #feca57;
     font-weight: bold;
     margin: 4px 0;
 }
+
 .manager-comment {
     font-size: 0.85rem;
     color: #e0e0e0;
@@ -310,9 +440,119 @@ pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x
     font-weight: bold;
     color: #fff;
 }
+
 .mode-banner-mock {
     background: #9b59b6;
 }
+
 .mode-banner-debug {
     background: #ff6b6b;
+}
+
+/* YouTube Grid Styles */
+.youtube-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.youtube-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.youtube-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.youtube-card-thumbnail {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.youtube-card-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+
+.youtube-card:hover .youtube-card-thumbnail img {
+    transform: scale(1.05);
+}
+
+.youtube-card-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.youtube-card-label {
+    display: inline-block;
+    background: #74b9ff;
+    color: #1a1a2e;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 4px;
+}
+
+.youtube-card-reason {
+    display: inline-block;
+    background: #f44336;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.youtube-card-title {
+    flex: 1;
+    line-height: 1.3;
+}
+
+.youtube-card-title a {
+    color: #feca57;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.youtube-card-title a:hover {
+    text-decoration: underline;
+}
+
+.youtube-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+.youtube-card-channel,
+.youtube-card-date {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

@@ -36,6 +36,7 @@ class MatchCore:
     referee: str = ""
     home_logo: str = ""
     away_logo: str = ""
+    competition_logo: str = ""  # 大会ロゴURL (Issue #116)
 
 
 @dataclass
