@@ -22,7 +22,7 @@
 |------|------|
 | 言語 | Python 3.11 |
 | 試合データ | [API-Football](https://www.api-football.com/) (RapidAPI) |
-| ニュース検索 | Google Custom Search API |
+| ニュース検索 | Gemini Grounding (Google Search) |
 | AI要約 | Google Gemini API |
 | 画像生成 | Pillow (PIL) |
 | CI/CD | GitHub Actions |
@@ -52,8 +52,7 @@ cp .env.example .env
 必要なAPIキー:
 - `RAPIDAPI_KEY`: [RapidAPI](https://rapidapi.com/api-sports/api/api-football) から取得
 - `GOOGLE_API_KEY`: [Google AI Studio](https://aistudio.google.com/app/apikey) から取得
-- `GOOGLE_SEARCH_ENGINE_ID`: [Programmable Search Engine](https://programmablesearchengine.google.com/) から取得
-- `GOOGLE_SEARCH_API_KEY`: [Google Cloud Console](https://console.cloud.google.com/apis/credentials) から取得
+
 
 ### 4. 実行
 
@@ -81,8 +80,7 @@ USE_MOCK_DATA=True python main.py
 |----------|------|
 | `RAPIDAPI_KEY` | API-Football用キー |
 | `GOOGLE_API_KEY` | Gemini API用キー |
-| `GOOGLE_SEARCH_ENGINE_ID` | 検索エンジンID |
-| `GOOGLE_SEARCH_API_KEY` | Custom Search API用キー |
+
 | `GMAIL_TOKEN` | Gmail OAuthトークン（`tests/setup_gmail_oauth.py` で生成）|
 | `GMAIL_CREDENTIALS` | Gmail OAuthクライアント情報（GCPから取得）|
 | `NOTIFY_EMAIL` | 通知先メールアドレス |

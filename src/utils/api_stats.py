@@ -41,10 +41,7 @@ class ApiStats:
             "quota_limit_str": "7,500/日",
             "console_url": "https://dashboard.api-football.com/"
         },
-        "Google Custom Search": {
-            "quota_limit_str": "100/日 (無料枠)",
-            "console_url": "https://console.cloud.google.com/apis/dashboard"
-        },
+
         "YouTube Data API": {
             "quota_limit_str": "10,000/日",
             "console_url": "https://console.cloud.google.com/apis/dashboard"
