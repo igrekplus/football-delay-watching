@@ -75,29 +75,66 @@ class MatchScheduler:
         Returns:
             処理対象試合のリスト
         """
+        # ログ: 時間窓情報
+        window_start = self.now - timedelta(minutes=self.BEFORE_KICKOFF_MINUTES)
+        window_end = self.now + timedelta(minutes=self.AFTER_KICKOFF_MINUTES)
+        
+        logger.info("=" * 70)
+        logger.info("試合フィルタリング開始")
+        logger.info(f"現在時刻 (JST): {self.now.strftime('%Y-%m-%d %H:%M:%S')}")
+        logger.info(f"時間窓: {window_start.strftime('%m/%d %H:%M')} - {window_end.strftime('%m/%d %H:%M')}")
+        logger.info(f"全試合数: {len(matches)}")
+        logger.info("=" * 70)
+        
         # 1. 時間ウィンドウでフィルタ
         time_filtered = []
         for match in matches:
-            if self._is_in_target_window(match):
+            kickoff_jst = DateTimeUtil.to_jst(match.core.kickoff_at_utc)
+            in_window = self._is_in_target_window(match)
+            
+            log_msg = f"[Fixture {match.id}] {match.home_team} vs {match.away_team}"
+            log_msg += f" | キックオフ: {kickoff_jst.strftime('%m/%d %H:%M JST')}"
+            log_msg += f" | 時間窓: {'✅ 対象' if in_window else '❌ 対象外'}"
+            logger.info(log_msg)
+            
+            if in_window:
                 time_filtered.append(match)
+        
+        logger.info(f"時間窓フィルタ結果: {len(time_filtered)}/{len(matches)} 試合が対象")
+        logger.info("-" * 70)
         
         # 2. GCSステータスでフィルタ（未処理 or 失敗で再試行可能）
         processable = []
         for match in time_filtered:
-            if status_manager.is_processable(match.id):
+            is_processable = status_manager.is_processable(match.id)
+            gcs_status = status_manager.get_status(match.id) or "なし（初回処理）"
+            
+            log_msg = f"[Fixture {match.id}] {match.home_team} vs {match.away_team}"
+            log_msg += f" | GCSステータス: {gcs_status}"
+            log_msg += f" | 処理可能: {'✅ Yes' if is_processable else '❌ No'}"
+            logger.info(log_msg)
+            
+            if is_processable:
                 processable.append(match)
-            else:
-                logger.debug(f"試合 {match.id} ({match.home_team} vs {match.away_team}) はスキップ（処理済み or 再試行上限）")
         
-        logger.info(f"時間フィルタ: {len(matches)} → {len(time_filtered)} 試合")
-        logger.info(f"ステータスフィルタ: {len(time_filtered)} → {len(processable)} 試合")
+        logger.info(f"ステータスフィルタ結果: {len(processable)}/{len(time_filtered)} 試合が処理可能")
+        logger.info("-" * 70)
         
         # 3. ランク順でソートし、上位MAX_MATCHES_PER_DAY件を返す
         processable.sort(key=lambda m: self._get_rank_priority(m))
         
         if len(processable) > self.MAX_MATCHES_PER_DAY:
-            logger.info(f"試合数制限: {len(processable)} → {self.MAX_MATCHES_PER_DAY}")
+            logger.info(f"試合数制限適用: {len(processable)} → {self.MAX_MATCHES_PER_DAY}")
+            excluded = processable[self.MAX_MATCHES_PER_DAY:]
+            for match in excluded:
+                logger.info(f"  除外: [Fixture {match.id}] {match.home_team} vs {match.away_team} (Rank {match.rank})")
             processable = processable[:self.MAX_MATCHES_PER_DAY]
+        
+        logger.info("=" * 70)
+        logger.info(f"最終選定: {len(processable)} 試合")
+        for match in processable:
+            logger.info(f"  選定: [Fixture {match.id}] {match.home_team} vs {match.away_team} (Rank {match.rank})")
+        logger.info("=" * 70)
         
         return processable
     

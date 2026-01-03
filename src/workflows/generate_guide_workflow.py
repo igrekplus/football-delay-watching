@@ -21,6 +21,18 @@ class GenerateGuideWorkflow:
     """
 
     def run(self, dry_run: bool = False):
+        from src.utils.datetime_util import DateTimeUtil
+        
+        # ログ: 実行タイミング情報
+        now_jst = DateTimeUtil.now_jst()
+        logger.info("=" * 70)
+        logger.info("GitHub Actions / ワークフロー実行開始")
+        logger.info(f"実行時刻 (JST): {now_jst.strftime('%Y-%m-%d %H:%M:%S')}")
+        logger.info(f"TARGET_DATE: {config.TARGET_DATE.strftime('%Y-%m-%d %H:%M JST')}")
+        logger.info(f"モード: {'モック' if config.USE_MOCK_DATA else 'デバッグ' if config.DEBUG_MODE else '本番'}")
+        logger.info(f"Dry Run: {dry_run}")
+        logger.info("=" * 70)
+        
         logger.info(f"Starting workflow... (Dry Run: {dry_run}, Mock: {config.USE_MOCK_DATA})")
         
         # 1. Match Extraction & Selection

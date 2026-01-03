@@ -96,27 +96,34 @@ class FixtureStatusManager:
         return None
     
     def is_processable(self, fixture_id: str) -> bool:
-        """処理対象かどうか判定（未処理 or 失敗で再試行可能）"""
+        """処理対象かどうか判定（未処理 or 失敗で再試行可能）
+        
+        詳細なログを出力して判定理由を明確化
+        """
         rows = self._read_csv()
         
         for row in rows:
             if row.get("fixture_id") == str(fixture_id):
                 status = row.get("status")
                 attempts = int(row.get("attempts", "0"))
+                last_attempt = row.get("last_attempt_at", "不明")
                 
                 # 完了済みはスキップ
                 if status == self.STATUS_COMPLETE:
+                    logger.debug(f"[FixtureStatus {fixture_id}] スキップ: 処理完了済み (last_attempt: {last_attempt})")
                     return False
                 
                 # 失敗で再試行上限に達している場合はスキップ
                 if status == self.STATUS_FAILED and attempts >= self.MAX_RETRY_ATTEMPTS:
-                    logger.warning(f"Fixture {fixture_id} exceeded max retry attempts ({attempts}/{self.MAX_RETRY_ATTEMPTS})")
+                    logger.warning(f"[FixtureStatus {fixture_id}] スキップ: 再試行上限到達 ({attempts}/{self.MAX_RETRY_ATTEMPTS})")
                     return False
                 
                 # それ以外（pending, processing, failed with attempts < max）は処理可能
+                logger.debug(f"[FixtureStatus {fixture_id}] 処理可能: status={status}, attempts={attempts}/{self.MAX_RETRY_ATTEMPTS}")
                 return True
         
         # レコードが存在しない = 未処理 = 処理可能
+        logger.debug(f"[FixtureStatus {fixture_id}] 処理可能: 初回処理（GCSレコードなし）")
         return True
     
     def mark_processing(self, fixture_id: str, kickoff_utc: datetime) -> bool:
