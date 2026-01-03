@@ -67,13 +67,18 @@ python scripts/tuning/tune_gemini.py spoiler --text "Man City and West Ham will 
 
 ## 4. プロンプトを編集
 
-`src/clients/llm_client.py` を編集：
+`settings/gemini_prompts.py` を編集：
 
-| メソッド | 行番号 | 修正内容 |
-|---------|-------|---------|
-| `generate_news_summary` | L86-95 | 要約プロンプト |
-| `generate_tactical_preview` | L120-130 | 戦術プレビュープロンプト |
-| `check_spoiler` | L153-165 | ネタバレ判定プロンプト |
+| プロンプト種別 | key | 修正内容 |
+|---------|-------|---------| 
+| ニュース要約 | `news_summary` | 要約プロンプト |
+| 戦術プレビュー | `tactical_preview` | 戦術分析プロンプト |
+| ネタバレ判定 | `check_spoiler` | ネタバレ判定プロンプト |
+| インタビュー | `interview` | 監督インタビュー要約 |
+| 同国対決 | `same_country_trivia` | トリビア生成 |
+
+> [!TIP]
+> プロンプトはテンプレート変数（`{home_team}`等）を使用できます。`build_prompt()` 関数で展開されます。
 
 ## 5. 変更後、再度テスト
 
