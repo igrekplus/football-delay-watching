@@ -9,6 +9,7 @@
 | 変数名 | デフォルト | 説明 |
 |--------|-----------|------|
 | `DEBUG_MODE` | `False` | デバッグモード有効化 |
+| `TARGET_DATE` | なし | 処理対象日 (YYYY-MM-DD) ※翌日指定 |
 | `USE_MOCK_DATA` | `False` | モックデータ使用 |
 | `USE_API_CACHE` | （自動判定） | キャッシュ有効化 |
 | `CACHE_BACKEND` | `gcs` | `local` or `gcs` |
@@ -63,7 +64,8 @@ return self.DEBUG_MODE and not self.USE_MOCK_DATA
 | モード | 対象期間 |
 |--------|---------|
 | **本番** | `昨日 07:00 JST` ～ `今日 07:00 JST` |
-| **デバッグ** | `現在時刻 - 24時間` ～ `現在時刻` |
+| **デバッグ (デフォルト)** | `現在時刻 - 24時間` ～ `現在時刻` |
+| **デバッグ (TARGET_DATE指定)** | `指定日-1日 07:00 JST` ～ `指定日 07:00 JST` |
 
 ### 3.2 GitHub Actions スケジュール
 

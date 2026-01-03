@@ -126,14 +126,32 @@ class MatchProcessor:
 
     def _is_within_time_window(self, match_date_jst: datetime, target_date: datetime) -> bool:
         """Checks if the match is within the target time window."""
-        now_jst = DateTimeUtil.now_jst()
+        import os
         
-        if config.DEBUG_MODE and not config.USE_MOCK_DATA:
-            # Debug mode: 過去24時間以内の試合を対象
+        # If TARGET_DATE is explicitly set, use production-like window logic relative to that date
+        # Window: [Target Date - 1 day 07:00, Target Date 07:00)
+        if os.getenv("TARGET_DATE"):
+            window_end = target_date # target_date is already set to 07:00 by config.TARGET_DATE
+            window_start = window_end - timedelta(days=1)
+        
+        elif config.DEBUG_MODE and not config.USE_MOCK_DATA:
+            # Default Debug mode: 過去24時間以内の試合を対象
+            now_jst = DateTimeUtil.now_jst()
             window_end = now_jst
             window_start = now_jst - timedelta(hours=24)
         else:
             # Production mode: D-1 07:00 JST to D 07:00 JST
+            # target_date is passed as "Today (execution time) - 1 day" in config.TARGET_DATE for prod?
+            # Wait, config.TARGET_DATE returns:
+            #   Prod: now - 1 day
+            # This function receives `target_date`.
+            # If prod, target_date is yesterday.
+            # Original code: window_end = now_jst.replace(hour=7...) -> this depended on now_jst, not target_date arg!
+            # The original code for Production was checking NOW, ignoring the passed target_date argument essentially.
+            # Let's align it to use the target_date logic which is safer implicitly.
+            
+            # Reverting to original logic for Production to avoid regression, but using DateTimeUtil
+            now_jst = DateTimeUtil.now_jst()
             window_end = now_jst.replace(hour=7, minute=0, second=0, microsecond=0)
             window_start = window_end - timedelta(days=1)
         

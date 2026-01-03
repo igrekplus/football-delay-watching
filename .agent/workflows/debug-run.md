@@ -17,7 +17,13 @@ description: デバッグモードでレポート生成 + Firebase Hostingへデ
 
 1. venv を有効化してデバッグモードで実行
 ```bash
-source .venv/bin/activate && DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+# 特定の日付(YYYY-MM-DD)を指定する場合は TARGET_DATE を設定
+# 例: 12/23の試合を見たい場合 → TARGET_DATE=2025-12-24 (翌日を指定)
+TARGET_DATE=2026-01-04 DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+
+# 実行後は必ずデプロイすること
+python scripts/sync_firebase_reports.py
+firebase deploy --only hosting
 ```
 
 2. 生成されたHTMLとimagesを確認

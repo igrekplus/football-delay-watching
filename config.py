@@ -139,13 +139,26 @@ class Config:
     def TARGET_DATE(self) -> 'datetime':
         """
         Returns the target date for match extraction.
+        - Env var TARGET_DATE (YYYY-MM-DD): Returns that date at 07:00 JST
         - Normal mode: Yesterday (JST)
-        - Debug mode with real API: Today (過去24時間以内の試合を取得)
+        - Debug mode with real API (default): Today (Now)
         """
         from datetime import datetime, timedelta
         import pytz
         
         jst = pytz.timezone('Asia/Tokyo')
+        
+        # Override via environment variable
+        env_target_date = os.getenv("TARGET_DATE")
+        if env_target_date:
+            try:
+                # Parse YYYY-MM-DD and set time to 07:00 JST (simulating report execution time)
+                # match_processor will use this to calculate [TARGET_DATE-1 07:00 ~ TARGET_DATE 07:00]
+                d = datetime.strptime(env_target_date, "%Y-%m-%d")
+                return jst.localize(d.replace(hour=7, minute=0, second=0, microsecond=0))
+            except ValueError:
+                pass
+
         now_jst = datetime.now(jst)
         
         if self.DEBUG_MODE and not self.USE_MOCK_DATA:
