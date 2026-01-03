@@ -4,6 +4,20 @@ description: YouTube検索のクエリとフィルタをチューニングする
 
 # YouTube検索チューニング
 
+> [!IMPORTANT]
+> **⚠️ CRITICAL: Quality Evaluation & Logging**
+> 1. **User Evaluates Quality**: AI MUST NOT evaluate the quality of the results (e.g., "relevant videos", "good channels"). ONLY the user can judge quality. The AI's role is to run the test and present the raw output.
+> 2. **Mandatory Logging**: You MUST save the full Request/Response pair to a log file for every run.
+>    - **Path**: `/temp/tuning/yyyy-mm-dd-hhmmdd_youtube_tuning.md`
+>    - **Format**:
+>      ```markdown
+>      # Run: yyyy-mm-dd hh:mm:ss
+>      ## Command
+>      `{command}`
+>      ## Output
+>      {raw_output}
+>      ```
+
 ## 1. クエリを直接テスト
 
 特定のクエリで検索結果を確認：
