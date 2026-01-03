@@ -18,6 +18,10 @@ description: Issue番号を指定して、ブランチ作成から実装、検�
    - If UI changes involved, deploy to Firebase Hosting using `/debug-run` workflow or manual command.
    - Create `walkthrough.md` to report results.
    - Use `notify_user` to request final review before merging.
+   
+   > [!CAUTION]
+   > **モックモード（`USE_MOCK_DATA=True`）で検証する場合は、必ず事前にユーザーに「この変更はモックで検証可能か」を確認すること。**
+   > LLMプロンプト変更やAPI連携の変更はモックでは検証できない。
 7. **Documentation Phase (Final Review)**:
    - Update relevant design documents in `docs/02_design/` to capture any changes made during implementation/debugging.
    - Update `GEMINI.md` if necessary.
