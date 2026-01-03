@@ -100,17 +100,28 @@ class NewsService:
         return self.llm.generate_tactical_preview(
             home_team=match.home_team,
             away_team=match.away_team,
-            articles=articles
+            articles=articles,
+            home_formation=match.home_formation,
+            away_formation=match.away_formation,
+            home_lineup=match.home_lineup,
+            away_lineup=match.away_lineup,
+            competition=match.competition
         )
 
     def _process_interviews(self, match: Union[MatchData, MatchAggregate]):
         """インタビュー記事を要約（Grounding機能で直接検索）"""
         for is_home in [True, False]:
             team_name = match.home_team if is_home else match.away_team
+            opponent_team = match.away_team if is_home else match.home_team
             
             # Grounding機能を活用：LLM自身がGoogle検索を行うため
-            # 事前の記事収集は不要。
-            summary = self.llm.summarize_interview(team_name, [])
+            # 事前の記事収集は不要。対戦相手を明示的に渡すことで
+            # この試合に関する情報に限定する (Issue #119)
+            summary = self.llm.summarize_interview(
+                team_name, 
+                [], 
+                opponent_team=opponent_team
+            )
             summary = self.filter.check_text(summary)
             
             if is_home:
