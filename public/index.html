@@ -334,6 +334,20 @@
                 firebase.initializeApp(firebaseConfig);
                 const auth = firebase.auth();
 
+                // 明示的にLOCAL永続化を設定（モバイルでのセッション維持を保証）
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                console.log('[AUTH] Persistence set to LOCAL');
+
+                // Redirect結果を処理（signInWithRedirect使用時のため）
+                try {
+                    const redirectResult = await auth.getRedirectResult();
+                    if (redirectResult.user) {
+                        console.log('[AUTH] Redirect login completed:', redirectResult.user.email);
+                    }
+                } catch (redirectError) {
+                    console.warn('[AUTH] Redirect result error (may be normal if not using redirect):', redirectError.code);
+                }
+
                 // 認証状態の監視
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
