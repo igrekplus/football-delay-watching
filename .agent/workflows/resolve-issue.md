@@ -28,4 +28,14 @@ description: Issue番号を指定して、ブランチ作成から実装、検�
    - Close the issue with a comment summarizing the changes and verification results.
    - Delete the feature branch.
 
+### Commit Message Template
+```
+feat(#123): 実装内容の要約
+
+- 詳細変更点
+- ...
+
+Closes #123
+```
+
 Example usage: `/resolve-issue 102`

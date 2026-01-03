@@ -120,17 +120,7 @@ GitHub Actions により **3時間ごと** に実行される。
 ## 🔑 環境変数 & APIクォータ管理
 
 詳細は [docs/04_operations/api_quota.md](docs/04_operations/api_quota.md) を参照。
-
-### 主要APIと確認コマンド
-
-| API | 日次上限 | 確認コマンド | Dashboard |
-|-----|---------|-------------|-----------|
-| **API-Football** | 7,500 | `python healthcheck/check_football_api.py` | [Dashboard](https://dashboard.api-football.com/) |
-| **Google Search** | 100 | `python healthcheck/check_google_search.py` | [Console](https://console.cloud.google.com/apis/api/customsearch.googleapis.com/quotas) |
-| **Gemini** | - | `python healthcheck/check_gemini.py` | [AI Studio](https://aistudio.google.com/) |
-| **YouTube** | 10,000 | - | [Console](https://console.cloud.google.com/apis/api/youtube.googleapis.com/quotas) |
-
-> **Reset**: API-Footballは 09:00 JST、Google系は 17:00 JST (夏 16:00) にリセット。
+各APIのヘルスチェックコマンドは `docs/04_operations/api_quota.md` の「ヘルスチェックスクリプト」セクションを参照すること。ユーザーからクオータ確認を求められた場合は、それらのスクリプトを実行する。
 
 ## 🌐 Web開発（Firebase Hosting）
 
@@ -178,20 +168,15 @@ AIアシスタント（あなた）が特定のタスクを行う際の行動規
 - **注意**: 情報解禁は試合1〜2日前。それ以前は「未定」と回答する。
 - **報告形式**: 試合日時、実況者、解説者を明記した表を作成する。
 
+### 4. 検証 (Verification)
+レポート生成ロジックの変更やチューニングを行った際は、必ず `/report-check-html` ワークフローを使用して検証を行う。
+- **目的**: 期待するキーワード（チーム名、監督名、特定のフレーズ等）が最終成果物（HTML）に含まれているか、機械的に保証するため。
+- **タイミング**: コード修正後、ユーザーにレビューを依頼する前。
+- **コマンド**: `/report-check-html keyword="<確認したい文字列>"`
+
 ## 📝 Issue対応フロー
 
-1. `gh issue list` / `gh issue view` で確認
-2. コード修正 & **デバッグモード (`DEBUG_MODE=True`) で動作確認**
-3. ユーザーに「クローズして良いか」確認
-4. コミット & クローズ（`Closes #N` を含める）
-5. Issueに完了報告コメントをする（必須）
+Issue対応の標準プロセスは、Workflowsの `resolve-issue` に定義されている。
+基本的には `/resolve-issue <Issue番号>` コマンドを使用してフローを開始すること。
 
-### コミットメッセージ
-```
-feat(#123): 実装内容の要約
-
-- 詳細変更点
-- ...
-
-Closes #123
-```
+詳細は [.agent/workflows/resolve-issue.md](.agent/workflows/resolve-issue.md) を参照。
