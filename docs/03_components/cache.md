@@ -19,7 +19,6 @@ Google Cloud Storage (GCS) をプライマリバックエンドとして使用�
 |-----|-----------------|--------------|
 | API-Football | `CachingHttpClient` | ✅ GCS対応 |
 | YouTube Data API | `YouTubeSearchClient` | ✅ GCS対応 |
-| Google Custom Search | `GoogleSearchClient` | ✅ GCS対応 |
 
 ---
 
@@ -32,7 +31,6 @@ graph TD
     subgraph "高レベル層"
         A[ApiFootballClient] --> B[CachingHttpClient]
         Y[YouTubeSearchClient] --> B
-        G[GoogleSearchClient] --> B
     end
     
     subgraph "キャッシュ層"

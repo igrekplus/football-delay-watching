@@ -34,8 +34,7 @@ graph TD
     
     C -.-> J[(API-Football)]
     D -.-> J
-    E -.-> K[(Google Search)]
-    E -.-> L[(Gemini API)]
+    E -.-> L[(Gemini API + Grounding)]
     F -.-> M[(YouTube API)]
     I -.-> N[(Gmail API)]
     

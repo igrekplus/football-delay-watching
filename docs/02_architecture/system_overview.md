@@ -28,8 +28,7 @@ graph TD
     
     C -.-> J[(API-Football)]
     D -.-> J
-    E -.-> K[(Google Search)]
-    E -.-> L[(Gemini API)]
+    E -.-> L[(Gemini API + Grounding)]
     F -.-> M[(YouTube API)]
     I -.-> N[(Gmail API)]
     
@@ -46,8 +45,8 @@ graph TD
 
 | レイヤー | コンポーネント | 詳細設計 |
 |---------|---------------|----------|
-| データソース | API-Football, Google Search | [external_apis.md](./external_apis.md) |
-| AI | Gemini API | [external_apis.md](./external_apis.md) |
+| データソース | API-Football | [external_apis.md](./external_apis.md) |
+| AI | Gemini API (Grounding) | [external_apis.md](./external_apis.md) |
 | キャッシュ | GCS | [cache.md](./cache.md) |
 | 実行基盤 | GitHub Actions | [infrastructure.md](./infrastructure.md) |
 | 配信 | Firebase, Gmail | [login.md](./login.md) |

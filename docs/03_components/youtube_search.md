@@ -93,7 +93,7 @@ YouTube検索結果のフィルタリングを担当するクラスの設計。
 
 > 実装: [src/youtube_filter.py](../../src/youtube_filter.py) の `YouTubePostFilter`
 
-### 3.5 LLM Post-Filter (Gemini)
+### 3.2 LLM Post-Filter (Gemini)
 キーワードだけでは判定が難しい高度なフィルタリング（例: 因縁対決の文脈判定）には、Gemini APIを使用する。
 
 > 詳細: [filtering.md](./gemini_tasks/filtering.md)
@@ -102,7 +102,7 @@ YouTube検索結果のフィルタリングを担当するクラスの設計。
 |-----------|------------|-------------|
 | `context_filter` | Geminiにタイトル/説明を提示し、当該チーム間の対戦か判定 | 過去対戦 (Historic Clashes) |
 
-### 3.2 フィルタ適用フロー
+### 3.3 フィルタ適用フロー
 
 ```mermaid
 graph LR
@@ -113,7 +113,7 @@ graph LR
     E --> F[最終結果]
 ```
 
-### 3.3 カテゴリ別適用フィルタ
+### 3.4 カテゴリ別適用フィルタ
 
 | カテゴリ | 適用フィルタ |
 |---------|-------------|
@@ -123,7 +123,7 @@ graph LR
 | 選手紹介 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
 | 練習風景 | `match_highlights`, `highlights`, `full_match`, `live_stream`, `press_conference`, `reaction` |
 
-### 3.4 フィルタ結果の返却形式
+### 3.5 フィルタ結果の返却形式
 
 ```python
 {
@@ -221,9 +221,33 @@ videos.sort(key=lambda v: (
 
 ---
 
-## 5. 統計・モニタリング
+## 5. UI表示
 
-### 5.1 統計カウンター
+レポートにおけるYouTube動画の表示仕様。
+可読性を高めるため、リスト形式ではなくグリッド形式を採用する。
+
+### 5.1 表示レイアウト
+
+| 項目 | 設定値 |
+|-----|--------|
+| レイアウト | CSS Grid (Responsive) |
+| 列数 | 幅に応じて自動調整 (minmax 200px) |
+| ギャップ | 15px |
+
+### 5.2 カードデザイン
+
+動画は「カード」として以下の通り表示する：
+1. **サムネイル**: 最上部に配置。
+2. **タイトル**: 2行まで表示し、以降は省略（`text-overflow: ellipsis`）。
+3. **メタ情報**: チャンネル名と投稿日時（相対時間）をフッターに配置。
+
+> 目的: スクロール量を減らし、多くの動画を一度に視認可能にする。
+
+---
+
+## 6. 統計・モニタリング
+
+### 6.1 統計カウンター
 
 | プロパティ | 取得元 | 説明 |
 |-----------|--------|------|
@@ -231,7 +255,7 @@ videos.sort(key=lambda v: (
 | `cache_hit_count` | `YouTubeSearchClient` | キャッシュヒット回数 |
 | `override_call_count` | `YouTubeService` | `search_override` 呼び出し回数 (Issue #107) |
 
-### 5.2 search_override使用時の挙動
+### 6.2 search_override使用時の挙動
 
 `search_override` はテスト・デバッグ用のモック関数注入機構。使用時の統計挙動：
 
@@ -244,9 +268,8 @@ videos.sort(key=lambda v: (
 
 ---
 
-## 6. 関連ドキュメント
+## 7. 関連ドキュメント
 
 - [YouTube動画取得要件](../01_requirements/youtube_integration.md) - 機能要件定義
 - [外部API連携設計](./external_apis.md) - API概要
 - [キャッシュ設計](./cache.md) - GCSキャッシュ
-

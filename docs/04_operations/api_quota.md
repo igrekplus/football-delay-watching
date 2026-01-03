@@ -39,16 +39,6 @@
 | **ローカル概算** | `YouTubeService.api_call_count × 100` で概算可能 |
 | **ログ確認** | `YouTube API: '...' -> N results (API calls: X)` で呼び出し回数を確認 |
 
-## 3. Google Custom Search API
-- **Custom Search JSON API**  
-  - 100クエリ/日 無料。  
-  - 追加: $5 / 1000クエリ（最大 10k クエリ/日）。 citeturn0search3
-- **Site Restricted JSON API**  
-  - 10サイト以下の限定検索用。$5 / 1000クエリで**日次上限なし**。  
-  - 2025-01-08 以降このエンドポイントは停止し、Vertex AI Search への移行が必須。citeturn5search0
-- **課金単位**: 1リクエスト=1クエリ。  
-- **モニタリング**: Cloud Console の API ダッシュボードで消費確認。
-
 ## 3. Google Gemini API (Generative AI)
 - 代表的モデルの従量課金（USD / 1M tokens）。citeturn1search0  
   - **Gemini 2.5 Flash**: Input $0.30、Output $2.50（無料ティアあり、同一エンドポイント）。  
@@ -76,7 +66,6 @@
 |-----|-----------|---------|------|---------|
 | **API-Football** | ~25 req | ~75 req | 7,500/日 (Pro) | ✅ 1% |
 | **YouTube Data API** | ~13クエリ=1,300 units | ~3,900 units | 10,000/日 | ⚠️ 39% |
-| **Custom Search** | ~3 req | ~9 req | 100/日 | ✅ 9% |
 | **Gemini** | ~20k tokens | ~60k tokens | 無料枠あり | ✅ |
 | **Gmail** | 1通/日 | 1通/日 | 500/日 | ✅ 0.2% |
 
@@ -87,7 +76,6 @@
 - **API-Football**: `fixtures`, `lineups`, `players`(22人分), `statistics`, `injuries` など。選手データはGCSキャッシュで削減可能。
 - **YouTube Data API**: 現状20クエリ/試合 → 改善後13クエリ/試合（Issue #27対応後）。search.list=100units/req。
 - **GCSキャッシュ効果**: 選手データはGCSに永続キャッシュ。2回目以降はAPI消費ゼロ。
-- **Custom Search**: ニュース検索×試合数。Free枠(100/day)で十分。
 - **Gemini**: ニュース要約で使用。トークン消費は軽量。
 - **Gmail**: レポート送信1通/日。上限に余裕あり。
 
@@ -96,7 +84,6 @@
 ## 6. 運用チェックリスト
 - 429/402/403 が出た場合:  
   - API-Football: 日次 or 分間上限を確認（レスポンスヘッダ `x-ratelimit-requests-limit` 等）。  
-  - Custom Search: Cloud Console で日次使用量確認。10k/day 上限に達していないか。  
   - Gemini: Cloud Billing の使用量、あるいはレスポンスエラーで rate limit 情報を確認。  
   - Gmail: 管理コンソールで送信制限違反/一時停止を確認。  
 - GitHub Actions での実行前に、前日消費量が上限の80%を超えていたら slack/email でアラート（要別途実装）。  
@@ -110,7 +97,6 @@
 |-----------|---------|----------|
 | `check_football_api.py` | API-Football | 残りリクエスト数、日次上限 |
 | `check_youtube.py` | YouTube Data API | クォータ消費状況、キャッシュ状態 |
-| `check_google_search.py` | Google Custom Search | 日次使用量 |
 | `check_gemini.py` | Gemini API | API接続確認 |
 | `check_gmail.py` | Gmail API | OAuth認証状態、送信可否 |
 | `check_gcs_cache.py` | GCS Cache | キャッシュカバレッジ確認 |
@@ -121,7 +107,6 @@
 # 全API一括確認
 python3 healthcheck/check_football_api.py
 python3 healthcheck/check_youtube.py
-python3 healthcheck/check_google_search.py
 python3 healthcheck/check_gemini.py
 python3 healthcheck/check_gmail.py
 
@@ -150,7 +135,6 @@ python3 healthcheck/check_gcs_cache.py
 |-----|------------------|------------------|------|
 | **API-Football** | 09:00 JST | 00:00 UTC | 毎日UTC 0時にリセット |
 | **YouTube Data API** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00（PDT/PST）にリセット |
-| **Google Custom Search** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00にリセット |
 | **Gemini API** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00にリセット |
 | **Gmail API** | 17:00 JST | 08:00 UTC | 太平洋時間 0:00にリセット |
 

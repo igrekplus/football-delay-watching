@@ -72,7 +72,7 @@ graph TD
 | **責務** | ニュース収集、LLM要約、スポイラーフィルタリング |
 | **入力** | `List[MatchData]` |
 | **出力** | `List[MatchData]` (news fields populated) |
-| **依存クライアント** | `GoogleSearchClient`, `LLMClient` |
+| **依存クライアント** | `GeminiRestClient` (Grounding), `LLMClient` |
 | **副作用** | `MatchData`のフィールド更新（in-place mutation） |
 
 **更新されるフィールド:**
@@ -148,8 +148,7 @@ graph TD
 flowchart LR
     subgraph Input["外部データソース"]
         API["API-Football"]
-        GS["Google Search"]
-        LLM["Gemini API"]
+        LLM["Gemini API (Grounding)"]
         YT["YouTube API"]
     end
     
@@ -172,7 +171,6 @@ flowchart LR
     
     API --> MP
     API --> FS
-    GS --> NS
     LLM --> NS
     YT --> YS
     
