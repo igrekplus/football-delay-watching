@@ -299,7 +299,19 @@ class YouTubeService:
         # sort_trusted適用（件数制限なし）
         kept = self.filter.sort_trusted(kept)
         
-        return {"kept": kept, "removed": []}
+        # Issue #109: LLM Post-Filter（Gemini）を適用
+        # モック/オーバーライドモードではスキップ
+        if kept and not self._search_override and not config.USE_MOCK_DATA:
+            try:
+                from src.clients.gemini_rest_client import GeminiRestClient
+                gemini_client = GeminiRestClient()
+                llm_result = self.filter.filter_by_context(kept, home_team, away_team, gemini_client)
+                removed.extend(llm_result["removed"])
+                kept = llm_result["kept"]
+            except Exception as e:
+                logger.warning(f"LLM filter skipped due to error: {e}")
+        
+        return {"kept": kept, "removed": removed}
     
     def _search_tactical(
         self,

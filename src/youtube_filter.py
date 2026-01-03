@@ -204,3 +204,108 @@ class YouTubePostFilter:
             logger.info(f"deduplicate: removed {len(videos) - len(unique)} duplicates")
 
         return unique
+
+    # ========== LLM-based Context Filter (Issue #109) ==========
+
+    def filter_by_context(
+        self,
+        videos: List[Dict],
+        home_team: str,
+        away_team: str,
+        gemini_client
+    ) -> Dict[str, List[Dict]]:
+        """
+        Gemini APIを使用してコンテキストベースのフィルタリングを行う。
+        
+        指定された2チーム間の直接対決に関連する動画のみを残す。
+        
+        Args:
+            videos: 動画リスト
+            home_team: ホームチーム名
+            away_team: アウェイチーム名
+            gemini_client: GeminiRestClientインスタンス
+            
+        Returns:
+            {"kept": [...], "removed": [...]}
+        """
+        if not videos:
+            return {"kept": [], "removed": []}
+        
+        # 入力データを構築（最大20件に制限してトークン節約）
+        MAX_VIDEOS_FOR_LLM = 20
+        candidates = videos[:MAX_VIDEOS_FOR_LLM]
+        
+        video_data = []
+        for i, v in enumerate(candidates):
+            video_data.append({
+                "id": i,
+                "title": v.get("title", ""),
+                "channel": v.get("channel_name", ""),
+            })
+        
+        import json
+        video_json = json.dumps(video_data, ensure_ascii=False)
+        
+        prompt = f"""あなたはサッカー動画のフィルタリング担当者です。
+
+以下のYouTube動画リストから、「{home_team}」と「{away_team}」の**直接対決**または**両チーム間の因縁・歴史**に関連する動画のみを選んでください。
+
+## フィルタリングルール
+- ✅ 残す: {home_team} vs {away_team} の試合ハイライト、因縁、歴史
+- ❌ 除外: 他チームとの対戦（例: {home_team} vs 他チーム、{away_team} vs 他チーム）
+- ❌ 除外: リーグ全体の汎用的な動画（両チームに特化していない場合）
+- ❌ 除外: 両チームに無関係な動画
+
+## 動画リスト
+{video_json}
+
+## 出力形式
+以下のJSON形式で回答してください。他のテキストは不要です。
+```json
+{{"kept_indices": [0, 2, 5], "reasoning": "簡潔な理由"}}
+```
+
+kept_indicesには残すべき動画のid（数字）のリストを入れてください。"""
+
+        try:
+            response_text = gemini_client.generate_content(prompt).strip()
+            
+            # マークダウンコードブロックを除去
+            if response_text.startswith("```"):
+                lines = response_text.split("\n")
+                # 最初と最後の``` を除去
+                if lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].strip() == "```":
+                    lines = lines[:-1]
+                response_text = "\n".join(lines)
+            
+            result = json.loads(response_text)
+            kept_indices = set(result.get("kept_indices", []))
+            reasoning = result.get("reasoning", "")
+            
+            logger.info(f"[LLM FILTER] {home_team} vs {away_team}: kept {len(kept_indices)}/{len(candidates)} videos. Reason: {reasoning}")
+            
+            kept = []
+            removed = []
+            
+            for i, v in enumerate(candidates):
+                if i in kept_indices:
+                    kept.append(v)
+                else:
+                    vv = dict(v)
+                    vv["filter_reason"] = "llm_context_filter"
+                    removed.append(vv)
+            
+            # MAX_VIDEOS_FOR_LLM を超えた動画はそのまま残す（保守的に）
+            if len(videos) > MAX_VIDEOS_FOR_LLM:
+                kept.extend(videos[MAX_VIDEOS_FOR_LLM:])
+            
+            return {"kept": kept, "removed": removed}
+            
+        except json.JSONDecodeError as e:
+            logger.warning(f"[LLM FILTER] JSON parse error: {e}. Skipping LLM filter.")
+            return {"kept": videos, "removed": []}
+        except Exception as e:
+            logger.error(f"[LLM FILTER] Error: {e}. Skipping LLM filter.")
+            return {"kept": videos, "removed": []}
