@@ -73,37 +73,7 @@ YOUTUBE_SEARCH_SPECS: Dict[str, Dict[str, Any]] = {
 }
 
 
-# =============================================================================
-# Google検索スペック
-#
-# ニュース検索・インタビュー検索のクエリテンプレートと設定を定義。
-# =============================================================================
 
-GOOGLE_SEARCH_SPECS: Dict[str, Dict[str, Any]] = {
-    "news": {
-        "label": "ニュース",
-        "query_template": '"{home_team}" "{away_team}" match preview -women -WFC -WSL -女子',
-        "date_restrict": "d2",
-        "gl_default": "us",
-        "gl_japan": "jp",
-        "num": 10,  # config.NEWS_SEARCH_LIMIT を参照する場合はNone
-    },
-    "interview_manager": {
-        "label": "監督インタビュー",
-        "query_template": '"{team_name}" manager "said" OR "says" OR "quotes" press conference Premier League -result -score -twitter.com -x.com -women -WFC -WSL',
-        "query_template_with_name": '"{team_name}" manager "{manager_name}" "said" OR "says" OR "quotes" press conference Premier League -result -score -twitter.com -x.com -women -WFC -WSL',
-        "date_restrict": "d7",
-        "gl": "uk",
-        "num": 5,
-    },
-    "interview_player": {
-        "label": "選手インタビュー",
-        "query_template": '"{team_name}" player interview "said" OR "reveals" OR "admits" Premier League -result -score -twitter.com -x.com -women -WFC -WSL',
-        "date_restrict": "d7",
-        "gl": "uk",
-        "num": 5,
-    },
-}
 
 
 # =============================================================================
@@ -189,47 +159,4 @@ def get_youtube_exclude_filters(category: str) -> List[str]:
     return spec.get("exclude_filters", [])
 
 
-def build_google_query(
-    search_type: str,
-    **kwargs
-) -> str:
-    """
-    Googleスペックからクエリを生成
-    
-    Args:
-        search_type: 検索種別（news, interview_manager等）
-        **kwargs: テンプレート変数
-    
-    Returns:
-        検索クエリ文字列
-    """
-    spec = GOOGLE_SEARCH_SPECS.get(search_type)
-    if not spec:
-        raise ValueError(f"Unknown Google search type: {search_type}")
-    
-    # manager_name が指定され、かつ専用テンプレートがある場合
-    if kwargs.get("manager_name") and "query_template_with_name" in spec:
-        return spec["query_template_with_name"].format(**kwargs)
-    
-    return spec["query_template"].format(**kwargs)
 
-
-def get_google_search_params(search_type: str) -> Dict[str, Any]:
-    """
-    Googleスペックから検索パラメータを取得
-    
-    Args:
-        search_type: 検索種別
-    
-    Returns:
-        {"date_restrict": ..., "gl": ..., "num": ...}
-    """
-    spec = GOOGLE_SEARCH_SPECS.get(search_type)
-    if not spec:
-        raise ValueError(f"Unknown Google search type: {search_type}")
-    
-    return {
-        "date_restrict": spec.get("date_restrict", "d2"),
-        "gl": spec.get("gl", spec.get("gl_default", "us")),
-        "num": spec.get("num", 10),
-    }
