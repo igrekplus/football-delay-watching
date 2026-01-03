@@ -103,11 +103,14 @@ class GenerateGuideWorkflow:
             # 8. Email Notification (シンプルなデバッグサマリ)
             self._send_debug_email(matches, report_list, youtube_stats)
             
-            # 9. 成功時: GCSステータス更新
+            # 9. 成功時: GCSステータス更新（実際に処理した試合のみ）
             if status_manager:
                 for match in matches:
-                    status_manager.mark_complete(match.id)
-                    logger.info(f"試合 {match.id} を処理完了としてマーク")
+                    if match.is_target:
+                        status_manager.mark_complete(match.id)
+                        logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理完了としてマーク")
+                    else:
+                        logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) はis_target=Falseのためスキップ（GCS更新なし）")
             
         except Exception as e:
             logger.error(f"レポート生成に失敗: {e}", exc_info=True)
