@@ -44,6 +44,15 @@ def load_articles(path: str) -> List[Dict]:
     return data.get("articles", data.get("kept", []))
 
 
+def print_articles_context(articles: List[Dict], max_articles: int = 3, max_chars: int = 500):
+    """記事コンテキストのプレビューを表示"""
+    context_preview = "\n".join([a.get("content", "")[:100] for a in articles[:max_articles]])
+    print(f"\nContext preview (first {max_articles} articles):")
+    print("-" * 40)
+    print(context_preview[:max_chars] + "...")
+    print("-" * 40)
+
+
 def cmd_summary(args):
     """summaryサブコマンド: ニュース要約をテスト"""
     load_dotenv()

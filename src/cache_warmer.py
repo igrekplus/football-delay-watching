@@ -22,9 +22,6 @@ class CacheWarmer:
     def __init__(self):
         self.client = ApiFootballClient()
         self.policy = ExecutionPolicy()
-        self.requests_made = 0
-        self.cache_hits = 0
-        self.cache_misses = 0
     
     def run(self, remaining_quota: int) -> Dict:
         """
@@ -61,32 +58,9 @@ class CacheWarmer:
             # スクワッド取得
             squad = self.client.get_squad(team_id, team_name)
             
-            # API call count logic:
-            # ApiFootballClient abstracts the call, but for statistics we want to know if it hit usage.
-            # Client updates config.QUOTA_INFO but doesn't expose "did I hit cache?" explicitly in current design
-            # except via inspecting internals or metrics.
-            # In the original code, `get_with_cache` was used directly and we counted based on response type.
-            # Here we might lose that granularity unless we ask the client.
-            # For simpler refactoring, we assume 1 request per call if not cached.
-            # To be precise, we need to know if cache was hit.
-            # Let's rely on the client's internal caching mechanics.
-            # Ideally `ApiFootballClient` should provide metrics.
-            # For now, we will increment requests_made generically or just drop precise hit/miss stats
-            # if the new client doesn't support generic metric access yet.
-            # *BUT* user wants to keep functionality.
-            # The old CacheWarmer tracked hits/misses.
-            # The `ApiFootballClient` I wrote uses `CachingHttpClient`.
-            # `CachingHttpClient` *should* handle headers or return types.
-            # Refactoring compromise: We will trust the client handles caching.
-            # We can approximate requests made by checking if quota dropped? No, race conditions.
-            # Let's count "processed" items.
-            
-            # Since strict feature parity on stats is hard without changing Client to return Metadata,
-            # I will omit detailed hit/miss stats in this version unless I update Client.
-            # However, I should decrement available_quota conservatively (assuming miss).
-            
+            # クォータは保守的に減算（キャッシュHIT時も減算）
+            # 実際のAPI呼び出しカウントはApiStatsで追跡
             available_quota -= 1
-            self.requests_made += 1 # Conservative estimate
             
             if not squad:
                 logger.warning(f"No squad data for {team_name}")
@@ -101,10 +75,6 @@ class CacheWarmer:
                 if player_id:
                     result = self.client.get_player(player_id, 2024, team_name)
                     available_quota -= 1
-                    # self.requests_made is now tracked in ApiStats primarily, 
-                    # but keeping local counter for return dict consistency if needed, 
-                    # though arguably we could rely on ApiStats.
-                    self.requests_made += 1
                     if result:
                         players_processed += 1
         
@@ -112,8 +82,7 @@ class CacheWarmer:
             "skipped": False,
             "teams_processed": len(all_teams),
             "players_processed": players_processed,
-            "requests_made": self.requests_made, # Approx
-            # "cache_hits": n/a
+            # requests_made は ApiStats で追跡（cache_warmer独自のカウントは廃止）
         }
         
         logger.info(f"Cache warming completed: {result}")
