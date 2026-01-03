@@ -40,7 +40,9 @@
 │   ├── html_generator.py    # HTML変換・Firebase manifest管理
 │   ├── cache_warmer.py      # キャッシュプリフェッチ
 │   └── email_service.py     # Gmail APIメール送信
-├── settings/            # 設定ファイル
+├── settings/            # 設定ファイル（検索仕様・プロンプト）
+│   ├── search_specs.py      # YouTube/Google検索クエリテンプレート
+│   └── gemini_prompts.py    # LLMプロンプトテンプレート (Issue #120)
 ├── healthcheck/         # APIヘルスチェック
 ├── docs/
 │   ├── 01_requirements/             # 要件定義
