@@ -189,37 +189,46 @@ class LLMClient:
         インタビュー記事を要約
         """
         if self.use_mock:
-            return f"【{team_name}】監督: 『重要な試合になる。選手たちは準備できている。』"
+            return "監督: 『重要な試合になる。選手たちは準備できている。』"
         
         if not articles:
-            return f"【{team_name}】関連記事が見つかりませんでした"
+            return "関連記事が見つかりませんでした"
         
         context = "\n".join([a['content'] for a in articles])
         
         prompt = f"""
-        Task: 以下のニュース記事から、{team_name}の監督や選手の試合前コメントを日本語で要約してください（200-300字）。
-        
-        Priorities:
-        1. 監督の具体的なコメントがあれば最優先で引用してください。
-        2. 監督のコメントがない場合は、選手のコメントを使用してください。
-        3. 両方ともない場合は、チーム状況や怪我人情報などの周辺情報をまとめてください。
-        
-        Constraint:
-        - 試合結果に関する情報は絶対に含めないでください。
-        - 「情報が見つかりませんでした」や「要約を作成できません」という回答は避け、ある情報だけで構成してください。
-        
-        Format: 【{team_name}】で始めて、可能な限り監督や選手の発言を引用形式で含めてください。
-        
-        Context:
-        {context}
-        """
+Task: {team_name}の監督が試合前に語った内容を、**可能な限り原文のまま**日本語で要約してください。
+
+## 優先順位
+1. 監督の直接発言（カギカッコ引用を最優先）
+2. 選手の直接発言
+3. 記事から推測されるチーム状況
+
+## 引用ルール
+- 発言は必ずカギカッコ「」で囲む
+- 誰の発言かを明記（例: グアルディオラ監督は「〜」と語った）
+- 英語の発言は意訳してよいが、ニュアンスを保つ
+
+## 除外対象
+- 試合結果（スコア、勝敗）
+- 監督の契約・後任問題
+- 女子チームの情報
+
+## 出力形式
+- 前置き文（「はい、承知いたしました」等のAI応答文）は不要、本文のみ
+- 【{team_name}】のようなチーム名プレフィックスは不要（UIで表示済み）
+- 1800-2000字
+
+Context:
+{context}
+"""
         
         try:
             return self.generate_content(prompt)
         except Exception as e:
             error_type = type(e).__name__
             logger.error(f"Error summarizing interview for {team_name}: {error_type} - {e}")
-            return f"【{team_name}】要約エラー（{error_type}）"
+            return f"要約エラー（{error_type}）"
     
     # ========== モック用メソッド ==========
     
@@ -230,4 +239,152 @@ class LLMClient:
     def _get_mock_tactical_preview(self, home_team: str, away_team: str) -> str:
         from src.mock_provider import MockProvider
         return MockProvider.get_tactical_preview(home_team, away_team)
+    
+    def _get_mock_same_country_trivia(self, matchups: List[Dict]) -> str:
+        """モック用: 同国対決トリビア"""
+        if not matchups:
+            return ""
+        lines = []
+        for m in matchups:
+            country = m.get("country", "Unknown")
+            home = ", ".join(m.get("home_players", []))
+            away = ", ".join(m.get("away_players", []))
+            lines.append(f"🏳️ **{country}** **{home}** vs **{away}**。[モック: 関係性・小ネタ]")
+        return "\\n\\n".join(lines)
+    
+    # ========== 同国対決（Issue #39） ==========
+    
+    def generate_same_country_trivia(
+        self,
+        home_team: str,
+        away_team: str,
+        matchups: List[Dict]
+    ) -> str:
+        """
+        同国対決の関係性・小ネタを生成
+        
+        Args:
+            home_team: ホームチーム名
+            away_team: アウェイチーム名
+            matchups: 検出されたマッチアップリスト
+                [{"country": "Japan", "home_players": [...], "away_players": [...]}]
+        
+        Returns:
+            関係性・小ネタを含むテキスト（日本語）
+        """
+        if self.use_mock:
+            return self._get_mock_same_country_trivia(matchups)
+        
+        if not matchups:
+            return ""
+        
+        # マッチアップデータを整形
+        matchup_texts = []
+        for m in matchups:
+            text = f"- 国籍: {m['country']}\\n"
+            text += f"  ホームチーム選手 ({home_team}): {', '.join(m['home_players'])}\\n"
+            text += f"  アウェイチーム選手 ({away_team}): {', '.join(m['away_players'])}"
+            matchup_texts.append(text)
+        
+        matchup_context = "\\n".join(matchup_texts)
+        
+        prompt = f"""あなたはサッカー専門のトリビアライターです。
+
+以下の同国対決について、選手間の関係性や興味深い事実（小ネタ）を日本語で記述してください。
+
+対決カード:
+{matchup_context}
+
+Requirements:
+1. 選手同士の関係性を優先的に記載:
+   - 代表チームでの共演
+   - 過去のクラブでの同僚関係
+   - ユース時代の共演
+2. 興味深いトリビアがあれば追加:
+   - 同郷、同年齢
+   - 過去の対戦エピソード
+   - ライバル関係
+3. 字数: 50-150字/国
+4. 試合結果には絶対に言及しない
+5. 確実な事実のみ記載（推測や不確かな情報は避ける）
+6. 前置き文は不要、本文のみ
+
+Output Format:
+🇯🇵 **日本**
+**選手A**（チームA）と**選手B**（チームB）。[関係性・小ネタ]
+"""
+        
+        try:
+            return self.generate_content(prompt)
+        except Exception as e:
+            logger.error(f"Error generating same country trivia: {e}")
+            return ""
+    
+
+    
+    def generate_same_country_trivia(
+        self,
+        home_team: str,
+        away_team: str,
+        matchups: List[Dict]
+    ) -> str:
+        """
+        同国対決の関係性・小ネタを生成
+        
+        Args:
+            home_team: ホームチーム名
+            away_team: アウェイチーム名
+            matchups: 検出されたマッチアップリスト
+                [{"country": "Japan", "home_players": [...], "away_players": [...]}]
+        
+        Returns:
+            関係性・小ネタを含むテキスト（日本語）
+        """
+        if self.use_mock:
+            return self._get_mock_same_country_trivia(matchups)
+        
+        if not matchups:
+            return ""
+        
+        # マッチアップデータを整形
+        matchup_texts = []
+        for m in matchups:
+            text = f"- 国籍: {m['country']}\n"
+            text += f"  ホームチーム選手 ({home_team}): {', '.join(m['home_players'])}\n"
+            text += f"  アウェイチーム選手 ({away_team}): {', '.join(m['away_players'])}"
+            matchup_texts.append(text)
+        
+        matchup_context = "\n".join(matchup_texts)
+        
+        prompt = f"""あなたはサッカー専門のトリビアライターです。
+
+以下の同国対決について、選手間の関係性や興味深い事実（小ネタ）を日本語で記述してください。
+
+対決カード:
+{matchup_context}
+
+Requirements:
+1. 選手同士の関係性を優先的に記載:
+   - 代表チームでの共演
+   - 過去のクラブでの同僚関係
+   - ユース時代の共演
+2. 興味深いトリビアがあれば追加:
+   - 同郷、同年齢
+   - 過去の対戦エピソード
+   - ライバル関係
+3. 字数: 50-150字/国
+4. 試合結果には絶対に言及しない
+5. 確実な事実のみ記載（推測や不確かな情報は避ける）
+6. 前置き文は不要、本文のみ
+
+Output Format:
+🇯🇵 **日本**
+**選手A**（チームA）と**選手B**（チームB）。[関係性・小ネタ]
+"""
+        
+        try:
+            return self.generate_content(prompt)
+        except Exception as e:
+            logger.error(f"Error generating same country trivia: {e}")
+            return ""
 

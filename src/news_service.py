@@ -134,7 +134,7 @@ class NewsService:
                 summary = self.llm.summarize_interview(team_name, safe_articles)
                 summary = self.filter.check_text(summary)
             else:
-                summary = f"【{team_name}】インタビュー記事が見つかりませんでした"
+                summary = "インタビュー記事が見つかりませんでした"
             
             if is_home:
                 match.home_interview = summary
