@@ -112,7 +112,7 @@ class Config:
     # Dynamic Settings based on Debug Mode
     @property
     def MATCH_LIMIT(self) -> int:
-        return 1 if self.DEBUG_MODE else 3
+        return 1 if self.DEBUG_MODE else 5
         
     @property
     def NEWS_SEARCH_LIMIT(self) -> int:
