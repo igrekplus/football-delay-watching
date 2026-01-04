@@ -118,24 +118,9 @@ class MatchScheduler:
                 processable.append(match)
         
         logger.info(f"ステータスフィルタ結果: {len(processable)}/{len(time_filtered)} 試合が処理可能")
-        logger.info("-" * 70)
-        
-        # 3. ランク順でソートし、上位MAX_MATCHES_PER_DAY件を返す
-        processable.sort(key=lambda m: self._get_rank_priority(m))
-        
-        if len(processable) > self.MAX_MATCHES_PER_DAY:
-            logger.info(f"試合数制限適用: {len(processable)} → {self.MAX_MATCHES_PER_DAY}")
-            excluded = processable[self.MAX_MATCHES_PER_DAY:]
-            for match in excluded:
-                logger.info(f"  除外: [Fixture {match.id}] {match.home_team} vs {match.away_team} (Rank {match.rank})")
-            processable = processable[:self.MAX_MATCHES_PER_DAY]
-        
-        logger.info("=" * 70)
-        logger.info(f"最終選定: {len(processable)} 試合")
-        for match in processable:
-            logger.info(f"  選定: [Fixture {match.id}] {match.home_team} vs {match.away_team} (Rank {match.rank})")
         logger.info("=" * 70)
         
+        # 選定（ランク順ソート・件数制限）はワークフロー側で MatchSelector が行う
         return processable
     
     def _is_in_target_window(self, match) -> bool:
