@@ -210,7 +210,7 @@ Prompt:
 --- End ---
 
 ================================================================================
-Tip: プロンプトを変更するには src/clients/llm_client.py を編集
+Tip: プロンプトを変更するには settings/gemini_prompts.py を編集
 ```
 
 ---
@@ -251,4 +251,4 @@ scripts/tuning/
 
 1. ニュース検索で保存したJSONを入力
 2. `summary` / `preview` で生成結果を確認
-3. `src/clients/llm_client.py` のプロンプトを編集
+3. `settings/gemini_prompts.py` のプロンプトを編集
