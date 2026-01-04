@@ -151,6 +151,18 @@ h3 {
     margin: 25px 0 15px 0;
 }
 
+/* Section labels (Starting XI, Substitutes, Injuries) */
+.section-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 p {
     margin: 10px 0;
 }
@@ -200,6 +212,31 @@ img {
     margin: 10px 0;
 }
 
+/* Formation images - smaller for side-by-side display */
+.formation-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.formation-container img {
+    max-width: 350px;
+    flex: 0 1 auto;
+}
+
+@media (max-width: 768px) {
+    .formation-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .formation-container img {
+        max-width: 100%;
+    }
+}
+
 code {
     background: rgba(255, 255, 255, 0.1);
     padding: 2px 6px;
@@ -234,6 +271,35 @@ pre {
     .player-cards {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+}
+
+/* Horizontal scroll player cards for Substitutes/Injuries */
+.player-cards-scroll {
+    display: flex;
+    gap: 12px;
+    margin: 15px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+}
+
+.player-cards-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.player-cards-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.player-cards-scroll::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+.player-cards-scroll .player-card {
+    flex-shrink: 0;
+    width: 180px;
 }
 
 .player-card {

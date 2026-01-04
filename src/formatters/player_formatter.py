@@ -129,7 +129,8 @@ class PlayerFormatter:
                              player_photos: Dict[str, str] = None,
                              position_label: str = None,
                              player_positions: Dict[str, str] = None,
-                             player_instagram: Dict[str, str] = None) -> str:
+                             player_instagram: Dict[str, str] = None,
+                             css_class: str = "player-cards") -> str:
         """
         選手リストをカード形式のHTMLに変換
         
@@ -153,7 +154,7 @@ class PlayerFormatter:
             player_instagram = {}
         
         if not lineup:
-            return '<div class="player-cards"><p>選手情報なし</p></div>'
+            return f'<div class="{css_class}"><p>選手情報なし</p></div>'
         
         # ポジション略称からフル名への変換
         pos_map = {'G': 'GK', 'D': 'DF', 'M': 'MF', 'F': 'FW'}
@@ -209,14 +210,14 @@ class PlayerFormatter:
 </div>'''
             cards_html.append(card)
         
-        return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
+        return f'<div class="{css_class}">\n' + '\n'.join(cards_html) + '\n</div>'
 
-    def format_injury_cards(self, injuries_list: list, player_photos: Dict[str, str] = None) -> str:
+    def format_injury_cards(self, injuries_list: list, player_photos: Dict[str, str] = None, css_class: str = "player-cards") -> str:
         """
         怪我人・出場停止リストをカード形式のHTMLに変換
         """
         if not injuries_list:
-            return '<div class="player-cards"><p>なし</p></div>'
+            return f'<div class="{css_class}"><p>なし</p></div>'
         
         if player_photos is None:
             player_photos = {}
@@ -244,4 +245,4 @@ class PlayerFormatter:
 </div>'''
             cards_html.append(card)
         
-        return f'<div class="player-cards">\n' + '\n'.join(cards_html) + '\n</div>'
+        return f'<div class="{css_class}">\n' + '\n'.join(cards_html) + '\n</div>'

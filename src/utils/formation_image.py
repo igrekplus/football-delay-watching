@@ -10,15 +10,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Pitch dimensions (pixels)
-PITCH_WIDTH = 800
-PITCH_HEIGHT = 600
+# Pitch dimensions (pixels) - reduced for compact display
+PITCH_WIDTH = 500
+PITCH_HEIGHT = 400
 PITCH_COLOR = (34, 139, 34)  # Forest green
 LINE_COLOR = (255, 255, 255)  # White
 PLAYER_COLOR = (255, 255, 255)
 PLAYER_BG_HOME = (0, 0, 139)  # Dark blue
 PLAYER_BG_AWAY = (139, 0, 0)  # Dark red
-PLAYER_RADIUS = 20
+PLAYER_RADIUS = 14
 
 # Formation layouts - define Y positions for each line (0.0 = goal, 1.0 = midfield)
 # Each formation maps to list of (line_y_ratio, num_players) 
@@ -119,7 +119,7 @@ class FormationImageGenerator:
         draw = ImageDraw.Draw(img)
         
         # Draw pitch lines
-        margin = 30
+        margin = 20
         # Outer boundary
         draw.rectangle(
             [margin, margin, self.width - margin, self.height - margin],
@@ -130,15 +130,15 @@ class FormationImageGenerator:
         draw.line([(margin, center_y), (self.width - margin, center_y)], 
                   fill=LINE_COLOR, width=2)
         # Center circle
-        circle_radius = 50
+        circle_radius = 35
         draw.ellipse(
             [self.width//2 - circle_radius, center_y - circle_radius,
              self.width//2 + circle_radius, center_y + circle_radius],
             outline=LINE_COLOR, width=2
         )
         # Penalty areas
-        penalty_width = 200
-        penalty_height = 80
+        penalty_width = 130
+        penalty_height = 55
         # Top penalty area
         draw.rectangle(
             [self.width//2 - penalty_width//2, margin,
@@ -162,7 +162,7 @@ class FormationImageGenerator:
     
     def _distribute_x(self, num_players: int) -> List[int]:
         """Calculate X positions for players in a line"""
-        margin = 80
+        margin = 50
         available_width = self.width - 2 * margin
         
         if num_players == 1:
@@ -183,7 +183,7 @@ class FormationImageGenerator:
         
         # Draw jersey number inside circle (if available)
         if number is not None:
-            number_font = self._get_font(16)
+            number_font = self._get_font(11)
             number_str = str(number)
             bbox = draw.textbbox((0, 0), number_str, font=number_font)
             num_width = bbox[2] - bbox[0]
@@ -195,7 +195,7 @@ class FormationImageGenerator:
         
         # Draw name (shortened) below circle
         short_name = self._shorten_name(name)
-        font = self._get_font(18)
+        font = self._get_font(12)
             
         # Get text bounding box
         bbox = draw.textbbox((0, 0), short_name, font=font)
@@ -233,7 +233,7 @@ class FormationImageGenerator:
     
     def _draw_title(self, draw: ImageDraw.Draw, title: str, is_home: bool):
         """Draw title at top of image"""
-        font = self._get_font(24)
+        font = self._get_font(18)
             
         bbox = draw.textbbox((0, 0), title, font=font)
         text_width = bbox[2] - bbox[0]

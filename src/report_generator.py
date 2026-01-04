@@ -159,14 +159,16 @@ class ReportGenerator:
             match.player_nationalities, match.player_numbers,
             match.player_birthdates, match.player_photos,
             position_label="SUB", player_positions=match.player_positions,
-            player_instagram=match.player_instagram
+            player_instagram=match.player_instagram,
+            css_class="player-cards-scroll"
         )
         away_bench_html = self.player_formatter.format_player_cards(
             match.away_bench, "", match.away_team,
             match.player_nationalities, match.player_numbers,
             match.player_birthdates, match.player_photos,
             position_label="SUB", player_positions=match.player_positions,
-            player_instagram=match.player_instagram
+            player_instagram=match.player_instagram,
+            css_class="player-cards-scroll"
         )
         
         home_logo_html = f'<img src="{match.home_logo}" alt="{match.home_team}" class="team-logo">' if match.home_logo else ''
@@ -174,8 +176,8 @@ class ReportGenerator:
         
         home_injuries = [i for i in match.injuries_list if i.get("team", "") == match.home_team]
         away_injuries = [i for i in match.injuries_list if i.get("team", "") == match.away_team]
-        home_injury_html = self.player_formatter.format_injury_cards(home_injuries, match.player_photos)
-        away_injury_html = self.player_formatter.format_injury_cards(away_injuries, match.player_photos)
+        home_injury_html = self.player_formatter.format_injury_cards(home_injuries, match.player_photos, css_class="player-cards-scroll")
+        away_injury_html = self.player_formatter.format_injury_cards(away_injuries, match.player_photos, css_class="player-cards-scroll")
         
         # チームセクション（2カラムレイアウト）
         lines.append('<div class="two-column-section">')
@@ -183,22 +185,22 @@ class ReportGenerator:
         # ホームチーム
         lines.append('<div class="team-column">')
         lines.append(f'<h3 class="lineup-header">{home_logo_html} {match.home_team}（{match.home_formation}）</h3>')
-        lines.append("#### Starting XI")
+        lines.append('<div class="section-label">Starting XI</div>')
         lines.append(home_cards_html)
-        lines.append("#### Substitutes")
+        lines.append('<div class="section-label">Substitutes</div>')
         lines.append(home_bench_html)
-        lines.append("#### Injuries / Suspended")
+        lines.append('<div class="section-label">Injuries / Suspended</div>')
         lines.append(home_injury_html)
         lines.append('</div>')
         
         # アウェイチーム
         lines.append('<div class="team-column">')
         lines.append(f'<h3 class="lineup-header">{away_logo_html} {match.away_team}（{match.away_formation}）</h3>')
-        lines.append("#### Starting XI")
+        lines.append('<div class="section-label">Starting XI</div>')
         lines.append(away_cards_html)
-        lines.append("#### Substitutes")
+        lines.append('<div class="section-label">Substitutes</div>')
         lines.append(away_bench_html)
-        lines.append("#### Injuries / Suspended")
+        lines.append('<div class="section-label">Injuries / Suspended</div>')
         lines.append(away_injury_html)
         lines.append('</div>')
         
@@ -224,12 +226,17 @@ class ReportGenerator:
             is_home=False, output_dir=self.WEB_IMAGE_DIR, match_id=match.id,
             player_numbers=match.player_numbers
         )
+        
+        # Wrap images in container for side-by-side display
+        formation_html = '<div class="formation-container">'
         if home_img:
-            lines.append(f"![{match.home_team}]({home_img})")
+            formation_html += f'<img src="{home_img}" alt="{match.home_team}">'
             image_paths.append(f"{self.WEB_IMAGE_DIR}/{home_img}")
         if away_img:
-            lines.append(f"![{match.away_team}]({away_img})")
+            formation_html += f'<img src="{away_img}" alt="{match.away_team}">'
             image_paths.append(f"{self.WEB_IMAGE_DIR}/{away_img}")
+        formation_html += '</div>'
+        lines.append(formation_html)
         lines.append("")
         
         # 同国対決（Issue #39）
