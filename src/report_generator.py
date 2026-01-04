@@ -279,8 +279,12 @@ class ReportGenerator:
         lines.append('<div class="section-content">')
         home_manager_photo_html = f'<img src="{match.home_manager_photo}" alt="{match.home_manager}" class="manager-photo">' if match.home_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         away_manager_photo_html = f'<img src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo">' if match.away_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
+        # ロゴ
+        home_team_logo = f'<img src="{match.home_logo}" alt="{match.home_team}" class="manager-team-logo">' if match.home_logo else ''
+        away_team_logo = f'<img src="{match.away_logo}" alt="{match.away_team}" class="manager-team-logo">' if match.away_logo else ''
         
         manager_section_html = f'''<div class="manager-section">
+<div class="manager-card">
     <div class="manager-identity">
         {home_team_logo}
         {home_manager_photo_html}
