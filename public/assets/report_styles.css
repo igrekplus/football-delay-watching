@@ -217,7 +217,7 @@ img {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    justify-content: center;
+    justify-content: flex-start;
     margin: 20px 0;
 }
 
@@ -693,4 +693,63 @@ pre {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Collapsible Sections for Mobile */
+.collapsible-section {
+    margin: 20px 0;
+}
+
+.collapsible-section summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-weight: bold;
+    color: #74b9ff;
+    font-size: 1.1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.collapsible-section summary::-webkit-details-marker {
+    display: none;
+}
+
+.collapsible-section summary::before {
+    content: "▼";
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+.collapsible-section:not([open]) summary::before {
+    transform: rotate(-90deg);
+}
+
+.collapsible-section .section-content {
+    padding: 16px 0;
+}
+
+/* On PC (>768px), always show content */
+@media (min-width: 769px) {
+    .collapsible-section {
+        pointer-events: auto;
+    }
+
+    .collapsible-section summary {
+        display: none;
+    }
+
+    .collapsible-section .section-content {
+        display: block !important;
+    }
+}
+
+/* On Mobile (<768px), default to closed */
+@media (max-width: 768px) {
+    .collapsible-section:not([open]) .section-content {
+        display: none;
+    }
 }

@@ -245,19 +245,29 @@ class ReportGenerator:
             lines.append(f"\n{match.same_country_text}\n")
             lines.append("")
         
-        # ニュース・戦術
-        lines.append("### ■ ニュース要約（600〜1,000字）")
+        # ニュース・戦術 (collapsible on mobile)
+        lines.append('<details class="collapsible-section" open>')
+        lines.append('<summary>📰 ニュース要約</summary>')
+        lines.append('<div class="section-content">')
         lines.append(f"- {match.news_summary}")
+        lines.append('</div>')
+        lines.append('</details>')
         lines.append("")
         
-        lines.append("### ■ 戦術プレビュー")
+        lines.append('<details class="collapsible-section" open>')
+        lines.append('<summary>📊 戦術プレビュー</summary>')
+        lines.append('<div class="section-content">')
         lines.append(f"- {match.tactical_preview}")
         if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
             lines.append(f"- URL: {match.preview_url}")
+        lines.append('</div>')
+        lines.append('</details>')
         lines.append("")
         
-        # 監督セクション
-        lines.append("### ■ 監督プレビュー")
+        # 監督セクション (collapsible on mobile)
+        lines.append('<details class="collapsible-section" open>')
+        lines.append('<summary>🎙️ 監督プレビュー</summary>')
+        lines.append('<div class="section-content">')
         home_manager_photo_html = f'<img src="{match.home_manager_photo}" alt="{match.home_manager}" class="manager-photo">' if match.home_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         away_manager_photo_html = f'<img src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo">' if match.away_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         
@@ -280,6 +290,8 @@ class ReportGenerator:
 </div>
 </div>'''
         lines.append(manager_section_html)
+        lines.append('</div>')
+        lines.append('</details>')
         lines.append("")
         
         # YouTube動画
