@@ -21,7 +21,7 @@ from src.utils.datetime_util import DateTimeUtil
 logger = logging.getLogger(__name__)
 
 REPORTS_DIR = "public/reports"
-CSS_PATH = "/assets/report_styles.css"
+CSS_PATH = "../assets/report_styles.css"
 
 
 def sync_from_firebase() -> int:
@@ -80,11 +80,14 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{mode_prefix}サッカー観戦ガイド - {report_date}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{CSS_PATH}">
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
         {mode_banner}
         {html_body}
         <div class="timestamp">
@@ -213,11 +216,14 @@ def _get_html_template(title: str, html_body: str, timestamp: str, mode_banner: 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{CSS_PATH}">
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
         {mode_banner}
         {html_body}
         <div class="timestamp">

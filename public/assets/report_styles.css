@@ -10,18 +10,36 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     min-height: 100vh;
     color: #e0e0e0;
-    line-height: 1.8;
-    font-size: 15px;
+    line-height: 1.5;
+    font-size: 14px;
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 30px 20px;
+}
+
+/* 2-Column Layout for PC */
+.two-column-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .two-column-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+.team-column {
+    min-width: 0;
+    /* Prevent grid blowout */
 }
 
 .back-link {
@@ -206,17 +224,22 @@ pre {
 
 /* Player Card Styles */
 .player-cards {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 12px;
     margin: 15px 0;
+}
+
+@media (max-width: 600px) {
+    .player-cards {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
 }
 
 .player-card {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 12px;
-    width: 170px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -393,11 +416,16 @@ pre {
 
 /* Manager Section Styles */
 .manager-section {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin: 15px 0;
+}
+
+@media (max-width: 1024px) {
+    .manager-section {
+        grid-template-columns: 1fr;
+    }
 }
 
 .manager-card {

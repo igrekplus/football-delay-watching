@@ -177,7 +177,11 @@ class ReportGenerator:
         home_injury_html = self.player_formatter.format_injury_cards(home_injuries, match.player_photos)
         away_injury_html = self.player_formatter.format_injury_cards(away_injuries, match.player_photos)
         
+        # チームセクション（2カラムレイアウト）
+        lines.append('<div class="two-column-section">')
+        
         # ホームチーム
+        lines.append('<div class="team-column">')
         lines.append(f'<h3 class="lineup-header">{home_logo_html} {match.home_team}（{match.home_formation}）</h3>')
         lines.append("#### Starting XI")
         lines.append(home_cards_html)
@@ -185,8 +189,10 @@ class ReportGenerator:
         lines.append(home_bench_html)
         lines.append("#### Injuries / Suspended")
         lines.append(home_injury_html)
+        lines.append('</div>')
         
         # アウェイチーム
+        lines.append('<div class="team-column">')
         lines.append(f'<h3 class="lineup-header">{away_logo_html} {match.away_team}（{match.away_formation}）</h3>')
         lines.append("#### Starting XI")
         lines.append(away_cards_html)
@@ -194,6 +200,9 @@ class ReportGenerator:
         lines.append(away_bench_html)
         lines.append("#### Injuries / Suspended")
         lines.append(away_injury_html)
+        lines.append('</div>')
+        
+        lines.append('</div>')  # end two-column-section
         
         home_form = self.match_info_formatter.format_form_with_icons(match.home_recent_form)
         away_form = self.match_info_formatter.format_form_with_icons(match.away_recent_form)
@@ -216,10 +225,10 @@ class ReportGenerator:
             player_numbers=match.player_numbers
         )
         if home_img:
-            lines.append(f"![{match.home_team}](/reports/{home_img})")
+            lines.append(f"![{match.home_team}]({home_img})")
             image_paths.append(f"{self.WEB_IMAGE_DIR}/{home_img}")
         if away_img:
-            lines.append(f"![{match.away_team}](/reports/{away_img})")
+            lines.append(f"![{match.away_team}]({away_img})")
             image_paths.append(f"{self.WEB_IMAGE_DIR}/{away_img}")
         lines.append("")
         
