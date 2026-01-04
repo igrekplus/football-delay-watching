@@ -119,6 +119,24 @@ GitHub Actions により **3時間ごと** に実行される。
 - **優先順位**:
   - キックオフ直後の試合、未処理の試合を優先的に処理する。
 
+### GitHub CLI (`gh`) の優先使用
+
+GitHub Actions の操作・確認には **`gh` コマンドを優先して使用すること**（ブラウザよりも効率的）。
+
+```bash
+# ワークフロー実行状況の確認
+gh run list --workflow=daily_report.yml --limit 5
+
+# 特定のRunをリアルタイム監視
+gh run watch <RUN_ID>
+
+# ワークフローの手動トリガー
+gh workflow run daily_report.yml --ref main
+
+# 失敗したRunのログ確認
+gh run view <RUN_ID> --log-failed
+```
+
 ## 🔑 環境変数 & APIクォータ管理
 
 詳細は [docs/04_operations/api_quota.md](docs/04_operations/api_quota.md) を参照。
