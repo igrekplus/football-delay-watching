@@ -282,6 +282,36 @@ DEBUG_MODE=True USE_MOCK_DATA=False TARGET_DATE=2026-01-04 /usr/local/bin/python
 
 ## 参考実装
 
-- `src/clients/schedule_status_client.py` - 日付単位のステータス管理（参考）
-- `src/utils/match_scheduler.py` - 時間ウィンドウ判定
 - `src/workflows/generate_guide_workflow.py` - ワークフロー本体
+
+## 試合選択ロジック (Match Selection Logic)
+
+`MatchSelector` は、以下のロジックに従ってレポート生成対象とする試合を選定する（最大数: `config.MATCH_LIMIT`）。
+
+### 1. ランク判定順序
+試合には優先度ランク(S, A, None)が付与され、以下の順序で選定される：
+
+1. **Rank S**: 最優先（例: Manchester City）
+2. **Rank A**: 高優先
+    - `config.A_RANK_TEAMS` に含まれるチーム
+    - **定義**: Arsenal, Chelsea, Brighton, Manchester United, Liverpool, Tottenham, Leeds United, Barcelona, Real Madrid, Atletico Madrid, Real Sociedad
+    - 日本人選手所属チーム（出場予定の選手情報が取得できた場合）
+3. **Rank None**: その他
+
+### 2. 同ランク時のタイブレーク
+ランクが同じ場合（特に Rank None 同士）、コンペティションの優先度で順位が決まる：
+
+1. `CL` (Champions League)
+2. `LALIGA` (La Liga)
+3. `EPL` (Premier League)
+4. `COPA` (Copa del Rey)
+5. `FA` (FA Cup)
+6. `EFL` (Carabao Cup)
+
+> [!NOTE]
+> `LALIGA > EPL` の設定により、ランク外の試合同士ではラ・リーガの試合（例: Osasuna, Celta Vigo）がプレミアリーグ（例: Aston Villa）より優先される。
+
+### 3. 選定フロー
+1. 全候補試合をランク順（S > A > None）、次いでコンペティション順にソート。
+2. 上位から順に `MATCH_LIMIT` (本番環境: 5) に達するまで選定。
+3. 選定された試合のみ `is_target=True` となり、レポート生成およびGCSステータス更新が行われる。
