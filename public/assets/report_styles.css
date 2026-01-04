@@ -445,8 +445,9 @@ pre {
     border-radius: 12px;
     padding: 12px 18px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    min-width: 280px;
-    flex: 1;
+    min-width: 200px;
+    max-width: 350px;
+    flex: 0 1 auto;
 }
 
 .match-info-icon {
@@ -477,8 +478,9 @@ pre {
 }
 
 .match-info-wide {
-    flex: 2;
-    min-width: 280px;
+    flex: 0 1 auto;
+    min-width: 200px;
+    max-width: 350px;
 }
 
 .match-info-subtext {
@@ -503,6 +505,7 @@ pre {
 
 .manager-card {
     display: flex;
+    flex-direction: row-reverse;
     gap: 15px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 12px;
@@ -732,18 +735,24 @@ pre {
     padding: 16px 0;
 }
 
-/* On PC (>768px), always show content */
+/* On PC (>768px), always show content but keep headers visible */
 @media (min-width: 769px) {
     .collapsible-section {
-        pointer-events: auto;
+        pointer-events: none;
     }
 
     .collapsible-section summary {
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .collapsible-section summary::before {
         display: none;
     }
 
     .collapsible-section .section-content {
         display: block !important;
+        pointer-events: auto;
     }
 }
 

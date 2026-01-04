@@ -299,9 +299,4 @@ class ReportGenerator:
         video_data = youtube_videos.get(match_key, {})
         lines.append(self.youtube_formatter.format_youtube_section(video_data, match_key))
         
-        # エラーステータス
-        lines.append("### ■ エラーステータス")
-        lines.append(f"- {match.error_status}")
-        lines.append("\n")
-        
         return "\n".join(lines), image_paths
