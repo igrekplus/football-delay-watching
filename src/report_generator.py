@@ -245,11 +245,19 @@ class ReportGenerator:
             lines.append(f"\n{match.same_country_text}\n")
             lines.append("")
         
-        # ニュース・戦術 (collapsible on mobile)
+        # ニュース・戦術 (collapsible on mobile) - Issue #130: Enable Markdown inside details
+        # Pre-convert Markdown to HTML since md_in_html extension has issues with our structure
+        import markdown as md_lib
+        
+        news_html = md_lib.markdown(match.news_summary, extensions=['nl2br'])
+        tactical_html = md_lib.markdown(match.tactical_preview, extensions=['nl2br'])
+        if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
+            tactical_html += f'\n<p><a href="{match.preview_url}">戦術プレビュー詳細</a></p>'
+        
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>📰 ニュース要約</summary>')
         lines.append('<div class="section-content">')
-        lines.append(f"- {match.news_summary}")
+        lines.append(news_html)
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
@@ -257,14 +265,15 @@ class ReportGenerator:
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>📊 戦術プレビュー</summary>')
         lines.append('<div class="section-content">')
-        lines.append(f"- {match.tactical_preview}")
-        if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
-            lines.append(f"- URL: {match.preview_url}")
+        lines.append(tactical_html)
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
         
-        # 監督セクション (collapsible on mobile)
+        # 監督セクション (collapsible on mobile) - Issue #130: New Layout
+        # Pre-convert manager interview Markdown to HTML
+        home_interview_html = md_lib.markdown(match.home_interview, extensions=['nl2br']) if match.home_interview else ''
+        away_interview_html = md_lib.markdown(match.away_interview, extensions=['nl2br']) if match.away_interview else ''
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>🎙️ 監督プレビュー</summary>')
         lines.append('<div class="section-content">')
@@ -272,24 +281,30 @@ class ReportGenerator:
         away_manager_photo_html = f'<img src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo">' if match.away_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         
         manager_section_html = f'''<div class="manager-section">
+    <div class="manager-identity">
+        {home_team_logo}
+        {home_manager_photo_html}
+        <div class="manager-text-info">
+            <div class="manager-team">{match.home_team}</div>
+            <div class="manager-name">{match.home_manager}</div>
+        </div>
+    </div>
+    <div class="manager-comment">{home_interview_html}</div>
+</div>
 <div class="manager-card">
-{home_manager_photo_html}
-<div class="manager-info">
-<div class="manager-team">{match.home_team}</div>
-<div class="manager-name">{match.home_manager}</div>
-<div class="manager-comment">{match.home_interview}</div>
-</div>
-</div>
-<div class="manager-card">
-{away_manager_photo_html}
-<div class="manager-info">
-<div class="manager-team">{match.away_team}</div>
-<div class="manager-name">{match.away_manager}</div>
-<div class="manager-comment">{match.away_interview}</div>
-</div>
+    <div class="manager-identity">
+        {away_team_logo}
+        {away_manager_photo_html}
+        <div class="manager-text-info">
+            <div class="manager-team">{match.away_team}</div>
+            <div class="manager-name">{match.away_manager}</div>
+        </div>
+    </div>
+    <div class="manager-comment">{away_interview_html}</div>
 </div>
 </div>'''
         lines.append(manager_section_html)
+
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
