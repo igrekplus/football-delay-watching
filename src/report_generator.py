@@ -292,35 +292,42 @@ class ReportGenerator:
             lines.append("")
         
         # ニュース・戦術 (collapsible on mobile) - Issue #130: Enable Markdown inside details
-        # Note: md_in_html extension requires blank lines around markdown content
+        # Pre-convert Markdown to HTML since md_in_html extension has issues with our structure
+        import markdown as md_lib
+        
+        news_html = md_lib.markdown(match.news_summary, extensions=['nl2br'])
+        tactical_html = md_lib.markdown(match.tactical_preview, extensions=['nl2br'])
+        if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
+            tactical_html += f'\n<p><a href="{match.preview_url}">戦術プレビュー詳細</a></p>'
+        
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>📰 ニュース要約</summary>')
-        lines.append('<div class="section-content" markdown="1">')
-        lines.append('')  # Required blank line for md_in_html
-        lines.append(f"{match.news_summary}")
-        lines.append('')  # Required blank line for md_in_html
+        lines.append('<div class="section-content">')
+        lines.append(news_html)
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
         
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>📊 戦術プレビュー</summary>')
-        lines.append('<div class="section-content" markdown="1">')
-        lines.append('')  # Required blank line for md_in_html
-        lines.append(f"{match.tactical_preview}")
-        if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
-            lines.append(f"\n[戦術プレビュー詳細]({match.preview_url})")
-        lines.append('')  # Required blank line for md_in_html
+        lines.append('<div class="section-content">')
+        lines.append(tactical_html)
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
         
         # 監督セクション (collapsible on mobile) - Issue #130: New Layout
+        # Pre-convert manager interview Markdown to HTML
+        home_interview_html = md_lib.markdown(match.home_interview, extensions=['nl2br']) if match.home_interview else ''
+        away_interview_html = md_lib.markdown(match.away_interview, extensions=['nl2br']) if match.away_interview else ''
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>🎙️ 監督プレビュー</summary>')
         lines.append('<div class="section-content">')
         home_manager_photo_html = f'<img src="{match.home_manager_photo}" alt="{match.home_manager}" class="manager-photo">' if match.home_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         away_manager_photo_html = f'<img src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo">' if match.away_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
+        # ロゴ
+        home_team_logo = f'<img src="{match.home_logo}" alt="{match.home_team}" class="manager-team-logo">' if match.home_logo else ''
+        away_team_logo = f'<img src="{match.away_logo}" alt="{match.away_team}" class="manager-team-logo">' if match.away_logo else ''
         
         # ロゴ
         home_team_logo = f'<img src="{match.home_logo}" alt="{match.home_team}" class="manager-team-logo">' if match.home_logo else ''
@@ -336,7 +343,7 @@ class ReportGenerator:
             <div class="manager-name">{match.home_manager}</div>
         </div>
     </div>
-    <div class="manager-comment">{match.home_interview}</div>
+    <div class="manager-comment">{home_interview_html}</div>
 </div>
 <div class="manager-card">
     <div class="manager-identity">
@@ -347,10 +354,11 @@ class ReportGenerator:
             <div class="manager-name">{match.away_manager}</div>
         </div>
     </div>
-    <div class="manager-comment">{match.away_interview}</div>
+    <div class="manager-comment">{away_interview_html}</div>
 </div>
 </div>'''
         lines.append(manager_section_html)
+
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")

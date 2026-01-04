@@ -11,17 +11,21 @@
 ```mermaid
 graph TD
     subgraph Workflow["GenerateGuideWorkflow.run()"]
-        A[MatchProcessor.run] --> B[FactsService.enrich_matches]
-        B --> C[NewsService.process_news]
-        C --> D[YouTubeService.fetch_videos]
-        D --> E[ReportGenerator.generate_all]
-        E --> F[HtmlGenerator.generate]
-        F --> G[EmailService.send]
+        A[MatchProcessor.run] --> B[MatchScheduler + FixtureStatusManager<br/>(prod only)]
+        B --> C[MatchSelector.select]
+        C --> D[FactsService.enrich_matches]
+        D --> E[NewsService.process_news]
+        E --> F[YouTubeService.fetch_videos]
+        F --> G[ReportGenerator.generate_all]
+        G --> H[HtmlGenerator.generate]
+        H --> I[EmailService.send]
     end
     
     H[main.py] --> Workflow
-    Workflow --> I[CacheWarmer.run]
+    Workflow --> J[CacheWarmer.run]
 ```
+
+> 補足: `MatchScheduler` / `FixtureStatusManager` は **本番のみ**で有効。デバッグ/モックではスキップされ、`MatchSelector.select()` が直接適用される。
 
 ---
 
@@ -33,16 +37,30 @@ graph TD
 
 | 項目 | 内容 |
 |------|------|
-| **責務** | 試合データ取得、ランク付け、選定 |
+| **責務** | 試合データ取得、ランク付け（選定はWorkflow側） |
 | **入力** | `config.TARGET_DATE`, `config.TARGET_LEAGUES` |
-| **出力** | `List[MatchData]` (選定済み) |
+| **出力** | `List[MatchAggregate]` (選定前) |
 | **依存クライアント** | `ApiFootballClient` |
 | **副作用** | なし |
 
 **内部フロー:**
 1. `extract_matches()`: API-Footballから試合リスト取得
 2. `MatchRanker.assign_rank()`: 各試合にランク付与
-3. `MatchSelector.select()`: ランク順に上位試合を選定
+
+### 2.1.1 Selection & Scheduling（Workflow内）
+
+| 項目 | 内容 |
+|------|------|
+| **責務** | 時間窓フィルタと処理済み管理による対象試合抽出 |
+| **入力** | `List[MatchAggregate]` |
+| **出力** | `List[MatchAggregate]` (is_target付与) |
+| **依存クライアント** | `FixtureStatusManager` (GCS) |
+| **副作用** | 本番のみステータス更新（processing/complete/failed） |
+
+**内部フロー:**
+1. `MatchScheduler.filter_processable_matches()`: 時間窓チェック
+2. `MatchSelector.select()`: ランク順に上位試合を選定（is_target付与）
+3. `FixtureStatusManager`: 処理開始/完了/失敗の状態管理（本番のみ）
 
 ---
 
@@ -51,10 +69,10 @@ graph TD
 | 項目 | 内容 |
 |------|------|
 | **責務** | 試合詳細情報（スタメン、怪我人、フォーム、対戦履歴）の付加 |
-| **入力** | `List[MatchData]` |
-| **出力** | `List[MatchData]` (enriched) |
+| **入力** | `List[MatchAggregate]` |
+| **出力** | `List[MatchAggregate]` (enriched) |
 | **依存クライアント** | `ApiFootballClient` |
-| **副作用** | `MatchData`のフィールド更新（in-place mutation） |
+| **副作用** | `MatchAggregate`のフィールド更新（in-place mutation） |
 
 **更新されるフィールド:**
 - `home_lineup`, `away_lineup`: スタメン情報
@@ -70,10 +88,10 @@ graph TD
 | 項目 | 内容 |
 |------|------|
 | **責務** | ニュース収集、LLM要約、スポイラーフィルタリング |
-| **入力** | `List[MatchData]` |
-| **出力** | `List[MatchData]` (news fields populated) |
+| **入力** | `List[MatchAggregate]` |
+| **出力** | `List[MatchAggregate]` (news fields populated) |
 | **依存クライアント** | `GeminiRestClient` (Grounding), `LLMClient` |
-| **副作用** | `MatchData`のフィールド更新（in-place mutation） |
+| **副作用** | `MatchAggregate`のフィールド更新（in-place mutation） |
 
 **更新されるフィールド:**
 - `news_summary`: ニュース要約（スポイラーフィルタ済み）
@@ -93,7 +111,7 @@ graph TD
 | 項目 | 内容 |
 |------|------|
 | **責務** | YouTube動画検索、優先度ソート、フィルタリング |
-| **入力** | `List[MatchData]` |
+| **入力** | `List[MatchAggregate]` |
 | **出力** | `Dict[str, List[Dict]]` (動画リスト) |
 | **依存クライアント** | YouTube Data API (via `YouTubeSearchClient`) |
 | **副作用** | ローカルキャッシュへの書き込み |
@@ -114,7 +132,7 @@ graph TD
 | 項目 | 内容 |
 |------|------|
 | **責務** | Markdownレポート生成、フォーメーション画像生成 |
-| **入力** | `List[MatchData]`, YouTube動画リスト |
+| **入力** | `List[MatchAggregate]`, YouTube動画リスト |
 | **出力** | `List[Dict]` (各試合のMarkdown+画像パス) |
 | **副作用** | フォーメーション画像ファイル生成 |
 
@@ -153,11 +171,14 @@ flowchart LR
     end
     
     subgraph Domain["ドメインモデル"]
-        MD[("MatchData")]
+        MD[("MatchAggregate")]
     end
     
     subgraph Services["サービス層"]
         MP["MatchProcessor"]
+        MS["MatchScheduler"]
+        SEL["MatchSelector"]
+        FSM["FixtureStatusManager"]
         FS["FactsService"]
         NS["NewsService"]
         YS["YouTubeService"]
@@ -174,7 +195,10 @@ flowchart LR
     LLM --> NS
     YT --> YS
     
-    MP --> MD
+    MP --> MS
+    MS --> SEL
+    FSM -.-> SEL
+    SEL --> MD
     FS --> MD
     NS --> MD
     YS --> MD
