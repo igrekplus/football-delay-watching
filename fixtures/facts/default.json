@@ -56,6 +56,90 @@
         ],
         "home_recent_form": "WWWWW",
         "away_recent_form": "LDDLL",
+        "home_recent_form_details": [
+            {
+                "date": "2025-12-29",
+                "opponent": "Liverpool",
+                "competition": "Premier League",
+                "round": "Matchday 18",
+                "score": "3-1",
+                "result": "W"
+            },
+            {
+                "date": "2025-12-26",
+                "opponent": "Everton",
+                "competition": "Premier League",
+                "round": "Matchday 17",
+                "score": "2-0",
+                "result": "W"
+            },
+            {
+                "date": "2025-12-21",
+                "opponent": "Aston Villa",
+                "competition": "Premier League",
+                "round": "Matchday 16",
+                "score": "4-2",
+                "result": "W"
+            },
+            {
+                "date": "2025-12-14",
+                "opponent": "Manchester United",
+                "competition": "Premier League",
+                "round": "Matchday 15",
+                "score": "3-0",
+                "result": "W"
+            },
+            {
+                "date": "2025-12-07",
+                "opponent": "Crystal Palace",
+                "competition": "Premier League",
+                "round": "Matchday 14",
+                "score": "2-1",
+                "result": "W"
+            }
+        ],
+        "away_recent_form_details": [
+            {
+                "date": "2025-12-29",
+                "opponent": "Southampton",
+                "competition": "Premier League",
+                "round": "Matchday 18",
+                "score": "1-2",
+                "result": "L"
+            },
+            {
+                "date": "2025-12-26",
+                "opponent": "Arsenal",
+                "competition": "Premier League",
+                "round": "Matchday 17",
+                "score": "1-1",
+                "result": "D"
+            },
+            {
+                "date": "2025-12-21",
+                "opponent": "Brighton",
+                "competition": "Premier League",
+                "round": "Matchday 16",
+                "score": "0-0",
+                "result": "D"
+            },
+            {
+                "date": "2025-12-14",
+                "opponent": "Wolves",
+                "competition": "Premier League",
+                "round": "Matchday 15",
+                "score": "0-2",
+                "result": "L"
+            },
+            {
+                "date": "2025-12-07",
+                "opponent": "Chelsea",
+                "competition": "Premier League",
+                "round": "Matchday 14",
+                "score": "1-3",
+                "result": "L"
+            }
+        ],
         "h2h_summary": "過去5年間 3試合: Manchester City 3勝, 引分 0, West Ham 0勝",
         "h2h_details": [
             {

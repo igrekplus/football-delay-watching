@@ -89,16 +89,21 @@ class ReportGenerator:
         else:
             logo_html = ''  # ロゴなしの場合は非表示（スタイルで調整）
 
+        # Issue #133: メタ情報を動的に構築（競技ロゴがある場合は競技名を非表示、Importanceはデバッグ欄へ移動）
+        meta_items = []
+        if not match.competition_logo:  # ロゴがない場合のみ競技名を表示
+            meta_items.append(f'<span class="competition-name">{competition_display}</span>')
+        meta_items.append(f'<span class="match-datetime">{match.kickoff_jst} / {match.kickoff_local} @ {match.venue}</span>')
+        
+        # セパレータで結合
+        metadata_html = '<span class="separator">|</span>'.join(meta_items)
+        
         header_html = f'''<div class="match-header-container">
     {logo_html}
     <div class="match-header-info">
         <h1>{match.home_team} vs {match.away_team}</h1>
         <div class="match-metadata">
-            <span class="competition-name">{competition_display}</span>
-            <span class="separator">|</span>
-            <span class="match-rank">Importance: {match.rank}</span>
-            <span class="separator desktop-only">|</span>
-            <span class="match-datetime">{match.kickoff_jst} / {match.kickoff_local} @ {match.venue}</span>
+            {metadata_html}
         </div>
     </div>
 </div>'''
@@ -112,9 +117,9 @@ class ReportGenerator:
         # 末尾にデバッグ情報とAPI使用状況を追加
         lines.append("\n---\n")
         
-        # デバッグ用：対象外動画一覧
+        # デバッグ用：対象外動画一覧 + Importance（Issue #133）
         match_key = f"{match.home_team} vs {match.away_team}"
-        lines.append(self.youtube_formatter.format_debug_video_section(youtube_videos, match_key))
+        lines.append(self.youtube_formatter.format_debug_video_section(youtube_videos, match_key, match_rank=match.rank))
         
         lines.append(excluded_section)
         
@@ -139,6 +144,33 @@ class ReportGenerator:
         lines.append("\n*Gmail API: OAuth認証済みアカウントの送信制限\n")
         
         return "".join(lines)
+    
+    def _format_form_details_table(self, form_details: list) -> str:
+        """直近試合詳細テーブルをHTML形式で生成（Issue #132）"""
+        table = '<table class="form-table"><thead><tr><th>日付</th><th>対戦相手</th><th>大会</th><th>スコア</th><th>結果</th></tr></thead><tbody>'
+        
+        for detail in form_details:
+            date_str = detail.get("date", "")
+            opponent = detail.get("opponent", "")
+            competition = detail.get("competition", "")
+            round_info = detail.get("round", "")
+            score = detail.get("score", "")
+            result = detail.get("result", "")
+            
+            # Result color class
+            result_class = {
+                "W": "result-win",
+                "D": "result-draw",
+                "L": "result-loss"
+            }.get(result, "")
+            
+            # Competition with round (if available)
+            comp_display = f"{competition}" if not round_info else f"{competition} ({round_info})"
+            
+            table += f'<tr><td>{date_str}</td><td>{opponent}</td><td>{comp_display}</td><td>{score}</td><td class="{result_class}">{result}</td></tr>'
+        
+        table += '</tbody></table>'
+        return table
     
     def _write_single_match_content(self, match: Union[MatchData, MatchAggregate], youtube_videos: Dict[str, List[Dict]]) -> tuple:
         """1試合分のレポート本文を生成"""
@@ -227,6 +259,35 @@ class ReportGenerator:
         away_form = self.match_info_formatter.format_form_with_icons(match.away_recent_form)
         lines.append(f"- 直近フォーム：Home {home_form} / Away {away_form}")
         lines.append(f"- 主審：{match.referee}")
+        lines.append("")
+        
+        # Recent Form Details Section (Issue #132)
+        lines.append("### ■ 直近5試合")
+        
+        if match.home_recent_form_details or match.away_recent_form_details:
+            lines.append('<div class="two-column-section">')
+            
+            # Home Team Form Table
+            lines.append('<div class="form-column">')
+            lines.append(f'<h4>{match.home_team}</h4>')
+            if match.home_recent_form_details:
+                lines.append(self._format_form_details_table(match.home_recent_form_details))
+            else:
+                lines.append('<p class="form-empty">データなし</p>')
+            lines.append('</div>')
+            
+            # Away Team Form Table
+            lines.append('<div class="form-column">')
+            lines.append(f'<h4>{match.away_team}</h4>')
+            if match.away_recent_form_details:
+                lines.append(self._format_form_details_table(match.away_recent_form_details))
+            else:
+                lines.append('<p class="form-empty">データなし</p>')
+            lines.append('</div>')
+            
+            lines.append('</div>')  # end two-column-section
+        else:
+            lines.append('<p class="form-empty">直近試合データなし</p>')
         lines.append("")
         
         # H2H Section (Issue #105)

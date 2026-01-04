@@ -77,6 +77,20 @@ class ApiFootballClient:
         params = {"h2h": h2h_param}
         return self._fetch(url, params=params, label=f"h2h {h2h_param}")
 
+    def fetch_team_recent_fixtures(self, team_id: int, last: int = 5) -> Dict[str, Any]:
+        """Fetch a team's last N fixtures (Issue #132).
+        
+        Args:
+            team_id: Team ID
+            last: Number of recent fixtures to fetch (default: 5)
+        
+        Returns:
+            API response containing recent fixtures
+        """
+        url = f"{self.base_url}/fixtures"
+        params = {"team": team_id, "last": last}
+        return self._fetch(url, params=params, label=f"recent fixtures team {team_id}")
+
     def fetch_player_details(self, player_id: int, team_name: str, season: int = 2024) -> Dict[str, Any]:
         """Fetch player details."""
         url = f"{self.base_url}/players"

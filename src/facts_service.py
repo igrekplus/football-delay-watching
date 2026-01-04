@@ -53,10 +53,13 @@ class FactsService:
         # 3. Fetch Team Form
         self._fetch_team_form(match)
         
-        # 4. Fetch Head-to-Head History
+        # 4. Fetch Recent Form Details (Issue #132)
+        self._fetch_recent_form_details(match)
+        
+        # 5. Fetch Head-to-Head History
         self._fetch_h2h(match)
         
-        # 5. Detect Same Country Matchups (Issue #39)
+        # 6. Detect Same Country Matchups (Issue #39)
         self._detect_and_generate_same_country(match)
     
     def _fetch_lineups(self, match: Union[MatchData, MatchAggregate]):
@@ -229,6 +232,90 @@ class FactsService:
             form = data['response'].get('form', '')
             return form[-5:] if form else ""
         return ""
+    
+    def _fetch_recent_form_details(self, match: Union[MatchData, MatchAggregate]):
+        """直近5試合詳細を取得・加工（Issue #132）"""
+        # Get fixture details for team IDs
+        fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
+        
+        if not fixture_data.get('response'):
+            logger.warning(f"Form details: fixtures response empty for match {match.id}")
+            return
+        
+        fixture = fixture_data['response'][0]
+        home_id = fixture['teams']['home']['id']
+        away_id = fixture['teams']['away']['id']
+        
+        # Fetch recent fixtures for each team
+        match.home_recent_form_details = self._get_team_recent_form_details(home_id, match.home_team)
+        match.away_recent_form_details = self._get_team_recent_form_details(away_id, match.away_team)
+    
+    def _get_team_recent_form_details(self, team_id: int, team_name: str) -> list:
+        """チームの直近5試合詳細を取得"""
+        data = self.api.fetch_team_recent_fixtures(team_id=team_id, last=5)
+        
+        if not data.get('response'):
+            logger.info(f"No recent fixtures for team {team_id}")
+            return []
+        
+        # Filter to finished matches only
+        finished_statuses = {"FT", "AET", "PEN"}
+        form_details = []
+        
+        for fixture in data['response']:
+            status = fixture.get('fixture', {}).get('status', {}).get('short', '')
+            if status not in finished_statuses:
+                continue
+            
+            fixture_info = fixture.get('fixture', {})
+            league_info = fixture.get('league', {})
+            goals = fixture.get('goals', {})
+            teams = fixture.get('teams', {})
+            
+            fixture_date = fixture_info.get('date', '')[:10]  # YYYY-MM-DD
+            competition = league_info.get('name', 'Unknown')
+            round_info = league_info.get('round', '')
+            
+            home_team_name = teams.get('home', {}).get('name', '')
+            away_team_name = teams.get('away', {}).get('name', '')
+            home_team_id = teams.get('home', {}).get('id')
+            home_goals = goals.get('home', 0) or 0
+            away_goals = goals.get('away', 0) or 0
+            
+            # Determine opponent and result from the target team's perspective
+            if home_team_id == team_id:
+                opponent = away_team_name
+                score = f"{home_goals}-{away_goals}"
+                if home_goals > away_goals:
+                    result = "W"
+                elif home_goals < away_goals:
+                    result = "L"
+                else:
+                    result = "D"
+            else:
+                opponent = home_team_name
+                score = f"{away_goals}-{home_goals}"  # Show from target team's perspective
+                if away_goals > home_goals:
+                    result = "W"
+                elif away_goals < home_goals:
+                    result = "L"
+                else:
+                    result = "D"
+            
+            form_details.append({
+                "date": fixture_date,
+                "opponent": opponent,
+                "competition": competition,
+                "round": round_info,
+                "score": score,
+                "result": result
+            })
+        
+        # Sort by date descending (most recent first)
+        form_details.sort(key=lambda x: x['date'], reverse=True)
+        
+        return form_details[:5]  # Ensure max 5 results
+    
     
     def _fetch_h2h(self, match: Union[MatchData, MatchAggregate]):
         """対戦履歴を取得・加工（過去5年間のみ）"""

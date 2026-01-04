@@ -112,7 +112,8 @@ body {
     display: flex;
     align-items: center;
     gap: var(--spacing-xl);
-    margin: var(--spacing-2xl) 0 var(--spacing-xl) 0;
+    margin: var(--spacing-2xl) 0 var(--spacing-md) 0;
+    /* Issue #133: 余白調整 */
     padding: var(--spacing-xl);
     background: var(--card-bg-light);
     border-radius: var(--card-radius);
@@ -221,7 +222,8 @@ h3 {
     align-items: center;
     font-size: 1.2rem;
     color: var(--color-secondary);
-    margin: 25px 0 15px 0;
+    margin: 15px 0 15px 0;
+    /* Issue #133: 余白調整 */
 }
 
 /* Section labels (Starting XI, Substitutes, Injuries) */
@@ -948,6 +950,80 @@ pre {
 
     .h2h-table thead th,
     .h2h-table tbody td {
+        padding: var(--spacing-sm);
+    }
+}
+
+/* Form Details Table (Issue #132) */
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-lg) 0;
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    font-size: 0.85rem;
+}
+
+.form-table thead th {
+    background: var(--card-bg-code);
+    color: var(--color-primary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.form-table tbody td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--card-border-light);
+    color: var(--color-text);
+}
+
+.form-table tbody tr:hover {
+    background: var(--card-bg-light);
+}
+
+/* Form Column Layout */
+.form-column {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-column h4 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--color-secondary);
+    font-size: 1rem;
+}
+
+.form-empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* Result Colors */
+.result-win {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.result-draw {
+    color: #FFC107;
+    font-weight: bold;
+}
+
+.result-loss {
+    color: #F44336;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .form-table {
+        font-size: 0.75rem;
+    }
+
+    .form-table thead th,
+    .form-table tbody td {
         padding: var(--spacing-sm);
     }
 }

@@ -59,6 +59,12 @@ class MatchFacts:
     home_recent_form: str = ""
     away_recent_form: str = ""
     
+    # 直近5試合詳細 (Issue #132)
+    home_recent_form_details: List[Dict] = field(default_factory=list)
+    away_recent_form_details: List[Dict] = field(default_factory=list)
+    # [{"date": "2026-01-01", "opponent": "Arsenal", "competition": "Premier League", 
+    #   "round": "Matchday 19", "score": "2-1", "result": "W"}, ...]
+    
     # 選手詳細情報
     player_nationalities: Dict[str, str] = field(default_factory=dict)
     player_numbers: Dict[str, int] = field(default_factory=dict)
@@ -330,6 +336,22 @@ class MatchAggregate:
     @away_recent_form.setter
     def away_recent_form(self, value: str):
         self.facts.away_recent_form = value
+    
+    @property
+    def home_recent_form_details(self) -> List[Dict]:
+        return self.facts.home_recent_form_details
+    
+    @home_recent_form_details.setter
+    def home_recent_form_details(self, value: List[Dict]):
+        self.facts.home_recent_form_details = value
+    
+    @property
+    def away_recent_form_details(self) -> List[Dict]:
+        return self.facts.away_recent_form_details
+    
+    @away_recent_form_details.setter
+    def away_recent_form_details(self, value: List[Dict]):
+        self.facts.away_recent_form_details = value
     
     @property
     def player_nationalities(self) -> Dict[str, str]:

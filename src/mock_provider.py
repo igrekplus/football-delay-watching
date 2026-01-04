@@ -122,6 +122,8 @@ class MockProvider:
         # フォーム・対戦履歴
         match.home_recent_form = facts.get("home_recent_form", "")
         match.away_recent_form = facts.get("away_recent_form", "")
+        match.home_recent_form_details = facts.get("home_recent_form_details", [])
+        match.away_recent_form_details = facts.get("away_recent_form_details", [])
         match.h2h_summary = facts.get("h2h_summary", "")
         match.h2h_details = facts.get("h2h_details", [])
         

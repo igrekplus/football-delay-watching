@@ -89,6 +89,18 @@
     - `goals.home`, `goals.away`
     - `teams.home.id`（勝敗判定に使用）
 
+### 3.8 /fixtures (team + last) - Issue #132
+- **用途**: チームの直近N試合を取得（フォーム詳細表示用）。
+- **パラメータ**: `team` (team id), `last` (取得件数、デフォルト5)
+- **クライアント側処理**:
+  - **フィルタ**: 終了試合のみ（`status.short` = FT/AET/PEN）
+  - **判定**: 対象チームからの視点でW/D/Lを判定
+  - **参照項目**:
+    - `fixture.date`, `fixture.status.short`
+    - `league.name`, `league.round`
+    - `goals.home`, `goals.away`
+    - `teams.home.id`, `teams.away.name`
+
 ---
 
 ## 4. 制限事項
