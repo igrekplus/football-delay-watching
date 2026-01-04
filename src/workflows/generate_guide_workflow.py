@@ -8,6 +8,7 @@ from src.report_generator import ReportGenerator
 from src.cache_warmer import run_cache_warming
 from src.utils.datetime_util import DateTimeUtil
 from src.utils.match_scheduler import MatchScheduler
+from src.domain.match_selector import MatchSelector
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,6 @@ class GenerateGuideWorkflow:
         status_manager = None
         if not config.USE_MOCK_DATA and not config.DEBUG_MODE:
             from src.utils.fixture_status_manager import FixtureStatusManager
-            from src.domain.match_selector import MatchSelector
             
             status_manager = FixtureStatusManager()
             scheduler = MatchScheduler()
@@ -72,7 +72,6 @@ class GenerateGuideWorkflow:
                     logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理開始としてマーク")
         else:
             # モック・デバッグモードでも選定ロジックを適用
-            from src.domain.match_selector import MatchSelector
             selector = MatchSelector()
             matches = selector.select(all_matches)
         

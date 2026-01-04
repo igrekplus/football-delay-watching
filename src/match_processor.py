@@ -1,5 +1,6 @@
 from typing import List, Optional, Dict, Any
 import logging
+import os
 from datetime import datetime, timedelta
 
 from config import config
@@ -101,9 +102,6 @@ class MatchProcessor:
         venue_city = fixture.get('venue', {}).get('city', '')
         venue_full = f"{venue_name}, {venue_city}" if venue_city else venue_name
 
-        # Japanese Weekday
-        weekday_ja = DateTimeUtil.get_weekday_ja(match_date_jst)
-        
         # Team Logos
         home_logo_url = teams['home'].get('logo', '')
         away_logo_url = teams['away'].get('logo', '')
@@ -133,8 +131,6 @@ class MatchProcessor:
 
     def _is_within_time_window(self, match_date_jst: datetime, target_date: datetime) -> bool:
         """Checks if the match is within the target time window."""
-        import os
-        
         # If TARGET_DATE is explicitly set, use production-like window logic relative to that date
         if os.getenv("TARGET_DATE"):
              # Assuming manual override wants strict day bucket + buffer
