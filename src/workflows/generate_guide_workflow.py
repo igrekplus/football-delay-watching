@@ -48,24 +48,33 @@ class GenerateGuideWorkflow:
         status_manager = None
         if not config.USE_MOCK_DATA and not config.DEBUG_MODE:
             from src.utils.fixture_status_manager import FixtureStatusManager
+            from src.domain.match_selector import MatchSelector
             
             status_manager = FixtureStatusManager()
             scheduler = MatchScheduler()
+            selector = MatchSelector()
             
             # 時間窓 + ステータス管理による二段階フィルタ
-            matches = scheduler.filter_processable_matches(all_matches, status_manager)
+            processable_matches = scheduler.filter_processable_matches(all_matches, status_manager)
             
-            if not matches:
+            if not processable_matches:
                 logger.info("現在処理対象の試合なし（時間外 or 処理済み）。次回実行まで待機。")
                 return  # 早期終了（ステータスは記録しない）
             
-            # 処理開始マーク
+            # 3. 最終選定（ランク順ソート + MATCH_LIMIT適用）
+            matches = selector.select(processable_matches)
+            logger.info(f"最終選定: {len([m for m in matches if m.is_target])} 試合（処理可能: {len(processable_matches)} 試合から）")
+            
+            # 処理開始マーク（is_target=Trueの試合のみ）
             for match in matches:
-                status_manager.mark_processing(match.id, match.core.kickoff_at_utc)
-                logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理開始としてマーク")
+                if match.is_target:
+                    status_manager.mark_processing(match.id, match.core.kickoff_at_utc)
+                    logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理開始としてマーク")
         else:
-            # モック・デバッグモードでは全試合を処理（ステータス管理なし）
-            matches = all_matches
+            # モック・デバッグモードでも選定ロジックを適用
+            from src.domain.match_selector import MatchSelector
+            selector = MatchSelector()
+            matches = selector.select(all_matches)
         
         try:
             # 3. Facts Acquisition

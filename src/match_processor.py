@@ -27,9 +27,9 @@ class MatchProcessor:
         # Calculate Rank for all matches
         for m in matches:
             self.ranker.assign_rank(m)
-            
-        selected_matches = self.selector.select(matches)
-        return selected_matches
+        
+        # 選定はワークフロー側で行う（スケジュール判定後）
+        return matches
 
     def extract_matches(self) -> List[MatchAggregate]:
         if config.USE_MOCK_DATA:
