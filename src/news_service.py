@@ -39,7 +39,7 @@ class NewsService:
                 
                 # 1. Generate Summary (Grounding機能で直接検索)
                 # Google Search API は使用せず、LLM が Grounding で検索
-                raw_summary = self._generate_summary(match, [])
+                raw_summary = self._generate_summary(match)
                 match.news_summary = self.filter.check_text(raw_summary)
                 
                 # 2. Spoiler check with LLM (Issue #33)
@@ -54,7 +54,7 @@ class NewsService:
                         match.news_summary = f"⚠️ 結果言及の可能性あり: {reason}\n\n{match.news_summary}"
                 
                 # 3. Generate Tactical Preview (Grounding機能で直接検索)
-                raw_preview = self._generate_tactical_preview(match, [])
+                raw_preview = self._generate_tactical_preview(match)
                 match.tactical_preview = self.filter.check_text(raw_preview)
                 match.preview_url = "https://example.com/tactical-preview"
                 
@@ -63,20 +63,18 @@ class NewsService:
 
 
 
-    def _generate_summary(self, match: Union[MatchData, MatchAggregate], articles: List[Dict[str, str]]) -> str:
+    def _generate_summary(self, match: Union[MatchData, MatchAggregate]) -> str:
         """ニュース要約を生成"""
         return self.llm.generate_news_summary(
             home_team=match.home_team,
-            away_team=match.away_team,
-            articles=articles
+            away_team=match.away_team
         )
 
-    def _generate_tactical_preview(self, match: Union[MatchData, MatchAggregate], articles: List[Dict[str, str]]) -> str:
+    def _generate_tactical_preview(self, match: Union[MatchData, MatchAggregate]) -> str:
         """戦術プレビューを生成"""
         return self.llm.generate_tactical_preview(
             home_team=match.home_team,
             away_team=match.away_team,
-            articles=articles,
             home_formation=match.home_formation,
             away_formation=match.away_formation,
             home_lineup=match.home_lineup,
@@ -95,7 +93,6 @@ class NewsService:
             # この試合に関する情報に限定する (Issue #119)
             summary = self.llm.summarize_interview(
                 team_name, 
-                [], 
                 opponent_team=opponent_team
             )
             summary = self.filter.check_text(summary)

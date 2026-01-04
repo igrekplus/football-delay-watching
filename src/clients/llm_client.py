@@ -65,8 +65,7 @@ class LLMClient:
     def generate_news_summary(
         self, 
         home_team: str, 
-        away_team: str, 
-        articles: List[Dict[str, str]]
+        away_team: str
     ) -> str:
         """
         ニュース記事から試合前サマリーを生成（Grounding機能使用）
@@ -87,12 +86,11 @@ class LLMClient:
     def generate_tactical_preview(
         self, 
         home_team: str, 
-        away_team: str, 
-        articles: List[Dict[str, str]],
+        away_team: str,
         home_formation: str = "",
         away_formation: str = "",
-        home_lineup: List[str] = None,
         away_lineup: List[str] = None,
+        home_lineup: List[str] = None,
         competition: str = ""
     ) -> str:
         """
@@ -179,7 +177,6 @@ class LLMClient:
     def summarize_interview(
         self, 
         team_name: str, 
-        articles: List[Dict[str, str]],
         opponent_team: str = None
     ) -> str:
         """
