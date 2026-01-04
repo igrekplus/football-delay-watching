@@ -266,9 +266,11 @@ class FactsService:
             
             try:
                 fixture_date = datetime.fromisoformat(fixture_date_str.replace("Z", "+00:00"))
-                if fixture_date.replace(tzinfo=None) < cutoff_date:
+                # Compare aware datetimes directly (cutoff_date is JST aware, fixture_date is UTC aware)
+                if fixture_date < cutoff_date:
                     continue
-            except (ValueError, TypeError):
+            except (ValueError, TypeError) as e:
+                logger.warning(f"H2H date parse/compare error: {e} for {fixture_date_str}")
                 continue
             
             filtered_matches.append(h2h_fixture)
