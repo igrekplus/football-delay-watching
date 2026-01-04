@@ -390,10 +390,6 @@ class ReportGenerator:
         home_team_logo = f'<img src="{match.home_logo}" alt="{match.home_team}" class="manager-team-logo">' if match.home_logo else ''
         away_team_logo = f'<img src="{match.away_logo}" alt="{match.away_team}" class="manager-team-logo">' if match.away_logo else ''
         
-        # ロゴ
-        home_team_logo = f'<img src="{match.home_logo}" alt="{match.home_team}" class="manager-team-logo">' if match.home_logo else ''
-        away_team_logo = f'<img src="{match.away_logo}" alt="{match.away_team}" class="manager-team-logo">' if match.away_logo else ''
-        
         manager_section_html = f'''<div class="manager-section">
 <div class="manager-card">
     <div class="manager-identity">
