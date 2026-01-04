@@ -231,7 +231,9 @@ class FactsService:
         return ""
     
     def _fetch_h2h(self, match: Union[MatchData, MatchAggregate]):
-        """対戦履歴を取得・加工"""
+        """対戦履歴を取得・加工（過去5年間のみ）"""
+        from datetime import datetime, timedelta
+        
         # Get fixture details for team IDs
         fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
         
@@ -250,33 +252,91 @@ class FactsService:
         if not h2h_data.get('response'):
             logger.info(f"H2H: No history found for {match.home_team} vs {match.away_team}")
             match.h2h_summary = "対戦履歴なし"
+            match.h2h_details = []
             return
         
-        # Count wins/draws
+        # Filter to last 5 years
+        cutoff_date = config.TARGET_DATE - timedelta(days=5*365)
+        filtered_matches = []
+        
+        for h2h_fixture in h2h_data['response']:
+            fixture_date_str = h2h_fixture.get('fixture', {}).get('date', '')
+            if not fixture_date_str:
+                continue
+            
+            try:
+                fixture_date = datetime.fromisoformat(fixture_date_str.replace("Z", "+00:00"))
+                if fixture_date.replace(tzinfo=None) < cutoff_date:
+                    continue
+            except (ValueError, TypeError):
+                continue
+            
+            filtered_matches.append(h2h_fixture)
+        
+        # Sort by date descending
+        filtered_matches.sort(
+            key=lambda x: x.get('fixture', {}).get('date', ''),
+            reverse=True
+        )
+        
+        if not filtered_matches:
+            logger.info(f"H2H: No matches within last 5 years for {match.home_team} vs {match.away_team}")
+            match.h2h_summary = "過去5年間の対戦なし"
+            match.h2h_details = []
+            return
+        
+        # Build h2h_details and count wins/draws
+        h2h_details = []
         home_wins = 0
         away_wins = 0
         draws = 0
         
-        for fixture in h2h_data['response']:
-            home_goals = fixture['goals']['home']
-            away_goals = fixture['goals']['away']
-            fixture_home_id = fixture['teams']['home']['id']
+        for h2h_fixture in filtered_matches:
+            fixture_info = h2h_fixture.get('fixture', {})
+            league_info = h2h_fixture.get('league', {})
+            goals = h2h_fixture.get('goals', {})
+            teams = h2h_fixture.get('teams', {})
             
+            fixture_date_str = fixture_info.get('date', '')[:10]  # YYYY-MM-DD
+            competition = league_info.get('name', 'Unknown')
+            home_team_name = teams.get('home', {}).get('name', '')
+            away_team_name = teams.get('away', {}).get('name', '')
+            home_goals = goals.get('home', 0) or 0
+            away_goals = goals.get('away', 0) or 0
+            score = f"{home_goals}-{away_goals}"
+            fixture_home_id = teams.get('home', {}).get('id')
+            
+            # Determine winner relative to the current match's home team
             if home_goals == away_goals:
+                winner = "draw"
                 draws += 1
             elif home_goals > away_goals:
                 if fixture_home_id == home_id:
+                    winner = match.home_team
                     home_wins += 1
                 else:
+                    winner = match.away_team
                     away_wins += 1
             else:
                 if fixture_home_id == home_id:
+                    winner = match.away_team
                     away_wins += 1
                 else:
+                    winner = match.home_team
                     home_wins += 1
+            
+            h2h_details.append({
+                "date": fixture_date_str,
+                "competition": competition,
+                "home": home_team_name,
+                "away": away_team_name,
+                "score": score,
+                "winner": winner
+            })
         
+        match.h2h_details = h2h_details
         total = home_wins + draws + away_wins
-        match.h2h_summary = f"過去{total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
+        match.h2h_summary = f"過去5年間 {total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
 
     def _get_mock_facts(self, match: Union[MatchData, MatchAggregate]):
         """モックデータを設定"""

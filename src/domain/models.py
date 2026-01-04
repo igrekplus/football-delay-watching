@@ -73,6 +73,8 @@ class MatchFacts:
     
     # 対戦成績
     h2h_summary: str = ""
+    h2h_details: List[Dict] = field(default_factory=list)
+    # [{"date": "2024-01-15", "competition": "Premier League", "home": "Liverpool", "away": "Man City", "score": "1-1", "winner": "draw"}, ...]
     
     # 同国対決（Issue #39）
     same_country_matchups: List[Dict] = field(default_factory=list)
@@ -402,6 +404,14 @@ class MatchAggregate:
         self.facts.h2h_summary = value
     
     @property
+    def h2h_details(self) -> List[Dict]:
+        return self.facts.h2h_details
+    
+    @h2h_details.setter
+    def h2h_details(self, value: List[Dict]):
+        self.facts.h2h_details = value
+    
+    @property
     def same_country_matchups(self) -> List[Dict]:
         return self.facts.same_country_matchups
     
@@ -583,6 +593,7 @@ class MatchData:
     
     # 対戦成績
     h2h_summary: str = ""  # 例: "5試合: Home 2勝, Draw 1, Away 2勝"
+    h2h_details: list = None  # [{"date": str, "competition": str, "home": str, "away": str, "score": str, "winner": str}, ...]
     
     # 監督情報
     home_manager: str = ""
@@ -624,6 +635,7 @@ class MatchData:
         if self.player_positions is None: self.player_positions = {}
         if self.player_instagram is None: self.player_instagram = {}
         if self.injuries_list is None: self.injuries_list = []
+        if self.h2h_details is None: self.h2h_details = []
     
     @staticmethod
     def _normalize_team_name(team_name: str) -> str:

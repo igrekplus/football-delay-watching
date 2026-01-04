@@ -1,0 +1,30 @@
+title:	プレビュー関連など情報の見せ方、Viewの修正
+state:	OPEN
+author:	igrekplus
+labels:	
+comments:	0
+assignees:	
+projects:	
+milestone:	
+number:	130
+--
+<img width="1585" height="623" alt="Image" src="https://github.com/user-attachments/assets/6cc05b6a-63f8-4276-bc1d-0fa84b4bbdb7" />
+
+１）現状、ニュース要約、戦術プレビュー、監督プレビューについては小見出しがない。
+###などのmd形式の内容はあるが、うまく小見出しに変換されていない。
+
+２）改行も少ない気がする。ただしこれは１）の改修の結果確認を受けてから考えたい。
+
+３）監督の画像の位置は文字（BARCELONA ¥n Hansi Flick）の横にしてほしい。あとロゴも出してほしい。
+
+４）基本情報の日時・会場については、「Espanyol vs Barcelona」の横にしてほしい。（PCなど、横に広げられる場合）
+基本情報、という小見出しが消えても良い。
+<img width="1592" height="470" alt="Image" src="https://github.com/user-attachments/assets/b25a6e1e-81ac-4a5f-99ed-16fa5896819b" />
+
+５）ソートで落ちた動画、除外された動画の一覧については、全ての動画分まとめて「選外試合リスト」の上にもってきてほしい。折りたたみは継続して。そしてどの動画の上、
+大見出し：デバッグ情報
+中見出し：対象外動画一覧
+　→これを表形式にする（レポート対象（記者会見、因縁etc）、理由（ソートで落ちた、除外）、内容（今の（[【Hansi Flick】 ⚠️ ¿LAMINE YAMAL OUT 🆚 ESPANYOL? HANSI FLICK en...](https://www.youtube.com/watch?v=384FqaGmai8) - Fútbol Digital）など）
+
+以下のURLを元にこれを記載しています。
+https://football-delay-watching-a8830.web.app/reports/2026-01-03_Espanyol_vs_Barcelona_20260104_170319.html

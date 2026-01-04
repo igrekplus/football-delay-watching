@@ -78,11 +78,16 @@
   - `player.nationality`
 
 ### 3.7 /fixtures/headtohead
-- **用途**: 直近対戦成績を集計（勝ち/引分/負けのみ利用）。
-- **パラメータ**: `h2h` (`{home_id}-{away_id}`), `last` (例 5)
-- **参照項目**:
-  - `goals.home`, `goals.away`
-  - `teams.home.id`（勝敗判定に使用）
+- **用途**: 直近対戦成績を集計。
+- **パラメータ**: `h2h` (`{home_id}-{away_id}`)
+- **クライアント側処理**:
+  - **フィルタ**: 過去5年間の試合のみを抽出
+  - **ソート**: 日付降順
+  - **参照項目**:
+    - `fixture.date`
+    - `league.name`
+    - `goals.home`, `goals.away`
+    - `teams.home.id`（勝敗判定に使用）
 
 ---
 

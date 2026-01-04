@@ -70,7 +70,7 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
     # Markdown→HTML変換
     html_body = markdown.markdown(
         markdown_content,
-        extensions=['tables', 'fenced_code', 'nl2br']
+        extensions=['tables', 'fenced_code', 'nl2br', 'markdown.extensions.md_in_html']
     )
     
     # CSS外部参照HTMLテンプレート
@@ -164,7 +164,7 @@ def generate_html_reports(report_list: list) -> list:
         # Markdown→HTML変換
         html_body = markdown.markdown(
             markdown_content,
-            extensions=['tables', 'fenced_code', 'nl2br']
+            extensions=['tables', 'fenced_code', 'nl2br', 'markdown.extensions.md_in_html']
         )
         
         # ページタイトル（実行時刻を含む）

@@ -123,6 +123,7 @@ class MockProvider:
         match.home_recent_form = facts.get("home_recent_form", "")
         match.away_recent_form = facts.get("away_recent_form", "")
         match.h2h_summary = facts.get("h2h_summary", "")
+        match.h2h_details = facts.get("h2h_details", [])
         
         # 怪我人情報
         match.injuries_list = facts.get("injuries_list", [])

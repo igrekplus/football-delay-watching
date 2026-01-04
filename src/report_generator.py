@@ -80,34 +80,42 @@ class ReportGenerator:
         image_paths = []
         
         # ヘッダー（試合タイトル） - Issue #116: ロゴ付きヘッダー
+        # ヘッダー（試合タイトル） - Issue #116 & #130: ロゴ付きヘッダー + 基本情報統合
+        # 大会名の表示用変換
+        competition_display = "Premier League" if match.competition == "EPL" else match.competition
+        
         if match.competition_logo:
-            # 大会名の表示用変換 (Issue #116 Polish)
-            competition_display = "Premier League" if match.competition == "EPL" else match.competition
-            
-            header_html = f'''<div class="match-header-container">
-    <img src="{match.competition_logo}" class="competition-logo-header" alt="{match.competition}">
+            logo_html = f'<img src="{match.competition_logo}" class="competition-logo-header" alt="{match.competition}">'
+        else:
+            logo_html = ''  # ロゴなしの場合は非表示（スタイルで調整）
+
+        header_html = f'''<div class="match-header-container">
+    {logo_html}
     <div class="match-header-info">
         <h1>{match.home_team} vs {match.away_team}</h1>
         <div class="match-metadata">
             <span class="competition-name">{competition_display}</span>
             <span class="separator">|</span>
             <span class="match-rank">Importance: {match.rank}</span>
+            <span class="separator desktop-only">|</span>
+            <span class="match-datetime">{match.kickoff_jst} / {match.kickoff_local} @ {match.venue}</span>
         </div>
     </div>
 </div>'''
-            lines.append(header_html)
-        else:
-            # フォールバック: ロゴがない場合は従来の表示
-            lines.append(f"# {match.home_team} vs {match.away_team}\n")
-            lines.append(f"**{match.competition}** / {match.rank}\n")
+        lines.append(header_html)
         
         # 試合レポート本文
         match_report, match_images = self._write_single_match_content(match, youtube_videos)
         lines.append(match_report)
         image_paths.extend(match_images)
         
-        # 末尾に選外試合リスト・API使用状況を追加
+        # 末尾にデバッグ情報とAPI使用状況を追加
         lines.append("\n---\n")
+        
+        # デバッグ用：対象外動画一覧
+        match_key = f"{match.home_team} vs {match.away_team}"
+        lines.append(self.youtube_formatter.format_debug_video_section(youtube_videos, match_key))
+        
         lines.append(excluded_section)
         
         return "\n".join(lines), image_paths
@@ -137,8 +145,7 @@ class ReportGenerator:
         lines = []
         image_paths = []
         
-        # 基本情報
-        lines.append("### ■ 基本情報")
+        # 基本情報 (ヘッダーに移動したため、ここでの呼び出しはレイアウト調整用などに残すか、完全に削除するか。MatchInfoFormatterは空文字を返すようになった)
         lines.append(self.match_info_formatter.format_match_info_html(match))
         
         # スタメン・ベンチ・負傷者
@@ -156,6 +163,14 @@ class ReportGenerator:
         )
         home_bench_html = self.player_formatter.format_player_cards(
             match.home_bench, "", match.home_team,
+            match.player_nationalities, match.player_numbers,
+            match.player_birthdates, match.player_photos,
+            position_label="SUB", player_positions=match.player_positions,
+            player_instagram=match.player_instagram,
+            css_class="player-cards-scroll"
+        )
+        away_bench_html = self.player_formatter.format_player_cards(
+            match.away_bench, "", match.away_team,
             match.player_nationalities, match.player_numbers,
             match.player_birthdates, match.player_photos,
             position_label="SUB", player_positions=match.player_positions,
@@ -204,13 +219,44 @@ class ReportGenerator:
         lines.append(away_injury_html)
         lines.append('</div>')
         
+        # アウェイチーム (Duplicate removal needed in manual check but strictly replacing block here)
+        
         lines.append('</div>')  # end two-column-section
         
         home_form = self.match_info_formatter.format_form_with_icons(match.home_recent_form)
         away_form = self.match_info_formatter.format_form_with_icons(match.away_recent_form)
         lines.append(f"- 直近フォーム：Home {home_form} / Away {away_form}")
-        lines.append(f"- 過去の対戦成績：{match.h2h_summary}")
         lines.append(f"- 主審：{match.referee}")
+        lines.append("")
+        
+        # H2H Section (Issue #105)
+        lines.append("### ■ 過去の対戦成績")
+        lines.append(f"<p class=\"h2h-summary\">{match.h2h_summary}</p>")
+        
+        if match.h2h_details:
+            h2h_table = '<table class="h2h-table"><thead><tr><th>日付</th><th>大会</th><th>対戦</th><th>スコア</th></tr></thead><tbody>'
+            for detail in match.h2h_details:
+                date_str = detail.get("date", "")
+                competition = detail.get("competition", "")
+                home_name = detail.get("home", "")
+                away_name = detail.get("away", "")
+                score = detail.get("score", "")
+                winner = detail.get("winner", "")
+                
+                # Highlight winner
+                if winner == home_name:
+                    home_display = f"<strong>{home_name}</strong>"
+                    away_display = away_name
+                elif winner == away_name:
+                    home_display = home_name
+                    away_display = f"<strong>{away_name}</strong>"
+                else:
+                    home_display = home_name
+                    away_display = away_name
+                
+                h2h_table += f'<tr><td>{date_str}</td><td>{competition}</td><td>{home_display} vs {away_display}</td><td>{score}</td></tr>'
+            h2h_table += '</tbody></table>'
+            lines.append(h2h_table)
         lines.append("")
         
         # フォーメーション図
@@ -245,48 +291,63 @@ class ReportGenerator:
             lines.append(f"\n{match.same_country_text}\n")
             lines.append("")
         
-        # ニュース・戦術 (collapsible on mobile)
+        # ニュース・戦術 (collapsible on mobile) - Issue #130: Enable Markdown inside details
+        # Note: md_in_html extension requires blank lines around markdown content
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>📰 ニュース要約</summary>')
-        lines.append('<div class="section-content">')
-        lines.append(f"- {match.news_summary}")
+        lines.append('<div class="section-content" markdown="1">')
+        lines.append('')  # Required blank line for md_in_html
+        lines.append(f"{match.news_summary}")
+        lines.append('')  # Required blank line for md_in_html
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
         
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>📊 戦術プレビュー</summary>')
-        lines.append('<div class="section-content">')
-        lines.append(f"- {match.tactical_preview}")
+        lines.append('<div class="section-content" markdown="1">')
+        lines.append('')  # Required blank line for md_in_html
+        lines.append(f"{match.tactical_preview}")
         if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
-            lines.append(f"- URL: {match.preview_url}")
+            lines.append(f"\n[戦術プレビュー詳細]({match.preview_url})")
+        lines.append('')  # Required blank line for md_in_html
         lines.append('</div>')
         lines.append('</details>')
         lines.append("")
         
-        # 監督セクション (collapsible on mobile)
+        # 監督セクション (collapsible on mobile) - Issue #130: New Layout
         lines.append('<details class="collapsible-section" open>')
         lines.append('<summary>🎙️ 監督プレビュー</summary>')
         lines.append('<div class="section-content">')
         home_manager_photo_html = f'<img src="{match.home_manager_photo}" alt="{match.home_manager}" class="manager-photo">' if match.home_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         away_manager_photo_html = f'<img src="{match.away_manager_photo}" alt="{match.away_manager}" class="manager-photo">' if match.away_manager_photo else '<div class="manager-photo manager-photo-placeholder">👤</div>'
         
+        # ロゴ
+        home_team_logo = f'<img src="{match.home_logo}" alt="{match.home_team}" class="manager-team-logo">' if match.home_logo else ''
+        away_team_logo = f'<img src="{match.away_logo}" alt="{match.away_team}" class="manager-team-logo">' if match.away_logo else ''
+        
         manager_section_html = f'''<div class="manager-section">
 <div class="manager-card">
-{home_manager_photo_html}
-<div class="manager-info">
-<div class="manager-team">{match.home_team}</div>
-<div class="manager-name">{match.home_manager}</div>
-<div class="manager-comment">{match.home_interview}</div>
-</div>
+    <div class="manager-identity">
+        {home_team_logo}
+        {home_manager_photo_html}
+        <div class="manager-text-info">
+            <div class="manager-team">{match.home_team}</div>
+            <div class="manager-name">{match.home_manager}</div>
+        </div>
+    </div>
+    <div class="manager-comment">{match.home_interview}</div>
 </div>
 <div class="manager-card">
-{away_manager_photo_html}
-<div class="manager-info">
-<div class="manager-team">{match.away_team}</div>
-<div class="manager-name">{match.away_manager}</div>
-<div class="manager-comment">{match.away_interview}</div>
-</div>
+    <div class="manager-identity">
+        {away_team_logo}
+        {away_manager_photo_html}
+        <div class="manager-text-info">
+            <div class="manager-team">{match.away_team}</div>
+            <div class="manager-name">{match.away_manager}</div>
+        </div>
+    </div>
+    <div class="manager-comment">{match.away_interview}</div>
 </div>
 </div>'''
         lines.append(manager_section_html)

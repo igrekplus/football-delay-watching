@@ -100,7 +100,7 @@ flowchart TD
 | 選手リスト | `*_lineup`, `*_bench` | FactsService | ReportGenerator |
 | 選手詳細 | `player_*` | FactsService | ReportGenerator |
 | 監督情報 | `*_manager`, `*_manager_photo` | FactsService | ReportGenerator |
-| フォーム・対戦 | `*_recent_form`, `h2h_*` | FactsService | ReportGenerator |
+| フォーム・対戦 | `*_recent_form`, `h2h_summary`, `h2h_details` | FactsService | ReportGenerator |
 | 怪我人情報 | `injuries_*` | FactsService | ReportGenerator |
 | ニュース要約 | `news_summary` | NewsService | ReportGenerator |
 | 戦術プレビュー | `tactical_preview` | NewsService | ReportGenerator |
