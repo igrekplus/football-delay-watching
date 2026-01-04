@@ -12,7 +12,7 @@
 | [implementation_flow.md](./implementation_flow.md) | 実装フロー・責務境界・データフロー |
 | [external_apis.md](./external_apis.md) | 外部API連携設計（概要・リンク集） |
 | [data_models.md](./data_models.md) | データモデル設計・責務境界・生成物スキーマ |
-| [domain_models.md](./domain_models.md) | ドメインモデル設計（MatchData） |
+| [domain_models.md](./domain_models.md) | ドメインモデル設計（MatchAggregate/MatchData） |
 
 > **Note**: コンポーネント設計は [03_components/](../03_components/) を参照。
 > 運用関連は [04_operations/](../04_operations/) を参照。
@@ -25,7 +25,9 @@
 graph TD
     A[GitHub Actions] --> B[main.py]
     B --> C[MatchProcessor]
-    C --> D[FactsService]
+    C --> C1[MatchScheduler + FixtureStatusManager<br/>(prod only)]
+    C1 --> C2[MatchSelector]
+    C2 --> D[FactsService]
     D --> E[NewsService]
     E --> F[YouTubeService]
     F --> G[ReportGenerator]
@@ -40,9 +42,11 @@ graph TD
     
     subgraph Cache
         O[(GCS Cache)]
+        P[(Report Status CSV)]
     end
     J -.-> O
     M -.-> O
+    C1 -.-> P
 ```
 
 ---
