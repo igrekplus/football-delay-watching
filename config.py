@@ -49,8 +49,12 @@ class Config:
     # S Rank Teams - Manchester City (highest priority)
     S_RANK_TEAMS: List[str] = ("Manchester City",)
     
-    # A Rank Teams - Arsenal, Chelsea
-    A_RANK_TEAMS: List[str] = ("Arsenal", "Chelsea")
+    # A Rank Teams - Arsenal, Chelsea, and other popular clubs
+    A_RANK_TEAMS: List[str] = (
+        "Arsenal", "Chelsea", "Brighton", "Manchester United", "Liverpool", 
+        "Tottenham", "Leeds United", "Barcelona", "Real Madrid", 
+        "Atletico Madrid", "Real Sociedad"
+    )
     
     # CL Big Teams (S Rank)
     CL_BIG_TEAMS: List[str] = (
