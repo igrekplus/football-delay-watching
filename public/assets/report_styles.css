@@ -53,6 +53,9 @@ body {
     height: 80px;
     object-fit: contain;
     flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 12px;
 }
 
 .match-header-info {
@@ -66,10 +69,26 @@ body {
     font-size: 2rem;
 }
 
+.match-metadata {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 1rem;
+}
+
+.competition-name {
+    color: #feca57;
+    font-weight: bold;
+}
+
+.separator {
+    color: #888;
+}
+
 .match-rank {
     font-size: 0.9rem;
     color: #74b9ff;
-    margin-top: 8px;
     font-weight: 500;
 }
 

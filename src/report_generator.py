@@ -81,11 +81,18 @@ class ReportGenerator:
         
         # ヘッダー（試合タイトル） - Issue #116: ロゴ付きヘッダー
         if match.competition_logo:
+            # 大会名の表示用変換 (Issue #116 Polish)
+            competition_display = "Premier League" if match.competition == "EPL" else match.competition
+            
             header_html = f'''<div class="match-header-container">
     <img src="{match.competition_logo}" class="competition-logo-header" alt="{match.competition}">
     <div class="match-header-info">
         <h1>{match.home_team} vs {match.away_team}</h1>
-        <div class="match-rank">Importance: {match.rank}</div>
+        <div class="match-metadata">
+            <span class="competition-name">{competition_display}</span>
+            <span class="separator">|</span>
+            <span class="match-rank">Importance: {match.rank}</span>
+        </div>
     </div>
 </div>'''
             lines.append(header_html)

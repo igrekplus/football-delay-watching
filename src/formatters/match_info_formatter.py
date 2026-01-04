@@ -8,15 +8,9 @@ class MatchInfoFormatter:
     """試合基本情報のフォーマット処理を担当するクラス"""
     
     def format_match_info_html(self, match: MatchData) -> str:
-        """試合基本情報カード（大会、日時、会場）のHTMLを生成"""
+        """試合基本情報カード（日時、会場）のHTMLを生成"""
+        # Issue #116 Polish: 大会情報のカードを削除（ヘッダーに移動したため）
         return f'''<div class="match-info-grid">
-<div class="match-info-item match-info-small">
-<div class="match-info-icon">🏆</div>
-<div class="match-info-content">
-<div class="match-info-label">大会</div>
-<div class="match-info-value">{match.competition}</div>
-</div>
-</div>
 <div class="match-info-item match-info-wide">
 <div class="match-info-icon">📅</div>
 <div class="match-info-content">
