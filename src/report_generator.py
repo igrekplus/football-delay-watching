@@ -352,6 +352,12 @@ class ReportGenerator:
             lines.append(f"\n{match.same_country_text}\n")
             lines.append("")
         
+        # 古巣対決（Issue #20）
+        if match.former_club_trivia:
+            lines.append("### ■ 古巣対決")
+            lines.append(f"\n{match.former_club_trivia}\n")
+            lines.append("")
+        
         # ニュース・戦術 (collapsible on mobile) - Issue #130: Enable Markdown inside details
         # Pre-convert Markdown to HTML since md_in_html extension has issues with our structure
         import markdown as md_lib

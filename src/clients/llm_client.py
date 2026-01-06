@@ -283,3 +283,47 @@ class LLMClient:
             logger.error(f"Error generating same country trivia: {e}")
             return ""
 
+    # ========== 古巣対決（Issue #20） ==========
+    def generate_former_club_trivia(
+        self,
+        home_team: str,
+        away_team: str,
+        home_players: List[str],
+        away_players: List[str]
+    ) -> str:
+        """
+        古巣対決トリビアを生成（Gemini Grounding使用）
+        
+        Args:
+            home_team: ホームチーム名
+            away_team: アウェイチーム名
+            home_players: ホームチームの全選手リスト
+            away_players: アウェイチームの全選手リスト
+        
+        Returns:
+            古巣対決トリビアテキスト（日本語）
+        """
+        if self.use_mock:
+            return self._get_mock_former_club_trivia(home_team, away_team)
+        
+        prompt = build_prompt(
+            'former_club_trivia',
+            home_team=home_team,
+            away_team=away_team,
+            home_players=", ".join(home_players),
+            away_players=", ".join(away_players)
+        )
+        
+        try:
+            from src.clients.gemini_rest_client import GeminiRestClient
+            rest_client = GeminiRestClient(api_key=self.api_key)
+            return rest_client.generate_content_with_grounding(prompt)
+        except Exception as e:
+            logger.error(f"Error generating former club trivia: {e}")
+            return ""
+    
+    def _get_mock_former_club_trivia(self, home_team: str, away_team: str) -> str:
+        """モック用: 古巣対決トリビア"""
+        return f"- **選手A**（{away_team}）は{home_team}のアカデミー出身。[モック: 古巣対決トリビア]"
+
+

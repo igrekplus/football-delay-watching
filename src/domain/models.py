@@ -87,6 +87,9 @@ class MatchFacts:
     # [{"country": "Japan", "home_players": ["三笘薫"], "away_players": ["冨安健洋"]}, ...]
     same_country_text: str = ""  # Geminiによる関係性・小ネタテキスト
     
+    # 古巣対決（Issue #20）
+    former_club_trivia: str = ""  # Gemini Groundingで生成したテキスト
+    
     # 監督情報
     home_manager: str = ""
     away_manager: str = ""
@@ -448,6 +451,14 @@ class MatchAggregate:
     @same_country_text.setter
     def same_country_text(self, value: str):
         self.facts.same_country_text = value
+    
+    @property
+    def former_club_trivia(self) -> str:
+        return self.facts.former_club_trivia
+    
+    @former_club_trivia.setter
+    def former_club_trivia(self, value: str):
+        self.facts.former_club_trivia = value
     
     @property
     def home_manager(self) -> str:

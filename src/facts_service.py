@@ -61,6 +61,9 @@ class FactsService:
         
         # 6. Detect Same Country Matchups (Issue #39)
         self._detect_and_generate_same_country(match)
+        
+        # 7. Generate Former Club Trivia (Issue #20)
+        self._generate_former_club_trivia(match)
     
     def _fetch_lineups(self, match: Union[MatchData, MatchAggregate]):
         """スタメン情報を取得・加工"""
@@ -342,8 +345,10 @@ class FactsService:
             match.h2h_details = []
             return
         
-        # Filter to last 5 years
+        # Filter to last 5 years AND exclude current/future matches
         cutoff_date = config.TARGET_DATE - timedelta(days=5*365)
+        # Exclude matches on or after TARGET_DATE (start of day in JST)
+        max_date = config.TARGET_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
         filtered_matches = []
         
         for h2h_fixture in h2h_data['response']:
@@ -354,7 +359,11 @@ class FactsService:
             try:
                 fixture_date = datetime.fromisoformat(fixture_date_str.replace("Z", "+00:00"))
                 # Compare aware datetimes directly (cutoff_date is JST aware, fixture_date is UTC aware)
+                # Exclude matches older than 5 years
                 if fixture_date < cutoff_date:
+                    continue
+                # Exclude current match date and future matches
+                if fixture_date >= max_date:
                     continue
             except (ValueError, TypeError) as e:
                 logger.warning(f"H2H date parse/compare error: {e} for {fixture_date_str}")
@@ -423,7 +432,8 @@ class FactsService:
                 "winner": winner
             })
         
-        match.h2h_details = h2h_details
+        # Limit h2h_details to 8 matches for display, but keep summary stats from all matches
+        match.h2h_details = h2h_details[:8]
         total = home_wins + draws + away_wins
         match.h2h_summary = f"過去5年間 {total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
 
@@ -483,4 +493,20 @@ class FactsService:
             )
         else:
             match.same_country_text = ""
+
+    def _generate_former_club_trivia(self, match: Union[MatchData, MatchAggregate]):
+        """古巣対決トリビアを生成（Issue #20）"""
+        home_players = match.home_lineup + match.home_bench
+        away_players = match.away_lineup + match.away_bench
+        
+        match.former_club_trivia = self.llm.generate_former_club_trivia(
+            home_team=match.home_team,
+            away_team=match.away_team,
+            home_players=home_players,
+            away_players=away_players
+        )
+        
+        if match.former_club_trivia:
+            logger.info(f"Generated former club trivia for {match.home_team} vs {match.away_team}")
+
 

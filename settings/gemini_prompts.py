@@ -51,6 +51,12 @@ PROMPT_METADATA: Dict[str, Dict[str, Any]] = {
         "char_limit_per_country": (50, 150),
         "use_grounding": False,
     },
+
+    "former_club_trivia": {
+        "label": "古巣対決トリビア",
+        "char_limit": (100, 300),  # 最大3件×80字+余白
+        "use_grounding": True,  # リアルタイム検索で確定
+    },
 }
 
 
