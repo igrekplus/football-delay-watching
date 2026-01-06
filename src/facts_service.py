@@ -499,12 +499,17 @@ class FactsService:
         home_players = match.home_lineup + match.home_bench
         away_players = match.away_lineup + match.away_bench
         
-        match.former_club_trivia = self.llm.generate_former_club_trivia(
+        raw_trivia = self.llm.generate_former_club_trivia(
             home_team=match.home_team,
             away_team=match.away_team,
             home_players=home_players,
             away_players=away_players
         )
+        
+        # Gemini Groundingの出典番号（例: [1], [1, 2]）を削除
+        import re
+        # [1], [1, 2], [1, 2, 3] などのパターンにマッチ
+        match.former_club_trivia = re.sub(r'\s*\[\d+(?:,\s*\d+)*\]', '', raw_trivia) if raw_trivia else ""
         
         if match.former_club_trivia:
             logger.info(f"Generated former club trivia for {match.home_team} vs {match.away_team}")
