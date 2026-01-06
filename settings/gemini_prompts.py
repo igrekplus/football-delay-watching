@@ -2,182 +2,93 @@
 Geminiプロンプト設定
 
 LLMClient用のプロンプトテンプレートを集約。
-チューニング時はこのファイルのみ変更すれば良い設計。
+テンプレートは settings/prompts/ 以下のMarkdownファイルから読み込み。
 
 Issue #120: LLMプロンプトの外部設定化（疎結合化）
 """
 
+import os
+from pathlib import Path
 from typing import Dict, Any, Optional, Tuple
 
+# プロンプトファイルのディレクトリ
+PROMPTS_DIR = Path(__file__).parent / "prompts"
+
 
 # =============================================================================
-# プロンプト定義
+# プロンプトメタデータ
 #
-# 各メソッドのプロンプトテンプレートと設定を定義。
-# LLMClientはこのスペックを参照してプロンプトを生成する。
+# 各プロンプトの設定（ラベル、文字数制限、Grounding使用有無等）
+# テンプレート本文は prompts/ ディレクトリのMarkdownファイルから読み込む
 # =============================================================================
 
-GEMINI_PROMPTS: Dict[str, Dict[str, Any]] = {
+PROMPT_METADATA: Dict[str, Dict[str, Any]] = {
     "news_summary": {
         "label": "ニュースサマリー",
-        "template": """Task: {home_team} vs {away_team} の試合に関する最新ニュースを検索し、日本語で試合前サマリーを作成してください。
-
-## 検索指示
-- "{home_team} vs {away_team} preview"
-- "{home_team} {away_team} news"
-- 直近48時間以内の記事を優先
-
-## 要約の要件
-- 両チームの最新状況、フォームを記述
-- 試合結果（スコア）は絶対に含めない
-- 負傷による欠場情報は含めない（既にスタメン情報に記載されているため）
-- ただし、怪我からの「復帰」ニュースは積極的に含める
-- 600-1000字程度
-
-## 出力形式
-- 前置き文不要、本文のみ""",
         "char_limit": (600, 1000),
         "use_grounding": True,
     },
 
     "tactical_preview": {
         "label": "戦術プレビュー",
-        "template": """Task: {home_team} vs {away_team} の戦術プレビューを作成してください。
-
-## 入力データ（確定情報）
-### {home_team}（ホーム）
-- フォーメーション: {home_formation}
-- スタメン: {home_lineup}
-
-### {away_team}（アウェイ）
-- フォーメーション: {away_formation}
-- スタメン: {away_lineup}
-
-## 検索指示
-### 戦術傾向（過去6ヶ月の記事を検索）
-- "{home_team} tactics analysis 2025 2026"
-- "{away_team} formation style"
-- 試合が開催される国（{competition}）のメディアを優先
-
-## 出力形式（必ず以下の3セクションに分けて記述）
-
-### ⚽ キープレイヤー
-- 各チーム1-2名の注目選手を挙げ、その理由を記述
-
-### 🎯 戦術スタイル
-- 各チームの得意とする戦術（堅守、ポゼッション、カウンター等）を過去6ヶ月の傾向から記述
-- 具体的な監督の戦術変更や特徴的なパターンがあれば言及
-
-### 🔥 キーマッチアップ
-- 注目の対決（例：左サイドバック vs 右ウイング）を具体的な選手名とともに記述
-- なぜその対決が重要なのか、どちらが有利か、両選手の特徴を比較して詳しく記述
-- 1つ以上の対決を挙げ、それぞれに具体的なコメントを付ける
-
-## 重要な制約
-- 試合結果（スコア）は絶対に含めない
-- 前置き文不要、本文のみ
-- スタメンに記載されていない選手を挙げない
-
-## 絶対禁止事項
-- 以下のような**メタ的な前置き・状況説明は一切書かない**。いきなり本題の内容から始めること。
-  - NG例: 「xx vs xx の戦術プレビューを作成します」
-  - NG例: 「ツールを実行して情報を収集しました」
-  - NG例: 「以下の情報が得られました」
-- 「承知しました」「生成します」などのAIの応答は含めない
-- この対戦カード以外の試合に関する情報""",
         "use_grounding": True,
     },
 
     "check_spoiler": {
         "label": "ネタバレ判定",
-        "template": """以下のテキストが「{home_team} vs {away_team}」の試合結果を言及しているかを判定してください。
-
-テキスト:
-{text}
-
-判定基準:
-- スコア（例: 2-1, 3-0）の記載
-- 勝敗の記載（例: 〇〇が勝利、敗北、won, lost）
-- ゴールを決めた選手名（得点者）
-
-回答は以下のJSON形式のみで（説明不要）:
-{{"is_safe": true, "reason": "なし"}} または {{"is_safe": false, "reason": "理由"}}""",
         "text_limit": 1500,
         "use_grounding": False,
     },
 
     "interview": {
         "label": "インタビュー要約",
-        "template": """あなたはサッカー専門のジャーナリストです。
-
-Task: {team_name}の監督が、{match_info} の試合に向けて語ったコメントや記者会見の内容を検索し、日本語の記事として書き起こしてください。
-
-## 検索指示
-- "{team_name} manager press conference" + "{search_query}"
-- 直近24-48時間以内の情報のみを使用
-- {search_context}
-
-## 絶対禁止事項
-- 以下のような**メタ的な前置き・状況説明は一切書かない**。いきなり本題の内容から始めること。
-  - NG例: 「xx監督は記者会見で述べました」
-  - NG例: 「以下の情報が得られました」
-  - NG例: 「サッカー専門ジャーナリストとして、〜の記事にまとめます」
-  - NG例: 「〜についてお伝えします」
-- 「承知しました」「要約します」などのAIの応答は含めない
-- この対戦カード（{match_info}）以外の試合に関する情報
-- レアル・マドリード、バルセロナなど他の対戦相手への言及
-- 1週間以上前の古い情報
-- 試合結果（スコア）
-
-## 出力の要件
-- 監督の具体的な発言はカギカッコ「」で引用
-- 対戦相手（{opponent_display}）に対する評価やコメントを優先的に含める
-- 怪我人・復帰選手の状況があれば含める
-- 1500-2000字程度
-
-## 構成（動的な小見出し）
-取得した情報の内容に基づいて、適切な小見出し（### ）を付けて構成する。
-例：
-- ### マヨラルの離脱について
-- ### 対戦相手ヘタフェへの警戒
-- ### 冬の移籍市場での補強
-- ### 若手選手の起用
-
-※ 情報がない項目は作成しない。固定フォーマットではなく、内容に即した見出しにすること。""",
         "char_limit": (1500, 2000),
         "use_grounding": True,
     },
 
     "same_country_trivia": {
         "label": "同国対決トリビア",
-        "template": """あなたはサッカー専門のトリビアライターです。
-
-以下の同国対決について、選手間の関係性や興味深い事実（小ネタ）を日本語で記述してください。
-
-対決カード:
-{matchup_context}
-
-Requirements:
-1. 選手同士の関係性を優先的に記載:
-   - 代表チームでの共演
-   - 過去のクラブでの同僚関係
-   - ユース時代の共演
-2. 興味深いトリビアがあれば追加:
-   - 同郷、同年齢
-   - 過去の対戦エピソード
-   - ライバル関係
-3. 字数: 50-150字/国
-4. 試合結果には絶対に言及しない
-5. 確実な事実のみ記載（推測や不確かな情報は避ける）
-6. 前置き文は不要、本文のみ
-
-Output Format:
-🇯🇵 **日本**
-**選手A**（チームA）と**選手B**（チームB）。[関係性・小ネタ]""",
         "char_limit_per_country": (50, 150),
         "use_grounding": False,
     },
 }
+
+
+# =============================================================================
+# テンプレートキャッシュ
+# =============================================================================
+
+_template_cache: Dict[str, str] = {}
+
+
+def _load_template(prompt_type: str) -> str:
+    """
+    Markdownファイルからテンプレートを読み込む（キャッシュ付き）
+    
+    Args:
+        prompt_type: プロンプト種別
+        
+    Returns:
+        テンプレート文字列
+        
+    Raises:
+        FileNotFoundError: テンプレートファイルが見つからない場合
+    """
+    if prompt_type in _template_cache:
+        return _template_cache[prompt_type]
+    
+    file_path = PROMPTS_DIR / f"{prompt_type}.md"
+    if not file_path.exists():
+        raise FileNotFoundError(f"Prompt template not found: {file_path}")
+    
+    template = file_path.read_text(encoding="utf-8")
+    _template_cache[prompt_type] = template
+    return template
+
+
+def clear_template_cache():
+    """テンプレートキャッシュをクリア（開発・テスト用）"""
+    _template_cache.clear()
 
 
 # =============================================================================
@@ -200,12 +111,12 @@ def build_prompt(
     
     Raises:
         ValueError: 不明なプロンプト種別
+        FileNotFoundError: テンプレートファイルが見つからない場合
     """
-    spec = GEMINI_PROMPTS.get(prompt_type)
-    if not spec:
+    if prompt_type not in PROMPT_METADATA:
         raise ValueError(f"Unknown prompt type: {prompt_type}")
 
-    template = spec["template"]
+    template = _load_template(prompt_type)
     return template.format(**kwargs)
 
 
@@ -222,7 +133,7 @@ def get_prompt_config(prompt_type: str) -> Dict[str, Any]:
     Raises:
         ValueError: 不明なプロンプト種別
     """
-    spec = GEMINI_PROMPTS.get(prompt_type)
+    spec = PROMPT_METADATA.get(prompt_type)
     if not spec:
         raise ValueError(f"Unknown prompt type: {prompt_type}")
 
@@ -261,3 +172,13 @@ def uses_grounding(prompt_type: str) -> bool:
     """
     config = get_prompt_config(prompt_type)
     return config.get("use_grounding", False)
+
+
+def list_prompt_types() -> list:
+    """
+    利用可能なプロンプト種別の一覧を取得
+    
+    Returns:
+        プロンプト種別のリスト
+    """
+    return list(PROMPT_METADATA.keys())

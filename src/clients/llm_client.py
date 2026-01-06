@@ -177,38 +177,34 @@ class LLMClient:
     def summarize_interview(
         self, 
         team_name: str, 
-        opponent_team: str = None
+        opponent_team: str,
+        manager_name: str = None,
+        opponent_manager_name: str = None
     ) -> str:
         """
         インタビュー記事を要約（Gemini Grounding + REST API使用）
         
         Args:
             team_name: 対象チーム名
-            articles: 記事リスト（現在は未使用、Groundingが検索）
-            opponent_team: 対戦相手チーム名（この試合に限定するため）
+            opponent_team: 対戦相手チーム名
+            manager_name: 監督名（省略時は「監督」を使用）
+            opponent_manager_name: 対戦相手の監督名（省略時は「相手監督」を使用）
         """
         if self.use_mock:
             return "監督: 『重要な試合になる。選手たちは準備できている。』"
         
-        # 対戦相手が指定されている場合は明確に指定
-        if opponent_team:
-            match_info = f"{team_name} vs {opponent_team}"
-            search_context = f"この試合（{match_info}）に限定してください。他の試合に関する情報は含めないでください。"
-            search_query = opponent_team
-            opponent_display = opponent_team
-        else:
-            match_info = f"{team_name}"
-            search_context = "直近の試合に限定してください。"
-            search_query = "latest"
-            opponent_display = "直近の相手"
+        # 監督名が指定されていない場合はデフォルト値
+        manager_display = manager_name or "監督"
+        opponent_manager_display = opponent_manager_name or "相手監督"
+        match_info = f"{team_name} vs {opponent_team}"
 
         prompt = build_prompt(
             'interview',
             team_name=team_name,
-            match_info=match_info,
-            search_query=search_query,
-            search_context=search_context,
-            opponent_display=opponent_display
+            opponent_team=opponent_team,
+            manager_name=manager_display,
+            opponent_manager_name=opponent_manager_display,
+            match_info=match_info
         )
         
         try:

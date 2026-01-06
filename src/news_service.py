@@ -87,13 +87,17 @@ class NewsService:
         for is_home in [True, False]:
             team_name = match.home_team if is_home else match.away_team
             opponent_team = match.away_team if is_home else match.home_team
+            manager_name = getattr(match, 'home_manager', '') if is_home else getattr(match, 'away_manager', '')
+            opponent_manager_name = getattr(match, 'away_manager', '') if is_home else getattr(match, 'home_manager', '')
             
             # Grounding機能を活用：LLM自身がGoogle検索を行うため
-            # 事前の記事収集は不要。対戦相手を明示的に渡すことで
+            # 事前の記事収集は不要。対戦相手と監督名を明示的に渡すことで
             # この試合に関する情報に限定する (Issue #119)
             summary = self.llm.summarize_interview(
                 team_name, 
-                opponent_team=opponent_team
+                opponent_team=opponent_team,
+                manager_name=manager_name,
+                opponent_manager_name=opponent_manager_name
             )
             summary = self.filter.check_text(summary)
             
