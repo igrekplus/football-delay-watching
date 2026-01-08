@@ -111,12 +111,17 @@ class GenerateGuideWorkflow:
             # 8. Email Notification (シンプルなデバッグサマリ)
             self._send_debug_email(matches, report_list, youtube_stats)
             
-            # 9. 成功時: GCSステータス更新（実際に処理した試合のみ）
+            # 9. 品質チェックに基づくGCSステータス更新
             if status_manager:
                 for match in matches:
                     if match.is_target:
-                        status_manager.mark_complete(match.id)
-                        logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理完了としてマーク")
+                        is_complete, missing = self._check_report_quality(match, youtube_videos)
+                        if is_complete:
+                            status_manager.mark_complete(match.id)
+                            logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理完了としてマーク")
+                        else:
+                            status_manager.mark_partial(match.id, ", ".join(missing))
+                            logger.warning(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を部分完了としてマーク (欠損: {missing})")
                     else:
                         logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) はis_target=Falseのためスキップ（GCS更新なし）")
             
@@ -142,6 +147,34 @@ class GenerateGuideWorkflow:
         logger.info(f"処理完了: {match_count}試合のレポートを生成")
         
         logger.info("Workflow completed.")
+
+    def _check_report_quality(self, match, youtube_videos: dict) -> tuple:
+        """
+        レポートの品質をチェック
+        
+        Returns:
+            (is_complete, missing_items): 完全か否かと、欠損コンテンツのリスト
+        """
+        missing = []
+        
+        # 必須: スタメン（ホーム・アウェイ両方）
+        if not match.home_lineup or len(match.home_lineup) == 0:
+            missing.append("home_lineup")
+        if not match.away_lineup or len(match.away_lineup) == 0:
+            missing.append("away_lineup")
+        
+        # 必須: ニュースサマリー または 戦術プレビュー
+        if not match.news_summary and not match.tactical_preview:
+            missing.append("news_summary/tactical_preview")
+        
+        # 推奨: YouTube動画
+        match_id = match.id
+        videos = youtube_videos.get(match_id, {})
+        if not any(v for v in videos.values() if v):  # 全カテゴリが空
+            missing.append("youtube_videos")
+        
+        is_complete = len(missing) == 0
+        return is_complete, missing
 
     def _generate_html(self, report_list):
         html_paths = []
