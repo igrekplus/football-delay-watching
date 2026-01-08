@@ -26,6 +26,7 @@ class FixtureStatusManager:
     STATUS_PROCESSING = "processing"
     STATUS_COMPLETE = "complete"
     STATUS_FAILED = "failed"
+    STATUS_PARTIAL = "partial"  # 一部コンテンツ欠損
     
     # 最大再試行回数
     MAX_RETRY_ATTEMPTS = 3
@@ -113,6 +114,11 @@ class FixtureStatusManager:
                     logger.debug(f"[FixtureStatus {fixture_id}] スキップ: 処理完了済み (last_attempt: {last_attempt})")
                     return False
                 
+                # 部分完了は再処理対象（次回実行時に再取得を試みる）
+                if status == self.STATUS_PARTIAL:
+                    logger.info(f"[FixtureStatus {fixture_id}] 再処理対象: 部分完了 (一部コンテンツ欠損, last_attempt: {last_attempt})")
+                    return True
+                
                 # 失敗で再試行上限に達している場合はスキップ
                 if status == self.STATUS_FAILED and attempts >= self.MAX_RETRY_ATTEMPTS:
                     logger.warning(f"[FixtureStatus {fixture_id}] スキップ: 再試行上限到達 ({attempts}/{self.MAX_RETRY_ATTEMPTS})")
@@ -155,6 +161,15 @@ class FixtureStatusManager:
             status=self.STATUS_FAILED,
             error_message=error,
             increment_attempts=True
+        )
+    
+    def mark_partial(self, fixture_id: str, missing_content: str) -> bool:
+        """部分完了をマーク（一部コンテンツ欠損、次回再処理対象）"""
+        return self._update_status(
+            fixture_id=str(fixture_id),
+            status=self.STATUS_PARTIAL,
+            error_message=f"Missing: {missing_content}",
+            increment_attempts=False  # 部分完了はリトライカウントを増やさない
         )
     
     def _update_status(
