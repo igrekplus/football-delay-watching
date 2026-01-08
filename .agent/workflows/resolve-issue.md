@@ -2,38 +2,38 @@
 description: Issue番号を指定して、ブランチ作成から実装、検証、マージまでの一連のフローを実行します。
 ---
 
-1. Ensure you have the Issue Number provided by the user (e.g., "102"). If not, ask the user for it.
-2. Read the issue details using `gh issue view <NUMBER>`.
-3. When you begin work, add the `in-progress` label to the issue: `gh issue edit <NUMBER> --add-label "in-progress"`.
-4. Create a new branch named `feature/issue-<NUMBER>-<SHORT_TITLE>`. Use the issue title to generate the short title (kebab-case).
-5. **Planning Phase**:
-   - **Update Design Docs (Pre)**: Update relevant design documents in `docs/02_design/` to reflect the intended changes *before* writing code.
-   - Create or update `implementation_plan.md` outlining the changes.
-   - Use `notify_user` to request review of the plan and design docs.
-6. **Execution Phase**:
-   - Once approved, implement the changes according to the plan.
-   - Update `task.md` as you progress.
-7. **Verification Phase**:
-   - Run the application in debug mode to verify changes: `DEBUG_MODE=True USE_MOCK_DATA=False python main.py`
-   - Check logs and generated reports.
-   - If UI changes involved, deploy to Firebase Hosting using `/debug-run` workflow or manual command.
-   - Create `walkthrough.md` to report results.
-   - Use `notify_user` to request final review before merging.
+1. ユーザーからIssue番号（例："102"）が提供されているか確認する。提供されていない場合はユーザーに尋ねる。
+2. `gh issue view <NUMBER>` を使用してIssueの詳細を確認する。
+3. 作業を開始する際、Issueに `in-progress` ラベルを追加する: `gh issue edit <NUMBER> --add-label "in-progress"`。
+4. `feature/issue-<NUMBER>-<SHORT_TITLE>` という名前の新しいブランチを作成する。ショートタイトル（ケバブケース）の生成にはIssueのタイトルを使用する。
+5. **計画フェーズ (Planning Phase)**:
+   - **設計ドキュメントの更新 (事前)**: コードを書く*前に*、意図した変更を反映させるために `docs/02_design/` 内の関連する設計ドキュメントを更新する。
+   - 変更内容を概説する `implementation_plan.md` を作成または更新する。
+   - `notify_user` を使用して、計画と設計ドキュメントのレビューを依頼する。
+6. **実行フェーズ (Execution Phase)**:
+   - 承認されたら、計画に従って変更を実装する。
+   - 進行に合わせて `task.md` を更新する。
+7. **検証フェーズ (Verification Phase)**:
+   - デバッグモードでアプリケーションを実行し、変更を検証する: `DEBUG_MODE=True USE_MOCK_DATA=False python main.py`
+   - ログと生成されたレポートを確認する。
+   - UIの変更が含まれる場合は、`/debug-run` ワークフローまたは手動コマンドを使用してFirebase Hostingにデプロイする。
+   - 結果を報告するために `walkthrough.md` を作成する。
+   - マージ前の最終レビューを依頼するために `notify_user` を使用する。
    
    > [!CAUTION]
    > **モックモード（`USE_MOCK_DATA=True`）で検証する場合は、必ず事前にユーザーに「この変更はモックで検証可能か」を確認すること。**
    > LLMプロンプト変更やAPI連携の変更はモックでは検証できない。
-8. **Documentation Phase (Final Review)**:
-   - Update relevant design documents in `docs/02_design/` to capture any changes made during implementation/debugging.
-   - Update `GEMINI.md` if necessary.
-   - Ensure "Code follows Design" principle is respected.
-9. **Completion Phase**:
-   - Once approved, merge the branch into `main`.
-   - Push to remote: `git push origin main`.
-   - Close the issue with a comment summarizing the changes and verification results.
-   - Delete the feature branch.
+8. **ドキュメントフェーズ (最終レビュー)**:
+   - 実装/デバッグ中に行われた変更を取り込むため、`docs/02_design/` 内の関連する設計ドキュメントを更新する。
+   - 必要に応じて `GEMINI.md` を更新する。
+   - "Code follows Design"（コードは設計に従う）の原則が守られていることを確認する。
+9. **完了フェーズ (Completion Phase)**:
+   - 承認されたら、ブランチを `main` にマージする。
+   - リモートにプッシュする: `git push origin main`。
+   - 変更内容と検証結果を要約したコメントを添えてIssueをクローズする。
+   - 機能ブランチを削除する。
 
-### Commit Message Template
+### コミットメッセージのテンプレート
 ```
 feat(#123): 実装内容の要約
 
