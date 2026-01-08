@@ -5,11 +5,11 @@ description: Geminiプロンプトをチューニングする
 # Geminiプロンプトチューニング
 
 > [!IMPORTANT]
-> **⚠️ CRITICAL: Quality Evaluation & Logging**
-> 1. **User Evaluates Quality**: AI MUST NOT evaluate the quality of the results (e.g., "good summary", "accurate preview"). ONLY the user can judge quality. The AI's role is to run the test and present the raw output.
-> 2. **Mandatory Logging**: You MUST save the full Request/Response pair to a log file for every run.
->    - **Path**: `/temp/tuning/yyyy-mm-dd-hhmmdd_gemini_tuning.md`
->    - **Format**:
+> **⚠️ 重要: 品質の評価とログ記録について**
+> 1. **品質評価はユーザーの責務**: AIは結果の品質（例：「良い要約」「正確なプレビュー」等）を評価しては**いけません**。品質を判断できるのはユーザーだけです。AIの役割はテストを実行し、生の出力を提示することに徹してください。
+> 2. **ログ記録は必須**: 実行ごとに、リクエストとレスポンスの完全なペアをログファイルに保存する必要があります。
+>    - **パス**: `/temp/tuning/yyyy-mm-dd-hhmmdd_gemini_tuning.md`
+>    - **フォーマット**:
 >      ```markdown
 >      # Run: yyyy-mm-dd hh:mm:ss
 >      ## Command
