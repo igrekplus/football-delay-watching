@@ -8,6 +8,9 @@ class MatchupFormatter:
     def format_matchup_section(self, matchups: List[PlayerMatchup], player_photos: Dict[str, str], 
                                team_logos: Dict[str, str], section_title: str = "■ 同国対決") -> str:
         """マッチアップセクション全体のHTMLを生成"""
+        if not matchups:
+            return ""
+            
         html = f'<div class="matchup-section">\n<h3 class="section-title">{section_title}</h3>\n<div class="matchup-container">\n'
         
         for matchup in matchups:
