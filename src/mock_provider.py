@@ -84,6 +84,8 @@ class MockProvider:
                 rank=item.get("rank", "None"),
                 venue=item.get("venue", ""),
                 referee=item.get("referee", ""),
+                home_logo=item.get("home_logo", ""),
+                away_logo=item.get("away_logo", ""),
                 competition_logo=item.get("competition_logo", ""),
                 kickoff_at_utc=kickoff_utc,
             )
@@ -126,6 +128,7 @@ class MockProvider:
         match.away_recent_form_details = facts.get("away_recent_form_details", [])
         match.h2h_summary = facts.get("h2h_summary", "")
         match.h2h_details = facts.get("h2h_details", [])
+        match.same_country_text = facts.get("same_country_text", "")
         
         # 怪我人情報
         match.injuries_list = facts.get("injuries_list", [])

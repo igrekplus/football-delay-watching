@@ -6,7 +6,8 @@ from src.utils.formation_image import generate_formation_image
 from src.utils.nationality_flags import format_player_with_flag
 from src.utils.api_stats import ApiStats
 from src.utils.datetime_util import DateTimeUtil
-from src.formatters import PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter
+from src.formatters import PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter, MatchupFormatter
+from src.parsers.matchup_parser import parse_matchup_text
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class ReportGenerator:
         self.player_formatter = PlayerFormatter()
         self.match_info_formatter = MatchInfoFormatter()
         self.youtube_formatter = YouTubeSectionFormatter()
+        self.matchup_formatter = MatchupFormatter()
     
     def generate_all(self, matches: List[Union[MatchData, MatchAggregate]], youtube_videos: Dict[str, List[Dict]] = None, 
                      youtube_stats: Dict[str, int] = None) -> List[Dict]:
@@ -346,10 +348,25 @@ class ReportGenerator:
         lines.append(formation_html)
         lines.append("")
         
-        # 同国対決（Issue #39）
+        # 同国対決（Issue #39, #141）
         if match.same_country_text:
-            lines.append("### ■ 同国対決")
-            lines.append(f"\n{match.same_country_text}\n")
+            matchups = parse_matchup_text(match.same_country_text)
+            if matchups:
+                team_logos = {
+                    match.home_team: match.home_logo,
+                    match.away_team: match.away_logo,
+                }
+                matchup_html = self.matchup_formatter.format_matchup_section(
+                    matchups=matchups,
+                    player_photos=match.player_photos,
+                    team_logos=team_logos,
+                    section_title="■ 同国対決"
+                )
+                lines.append(matchup_html)
+            else:
+                # パース失敗時は従来のテキスト表示にフォールバック
+                lines.append("### ■ 同国対決")
+                lines.append(f"\n{match.same_country_text}\n")
             lines.append("")
         
         # 古巣対決（Issue #20）
@@ -363,7 +380,8 @@ class ReportGenerator:
         import markdown as md_lib
         
         news_html = md_lib.markdown(match.news_summary, extensions=['nl2br'])
-        tactical_html = md_lib.markdown(match.tactical_preview, extensions=['nl2br'])
+        # tactical_html = md_lib.markdown(match.tactical_preview, extensions=['nl2br'])
+        tactical_html = self._format_tactical_preview_with_visuals(match, md_lib)
         if match.preview_url and match.preview_url != "https://example.com/tactical-preview":
             tactical_html += f'\n<p><a href="{match.preview_url}">戦術プレビュー詳細</a></p>'
         
@@ -432,3 +450,55 @@ class ReportGenerator:
         lines.append(self.youtube_formatter.format_youtube_section(video_data, match_key))
         
         return "\n".join(lines), image_paths
+
+    def _format_tactical_preview_with_visuals(self, match, md_lib) -> str:
+        """戦術プレビュー内のキーマッチアップをビジュアル化"""
+        text = match.tactical_preview
+        if not text:
+            return ""
+            
+        # キーマッチアップセクションを検索
+        separator = "### 🔥 キーマッチアップ"
+        parts = text.split(separator)
+        
+        if len(parts) < 2:
+            return md_lib.markdown(text, extensions=['nl2br'])
+            
+        pre_text = parts[0]
+        matchup_text = parts[1]
+        rest_text = ""
+        
+        # 後続セクションがある場合（念のため）
+        import re
+        next_section_match = re.search(r'\n### ', matchup_text)
+        if next_section_match:
+             rest_text = matchup_text[next_section_match.start():]
+             matchup_text = matchup_text[:next_section_match.start()]
+             
+        # マッチアップをパース
+        matchups = parse_matchup_text(matchup_text)
+        
+        if not matchups:
+            return md_lib.markdown(text, extensions=['nl2br'])
+            
+        # ビジュアルカードの生成
+        team_logos = {
+            match.home_team: match.home_logo,
+            match.away_team: match.away_logo,
+        }
+        
+        matchup_html = self.matchup_formatter.format_matchup_section(
+            matchups=matchups,
+            player_photos=match.player_photos,
+            team_logos=team_logos,
+            section_title="🔥 キーマッチアップ"
+        )
+        
+        # HTMLの結合
+        html = md_lib.markdown(pre_text, extensions=['nl2br'])
+        html += matchup_html
+        if rest_text:
+            html += md_lib.markdown(rest_text, extensions=['nl2br'])
+            
+        return html
+

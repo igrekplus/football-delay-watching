@@ -234,10 +234,16 @@ class LLMClient:
         lines = []
         for m in matchups:
             country = m.get("country", "Unknown")
-            home = ", ".join(m.get("home_players", []))
-            away = ", ".join(m.get("away_players", []))
-            lines.append(f"🏳️ **{country}** **{home}** vs **{away}**。[モック: 関係性・小ネタ]")
-        return "\\n\\n".join(lines)
+            # パルサーが期待するフォーマットに合わせてモックを生成
+            home_players = m.get("home_players", [])
+            away_players = m.get("away_players", [])
+            
+            p1 = home_players[0] if home_players else "選手A"
+            p2 = away_players[0] if away_players else "選手B"
+            
+            lines.append(f"🏳️ **{country}**")
+            lines.append(f"**{p1}**（ホームチーム）と**{p2}**（アウェイチーム）。[モック: 関係性・小ネタ]")
+        return "\n\n".join(lines)
     
 
     # ========== 同国対決（Issue #39） ==========    

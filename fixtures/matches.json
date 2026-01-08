@@ -11,6 +11,8 @@
             "rank": "S",
             "venue": "Etihad Stadium, Manchester",
             "referee": "Paul Tierney, England",
+            "home_logo": "https://media.api-sports.io/football/teams/50.png",
+            "away_logo": "https://media.api-sports.io/football/teams/48.png",
             "kickoff_at_utc": "2025-12-20T15:00:00Z"
         },
         {

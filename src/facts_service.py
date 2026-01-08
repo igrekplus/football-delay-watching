@@ -255,14 +255,19 @@ class FactsService:
     
     def _get_team_recent_form_details(self, team_id: int, team_name: str) -> list:
         """チームの直近5試合詳細を取得"""
-        data = self.api.fetch_team_recent_fixtures(team_id=team_id, last=5)
+        from datetime import datetime
+        
+        # 当該試合より前の結果のみを表示するため、多めに取得
+        data = self.api.fetch_team_recent_fixtures(team_id=team_id, last=10)
         
         if not data.get('response'):
             logger.info(f"No recent fixtures for team {team_id}")
             return []
         
-        # Filter to finished matches only
+        # Filter to finished matches only AND exclude current/future matches
         finished_statuses = {"FT", "AET", "PEN"}
+        # TARGET_DATEの0時以降を除外（H2Hと同様のロジック）
+        max_date = config.TARGET_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
         form_details = []
         
         for fixture in data['response']:
@@ -271,6 +276,16 @@ class FactsService:
                 continue
             
             fixture_info = fixture.get('fixture', {})
+            
+            # 当該試合日以降の試合を除外（H2Hと同様のロジック）
+            fixture_date_str = fixture_info.get('date', '')
+            if fixture_date_str:
+                try:
+                    fixture_dt = datetime.fromisoformat(fixture_date_str.replace("Z", "+00:00"))
+                    if fixture_dt >= max_date:
+                        continue
+                except (ValueError, TypeError):
+                    pass
             league_info = fixture.get('league', {})
             goals = fixture.get('goals', {})
             teams = fixture.get('teams', {})
@@ -441,8 +456,9 @@ class FactsService:
         """モックデータを設定"""
         from src.mock_provider import MockProvider
         MockProvider.apply_facts(match)
-        # モックモードでも同国対決を検出・生成
-        self._detect_and_generate_same_country(match)
+        # モックモードでも同国対決を検出・生成（モックデータに既にある場合はスキップ）
+        if not match.same_country_text:
+            self._detect_and_generate_same_country(match)
     
     def _detect_same_country_matchups(self, match: Union[MatchData, MatchAggregate]) -> list:
         """同国対決を検出（Issue #39）"""

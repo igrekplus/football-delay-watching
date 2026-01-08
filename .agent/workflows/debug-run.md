@@ -27,7 +27,9 @@ description: デバッグモードでレポート生成 + Firebase Hostingへデ
 #
 # ※ TARGET_DATEはJST基準。APIから取得する試合日時はUTC。
 #   内部で比較する際、TARGET_DATEの0時(JST)以降の試合を除外する。
-TARGET_DATE=2026-01-08 DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+# ※ TARGET_DATEはJST基準。APIから取得する試合日時はUTC。
+#   内部で比較する際、TARGET_DATEの0時(JST)以降の試合を除外する。
+TARGET_DATE=$(date -v-2d +%Y-%m-%d) DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 
 # 実行後は必ずデプロイすること
 python scripts/sync_firebase_reports.py
