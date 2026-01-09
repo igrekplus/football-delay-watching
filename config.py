@@ -111,7 +111,7 @@ class Config:
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE", "False").lower() == "true"
     
     # Mock Mode (use hardcoded data, no API calls)
-    USE_MOCK_DATA: bool = os.getenv("USE_MOCK_DATA", "True").lower() == "true"
+    USE_MOCK_DATA: bool = os.getenv("USE_MOCK_DATA", "False").lower() == "true"
     
     # Dynamic Settings based on Debug Mode
     @property
