@@ -167,11 +167,8 @@ class GenerateGuideWorkflow:
         if not match.news_summary and not match.tactical_preview:
             missing.append("news_summary/tactical_preview")
         
-        # 推奨: YouTube動画
-        match_id = match.id
-        videos = youtube_videos.get(match_id, {})
-        if not any(v for v in videos.values() if v):  # 全カテゴリが空
-            missing.append("youtube_videos")
+        # YouTube動画は品質判定から除外（クォータ切れ時に再処理ループを防ぐため）
+        # 動画がなくても complete として扱う
         
         is_complete = len(missing) == 0
         return is_complete, missing
