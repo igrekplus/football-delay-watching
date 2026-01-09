@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Any, Optional
 from src.clients.api_football_client import ApiFootballClient
 from src.domain.models import MatchAggregate
