@@ -29,7 +29,7 @@
 # venvを有効化
 source .venv/bin/activate
 
-# 日付(YYYY-MM-DD)は必要に応じて変更
+# 日付(YYYY-MM-DD)は必要に応じて変更するが、原則2日以上前のfixturesが存在する日で実施すること。
 # 指定した日付の「07:00 JST」として実行される（＝その前の晩の試合を拾う）
 TARGET_DATE="2026-01-10" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 ```

@@ -1,23 +1,22 @@
 import logging
 import re
 from datetime import datetime, timedelta
-from typing import List, Union, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any
 from config import config
-from src.domain.models import MatchData, MatchAggregate
+from src.domain.models import MatchAggregate
 
 logger = logging.getLogger(__name__)
 
 class FactsFormatter:
     """
-    APIから取得した生データを MatchData オブジェクトに整形して流し込むサービス。
+    APIから取得した生データを MatchAggregate オブジェクトに整形して流し込むサービス。
     ロジックのみを保持し、外部通信は行わない。
     """
 
-    def format_lineups(self, match: Union[MatchData, MatchAggregate], data: Dict[str, Any]) -> List[Tuple[int, str, str]]:
+    def format_lineups(self, match: MatchAggregate, data: Dict[str, Any]) -> List[Tuple[int, str, str]]:
         """スタメン情報を整形し、選手詳細取得用のIDリストを返す"""
         if not data.get('response'):
-            logger.error(f"No lineup data for match {match.id}")
-            # Use ERROR_PARTIAL if available in config, otherwise just log
+            logger.error(f"No lineup data for match {match.core.id}")
             if hasattr(config, 'ERROR_PARTIAL'):
                 match.error_status = config.ERROR_PARTIAL
             return []
@@ -48,35 +47,35 @@ class FactsFormatter:
             # Store player numbers
             for name, _, number in start_xi_data:
                 if number is not None:
-                    match.player_numbers[name] = number
+                    match.facts.player_numbers[name] = number
             
             for name, _, number, pos in subs_data:
                 if number is not None:
-                    match.player_numbers[name] = number
+                    match.facts.player_numbers[name] = number
                 if pos:
-                    match.player_positions[name] = pos
+                    match.facts.player_positions[name] = pos
             
             # Collect player IDs for details lookup
             player_id_name_pairs.extend([(p[1], p[0], team_name) for p in start_xi_data])
             player_id_name_pairs.extend([(p[1], p[0], team_name) for p in subs_data])
             
             # Assign to match object
-            if team_name == match.home_team:
-                match.home_formation = formation
-                match.home_lineup = start_xi
-                match.home_bench = subs
-                match.home_manager = coach_name
-                match.home_manager_photo = coach_photo
-            elif team_name == match.away_team:
-                match.away_formation = formation
-                match.away_lineup = start_xi
-                match.away_bench = subs
-                match.away_manager = coach_name
-                match.away_manager_photo = coach_photo
+            if team_name == match.core.home_team:
+                match.facts.home_formation = formation
+                match.facts.home_lineup = start_xi
+                match.facts.home_bench = subs
+                match.facts.home_manager = coach_name
+                match.facts.home_manager_photo = coach_photo
+            elif team_name == match.core.away_team:
+                match.facts.away_formation = formation
+                match.facts.away_lineup = start_xi
+                match.facts.away_bench = subs
+                match.facts.away_manager = coach_name
+                match.facts.away_manager_photo = coach_photo
         
         return player_id_name_pairs
 
-    def format_injuries(self, match: Union[MatchData, MatchAggregate], data: Dict[str, Any]):
+    def format_injuries(self, match: MatchAggregate, data: Dict[str, Any]):
         """怪我人情報を整形"""
         injuries = []
         for item in data.get('response', []):
@@ -93,28 +92,28 @@ class FactsFormatter:
             })
             
             if photo:
-                match.player_photos[player_name] = photo
+                match.facts.player_photos[player_name] = photo
         
         if injuries:
-            match.injuries_list = injuries[:5]
-            match.injuries_info = ", ".join(
-                f"{i['name']}({i['team']}): {i['reason']}" for i in match.injuries_list
+            match.facts.injuries_list = injuries[:5]
+            match.facts.injuries_info = ", ".join(
+                f"{i['name']}({i['team']}): {i['reason']}" for i in match.facts.injuries_list
             )
         else:
-            match.injuries_list = []
-            match.injuries_info = "なし"
+            match.facts.injuries_list = []
+            match.facts.injuries_info = "なし"
 
-    def format_recent_form(self, match: Union[MatchData, MatchAggregate], home_raw: Dict[str, Any], away_raw: Dict[str, Any]):
+    def format_recent_form(self, match: MatchAggregate, home_raw: Dict[str, Any], away_raw: Dict[str, Any]):
         """直近フォーム情報を整形"""
-        match.home_recent_form_details = self._parse_form(home_raw, match.home_team)
-        match.away_recent_form_details = self._parse_form(away_raw, match.away_team)
+        match.facts.home_recent_form_details = self._parse_form(home_raw, match.core.home_team)
+        match.facts.away_recent_form_details = self._parse_form(away_raw, match.core.away_team)
 
-    def format_h2h(self, match: Union[MatchData, MatchAggregate], data: Dict[str, Any], home_id: int):
+    def format_h2h(self, match: MatchAggregate, data: Dict[str, Any], home_id: int):
         """H2H情報を整形"""
         if not data.get('response'):
-            logger.info(f"H2H: No history found for {match.home_team} vs {match.away_team}")
-            match.h2h_summary = "対戦履歴なし"
-            match.h2h_details = []
+            logger.info(f"H2H: No history found for {match.core.home_team} vs {match.core.away_team}")
+            match.facts.h2h_summary = "対戦履歴なし"
+            match.facts.h2h_details = []
             return
 
         # 日付フィルタリング (直近5年、かつターゲット日以前)
@@ -140,8 +139,8 @@ class FactsFormatter:
         filtered_matches.sort(key=lambda x: x.get('fixture', {}).get('date', ''), reverse=True)
         
         if not filtered_matches:
-            match.h2h_summary = "過去5年間の対戦なし"
-            match.h2h_details = []
+            match.facts.h2h_summary = "過去5年間の対戦なし"
+            match.facts.h2h_details = []
             return
 
         h2h_details = []
@@ -168,17 +167,17 @@ class FactsFormatter:
                 draws += 1
             elif home_goals > away_goals:
                 if fixture_home_id == home_id:
-                    winner = match.home_team
+                    winner = match.core.home_team
                     home_wins += 1
                 else:
-                    winner = match.away_team
+                    winner = match.core.away_team
                     away_wins += 1
             else:
                 if fixture_home_id == home_id:
-                    winner = match.away_team
+                    winner = match.core.away_team
                     away_wins += 1
                 else:
-                    winner = match.home_team
+                    winner = match.core.home_team
                     home_wins += 1
             
             h2h_details.append({
@@ -190,9 +189,9 @@ class FactsFormatter:
                 "winner": winner
             })
         
-        match.h2h_details = h2h_details[:8]
+        match.facts.h2h_details = h2h_details[:8]
         total = home_wins + draws + away_wins
-        match.h2h_summary = f"過去5年間 {total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
+        match.facts.h2h_summary = f"過去5年間 {total}試合: {match.core.home_team} {home_wins}勝, 引分 {draws}, {match.core.away_team} {away_wins}勝"
 
     def _parse_form(self, data: Dict[str, Any], team_name: str) -> List[Dict[str, Any]]:
         """個別チームのフォーム情報を解析"""
@@ -217,12 +216,11 @@ class FactsFormatter:
                 except (ValueError, TypeError):
                     pass
 
-            fixture_info = fixture_item.get('fixture', {})
             league_info = fixture_item.get('league', {})
             goals = fixture_item.get('goals', {})
             teams = fixture_item.get('teams', {})
             
-            fixture_date = fixture_info.get('date', '')[:10]
+            fixture_date = fixture_item.get('fixture', {}).get('date', '')[:10]
             opponent = teams.get('away', {}).get('name', '') if teams.get('home', {}).get('name', '') == team_name else teams.get('home', {}).get('name', '')
             
             home_goals = goals.get('home', 0) or 0
