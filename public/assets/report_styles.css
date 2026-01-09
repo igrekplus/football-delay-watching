@@ -1110,8 +1110,8 @@ pre {
 
 .matchup-badge {
     position: absolute;
-    bottom: -5px;
-    right: -5px;
+    top: -8px;
+    right: -8px;
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -1126,6 +1126,7 @@ pre {
 .matchup-player-info {
     display: flex;
     flex-direction: column;
+    padding-top: 2px;
 }
 
 .matchup-player-name {

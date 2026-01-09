@@ -57,7 +57,8 @@ def parse_matchup_text(llm_output: str) -> List[PlayerMatchup]:
                 if result:
                     matchups.append(result)
             
-            current_header = f"{header_match.group(1)} **{header_match.group(2)}**"
+            # 太字装飾 ** を削除
+            current_header = f"{header_match.group(1)} {header_match.group(2)}"
             # 同じ行に選手情報がある場合
             remaining = line[header_match.end():].strip()
             current_content = [remaining] if remaining else []
@@ -74,20 +75,25 @@ def parse_matchup_text(llm_output: str) -> List[PlayerMatchup]:
     if not matchups:
         vs_pattern = r'\*\*([^*]+)\*\*\s*[（\(]([^）\)]+)[）\)]\s*(?:vs|と)\s*\*\*([^*]+)\*\*\s*[（\(]([^）\)]+)[）\)]'
         for match in re.finditer(vs_pattern, llm_output):
-            # 説明文は選手情報の後ろのテキスト
+            # 説明文は選手情報の後ろのテキスト。次のマッチアップの開始または改行2つまで取得
             desc_start = match.end()
-            desc_end = llm_output.find('\n', desc_start)
-            if desc_end == -1:
+            # 次の ** か 箇条書き番号(\d+\.) を探す
+            next_start_match = re.search(r'\n\s*(?:\*\*|\d+\.)', llm_output[desc_start:])
+            if next_start_match:
+                desc_end = desc_start + next_start_match.start()
+            else:
                 desc_end = len(llm_output)
-            description = re.sub(r'^[。．.\s]+', '', llm_output[desc_start:desc_end]).strip()
+                
+            description = re.sub(r'^[。．.\s\(\(（vs:：と]+', '', llm_output[desc_start:desc_end]).strip()
             
+            # 全てのフィールドから ** を削除
             matchups.append(PlayerMatchup(
                 header="",
                 player1_name=escape(match.group(1).strip()),
                 player1_team=escape(match.group(2).strip()),
                 player2_name=escape(match.group(3).strip()),
                 player2_team=escape(match.group(4).strip()),
-                description=escape(description)
+                description=escape(description.replace('**', ''))
             ))
     
     logger.info(f"Parsed {len(matchups)} matchups from LLM output")
@@ -112,16 +118,20 @@ def _process_section(header: str, content: str) -> Optional[PlayerMatchup]:
         pattern = rf'\*\*{re.escape(name)}\*\*\s*[（\(]{re.escape(team)}[）\)]'
         description = re.sub(pattern, '', description)
     
-    # 「は」「と」「の」などの接続詞と重複改行を整理
-    description = re.sub(r'^\s*(?:は[、,]?\s*|と\s*|の\s*)', '', description)
-    description = re.sub(r'^[。．.,、\s]+', '', description).strip()
+    # 「は」「と」「の」「の対決。/の対決」などの接続詞と重複改行を整理
+    # 自然文形式での残骸を除去
+    description = re.sub(r'^\s*(?:は[、,]?\s*|と\s*|の\s*|vs\s*[:：]?\s*)', '', description)
+    # 「選手A (チームA) と 選手B (チームB) の対決。」のような場合の「の対決」部分を削除
+    description = re.sub(r'^\s*(?:の対決[。．,、\s]*|のマッチアップ[。．,、\s]*)', '', description)
+    description = re.sub(r'^[。．.,、\s\(\(（]+', '', description).strip()
     
+    # 全てのフィールドから ** を削除
     return PlayerMatchup(
-        header=escape(header) if header else "",
+        header=escape(header.replace('**', '')) if header else "",
         player1_name=escape(player1_name.strip()),
         player1_team=escape(player1_team.strip()),
         player2_name=escape(player2_name.strip()),
         player2_team=escape(player2_team.strip()),
-        description=escape(description)
+        description=escape(description.replace('**', ''))
     )
 
