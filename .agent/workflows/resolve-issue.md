@@ -28,6 +28,7 @@ description: Issue番号を指定して、ブランチ作成から実装、検�
    - 必要に応じて `GEMINI.md` を更新する。
    - "Code follows Design"（コードは設計に従う）の原則が守られていることを確認する。
 9. **完了フェーズ (Completion Phase)**:
+   - **マージ前の最終確認 (Critical)**: `git diff main...HEAD` を実行し、意図しない変更（特に既存機能の削除や不要なファイルの上書き）が含まれていないか必ず確認する。
    - 承認されたら、ブランチを `main` にマージする。
    - リモートにプッシュする: `git push origin main`。
    - 変更内容と検証結果を要約したコメントを添えてIssueをクローズする。
