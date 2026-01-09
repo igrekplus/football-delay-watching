@@ -55,9 +55,6 @@ class MatchFacts:
     home_formation: str = ""
     away_formation: str = ""
     
-    # 直近フォーム
-    home_recent_form: str = ""
-    away_recent_form: str = ""
     
     # 直近5試合詳細 (Issue #132)
     home_recent_form_details: List[Dict] = field(default_factory=list)
@@ -324,21 +321,6 @@ class MatchAggregate:
     def away_formation(self, value: str):
         self.facts.away_formation = value
     
-    @property
-    def home_recent_form(self) -> str:
-        return self.facts.home_recent_form
-    
-    @home_recent_form.setter
-    def home_recent_form(self, value: str):
-        self.facts.home_recent_form = value
-    
-    @property
-    def away_recent_form(self) -> str:
-        return self.facts.away_recent_form
-    
-    @away_recent_form.setter
-    def away_recent_form(self, value: str):
-        self.facts.away_recent_form = value
     
     @property
     def home_recent_form_details(self) -> List[Dict]:
@@ -609,8 +591,6 @@ class MatchData:
     home_formation: str = ""
     away_formation: str = ""
     referee: str = ""
-    home_recent_form: str = ""  # 直近5試合の結果（W-L-D形式）
-    away_recent_form: str = ""
     
     # 選手詳細情報（name -> value のマッピング）
     player_nationalities: dict = None  # {"Player Name": "England", ...}

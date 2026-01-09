@@ -64,8 +64,10 @@
   - `team.name`
   - `player.reason`
 
-### 3.5 /teams/statistics
+### 3.5 /teams/statistics [廃止済み]
 - **用途**: 直近フォーム（W/D/L文字列）。
+- **理由**: リーグ戦固定のため、全大会を含む直近5試合テーブル（/fixtures）に統合。
+- **廃止日**: 2026-01-09
 - **パラメータ**: `team` (team id), `season`, `league` (現状 39 固定)
 - **参照項目**:
   - `form`（例 "WDWLW"）

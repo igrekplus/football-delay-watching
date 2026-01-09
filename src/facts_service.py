@@ -50,8 +50,6 @@ class FactsService:
         # 2. Fetch Injuries
         self._fetch_injuries(match)
         
-        # 3. Fetch Team Form
-        self._fetch_team_form(match)
         
         # 4. Fetch Recent Form Details (Issue #132)
         self._fetch_recent_form_details(match)
@@ -209,32 +207,6 @@ class FactsService:
             match.injuries_list = []
             match.injuries_info = "なし"
     
-    def _fetch_team_form(self, match: Union[MatchData, MatchAggregate]):
-        """チームフォームを取得"""
-        # Get fixture details for team IDs
-        fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
-        
-        if not fixture_data.get('response'):
-            return
-        
-        fixture = fixture_data['response'][0]
-        home_id = fixture['teams']['home']['id']
-        away_id = fixture['teams']['away']['id']
-        
-        league_id = config.LEAGUE_IDS.get(match.competition, 39)
-        
-        # Fetch form for each team
-        match.home_recent_form = self._get_team_form(home_id, league_id)
-        match.away_recent_form = self._get_team_form(away_id, league_id)
-    
-    def _get_team_form(self, team_id: int, league_id: int) -> str:
-        """チームの直近フォームを取得"""
-        data = self.api.fetch_team_statistics(team_id=team_id, league_id=league_id)
-        
-        if data.get('response'):
-            form = data['response'].get('form', '')
-            return form[-5:] if form else ""
-        return ""
     
     def _fetch_recent_form_details(self, match: Union[MatchData, MatchAggregate]):
         """直近5試合詳細を取得・加工（Issue #132）"""

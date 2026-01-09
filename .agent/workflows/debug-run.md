@@ -1,63 +1,67 @@
+# Debug Run & Deploy (絶対遵守)
+
+デバッグモードでレポートを生成し、Firebase Hostingにデプロイする。
+**「実データをAPIから取得してテストしたい」のか「UIだけ確認したい」のかを、環境変数で厳密に使い分けること。**
+
+## 🚨 重要：実行モードの選択
+
+| 目的 | 指定する環境変数 |
+| :--- | :--- |
+| **実データの取得・検証**（今回のようなケース） | `DEBUG_MODE=True USE_MOCK_DATA=False` |
+| UI/レイアウトのみの確認（APIを叩かない） | `DEBUG_MODE=True USE_MOCK_DATA=True` |
+
 ---
-description: デバッグモードでレポート生成 + Firebase Hostingへデプロイ
----
-
-# Debug Run & Deploy
-
-デバッグモードでレポートを生成し、Firebase Hostingにデプロイするワークフロー。
-
-## 前提条件
-
-- `.venv` が作成済みであること
-- 初回のみ: `python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
 
 ## 手順
 
 // turbo-all
 
-1. venv を有効化してデバッグモードで実行
-```bash
-# 特定の日付(YYYY-MM-DD)を指定する場合は TARGET_DATE を設定
-# 計算式: TARGET_DATE = 試合日(現地) + 1日
-#
-# | 見たい試合の現地日付 | TARGET_DATE (JST) |
-# |---------------------|-------------------|
-# | 1/7 (火)            | 2026-01-08        |
-# | 1/8 (水)            | 2026-01-09        |
-#
-# ※ TARGET_DATEはJST基準。APIから取得する試合日時はUTC。
-#   内部で比較する際、TARGET_DATEの0時(JST)以降の試合を除外する。
-TARGET_DATE=$(date -v-2d +%Y-%m-%d) DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+### 1. レポート生成（実データ検証モード）
 
-# 実行後は必ずデプロイすること
-python scripts/sync_firebase_reports.py
-firebase deploy --only hosting
+以下のコマンドをコピーして実行する。**`USE_MOCK_DATA=False` を忘れると、APIを叩かずに偽データで動くので注意。**
+
+```bash
+# 日付(YYYY-MM-DD)は必要に応じて変更
+# 指定した日付の「07:00 JST」として実行される（＝その前の晩の試合を拾う）
+TARGET_DATE="2026-01-10" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 ```
 
-2. 生成されたHTMLとimagesを確認
+**[確認項目]**
+ログの開始直後に出る以下の行を**必ず**目視確認すること：
+`Starting workflow... (Dry Run: False, Mock: False)`
+→ `Mock: False` になっていればOK。`Mock: True` なら即座に停止してやり直すこと。
+
+### 2. 生成物のローカル確認
+ファイルが存在するか、日付が正しいかを確認。
 ```bash
-ls -la public/reports/*.html | tail -5
-ls -la public/reports/images/*.png | tail -5
+ls -lt public/reports/*.html | head -n 5
 ```
 
-3. デプロイ前にFirebaseからレポートを同期（紛失防止）
+### 3. Firebaseとの同期（必須：他人の進捗を上書きしないため）
 ```bash
 python scripts/sync_firebase_reports.py
 ```
 
-4. Firebase Hostingへデプロイ
+### 4. デプロイ
 ```bash
 firebase deploy --only hosting
 ```
 
-5. デプロイ完了後、ブラウザでWEBサイトを確認
-まずLLM（あなた）が確認してから、ユーザ側に確認を促すこと。
-```bash
-open https://football-delay-watching-a8830.web.app
-```
+### 5. URLの確認と報告
+デプロイ完了後、公開URL（https://football-delay-watching-a8830.web.app）を開き、生成されたレポートのURLを特定してユーザーに報告する。
 
-## 補足
+---
 
-- デバッグモードでは1試合のみ処理
-- 選手検索は1人/チームに削減（クォータ節約）
-- レポートには `[DEBUG]` バッジが表示される
+## 📅 TARGET_DATE の計算ガイド
+「見たい試合の現地日付」の **+1日** を指定するのがルール。
+
+| 見たい試合の現地日付 | 指定する TARGET_DATE (JST) |
+| :--- | :--- |
+| 1/7(火) の試合 | 2026-01-08 |
+| 1/10(土) の試合 | 2026-01-11 |
+
+---
+
+## 💡 トラブルシューティング
+- **"No matches found" と出る**: TARGET_DATEがずれているか、指定した期間に試合がない。
+- **データが古い**: `rm -rf .gemini/cache` でローカルキャッシュを消して再試行。

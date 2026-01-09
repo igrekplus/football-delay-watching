@@ -12,10 +12,3 @@ class MatchInfoFormatter:
         # Issue #116 Polish: 大会情報のカードを削除（ヘッダーに移動したため）
         return ""
 
-    def format_form_with_icons(self, form: str) -> str:
-        """フォーム文字列（W, D, L）をアイコン付きに変換"""
-        if not form:
-            return ""
-        icons = {"W": "✅", "D": "➖", "L": "❌"}
-        icon_str = "".join(icons.get(c, c) for c in form)
-        return f"{form} ({icon_str})"

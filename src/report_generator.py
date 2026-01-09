@@ -257,9 +257,6 @@ class ReportGenerator:
         
         lines.append('</div>')  # end two-column-section
         
-        home_form = self.match_info_formatter.format_form_with_icons(match.home_recent_form)
-        away_form = self.match_info_formatter.format_form_with_icons(match.away_recent_form)
-        lines.append(f"- 直近フォーム：Home {home_form} / Away {away_form}")
         lines.append(f"- 主審：{match.referee}")
         lines.append("")
         
