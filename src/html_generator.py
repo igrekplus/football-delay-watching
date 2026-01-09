@@ -10,10 +10,9 @@ import logging
 from pathlib import Path
 
 import markdown
-from typing import Union
 
 from config import config
-from src.domain.models import MatchData, MatchAggregate
+from src.domain.models import MatchAggregate
 from src.clients.firebase_sync_client import FirebaseSyncClient
 from src.manifest_manager import ManifestManager
 from src.utils.datetime_util import DateTimeUtil
@@ -126,10 +125,10 @@ def generate_html_reports(report_list: list) -> list:
     Args:
         report_list: ReportGenerator.generate_all()の戻り値
             [{
-                "match": Union[MatchData, MatchAggregate],
+                "match": MatchAggregate,
                 "markdown_content": str,
                 "image_paths": List[str],
-                "filename": str  # "2025-12-27_ManchesterCity_vs_Arsenal_20251228_072100"
+                "filename": str  
             }, ...]
     
     Returns:
@@ -170,7 +169,7 @@ def generate_html_reports(report_list: list) -> list:
         # ページタイトル（実行時刻を含む）
         time_part = generation_datetime.split('_')[1]  # "HHMMSS"
         time_display = f"{time_part[:2]}:{time_part[2:4]}:{time_part[4:]}"
-        title = f"{mode_prefix}{match.home_team} vs {match.away_team} - {match.competition} ({time_display})"
+        title = f"{mode_prefix}{match.core.home_team} vs {match.core.away_team} - {match.core.competition} ({time_display})"
         
         # CSS外部参照HTMLテンプレート
         html_template = _get_html_template(title, html_body, timestamp, mode_banner)
@@ -186,14 +185,14 @@ def generate_html_reports(report_list: list) -> list:
         
         # manifest用エントリ
         match_entries.append({
-            "fixture_id": match.id,
-            "home_team": match.home_team,
-            "away_team": match.away_team,
-            "competition": match.competition,
-            "kickoff_local": match.kickoff_local,
-            "kickoff_jst": match.kickoff_jst,
+            "fixture_id": match.core.id,
+            "home_team": match.core.home_team,
+            "away_team": match.core.away_team,
+            "competition": match.core.competition,
+            "kickoff_local": match.core.kickoff_local,
+            "kickoff_jst": match.core.kickoff_jst,
             "file": html_filename,
-            "match_date": match.match_date_local,
+            "match_date": match.core.match_date_local,
             "is_mock": config.USE_MOCK_DATA,
             "is_debug": config.DEBUG_MODE
         })

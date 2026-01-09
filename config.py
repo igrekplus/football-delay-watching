@@ -171,9 +171,6 @@ class Config:
             # Normal mode: yesterday
             return now_jst - timedelta(days=1)
 
-    # Mock Data Flags (Default to False if keys are present, else True)
-    USE_MOCK_DATA: bool = os.getenv("USE_MOCK_DATA", "True").lower() == "true"
-
     # Error Levels
     ERROR_CRITICAL: str = "E1"
     ERROR_PARTIAL: str = "E2"

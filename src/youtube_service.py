@@ -10,14 +10,14 @@ Issue #102:検索/キャッシュはYouTubeSearchClientに統一
 
 import logging
 from datetime import datetime
-from typing import List, Dict, Optional, Tuple, Callable, Union
+from typing import List, Dict, Optional, Tuple, Callable
 
 from config import config
 from settings.channels import (
     get_team_channel,
     is_trusted_channel,
     get_channel_info,
-    TACTICS_CHANNELS,  # 後方互換性のため残す（将来削除予定）
+    TACTICS_CHANNELS,
 )
 from settings.search_specs import (
     YOUTUBE_SEARCH_SPECS,
@@ -25,7 +25,7 @@ from settings.search_specs import (
     get_youtube_time_window,
     get_youtube_exclude_filters,
 )
-from src.domain.models import MatchData, MatchAggregate
+from src.domain.models import MatchAggregate
 from src.youtube_filter import YouTubePostFilter
 from src.clients.youtube_client import YouTubeSearchClient
 
@@ -441,7 +441,7 @@ class YouTubeService:
         """重複を排除（後方互換性のため、内部ではself.filter.deduplicateを使用）"""
         return self.filter.deduplicate(videos)
     
-    def _get_key_players(self, match: Union[MatchData, MatchAggregate]) -> Tuple[List[str], List[str]]:
+    def _get_key_players(self, match: MatchAggregate) -> Tuple[List[str], List[str]]:
         """
         各チームのキープレイヤーを取得（FW/MF優先）
         
@@ -454,46 +454,45 @@ class YouTubeService:
         away_players = []
         
         # ホームチーム - リストから取得（FW/MF優先は形式的）
-        if match.home_lineup:
+        if match.facts.home_lineup:
             # スタメンリストから後ろの方（FW想定）を優先
-            for player in reversed(match.home_lineup):
+            for player in reversed(match.facts.home_lineup):
                 if len(home_players) < player_count:
                     home_players.append(player)
         
         # アウェイチーム
-        if match.away_lineup:
-            for player in reversed(match.away_lineup):
+        if match.facts.away_lineup:
+            for player in reversed(match.facts.away_lineup):
                 if len(away_players) < player_count:
                     away_players.append(player)
         
         return home_players, away_players
     
-    def get_videos_for_match(self, match: Union[MatchData, MatchAggregate]) -> Dict[str, List[Dict]]:
+    def get_videos_for_match(self, match: MatchAggregate) -> Dict[str, List[Dict]]:
         """試合に関連する動画を取得（kept/removed/overflowを含む辞書を返す）"""
         all_kept = []
         all_removed = []
         all_overflow = []
         
-        home_team = match.home_team
-        away_team = match.away_team
-        home_manager = getattr(match, 'home_manager', '')
-        away_manager = getattr(match, 'away_manager', '')
+        home_team = match.core.home_team
+        away_team = match.core.away_team
+        home_manager = match.facts.home_manager
+        away_manager = match.facts.away_manager
         
         # Issue #70: kickoff_at_utc を優先使用
-        # フォールバック: DateTimeUtil で複数フォーマット対応パース
         import pytz
         from src.utils.datetime_util import DateTimeUtil
         
-        if hasattr(match, 'kickoff_at_utc') and match.kickoff_at_utc is not None:
-            kickoff_time = match.kickoff_at_utc
+        if match.core.kickoff_at_utc is not None:
+            kickoff_time = match.core.kickoff_at_utc
             logger.info(f"Kickoff time (from kickoff_at_utc): {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
         else:
             # フォールバック: kickoff_jst 文字列をパース
-            kickoff_time = DateTimeUtil.parse_kickoff_jst(match.kickoff_jst)
+            kickoff_time = DateTimeUtil.parse_kickoff_jst(match.core.kickoff_jst)
             if kickoff_time:
-                logger.info(f"Kickoff time (parsed from kickoff_jst): {match.kickoff_jst} -> UTC: {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
+                logger.info(f"Kickoff time (parsed from kickoff_jst): {match.core.kickoff_jst} -> UTC: {kickoff_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
             else:
-                logger.warning(f"Failed to parse kickoff_jst: {match.kickoff_jst}, using current time")
+                logger.warning(f"Failed to parse kickoff_jst: {match.core.kickoff_jst}, using current time")
                 kickoff_time = datetime.now(pytz.UTC)
         
         logger.info(f"Fetching YouTube videos for {home_team} vs {away_team}")
@@ -559,7 +558,7 @@ class YouTubeService:
             "overflow": final_overflow
         }
     
-    def process_matches(self, matches: List[Union[MatchData, MatchAggregate]]) -> Dict[str, List[Dict]]:
+    def process_matches(self, matches: List[MatchAggregate]) -> Dict[str, List[Dict]]:
         """全試合の動画を取得"""
         # モックモード: APIアクセスなしでリアルなダミーデータを返却
         if config.USE_MOCK_DATA:
@@ -568,13 +567,13 @@ class YouTubeService:
         results = {}
         
         for match in matches:
-            if match.is_target:
-                match_key = f"{match.home_team} vs {match.away_team}"
+            if match.core.is_target:
+                match_key = f"{match.core.home_team} vs {match.core.away_team}"
                 results[match_key] = self.get_videos_for_match(match)
         
         return results
     
-    def _get_mock_videos(self, matches: List[Union[MatchData, MatchAggregate]]) -> Dict[str, List[Dict]]:
+    def _get_mock_videos(self, matches: List[MatchAggregate]) -> Dict[str, List[Dict]]:
         """モック用YouTube動画データを取得"""
         from src.mock_provider import MockProvider
         return MockProvider.get_youtube_videos_for_matches(matches)

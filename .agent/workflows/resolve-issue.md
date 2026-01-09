@@ -14,6 +14,7 @@ description: Issue番号を指定して、ブランチ作成から実装、検�
    - 承認されたら、計画に従って変更を実装する。
    - 進行に合わせて `task.md` を更新する。
 7. **検証フェーズ (Verification Phase)**:
+   - `debug-run.md`の内容に則り作業を行う。明確にdebug-runの何の作業をするか宣言してから作業を実施する。
    - デバッグモードでアプリケーションを実行し、変更を検証する: `DEBUG_MODE=True USE_MOCK_DATA=False python main.py`
    - ログと生成されたレポートを確認する。
    - UIの変更が含まれる場合は、`/debug-run` ワークフローまたは手動コマンドを使用してFirebase Hostingにデプロイする。

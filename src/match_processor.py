@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 
 from config import config
-from src.domain.models import MatchData, MatchCore, MatchAggregate
+from src.domain.models import MatchCore, MatchAggregate
 from src.clients.api_football_client import ApiFootballClient
 from src.domain.match_ranker import MatchRanker
 from src.domain.match_selector import MatchSelector

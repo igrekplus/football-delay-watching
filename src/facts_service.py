@@ -1,136 +1,80 @@
 """
 試合データサービス
 
-試合の詳細情報（スタメン、怪我人、フォーム、対戦履歴）の取得・加工を担当する。
-API呼び出しはClientに委譲し、データ加工ロジックに専念する。
+FixtureDataFetcher, FactsFormatter, TributeGenerator を統括する Facade サービス。
+既存の呼び出し元（MatchProcessor等）のインターフェースを維持しつつ、
+実際の処理を各サービスへ委譲する。
 """
 
 import logging
-from typing import List, Union
-
+from typing import List
 from config import config
-from src.domain.models import MatchData, MatchAggregate
+from src.domain.models import MatchAggregate
 from src.clients.api_football_client import ApiFootballClient
 from src.clients.llm_client import LLMClient
+from src.services.fixture_data_fetcher import FixtureDataFetcher
+from src.services.facts_formatter import FactsFormatter
+from src.services.tribute_generator import TributeGenerator
+from src.mock_provider import MockProvider
 from settings.player_instagram import get_player_instagram_urls
 
 logger = logging.getLogger(__name__)
 
-
 class FactsService:
-    """試合データ取得・加工サービス"""
+    """試合データ取得・加工サービス (Facade)"""
     
     def __init__(self, api_client: ApiFootballClient = None, llm_client: LLMClient = None):
-        """
-        Args:
-            api_client: API-Footballクライアント（DIで注入可能）
-            llm_client: LLMクライアント（DIで注入可能）
-        """
         self.api = api_client or ApiFootballClient()
         self.llm = llm_client or LLMClient()
+        
+        # サブサービスの初期化
+        self.fetcher = FixtureDataFetcher(self.api)
+        self.formatter = FactsFormatter()
+        self.tribute = TributeGenerator(self.llm)
 
-    def enrich_matches(self, matches: List[Union[MatchData, MatchAggregate]]):
+    def enrich_matches(self, matches: List[MatchAggregate]):
         """試合リストにデータを付加"""
         for match in matches:
-            if match.is_target:
-                self._get_facts(match)
+            if match.core.is_target:
+                self._enrich_single(match)
 
-    def _get_facts(self, match: Union[MatchData, MatchAggregate]):
-        """試合データを取得"""
+    def _enrich_single(self, match: MatchAggregate):
+        """1試合に対してデータを補完する"""
         if config.USE_MOCK_DATA:
-            self._get_mock_facts(match)
-        else:
-            self._fetch_facts_from_api(match)
-
-    def _fetch_facts_from_api(self, match: Union[MatchData, MatchAggregate]):
-        """APIから試合データを取得"""
-        # 1. Fetch Lineups
-        self._fetch_lineups(match)
-        
-        # 2. Fetch Injuries
-        self._fetch_injuries(match)
-        
-        
-        # 4. Fetch Recent Form Details (Issue #132)
-        self._fetch_recent_form_details(match)
-        
-        # 5. Fetch Head-to-Head History
-        self._fetch_h2h(match)
-        
-        # 6. Detect Same Country Matchups (Issue #39)
-        self._detect_and_generate_same_country(match)
-        
-        # 7. Generate Former Club Trivia (Issue #20)
-        self._generate_former_club_trivia(match)
-    
-    def _fetch_lineups(self, match: Union[MatchData, MatchAggregate]):
-        """スタメン情報を取得・加工"""
-        data = self.api.fetch_lineups(match.id)
-        
-        if not data.get('response'):
-            logger.error(f"No lineup data for match {match.id}")
-            match.error_status = config.ERROR_PARTIAL
+            logger.info(f"Applying mock facts for {match.core.home_team} vs {match.core.away_team}")
+            MockProvider.apply_facts(match)
+            # モックモードでも同国対決を検出・生成
+            if not match.facts.same_country_text:
+                self.tribute.detect_and_generate_same_country(match)
             return
+
+        # 1. APIからのデータ一括取得
+        raw = self.fetcher.fetch_all(match)
+
+        # 2. データの整形と流し込み
+        # lineups & player details
+        player_id_pairs = self.formatter.format_lineups(match, raw.lineups)
+        if player_id_pairs:
+            self._fetch_player_details(match, player_id_pairs)
         
-        # Collect player (id, lineup_name, team_name) pairs for nationality/photo lookup
-        player_id_name_pairs = []
+        # Instagram URL
+        self._set_instagram_urls(match)
         
-        for team_data in data.get('response', []):
-            team_name = team_data['team']['name']
-            formation = team_data['formation']
-            
-            # Extract coach info (Issue #53)
-            coach_name = team_data.get('coach', {}).get('name', '')
-            coach_photo = team_data.get('coach', {}).get('photo', '')
-            
-            # Extract player data
-            start_xi_data = [
-                (p['player']['name'], p['player']['id'], p['player'].get('number'))
-                for p in team_data['startXI']
-            ]
-            subs_data = [
-                (p['player']['name'], p['player']['id'], p['player'].get('number'), p['player'].get('pos', ''))
-                for p in team_data['substitutes']
-            ]
-            
-            start_xi = [p[0] for p in start_xi_data]
-            subs = [p[0] for p in subs_data]
-            
-            # Store player numbers
-            for name, _, number in start_xi_data:
-                if number is not None:
-                    match.player_numbers[name] = number
-            
-            for name, _, number, pos in subs_data:
-                if number is not None:
-                    match.player_numbers[name] = number
-                if pos:
-                    match.player_positions[name] = pos
-            
-            # Collect player IDs for details lookup
-            player_id_name_pairs.extend([(p[1], p[0], team_name) for p in start_xi_data])
-            player_id_name_pairs.extend([(p[1], p[0], team_name) for p in subs_data])
-            
-            # Assign to match
-            if team_name == match.home_team:
-                match.home_formation = formation
-                match.home_lineup = start_xi
-                match.home_bench = subs
-                match.home_manager = coach_name
-                match.home_manager_photo = coach_photo
-            elif team_name == match.away_team:
-                match.away_formation = formation
-                match.away_lineup = start_xi
-                match.away_bench = subs
-                match.away_manager = coach_name
-                match.away_manager_photo = coach_photo
+        # Injuries
+        self.formatter.format_injuries(match, raw.injuries)
         
-        # Fetch player details (nationality, photo, birthdate)
-        if not config.USE_MOCK_DATA and player_id_name_pairs:
-            self._fetch_player_details(match, player_id_name_pairs)
-    
-    def _fetch_player_details(self, match: Union[MatchData, MatchAggregate], player_id_name_pairs: list):
-        """選手詳細情報を取得"""
+        # Recent Form
+        self.formatter.format_recent_form(match, raw.home_form, raw.away_form)
+        
+        # H2H
+        self.formatter.format_h2h(match, raw.h2h, raw.home_team_id)
+
+        # 3. LLMによるトリビア生成
+        self.tribute.detect_and_generate_same_country(match)
+        self.tribute.generate_former_club_trivia(match)
+
+    def _fetch_player_details(self, match: MatchAggregate, player_id_name_pairs: list):
+        """選手詳細情報（国籍、写真等）を取得"""
         for player_id, lineup_name, team_name in player_id_name_pairs:
             try:
                 data = self.api.fetch_player_details(
@@ -143,363 +87,32 @@ class FactsService:
                     
                     nationality = player_data['player'].get('nationality', '')
                     if nationality:
-                        match.player_nationalities[lineup_name] = nationality
+                        match.facts.player_nationalities[lineup_name] = nationality
                     
                     photo = player_data['player'].get('photo', '')
                     if photo:
-                        match.player_photos[lineup_name] = photo
+                        match.facts.player_photos[lineup_name] = photo
                     
                     birth_date = player_data['player'].get('birth', {}).get('date', '')
                     if birth_date:
-                        match.player_birthdates[lineup_name] = birth_date
+                        match.facts.player_birthdates[lineup_name] = birth_date
                         
             except Exception as e:
                 logger.warning(f"Error fetching details for player {player_id}: {e}")
                 continue
-        
-        # Issue #40: Instagram URL設定（CSVから）
-        self._set_instagram_urls(match)
-    
-    def _set_instagram_urls(self, match: Union[MatchData, MatchAggregate]):
+
+    def _set_instagram_urls(self, match: MatchAggregate):
         """選手のInstagram URLをCSVから設定"""
         instagram_urls = get_player_instagram_urls()
         
-        # 両チームの全選手に対してInstagram URLを設定
         all_players = (
-            match.home_lineup + match.home_bench +
-            match.away_lineup + match.away_bench
+            match.facts.home_lineup + match.facts.home_bench +
+            match.facts.away_lineup + match.facts.away_bench
         )
         
         for player_name in all_players:
             if player_name in instagram_urls:
-                match.player_instagram[player_name] = instagram_urls[player_name]
+                match.facts.player_instagram[player_name] = instagram_urls[player_name]
         
-        if match.player_instagram:
-            logger.debug(f"Set Instagram URLs for {len(match.player_instagram)} players")
-    
-    def _fetch_injuries(self, match: Union[MatchData, MatchAggregate]):
-        """怪我人情報を取得・加工"""
-        data = self.api.fetch_injuries(match.id)
-        
-        injuries = []
-        for item in data.get('response', []):
-            player_name = item['player']['name']
-            team_name = item['team']['name']
-            reason = item['player'].get('reason', 'Unknown')
-            photo = item['player'].get('photo', '')
-            
-            injuries.append({
-                "name": player_name,
-                "team": team_name,
-                "reason": reason,
-                "photo": photo
-            })
-            
-            if photo:
-                match.player_photos[player_name] = photo
-        
-        if injuries:
-            match.injuries_list = injuries[:5]
-            match.injuries_info = ", ".join(
-                f"{i['name']}({i['team']}): {i['reason']}" for i in match.injuries_list
-            )
-        else:
-            match.injuries_list = []
-            match.injuries_info = "なし"
-    
-    
-    def _fetch_recent_form_details(self, match: Union[MatchData, MatchAggregate]):
-        """直近5試合詳細を取得・加工（Issue #132）"""
-        # Get fixture details for team IDs
-        fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
-        
-        if not fixture_data.get('response'):
-            logger.warning(f"Form details: fixtures response empty for match {match.id}")
-            return
-        
-        fixture = fixture_data['response'][0]
-        home_id = fixture['teams']['home']['id']
-        away_id = fixture['teams']['away']['id']
-        
-        # Fetch recent fixtures for each team
-        match.home_recent_form_details = self._get_team_recent_form_details(home_id, match.home_team)
-        match.away_recent_form_details = self._get_team_recent_form_details(away_id, match.away_team)
-    
-    def _get_team_recent_form_details(self, team_id: int, team_name: str) -> list:
-        """チームの直近5試合詳細を取得"""
-        from datetime import datetime
-        
-        # 当該試合より前の結果のみを表示するため、多めに取得
-        data = self.api.fetch_team_recent_fixtures(team_id=team_id, last=10)
-        
-        if not data.get('response'):
-            logger.info(f"No recent fixtures for team {team_id}")
-            return []
-        
-        # Filter to finished matches only AND exclude current/future matches
-        finished_statuses = {"FT", "AET", "PEN"}
-        # TARGET_DATEの0時以降を除外（H2Hと同様のロジック）
-        max_date = config.TARGET_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
-        form_details = []
-        
-        for fixture in data['response']:
-            status = fixture.get('fixture', {}).get('status', {}).get('short', '')
-            if status not in finished_statuses:
-                continue
-            
-            fixture_info = fixture.get('fixture', {})
-            
-            # 当該試合日以降の試合を除外（H2Hと同様のロジック）
-            fixture_date_str = fixture_info.get('date', '')
-            if fixture_date_str:
-                try:
-                    fixture_dt = datetime.fromisoformat(fixture_date_str.replace("Z", "+00:00"))
-                    if fixture_dt >= max_date:
-                        continue
-                except (ValueError, TypeError):
-                    pass
-            league_info = fixture.get('league', {})
-            goals = fixture.get('goals', {})
-            teams = fixture.get('teams', {})
-            
-            fixture_date = fixture_info.get('date', '')[:10]  # YYYY-MM-DD
-            competition = league_info.get('name', 'Unknown')
-            round_info = league_info.get('round', '')
-            
-            home_team_name = teams.get('home', {}).get('name', '')
-            away_team_name = teams.get('away', {}).get('name', '')
-            home_team_id = teams.get('home', {}).get('id')
-            home_goals = goals.get('home', 0) or 0
-            away_goals = goals.get('away', 0) or 0
-            
-            # Determine opponent and result from the target team's perspective
-            if home_team_id == team_id:
-                opponent = away_team_name
-                score = f"{home_goals}-{away_goals}"
-                if home_goals > away_goals:
-                    result = "W"
-                elif home_goals < away_goals:
-                    result = "L"
-                else:
-                    result = "D"
-            else:
-                opponent = home_team_name
-                score = f"{away_goals}-{home_goals}"  # Show from target team's perspective
-                if away_goals > home_goals:
-                    result = "W"
-                elif away_goals < home_goals:
-                    result = "L"
-                else:
-                    result = "D"
-            
-            form_details.append({
-                "date": fixture_date,
-                "opponent": opponent,
-                "competition": competition,
-                "round": round_info,
-                "score": score,
-                "result": result
-            })
-        
-        # Sort by date descending (most recent first)
-        form_details.sort(key=lambda x: x['date'], reverse=True)
-        
-        return form_details[:5]  # Ensure max 5 results
-    
-    
-    def _fetch_h2h(self, match: Union[MatchData, MatchAggregate]):
-        """対戦履歴を取得・加工（過去5年間のみ）"""
-        from datetime import datetime, timedelta
-        
-        # Get fixture details for team IDs
-        fixture_data = self.api.fetch_fixtures(fixture_id=match.id)
-        
-        if not fixture_data.get('response'):
-            logger.warning(f"H2H: fixtures response empty for match {match.id}")
-            match.h2h_summary = "対戦成績取得失敗（fixture取得エラー）"
-            return
-        
-        fixture = fixture_data['response'][0]
-        home_id = fixture['teams']['home']['id']
-        away_id = fixture['teams']['away']['id']
-        
-        # Fetch H2H
-        h2h_data = self.api.fetch_h2h(team1_id=home_id, team2_id=away_id)
-        
-        if not h2h_data.get('response'):
-            logger.info(f"H2H: No history found for {match.home_team} vs {match.away_team}")
-            match.h2h_summary = "対戦履歴なし"
-            match.h2h_details = []
-            return
-        
-        # Filter to last 5 years AND exclude current/future matches
-        cutoff_date = config.TARGET_DATE - timedelta(days=5*365)
-        # Exclude matches on or after TARGET_DATE (start of day in JST)
-        max_date = config.TARGET_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
-        filtered_matches = []
-        
-        for h2h_fixture in h2h_data['response']:
-            fixture_date_str = h2h_fixture.get('fixture', {}).get('date', '')
-            if not fixture_date_str:
-                continue
-            
-            try:
-                fixture_date = datetime.fromisoformat(fixture_date_str.replace("Z", "+00:00"))
-                # Compare aware datetimes directly (cutoff_date is JST aware, fixture_date is UTC aware)
-                # Exclude matches older than 5 years
-                if fixture_date < cutoff_date:
-                    continue
-                # Exclude current match date and future matches
-                if fixture_date >= max_date:
-                    continue
-            except (ValueError, TypeError) as e:
-                logger.warning(f"H2H date parse/compare error: {e} for {fixture_date_str}")
-                continue
-            
-            filtered_matches.append(h2h_fixture)
-        
-        # Sort by date descending
-        filtered_matches.sort(
-            key=lambda x: x.get('fixture', {}).get('date', ''),
-            reverse=True
-        )
-        
-        if not filtered_matches:
-            logger.info(f"H2H: No matches within last 5 years for {match.home_team} vs {match.away_team}")
-            match.h2h_summary = "過去5年間の対戦なし"
-            match.h2h_details = []
-            return
-        
-        # Build h2h_details and count wins/draws
-        h2h_details = []
-        home_wins = 0
-        away_wins = 0
-        draws = 0
-        
-        for h2h_fixture in filtered_matches:
-            fixture_info = h2h_fixture.get('fixture', {})
-            league_info = h2h_fixture.get('league', {})
-            goals = h2h_fixture.get('goals', {})
-            teams = h2h_fixture.get('teams', {})
-            
-            fixture_date_str = fixture_info.get('date', '')[:10]  # YYYY-MM-DD
-            competition = league_info.get('name', 'Unknown')
-            home_team_name = teams.get('home', {}).get('name', '')
-            away_team_name = teams.get('away', {}).get('name', '')
-            home_goals = goals.get('home', 0) or 0
-            away_goals = goals.get('away', 0) or 0
-            score = f"{home_goals}-{away_goals}"
-            fixture_home_id = teams.get('home', {}).get('id')
-            
-            # Determine winner relative to the current match's home team
-            if home_goals == away_goals:
-                winner = "draw"
-                draws += 1
-            elif home_goals > away_goals:
-                if fixture_home_id == home_id:
-                    winner = match.home_team
-                    home_wins += 1
-                else:
-                    winner = match.away_team
-                    away_wins += 1
-            else:
-                if fixture_home_id == home_id:
-                    winner = match.away_team
-                    away_wins += 1
-                else:
-                    winner = match.home_team
-                    home_wins += 1
-            
-            h2h_details.append({
-                "date": fixture_date_str,
-                "competition": competition,
-                "home": home_team_name,
-                "away": away_team_name,
-                "score": score,
-                "winner": winner
-            })
-        
-        # Limit h2h_details to 8 matches for display, but keep summary stats from all matches
-        match.h2h_details = h2h_details[:8]
-        total = home_wins + draws + away_wins
-        match.h2h_summary = f"過去5年間 {total}試合: {match.home_team} {home_wins}勝, 引分 {draws}, {match.away_team} {away_wins}勝"
-
-    def _get_mock_facts(self, match: Union[MatchData, MatchAggregate]):
-        """モックデータを設定"""
-        from src.mock_provider import MockProvider
-        MockProvider.apply_facts(match)
-        # モックモードでも同国対決を検出・生成（モックデータに既にある場合はスキップ）
-        if not match.same_country_text:
-            self._detect_and_generate_same_country(match)
-    
-    def _detect_same_country_matchups(self, match: Union[MatchData, MatchAggregate]) -> list:
-        """同国対決を検出（Issue #39）"""
-        home_players = match.home_lineup + match.home_bench
-        away_players = match.away_lineup + match.away_bench
-        
-        # 国籍ごとにグループ化
-        home_by_country = {}
-        away_by_country = {}
-        
-        for player in home_players:
-            country = match.player_nationalities.get(player, "")
-            if country:
-                home_by_country.setdefault(country, []).append(player)
-        
-        for player in away_players:
-            country = match.player_nationalities.get(player, "")
-            if country:
-                away_by_country.setdefault(country, []).append(player)
-        
-        # 両チームに存在する国籍を抽出（イングランド以外、注目度が高い国籍のみ）
-        # 注: イングランドはプレミアリーグでは多すぎるので除外
-        excluded_countries = {"England", "Spain", "Germany", "France", "Italy"}
-        common_countries = (set(home_by_country.keys()) & set(away_by_country.keys())) - excluded_countries
-        
-        matchups = []
-        for country in common_countries:
-            matchups.append({
-                "country": country,
-                "home_players": home_by_country[country],
-                "away_players": away_by_country[country]
-            })
-        
-        return matchups
-    
-    def _detect_and_generate_same_country(self, match: Union[MatchData, MatchAggregate]):
-        """同国対決を検出し、関係性テキストを生成（Issue #39）"""
-        matchups = self._detect_same_country_matchups(match)
-        match.same_country_matchups = matchups
-        
-        if matchups:
-            logger.info(f"Detected same country matchups: {[m['country'] for m in matchups]}")
-            # LLMで関係性・小ネタを生成
-            match.same_country_text = self.llm.generate_same_country_trivia(
-                home_team=match.home_team,
-                away_team=match.away_team,
-                matchups=matchups
-            )
-        else:
-            match.same_country_text = ""
-
-    def _generate_former_club_trivia(self, match: Union[MatchData, MatchAggregate]):
-        """古巣対決トリビアを生成（Issue #20）"""
-        home_players = match.home_lineup + match.home_bench
-        away_players = match.away_lineup + match.away_bench
-        
-        raw_trivia = self.llm.generate_former_club_trivia(
-            home_team=match.home_team,
-            away_team=match.away_team,
-            home_players=home_players,
-            away_players=away_players
-        )
-        
-        # Gemini Groundingの出典番号（例: [1], [1, 2]）を削除
-        import re
-        # [1], [1, 2], [1, 2, 3] などのパターンにマッチ
-        match.former_club_trivia = re.sub(r'\s*\[\d+(?:,\s*\d+)*\]', '', raw_trivia) if raw_trivia else ""
-        
-        if match.former_club_trivia:
-            logger.info(f"Generated former club trivia for {match.home_team} vs {match.away_team}")
-
-
+        if match.facts.player_instagram:
+            logger.debug(f"Set Instagram URLs for {len(match.facts.player_instagram)} players")
