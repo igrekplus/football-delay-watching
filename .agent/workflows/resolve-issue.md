@@ -17,7 +17,7 @@ description: Issue番号を指定して、ブランチ作成から実装、検�
    - `debug-run.md`の内容に則り作業を行う。明確にdebug-runの何の作業をするか宣言してから作業を実施する。
    - デバッグモードでアプリケーションを実行し、変更を検証する: `DEBUG_MODE=True USE_MOCK_DATA=False python main.py`
    - ログと生成されたレポートを確認する。
-   - UIの変更が含まれる場合は、`/debug-run` ワークフローまたは手動コマンドを使用してFirebase Hostingにデプロイする。
+   - `/debug-run` ワークフローまたは手動コマンドを使用してFirebase Hostingにデプロイする。
    - 結果を報告するために `walkthrough.md` を作成する。
    - マージ前の最終レビューを依頼するために `notify_user` を使用する。
    
