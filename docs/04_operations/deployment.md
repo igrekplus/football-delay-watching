@@ -179,12 +179,11 @@ flowchart LR
     subgraph GitHub Actions
         A[07:00 JST] --> B[main.py]
         B --> C[試合データ取得]
-        C --> D[Markdown生成]
-        D --> E[HTML変換]
-        E --> F[manifest更新]
-        F --> G[Firebase Deploy]
+        C --> D[レポート生成]
+        D --> E[HTMLファイル・manifest作成]
+        E --> F[Firebase Deploy]
     end
-    G --> H[Web公開]
+    F --> G[Web公開]
 ```
 
 ---
@@ -197,12 +196,12 @@ flowchart LR
 flowchart TD
     subgraph 生成
         A[MatchProcessor] -->|試合データ| B[ReportGenerator]
-        B -->|Markdown| C[reports/*.md]
+        B -->|HTMLコンテンツ| C[HTMLデータ]
     end
     
     subgraph 変換
         C --> D[HtmlGenerator]
-        D -->|HTML| E[public/reports/*.html]
+        D -->|HTMLファイル| E[public/reports/*.html]
         D -->|メタ情報| F[public/reports/manifest.json]
     end
     
@@ -216,7 +215,6 @@ flowchart TD
 
 | 生成物 | パス | 保持期間 |
 |--------|------|----------|
-| Markdown | `reports/` | ローカル（永続） |
 | HTML | `public/reports/*.html` | Firebase上で永続 |
 | 画像 | `public/reports/images/` | Firebase上で永続 |
 | manifest | `public/reports/manifest.json` | 最新に上書き |

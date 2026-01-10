@@ -17,7 +17,7 @@ graph TD
         D --> E[NewsService.process_news]
         E --> F[YouTubeService.fetch_videos]
         F --> G[ReportGenerator.generate_all]
-        G --> H[HtmlGenerator.generate]
+        G --> H[HtmlGenerator.generate_html_reports]
         H --> I[EmailService.send]
     end
     
@@ -131,9 +131,9 @@ graph TD
 
 | 項目 | 内容 |
 |------|------|
-| **責務** | Markdownレポート生成、フォーメーション画像生成 |
+| **責務** | HTMLレポート用コンテンツ生成、フォーメーション画像生成 |
 | **入力** | `List[MatchAggregate]`, YouTube動画リスト |
-| **出力** | `List[Dict]` (各試合のMarkdown+画像パス) |
+| **出力** | `List[Dict]` (各試合のHTMLコンテンツ+画像パス) |
 | **副作用** | フォーメーション画像ファイル生成 |
 
 ---
@@ -142,8 +142,8 @@ graph TD
 
 | 項目 | 内容 |
 |------|------|
-| **責務** | Markdown → HTML変換、manifest更新、Firebase同期 |
-| **入力** | Markdownレポートリスト |
+| **責務** | HTMLレポートファイル生成、manifest更新、Firebase同期 |
+| **入力** | HTMLコンテンツリスト |
 | **出力** | HTMLファイル、manifest.json |
 | **副作用** | `public/reports/`への書き込み |
 

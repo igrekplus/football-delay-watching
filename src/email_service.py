@@ -46,8 +46,8 @@ class EmailService:
         """メール送信が利用可能かどうか"""
         return self.client.is_available()
     
-    def _markdown_to_html(self, md_content: str) -> str:
-        """MarkdownをHTMLに変換"""
+    def _markdown_to_html(self, content: str) -> str:
+        """HTMLコンテンツとして変換"""
         # 画像パスをCIDに変換（後で添付画像と紐付け）
         def replace_image_path(match):
             alt = match.group(1)
@@ -57,7 +57,7 @@ class EmailService:
         
         md_content = re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', replace_image_path, md_content)
         
-        # Markdown → HTML変換
+        # HTML変換
         html_content = markdown.markdown(
             md_content,
             extensions=['tables', 'fenced_code', 'nl2br']
@@ -65,27 +65,24 @@ class EmailService:
         
         return self._template.format(content=html_content)
     
-    def send_report(
+    def send_match_report_email(
         self,
         to_email: str,
         subject: str,
-        markdown_content: str,
+        content: str,
         image_paths: List[str] = None
     ) -> bool:
         """
-        レポートをメール送信
+        試合レポートメールを送信
         
         Args:
-            to_email: 送信先メールアドレス
-            subject: メール件名
-            markdown_content: Markdown形式のレポート内容
-            image_paths: 添付する画像ファイルのパスリスト
-            
-        Returns:
-            送信成功時True
+            to_email: 宛先メールアドレス
+            subject: 件名
+            content: レポート内容
+            image_paths: インライン添付する画像のパスリスト
         """
-        # Markdown → HTML
-        html_content = self._markdown_to_html(markdown_content)
+        # HTML化
+        html_content = self._markdown_to_html(content)
         
         # GmailClient経由で送信
         return self.client.send_html_message(

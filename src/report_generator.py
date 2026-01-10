@@ -61,9 +61,17 @@ class ReportGenerator:
         return report_list
     
     def generate_single_match(self, match: MatchAggregate, youtube_videos: Dict[str, List[Dict]], 
-                               excluded_section: str) -> tuple:
+                               excluded_section: str):
         """
-        1試合分のMarkdownレポートを生成
+        1試合分のHTMLレポート用コンテンツを生成
+        
+        Args:
+            match (MatchAggregate): 試合データ集約オブジェクト
+            youtube_videos (Dict[str, List[Dict]]): YouTube動画情報
+            excluded_section (str): 選外試合リストとAPI使用状況のHTMLセクション
+        
+        Returns:
+            tuple: (str, List[str]) Markdownコンテンツと画像パスのリスト
         """
         lines = []
         image_paths = []

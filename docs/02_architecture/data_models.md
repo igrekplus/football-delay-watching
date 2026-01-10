@@ -28,7 +28,6 @@ flowchart LR
     end
     
     subgraph Output["生成物"]
-        MD[("Markdown")]
         HTML[("HTML")]
         MAN[("manifest.json")]
         IMG[("Formation PNG")]
@@ -45,8 +44,7 @@ flowchart LR
     MP --> MA
     MM --> MA
     
-    MA --> MD
-    MD --> HTML
+    MA --> HTML
     HTML --> MAN
     MA --> IMG
 ```
@@ -129,7 +127,6 @@ flowchart TD
 
 | 生成物 | 形式 | 保存先 | 生成元 |
 |-------|------|--------|--------|
-| 試合レポート | Markdown | `reports/*.md` | ReportGenerator |
 | HTMLレポート | HTML | `public/reports/*.html` | HtmlGenerator |
 | フォーメーション画像 | PNG | `public/reports/images/` | ReportGenerator |
 | レポート一覧 | JSON | `public/reports/manifest.json` | HtmlGenerator |

@@ -1,7 +1,7 @@
 """
 HTML生成モジュール
 
-MarkdownレポートをHTMLに変換してpublic/reports/に配置する。
+HTMLレポートをpublic/reports/に配置する。
 責務: HTML生成に特化（CSS外部参照、manifest管理はManifestManagerへ委譲）
 """
 
@@ -35,12 +35,12 @@ def sync_from_firebase() -> int:
     return client.sync_reports(Path(REPORTS_DIR))
 
 
-def generate_html_report(markdown_content: str, report_datetime: str = None) -> str:
+def generate_html_report(content: str, report_datetime: str = None) -> str:
     """
-    MarkdownレポートをHTMLに変換してpublic/reports/に日時付きで保存
+    レポートコンテンツをHTMLファイルとしてpublic/reports/に日時付きで保存
     
     Args:
-        markdown_content: Markdown形式のレポート内容
+        content: HTMLボディ用のレポート内容
         report_datetime: レポート日時 (YYYY-MM-DD_HHMMSS形式、省略時は現在日時)
     
     Returns:
@@ -66,9 +66,9 @@ def generate_html_report(markdown_content: str, report_datetime: str = None) -> 
         mode_prefix = ""
         mode_banner = ""
     
-    # Markdown→HTML変換
+    # コンテンツをHTMLとして整形
     html_body = markdown.markdown(
-        markdown_content,
+        content,
         extensions=['tables', 'fenced_code', 'nl2br', 'markdown.extensions.md_in_html']
     )
     
@@ -157,12 +157,12 @@ def generate_html_reports(report_list: list) -> list:
     
     for report in report_list:
         match = report["match"]
-        markdown_content = report["markdown_content"]
+        content = report["markdown_content"]
         filename_base = report["filename"]
         
-        # Markdown→HTML変換
+        # コンテンツをHTMLとして整形
         html_body = markdown.markdown(
-            markdown_content,
+            content,
             extensions=['tables', 'fenced_code', 'nl2br', 'markdown.extensions.md_in_html']
         )
         
@@ -236,7 +236,7 @@ def _get_html_template(title: str, html_body: str, timestamp: str, mode_banner: 
 
 def generate_from_latest_report(reports_dir: str = None) -> str:
     """
-    最新のMarkdownレポートを読み込んでHTMLに変換
+    最新のレポートを読み込んでHTMLを生成
     
     Args:
         reports_dir: レポートディレクトリ（デフォルト: config.OUTPUT_DIR）
