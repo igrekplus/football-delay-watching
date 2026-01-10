@@ -165,8 +165,8 @@ class Config:
         
         if self.DEBUG_MODE and not self.USE_MOCK_DATA:
             # Debug mode: 過去24時間以内の最近キックオフ試合を対象
-            # TARGET_DATEは現在時刻を返し、match_processorで過去24時間を検索
-            return now_jst
+            # デフォルトで前日を指定することで、前日夜〜当日早朝の試合を確実に拾う
+            return now_jst - timedelta(days=1)
         else:
             # Normal mode: yesterday
             return now_jst - timedelta(days=1)
