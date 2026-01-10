@@ -24,6 +24,17 @@ def get_jinja_env() -> Environment:
         trim_blocks=True,
         lstrip_blocks=True,
     )
+    
+    # カスタムフィルターの登録
+    from markupsafe import Markup, escape
+    
+    def nl2br(value):
+        if not value:
+            return value
+        return Markup(escape(value).replace("\n", "<br>\n"))
+        
+    env.filters['nl2br'] = nl2br
+    
     return env
 
 

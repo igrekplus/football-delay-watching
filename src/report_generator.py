@@ -9,6 +9,7 @@ from src.utils.datetime_util import DateTimeUtil
 from src.formatters import PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter, MatchupFormatter
 from src.parsers.matchup_parser import parse_matchup_text
 from config import config
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -102,22 +103,58 @@ class ReportGenerator:
         return markdown_content, image_paths
     
     def _generate_excluded_section(self, matches: List[MatchAggregate], youtube_stats: Dict[str, int]) -> str:
-        """選外試合リストとAPI使用状況のセクションを生成"""
-        lines = ["## 選外試合リスト\n"]
+        """選外試合リストとAPI使用状況のセクションを生成（HTML形式）"""
         excluded = [m for m in matches if not m.core.is_target]
+        
+        html_parts = ['<div class="debug-info">']
+        html_parts.append('<h3>選外試合リスト</h3>')
         if not excluded:
-            lines.append("- なし\n")
+            html_parts.append('<p>なし</p>')
         else:
+            html_parts.append('<ul>')
             for match in excluded:
-                lines.append(f"- {match.core.home_team} vs {match.core.away_team} （{match.core.competition}）… {match.core.selection_reason}\n")
+                html_parts.append(f'<li>{match.core.home_team} vs {match.core.away_team} （{match.core.competition}）… {match.core.selection_reason}</li>')
+            html_parts.append('</ul>')
         
-        lines.append("\n## API使用状況\n")
-        api_table = ApiStats.format_table()
-        lines.append(api_table)
-        lines.append("\n")
-        lines.append("\n*Gmail API: OAuth認証済みアカウントの送信制限\n")
+        html_parts.append('<h3>API使用状況</h3>')
+        api_table = ApiStats.format_table()  # Markdown table
+        # Convert Markdown table to HTML
+        html_parts.append(self._markdown_table_to_html(api_table))
+        html_parts.append('<p><small>*Gmail API: OAuth認証済みアカウントの送信制限</small></p>')
+        html_parts.append('</div>')
         
-        return "".join(lines)
+        return "\n".join(html_parts)
+    
+    def _markdown_table_to_html(self, md_table: str) -> str:
+        """Markdown テーブルを HTML テーブルに変換"""
+        lines = [line.strip() for line in md_table.strip().split('\n') if line.strip()]
+        if not lines:
+            return ""
+        
+        html = ['<table class="api-stats-table">']
+        for i, line in enumerate(lines):
+            if line.startswith('|---') or line.startswith('| ---'):
+                continue  # Skip separator line
+            cells = [cell.strip() for cell in line.strip('|').split('|')]
+            tag = 'th' if i == 0 else 'td'
+            row_tag = 'thead' if i == 0 else 'tbody'
+            if i == 0:
+                html.append(f'<{row_tag}><tr>')
+            elif i == 1 or (i > 1 and '</tbody>' not in html[-1]):
+                if i == 1:
+                    html.append('<tbody>')
+                html.append('<tr>')
+            for cell in cells:
+                # Convert Markdown links to HTML
+                cell = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" target="_blank">\1</a>', cell)
+                html.append(f'<{tag}>{cell}</{tag}>')
+            html.append('</tr>')
+            if i == 0:
+                html.append(f'</{row_tag}>')
+        html.append('</tbody>')
+        html.append('</table>')
+        return '\n'.join(html)
+
     
     def _format_form_details_table(self, form_details: list) -> str:
         """直近試合詳細テーブルをHTML形式で生成"""
@@ -205,7 +242,7 @@ class ReportGenerator:
                     section_title="■ 同国対決"
                 )
             else:
-                same_country_html = f"### ■ 同国対決\n\n{match.facts.same_country_text}\n"
+                same_country_html = f"<h3>■ 同国対決</h3><p>{match.facts.same_country_text}</p>"
 
         # ニュース・戦術プレビュー
         news_html = md_lib.markdown(match.preview.news_summary, extensions=['nl2br'])

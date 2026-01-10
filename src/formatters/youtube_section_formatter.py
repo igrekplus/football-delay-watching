@@ -31,7 +31,7 @@ class YouTubeSectionFormatter:
         if not videos:
             return ""
 
-        lines = ["### ■ 📹 試合前の見どころ動画", ""]
+        lines = ['<h3>■ 📹 試合前の見どころ動画</h3>', ""]
         
         for cat_key, cat_label in self.CATEGORY_LABELS.items():
             cat_videos = [v for v in videos if v.get("category") == cat_key]
@@ -99,7 +99,7 @@ class YouTubeSectionFormatter:
         if not removed and not overflow and not match_rank:
             return ""
 
-        lines = ["### ■ デバッグ情報", ""]
+        lines = ['<h3>■ デバッグ情報</h3>', ""]
         
         # Issue #133: Match Rank (Importance) を折りたたみの外に表示
         if match_rank:
