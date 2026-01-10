@@ -157,28 +157,14 @@ def generate_html_reports(report_list: list) -> list:
     
     for report in report_list:
         match = report["match"]
-        content = report["markdown_content"]
+        html_content = report["markdown_content"]  # Jinja2 でレンダリング済み
         filename_base = report["filename"]
-        
-        # コンテンツをHTMLとして整形
-        html_body = markdown.markdown(
-            content,
-            extensions=['tables', 'fenced_code', 'nl2br', 'markdown.extensions.md_in_html']
-        )
-        
-        # ページタイトル（実行時刻を含む）
-        time_part = generation_datetime.split('_')[1]  # "HHMMSS"
-        time_display = f"{time_part[:2]}:{time_part[2:4]}:{time_part[4:]}"
-        title = f"{mode_prefix}{match.core.home_team} vs {match.core.away_team} - {match.core.competition} ({time_display})"
-        
-        # CSS外部参照HTMLテンプレート
-        html_template = _get_html_template(title, html_body, timestamp, mode_banner)
         
         # HTMLファイル保存
         html_filename = f"{filename_base}.html"
         output_path = os.path.join(REPORTS_DIR, html_filename)
         with open(output_path, "w", encoding="utf-8") as f:
-            f.write(html_template)
+            f.write(html_content)
         
         html_paths.append(output_path)
         logger.info(f"Generated HTML: {output_path}")

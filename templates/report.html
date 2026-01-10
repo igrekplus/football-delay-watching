@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}{{ mode_prefix }}{{ match.core.home_team }} vs {{ match.core.away_team }} - {{ match.core.competition
+}}{% endblock %}
+
+{% block mode_banner %}
+{% if mode_banner %}
+{{ mode_banner | safe }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="match-header-container">
+    {% if match.core.competition_logo %}
+    <img src="{{ match.core.competition_logo }}" class="competition-logo-header" alt="{{ match.core.competition }}">
+    {% endif %}
+    <div class="match-header-info">
+        <h1>{{ match.core.home_team }} vs {{ match.core.away_team }}</h1>
+        <div class="match-metadata">
+            {% if not match.core.competition_logo %}
+            <span class="competition-name">{{ competition_display }}</span>
+            <span class="separator">|</span>
+            {% endif %}
+            <span class="match-datetime">{{ match.core.kickoff_jst }} / {{ match.core.kickoff_local }} @ {{
+                match.core.venue }}</span>
+        </div>
+    </div>
+</div>
+
+{{ match_info_html | safe }}
+
+<div class="two-column-section">
+    <div class="team-column">
+        <h3 class="lineup-header">
+            {% if match.core.home_logo %}<img src="{{ match.core.home_logo }}" alt="{{ match.core.home_team }}"
+                class="team-logo">{% endif %}
+            {{ match.core.home_team }}（{{ match.facts.home_formation }}）
+        </h3>
+        <div class="section-label">Starting XI</div>
+        {{ home_cards_html | safe }}
+        <div class="section-label">Substitutes</div>
+        {{ home_bench_html | safe }}
+        <div class="section-label">Injuries / Suspended</div>
+        {{ home_injury_html | safe }}
+    </div>
+    <div class="team-column">
+        <h3 class="lineup-header">
+            {% if match.core.away_logo %}<img src="{{ match.core.away_logo }}" alt="{{ match.core.away_team }}"
+                class="team-logo">{% endif %}
+            {{ match.core.away_team }}（{{ match.facts.away_formation }}）
+        </h3>
+        <div class="section-label">Starting XI</div>
+        {{ away_cards_html | safe }}
+        <div class="section-label">Substitutes</div>
+        {{ away_bench_html | safe }}
+        <div class="section-label">Injuries / Suspended</div>
+        {{ away_injury_html | safe }}
+    </div>
+</div>
+
+<p>- 主審：{{ match.core.referee }}</p>
+
+<h3>■ 直近5試合</h3>
+{% if has_recent_form %}
+<div class="two-column-section">
+    <div class="form-column">
+        <h4>{{ match.core.home_team }}</h4>
+        {% if match.facts.home_recent_form_details %}
+        {% include "partials/form_table.html" with context %}
+        {% set form_details = match.facts.home_recent_form_details %} {# Reset for next include if needed, but we should
+        handle it better #}
+        {% else %}
+        <p class="form-empty">データなし</p>
+        {% endif %}
+    </div>
+    <div class="form-column">
+        <h4>{{ match.core.away_team }}</h4>
+        {% if match.facts.away_recent_form_details %}
+        {% set form_details = match.facts.away_recent_form_details %}
+        {% include "partials/form_table.html" %}
+        {% else %}
+        <p class="form-empty">データなし</p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<p class="form-empty">直近試合データなし</p>
+{% endif %}
+
+<h3>■ 過去の対戦成績</h3>
+<p class="h2h-summary">{{ match.facts.h2h_summary }}</p>
+{% if match.facts.h2h_details %}
+{% set h2h_details = match.facts.h2h_details %}
+{% include "partials/h2h_table.html" %}
+{% endif %}
+
+<h3>■ フォーメーション図</h3>
+{{ formation_html | safe }}
+
+{% if match.facts.same_country_text %}
+{{ same_country_html | safe }}
+{% endif %}
+
+{% if match.facts.former_club_trivia %}
+<h3>■ 古巣対決</h3>
+<p>{{ match.facts.former_club_trivia | nl2br }}</p>
+{% endif %}
+
+<details class="collapsible-section" open>
+    <summary>📰 ニュース要約</summary>
+    <div class="section-content">
+        {{ news_html | safe }}
+    </div>
+</details>
+
+<details class="collapsible-section" open>
+    <summary>📊 戦術プレビュー</summary>
+    <div class="section-content">
+        {{ tactical_html | safe }}
+        {% if match.preview.preview_url and match.preview.preview_url != "https://example.com/tactical-preview" %}
+        <p><a href="{{ match.preview.preview_url }}">戦術プレビュー詳細</a></p>
+        {% endif %}
+    </div>
+</details>
+
+<details class="collapsible-section" open>
+    <summary>🎙️ 監督プレビュー</summary>
+    <div class="section-content">
+        {{ manager_section_html | safe }}
+    </div>
+</details>
+
+{{ youtube_html | safe }}
+
+<hr>
+{{ debug_youtube_html | safe }}
+{{ excluded_section | safe }}
+
+{% endblock %}

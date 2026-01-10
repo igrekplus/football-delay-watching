@@ -1,0 +1,23 @@
+<div class="{{ css_class }}">
+    {% if not injuries %}
+    <p>なし</p>
+    {% else %}
+    {% for injury in injuries %}
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>{{ injury.name }}</span></div>
+        <div class="player-card-body">
+            {% if injury.photo_url %}
+            <img src="{{ injury.photo_url }}" alt="{{ injury.name }}" class="player-card-photo">
+            {% else %}
+            <div class="player-card-photo player-card-photo-placeholder"></div>
+            {% endif %}
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">{{ injury.team }}</div>
+                <div class="player-card-age injury-reason">⚠️ {{ injury.reason }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>

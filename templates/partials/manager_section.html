@@ -1,0 +1,36 @@
+<div class="manager-section">
+    <div class="manager-card">
+        <div class="manager-identity">
+            {% if home_team_logo %}
+            <img src="{{ home_team_logo }}" alt="{{ home_team }}" class="manager-team-logo">
+            {% endif %}
+            {% if home_manager_photo %}
+            <img src="{{ home_manager_photo }}" alt="{{ home_manager }}" class="manager-photo">
+            {% else %}
+            <div class="manager-photo manager-photo-placeholder">👤</div>
+            {% endif %}
+            <div class="manager-text-info">
+                <div class="manager-team">{{ home_team }}</div>
+                <div class="manager-name">{{ home_manager }}</div>
+            </div>
+        </div>
+        <div class="manager-comment">{{ home_interview | safe }}</div>
+    </div>
+    <div class="manager-card">
+        <div class="manager-identity">
+            {% if away_team_logo %}
+            <img src="{{ away_team_logo }}" alt="{{ away_team }}" class="manager-team-logo">
+            {% endif %}
+            {% if away_manager_photo %}
+            <img src="{{ away_manager_photo }}" alt="{{ away_manager }}" class="manager-photo">
+            {% else %}
+            <div class="manager-photo manager-photo-placeholder">👤</div>
+            {% endif %}
+            <div class="manager-text-info">
+                <div class="manager-team">{{ away_team }}</div>
+                <div class="manager-name">{{ away_manager }}</div>
+            </div>
+        </div>
+        <div class="manager-comment">{{ away_interview | safe }}</div>
+    </div>
+</div>

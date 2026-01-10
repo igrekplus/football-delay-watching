@@ -1,0 +1,22 @@
+<table class="h2h-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>大会</th>
+            <th>対戦</th>
+            <th>スコア</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detail in h2h_details %}
+        {% set home_display = "<strong>" ~ detail.home ~ "</strong>" if detail.winner == detail.home else detail.home %}
+        {% set away_display = "<strong>" ~ detail.away ~ "</strong>" if detail.winner == detail.away else detail.away %}
+        <tr>
+            <td>{{ detail.date }}</td>
+            <td>{{ detail.competition }}</td>
+            <td>{{ home_display | safe }} vs {{ away_display | safe }}</td>
+            <td>{{ detail.score }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

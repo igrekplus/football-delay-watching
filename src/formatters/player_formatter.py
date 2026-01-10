@@ -133,13 +133,9 @@ class PlayerFormatter:
                              css_class: str = "player-cards") -> str:
         """
         選手リストをカード形式のHTMLに変換
-        
-        Args:
-            position_label: 全選手に使用するポジションラベル（例: "SUB"）。
-                           Noneの場合はフォーメーションから計算
-            player_positions: 選手名 -> ポジションのマッピング（ベンチ用）
-            player_instagram: 選手名 -> Instagram URLのマッピング
         """
+        from src.template_engine import render_template
+        
         if nationalities is None:
             nationalities = {}
         if player_numbers is None:
@@ -159,10 +155,7 @@ class PlayerFormatter:
         # ポジション略称からフル名への変換
         pos_map = {'G': 'GK', 'D': 'DF', 'M': 'MF', 'F': 'FW'}
         
-        # Instagram SVGアイコン
-        instagram_svg = '''<svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>'''
-        
-        cards_html = []
+        players_data = []
         for idx, name in enumerate(lineup):
             # ベンチ選手の場合: player_positionsから取得、なければposition_labelを使用
             if position_label:
@@ -181,68 +174,54 @@ class PlayerFormatter:
             # 国旗を取得
             flag = format_player_with_flag("", nationality).strip() if nationality else ""
             
-            # Issue #51: カードHTML構造を改善
+            # 表示用データの整理
             number_display = f"#{number}" if number is not None else ""
-            photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
-            # 年齢と生年月日を併記
             birthdate_formatted = birthdate.replace('-', '/') if birthdate else ""
             age_display = f"{age}歳" if age else ""
             if birthdate_formatted and age_display:
                 age_display = f"{age_display} ({birthdate_formatted})"
-            # 国籍に国旗を追加
-            nationality_display = f"{flag} {nationality}" if nationality else ""
             
-            # Issue #40: Instagramリンク
-            instagram_html = ""
-            if instagram_url:
-                instagram_html = f'<a href="{instagram_url}" target="_blank" rel="noopener noreferrer" class="player-instagram-link" title="Instagram">{instagram_svg}</a>'
-            
-            card = f'''<div class="player-card">
-<div class="player-card-header"><span>{name}</span>{instagram_html}</div>
-<div class="player-card-body">
-{photo_html}
-<div class="player-card-info">
-<div class="player-card-position">{position} {number_display}</div>
-<div class="player-card-nationality">{nationality_display}</div>
-<div class="player-card-age">{age_display}</div>
-</div>
-</div>
-</div>'''
-            cards_html.append(card)
+            players_data.append({
+                "name": name,
+                "position": position,
+                "number_display": number_display,
+                "nationality": nationality,
+                "flag": flag,
+                "age_display": age_display,
+                "photo_url": photo_url,
+                "instagram_url": instagram_url
+            })
         
-        return f'<div class="{css_class}">\n' + '\n'.join(cards_html) + '\n</div>'
+        return render_template("partials/player_card.html", 
+                               css_class=css_class, 
+                               players=players_data)
 
     def format_injury_cards(self, injuries_list: list, player_photos: Dict[str, str] = None, css_class: str = "player-cards") -> str:
         """
         怪我人・出場停止リストをカード形式のHTMLに変換
         """
+        from src.template_engine import render_template
+        
         if not injuries_list:
             return f'<div class="{css_class}"><p>なし</p></div>'
         
         if player_photos is None:
             player_photos = {}
         
-        cards_html = []
+        injuries_data = []
         for injury in injuries_list:
             name = injury.get("name", "Unknown")
             team = injury.get("team", "")
             reason = injury.get("reason", "")
-            # injuries_list 内の photo を優先、なければ player_photos から取得
             photo_url = injury.get("photo", "") or player_photos.get(name, "")
             
-            photo_html = f'<img src="{photo_url}" alt="{name}" class="player-card-photo">' if photo_url else '<div class="player-card-photo player-card-photo-placeholder"></div>'
-            
-            card = f'''<div class="player-card injury-card">
-<div class="player-card-header"><span>{name}</span></div>
-<div class="player-card-body">
-{photo_html}
-<div class="player-card-info">
-<div class="player-card-position">🏥 OUT</div>
-<div class="player-card-nationality">{team}</div>
-<div class="player-card-age injury-reason">⚠️ {reason}</div>
-</div>
-</div>
-</div>'''
-            cards_html.append(card)
+            injuries_data.append({
+                "name": name,
+                "team": team,
+                "reason": reason,
+                "photo_url": photo_url
+            })
         
-        return f'<div class="{css_class}">\n' + '\n'.join(cards_html) + '\n</div>'
+        return render_template("partials/injury_card.html", 
+                               css_class=css_class, 
+                               injuries=injuries_data)

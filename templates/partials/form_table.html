@@ -1,0 +1,28 @@
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detail in form_details %}
+        {% set result_class = {
+        "W": "result-win",
+        "D": "result-draw",
+        "L": "result-loss"
+        }.get(detail.result, "") %}
+        {% set comp_display = detail.competition ~ ((' (' ~ detail.round ~ ')') if detail.round else '') %}
+        <tr>
+            <td>{{ detail.date }}</td>
+            <td>{{ detail.opponent }}</td>
+            <td>{{ comp_display }}</td>
+            <td>{{ detail.score }}</td>
+            <td class="{{ result_class }}">{{ detail.result }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
