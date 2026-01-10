@@ -103,7 +103,7 @@
 
 {% if match.facts.former_club_trivia %}
 <h3>■ 古巣対決</h3>
-<p>{{ match.facts.former_club_trivia | nl2br }}</p>
+{{ former_club_html | safe }}
 {% endif %}
 
 <details class="collapsible-section" open>

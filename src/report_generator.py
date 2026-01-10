@@ -251,9 +251,14 @@ class ReportGenerator:
             else:
                 same_country_html = f"<h3>■ 同国対決</h3><p>{match.facts.same_country_text}</p>"
 
-        # ニュース・戦術プレビュー
+        # ニュース・戦術プレビュー・古巣対決
         news_html = md_lib.markdown(match.preview.news_summary, extensions=['nl2br'])
         tactical_html = self._format_tactical_preview_with_visuals(match, md_lib)
+        
+        # 古巣対決（Markdownを変換）
+        former_club_html = ""
+        if match.facts.former_club_trivia:
+            former_club_html = md_lib.markdown(match.facts.former_club_trivia, extensions=['nl2br'])
         
         # 監督コメント
         home_interview_html = md_lib.markdown(match.preview.home_interview, extensions=['nl2br']) if match.preview.home_interview else ''
@@ -291,6 +296,7 @@ class ReportGenerator:
             "news_html": news_html,
             "tactical_html": tactical_html,
             "manager_section_html": manager_section_html,
+            "former_club_html": former_club_html,
             "youtube_html": youtube_html,
             "debug_youtube_html": debug_youtube_html
         }
