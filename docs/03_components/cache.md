@@ -18,7 +18,8 @@ Google Cloud Storage (GCS) をプライマリバックエンドとして使用�
 | API | 実装クライアント | キャッシュ対応 |
 |-----|-----------------|--------------|
 | API-Football | `CachingHttpClient` | ✅ GCS対応 |
-| YouTube Data API | `YouTubeSearchClient` | ✅ GCS対応 |
+| YouTube Data API | `YouTubeSearchClient` | ✅ ローカル（`api_cache/youtube/`） |
+| Gemini Grounding | `LLMClient` | ✅ GCS対応 |
 
 ---
 
@@ -31,6 +32,7 @@ graph TD
     subgraph "高レベル層"
         A[ApiFootballClient] --> B[CachingHttpClient]
         Y[YouTubeSearchClient] --> B
+        L[LLMClient] --> C[CacheStore]
     end
     
     subgraph "キャッシュ層"
@@ -52,7 +54,8 @@ graph TD
 | **CacheStore** | `src/clients/cache_store.py` | ストレージバックエンド抽象化（GCS/Local） |
 | **HttpClient** | `src/clients/http_client.py` | HTTP通信抽象化 |
 | **CachingHttpClient** | `src/clients/caching_http_client.py` | キャッシュ付きHTTP実行、TTL判定 |
-| **YouTubeSearchClient** | `src/clients/youtube_client.py` | YouTube検索・キャッシュ管理 |
+| **YouTubeSearchClient** | `src/clients/youtube_client.py` | YouTube検索・ローカルキャッシュ管理 |
+| **LLMClient** | `src/clients/llm_client.py` | Gemini Grounding呼び出し・キャッシュ管理 |
 | **cache_config** | `settings/cache_config.py` | TTL設定、バックエンド設定 |
 
 ### 2.3 シーケンス図
@@ -91,6 +94,7 @@ sequenceDiagram
 | `GCS_CACHE_BUCKET` | `football-delay-watching-cache` | GCSバケット名 |
 | `CACHE_BACKEND` | `gcs` | `local` or `gcs` |
 | `USE_API_CACHE` | `True` | キャッシュ有効化フラグ |
+| `USE_GROUNDING_CACHE` | `True` | Groundingキャッシュ有効化フラグ |
 
 ### 3.2 TTL設定 (`settings/cache_config.py`)
 
@@ -196,8 +200,11 @@ gs://football-delay-watching-cache/
 │   └── {team_name}_{season}_{league_id}.json
 ├── headtohead/
 │   └── {team1}_vs_{team2}.json
-└── youtube/
-    └── {query_hash}.json
+└── grounding/
+    ├── tactical_preview/
+    │   └── {home_vs_away}.json
+    └── interview/
+        └── {home_vs_away}.json
 ```
 
 ### 5.1 ファイル命名規則
@@ -222,6 +229,7 @@ gs://football-delay-watching-cache/
 | **チーム統計** (`/statistics`) | 10日間 | リーグ進行で更新される |
 | **負傷者** (`/injuries`) | 0 | 当日変動あり |
 | **YouTube検索** | 7日間 | 新着動画の反映 |
+| **Gemini Grounding** | 7日間 | 監督インタビュー・戦術プレビュー |
 
 ---
 
