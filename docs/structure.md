@@ -22,6 +22,7 @@
 1. [04_operations/deployment.md](./04_operations/deployment.md) - デプロイ手順
 2. [04_operations/execution_mode.md](./04_operations/execution_mode.md) - 実行モード（本番/デバッグ/モック）
 3. [04_operations/api_quota.md](./04_operations/api_quota.md) - APIクォータ管理
+4. [04_operations/report_status.md](./04_operations/report_status.md) - レポートステータス管理
 
 ### 「AIと一緒に開発したい」 → AI協業
 1. [GEMINI.md](../GEMINI.md) - AI向けガイド・開発コマンド・Issue対応フロー

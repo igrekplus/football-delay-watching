@@ -90,6 +90,17 @@
 | **デバッグ** | `DEBUG_MODE=True USE_MOCK_DATA=False python main.py` | 実API・1試合のみ |
 | **本番** | `USE_MOCK_DATA=False python main.py` | バッチ実行 |
 
+### 📊 レポートステータス管理
+レポート生成のステータスは GCS 上のCSV (`schedule/fixture_status.csv`) で管理される。
+
+| ステータス | 意味 |
+|-----------|------|
+| `complete` | 品質チェック合格（再処理なし） |
+| `partial` | 一部欠損（次回バッチで再処理） |
+| `failed` | エラー終了（3回まで再試行） |
+
+> 詳細は [docs/04_operations/report_status.md](docs/04_operations/report_status.md) を参照。
+
 ### 📅 デバッグ対象日の指定・計算
 デバッグ実行等で「特定の日付の試合」を処理したい場合、**「実行日(レポート生成日)」**を指定する（`TARGET_DATE`）。
 計算式: `試合日(現地) + 1日`
