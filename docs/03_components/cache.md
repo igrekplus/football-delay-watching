@@ -200,11 +200,13 @@ gs://football-delay-watching-cache/
 │   └── {team_name}_{season}_{league_id}.json
 ├── headtohead/
 │   └── {team1}_vs_{team2}.json
-└── grounding/
-    ├── tactical_preview/
-    │   └── {home_vs_away}.json
-    └── interview/
-        └── {home_vs_away}.json
+├── grounding/
+│   ├── tactical_preview/
+│   │   └── {home_vs_away}.json
+│   └── interview/
+│       └── {home_vs_away}.json
+└── name_translation/
+    └── {name_hash}.json
 ```
 
 ### 5.1 ファイル命名規則
@@ -224,6 +226,7 @@ gs://football-delay-watching-cache/
 |-----------|-----|------|
 | **選手データ** (`/players`) | 無期限 | 国籍、ポジション等は年単位で不変 |
 | **スタメン** (`/lineups`) | 無期限 | 試合後は確定データ |
+| **選手名翻訳** (`name_translation`) | 無期限 | 選手名のカタカナ表記は静的データ |
 | **試合一覧** (`/fixtures`) | 10日間 | 開発中の連続実行に対応 |
 | **過去対戦** (`/headtohead`) | 10日間 | 試合後に内容が変わる |
 | **チーム統計** (`/statistics`) | 10日間 | リーグ進行で更新される |

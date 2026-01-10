@@ -64,10 +64,11 @@ class ReportGenerator:
     def generate_single_match(self, match: MatchAggregate, youtube_videos: Dict[str, List[Dict]], 
                                excluded_section: str) -> tuple:
         """
-        1試合分のMarkdownレポートを生成
+        1試合分のHTMLレポートを生成（選手名カタカナ変換込み）
         """
         from src.template_engine import render_template
         from config import config
+        from src.utils.name_translator import NameTranslator
         
         # デバッグ/モックモードの見出し設定
         mode_prefix = ""
@@ -98,9 +99,15 @@ class ReportGenerator:
         })
         
         # テンプレートでレンダリング
-        markdown_content = render_template("report.html", **match_report_context)
+        html_content = render_template("report.html", **match_report_context)
         
-        return markdown_content, image_paths
+        # 選手名をカタカナに変換
+        player_names = self._extract_player_names(match)
+        if player_names:
+            translator = NameTranslator()
+            html_content = translator.translate_names_in_html(html_content, player_names)
+        
+        return html_content, image_paths
     
     def _generate_excluded_section(self, matches: List[MatchAggregate], youtube_stats: Dict[str, int]) -> str:
         """選外試合リストとAPI使用状況のセクションを生成（HTML形式）"""
@@ -336,3 +343,37 @@ class ReportGenerator:
             
         return html
 
+    def _extract_player_names(self, match: MatchAggregate) -> List[str]:
+        """
+        試合データから選手名を抽出
+        
+        Returns:
+            選手名のリスト（英語）
+        """
+        names = []
+        
+        # スタメン
+        if match.facts.home_lineup:
+            names.extend(match.facts.home_lineup)
+        if match.facts.away_lineup:
+            names.extend(match.facts.away_lineup)
+        
+        # ベンチ
+        if match.facts.home_bench:
+            names.extend(match.facts.home_bench)
+        if match.facts.away_bench:
+            names.extend(match.facts.away_bench)
+        
+        # 負傷者
+        if match.facts.injuries_list:
+            for injury in match.facts.injuries_list:
+                if injury.get("player"):
+                    names.append(injury["player"])
+        
+        # 監督名
+        if match.facts.home_manager:
+            names.append(match.facts.home_manager)
+        if match.facts.away_manager:
+            names.append(match.facts.away_manager)
+        
+        return names
