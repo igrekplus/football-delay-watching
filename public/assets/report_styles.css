@@ -1202,3 +1202,44 @@ pre {
         width: 100%;
     }
 }
+/* Key Player Details (Issue #157) */
+.key-player-details {
+    margin-top: 10px;
+    border-top: 1px dashed var(--card-border-light, rgba(255, 255, 255, 0.1));
+    padding-top: 8px;
+}
+
+.key-player-details summary {
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--color-secondary, #74b9ff);
+    font-weight: bold;
+    outline: none;
+    list-style: none; /* Hide default triangle */
+}
+
+/* Custom indicator */
+.key-player-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.key-player-details summary::after {
+    content: " ▼";
+    font-size: 0.7em;
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.key-player-details[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.key-player-details-content {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--color-text-subtle, #ccc);
+    line-height: 1.5;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+}

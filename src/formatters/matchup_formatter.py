@@ -123,3 +123,58 @@ class MatchupFormatter:
     </div>
 </div>
 '''
+
+    def format_key_player_section(self, key_players: List, player_photos: Dict[str, str], 
+                                  team_logos: Dict[str, str], section_title: str = "■ 注目選手") -> str:
+        """キープレイヤーセクション全体のHTMLを生成"""
+        if not key_players:
+            return ""
+            
+        html = f'<div class="matchup-section key-player-section">\n<h3 class="section-title">{section_title}</h3>\n<div class="matchup-container">\n'
+        
+        for player in key_players:
+            html += self.format_single_key_player(player, player_photos, team_logos)
+            
+        html += '</div>\n</div>'
+        return html
+
+    def format_single_key_player(self, player, player_photos: dict, team_logos: dict) -> str:
+        """1人のキープレイヤーをHTMLカードとしてフォーマット"""
+        from src.parsers.key_player_parser import KeyPlayer
+        
+        photo = self._get_photo(player.name, player_photos)
+        logo = self._get_logo(player.team, team_logos)
+        
+        details_html = ""
+        if player.detailed_description:
+            # 改行を<br>に変換
+            formatted_details = player.detailed_description.replace('\n', '<br>')
+            details_html = f'''
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    {formatted_details}
+                </div>
+            </details>
+            '''
+        
+        return f'''
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="{photo}" alt="{player.name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">
+                <img src="{logo}" alt="{player.team}" class="matchup-badge" onerror="this.style.display=\'none\';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">{player.name}</div>
+                <div class="matchup-team-name">{player.team}</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        {player.description}
+        {details_html}
+    </div>
+</div>
+'''
