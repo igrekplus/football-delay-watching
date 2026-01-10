@@ -31,7 +31,13 @@ source .venv/bin/activate
 
 # 日付(YYYY-MM-DD)は必要に応じて変更するが、原則2日以上前のfixturesが存在する日で実施すること。
 # 指定した日付の「07:00 JST」として実行される（＝その前の晩の試合を拾う）
-TARGET_DATE="2026-01-10" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+# 指定した日付の「07:00 JST」として実行される（＝その前の晩の試合を拾う）
+#
+# > [!IMPORTANT]
+# > **TARGET_DATE は必ず「今日より2日以上前」の日付を指定すること！**
+# > 当日や前日を指定するとスタメン情報がまだAPIに存在せず、レポートが不完全になります。
+# > 例: 今日が 1/10 なら、1/8 以前を指定する。
+TARGET_DATE="2026-01-08" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 ```
 
 **[確認項目]**

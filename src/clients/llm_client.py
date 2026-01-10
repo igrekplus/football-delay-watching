@@ -7,11 +7,14 @@ ServiceはこのClientを通じてLLM機能を使用する。
 
 import json
 import logging
+import os
 from typing import Dict, List, Optional, Tuple
 
 from config import config
 from settings.gemini_prompts import build_prompt, get_prompt_config
+from settings.cache_config import GROUNDING_TTL_DAYS
 from src.utils.api_stats import ApiStats
+from src.clients.cache_store import CacheStore, create_cache_store
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +24,17 @@ class LLMClient:
     
     MODEL_NAME = "gemini-pro-latest"
     
-    def __init__(self, api_key: str = None, use_mock: bool = None):
+    def __init__(self, api_key: str = None, use_mock: bool = None, cache_store: CacheStore = None):
         """
         Args:
             api_key: Gemini API Key（省略時はconfig.GOOGLE_API_KEY）
             use_mock: モックモード（省略時はconfig.USE_MOCK_DATA）
+            cache_store: キャッシュストア（省略時は自動生成）
         """
         self.api_key = api_key or config.GOOGLE_API_KEY
         self.use_mock = use_mock if use_mock is not None else config.USE_MOCK_DATA
+        self.cache_store = cache_store or create_cache_store()
+        self.use_grounding_cache = os.getenv("USE_GROUNDING_CACHE", "True").lower() == "true"
         self._model = None
     
     def _get_model(self):
@@ -78,7 +84,10 @@ class LLMClient:
         try:
             from src.clients.gemini_rest_client import GeminiRestClient
             rest_client = GeminiRestClient(api_key=self.api_key)
-            return rest_client.generate_content_with_grounding(prompt)
+            result = rest_client.generate_content_with_grounding(prompt)
+            # API呼び出しを記録
+            ApiStats.record_call("Gemini Grounding")
+            return result
         except Exception as e:
             logger.error(f"Error generating news summary: {e}")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
@@ -124,10 +133,23 @@ class LLMClient:
             competition=competition or "欧州"
         )
         
+        # Groundingキャッシュチェック
+        cache_key = self._build_grounding_cache_key("tactical_preview", home_team, away_team)
+        cached_result = self._read_grounding_cache(cache_key, "tactical_preview")
+        if cached_result:
+            return cached_result
+        
         try:
             from src.clients.gemini_rest_client import GeminiRestClient
             rest_client = GeminiRestClient(api_key=self.api_key)
-            return rest_client.generate_content_with_grounding(prompt)
+            result = rest_client.generate_content_with_grounding(prompt)
+            
+            # API呼び出しを記録
+            ApiStats.record_call("Gemini Grounding")
+            
+            # キャッシュ保存
+            self._write_grounding_cache(cache_key, result)
+            return result
         except Exception as e:
             logger.error(f"Error generating tactical preview: {e}")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
@@ -207,16 +229,87 @@ class LLMClient:
             match_info=match_info
         )
         
+        # Groundingキャッシュチェック
+        cache_key = self._build_grounding_cache_key("interview", team_name, opponent_team)
+        cached_result = self._read_grounding_cache(cache_key, "interview")
+        if cached_result:
+            return cached_result
+            
         try:
             from src.clients.gemini_rest_client import GeminiRestClient
             rest_client = GeminiRestClient(api_key=self.api_key)
-            return rest_client.generate_content_with_grounding(prompt)
+            result = rest_client.generate_content_with_grounding(prompt)
+            
+            # API呼び出しを記録
+            ApiStats.record_call("Gemini Grounding")
+            
+            # キャッシュ保存
+            self._write_grounding_cache(cache_key, result)
+            return result
             
         except Exception as e:
             error_type = type(e).__name__
             logger.error(f"Error summarizing interview for {team_name}: {error_type} - {e}")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
     
+    # ========== Grounding キャッシュヘルパー ==========
+
+    def _build_grounding_cache_key(self, type_name: str, home_team: str, away_team: str) -> str:
+        """Grounding キャッシュキー（パス）を生成"""
+        # ファイル名として安全なようにスペースを除去
+        h = home_team.replace(" ", "")
+        a = away_team.replace(" ", "")
+        return f"grounding/{type_name}/{h}_vs_{a}.json"
+
+    def _read_grounding_cache(self, cache_key: str, type_name: str) -> Optional[str]:
+        """Grounding キャッシュを読み込む"""
+        if not self.use_grounding_cache:
+            return None
+            
+        try:
+            data = self.cache_store.read(cache_key)
+            if data:
+                # TTLチェック
+                from datetime import datetime
+                timestamp_str = data.get("timestamp")
+                ttl_days = GROUNDING_TTL_DAYS.get(type_name, 7)
+                
+                if timestamp_str:
+                    timestamp = datetime.fromisoformat(timestamp_str)
+                    age_days = (datetime.now() - timestamp).days
+                    if age_days < ttl_days:
+                        logger.info(f"[GROUNDING CACHE] HIT: {cache_key}")
+                        # キャッシュヒットを記録
+                        ApiStats.record_cache_hit("Gemini Grounding")
+                        return data.get("content")
+                    else:
+                        logger.info(f"[GROUNDING CACHE] EXPIRED: {cache_key}")
+                else:
+                    # タイムスタンプがない場合は古い形式か無期限扱い
+                    logger.info(f"[GROUNDING CACHE] HIT (no timestamp): {cache_key}")
+                    ApiStats.record_cache_hit("Gemini Grounding")
+                    return data.get("content")
+        except Exception as e:
+            logger.warning(f"Failed to read grounding cache {cache_key}: {e}")
+            
+        return None
+
+    def _write_grounding_cache(self, cache_key: str, content: str) -> None:
+        """Grounding キャッシュを書き込む"""
+        if not self.use_grounding_cache or not content:
+            return
+            
+        try:
+            from datetime import datetime
+            data = {
+                "timestamp": datetime.now().isoformat(),
+                "content": content
+            }
+            self.cache_store.write(cache_key, data)
+            logger.debug(f"[GROUNDING CACHE] SAVED: {cache_key}")
+        except Exception as e:
+            logger.warning(f"Failed to write grounding cache {cache_key}: {e}")
+
     # ========== モック用メソッド ==========
     
     def _get_mock_news_summary(self, home_team: str, away_team: str) -> str:
@@ -323,7 +416,10 @@ class LLMClient:
         try:
             from src.clients.gemini_rest_client import GeminiRestClient
             rest_client = GeminiRestClient(api_key=self.api_key)
-            return rest_client.generate_content_with_grounding(prompt)
+            result = rest_client.generate_content_with_grounding(prompt)
+            # API呼び出しを記録
+            ApiStats.record_call("Gemini Grounding")
+            return result
         except Exception as e:
             logger.error(f"Error generating former club trivia: {e}")
             return ""
