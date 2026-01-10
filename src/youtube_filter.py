@@ -180,11 +180,10 @@ class YouTubePostFilter:
             else:
                 v["channel_display"] = f"⚠️ {v.get('channel_name', 'Unknown')}"
 
-        # ソート: 信頼チャンネル優先、その中ではrelevance順維持
-        videos.sort(key=lambda v: (
-            0 if v["is_trusted"] else 1,
-            v.get("original_index", 0)
-        ))
+        # ソート: 信頼チャンネル優先、その中では公開日時が新しい順（降順）
+        # 安定ソートを利用して、まず日時で降順ソートし、次に信頼フラグで昇順（0:Trusted, 1:Untrusted）ソートする
+        videos.sort(key=lambda v: v.get("published_at", ""), reverse=True)
+        videos.sort(key=lambda v: 0 if v["is_trusted"] else 1)
 
         return videos
 
