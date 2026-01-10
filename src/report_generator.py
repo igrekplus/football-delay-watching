@@ -382,4 +382,25 @@ class ReportGenerator:
         if match.facts.away_manager:
             names.append(match.facts.away_manager)
         
+        # 同国対決セクションから抽出
+        if match.facts.same_country_text:
+            matchups = parse_matchup_text(match.facts.same_country_text)
+            for m in matchups:
+                names.extend([m.player1_name, m.player2_name])
+        
+        # 戦術プレビューのキーマッチアップから抽出
+        if match.preview.tactical_preview:
+             # キーマッチアップ部分を抽出（_format_tactical_preview_with_visuals と同じロジック）
+            separator = "### 🔥 キーマッチアップ"
+            parts = match.preview.tactical_preview.split(separator)
+            if len(parts) >= 2:
+                matchup_text = parts[1]
+                next_section_match = re.search(r'\n### ', matchup_text)
+                if next_section_match:
+                    matchup_text = matchup_text[:next_section_match.start()]
+                
+                matchups = parse_matchup_text(matchup_text)
+                for m in matchups:
+                    names.extend([m.player1_name, m.player2_name])
+        
         return names

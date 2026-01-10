@@ -15,7 +15,13 @@
     <img src="{{ match.core.competition_logo }}" class="competition-logo-header" alt="{{ match.core.competition }}">
     {% endif %}
     <div class="match-header-info">
-        <h1>{{ match.core.home_team }} vs {{ match.core.away_team }}</h1>
+        <h1>
+            {% if match.core.home_logo %}<img src="{{ match.core.home_logo }}" class="header-team-logo-left"
+                alt="{{ match.core.home_team }}">{% endif %}
+            {{ match.core.home_team }} vs {{ match.core.away_team }}
+            {% if match.core.away_logo %}<img src="{{ match.core.away_logo }}" class="header-team-logo-right"
+                alt="{{ match.core.away_team }}">{% endif %}
+        </h1>
         <div class="match-metadata">
             {% if not match.core.competition_logo %}
             <span class="competition-name">{{ competition_display }}</span>
@@ -27,6 +33,12 @@
     </div>
 </div>
 
+{% if news_html %}
+<div class="news-summary-top">
+    {{ news_html | safe }}
+</div>
+{% endif %}
+
 {{ match_info_html | safe }}
 
 <div class="two-column-section">
@@ -34,9 +46,10 @@
         <h3 class="lineup-header">
             {% if match.core.home_logo %}<img src="{{ match.core.home_logo }}" alt="{{ match.core.home_team }}"
                 class="team-logo">{% endif %}
-            {{ match.core.home_team }}（{{ match.facts.home_formation }}）
+            {{ match.core.home_team }}
         </h3>
-        <div class="section-label">Starting XI</div>
+        <div class="section-label">Starting XI <span class="formation-badge">({{ match.facts.home_formation }})</span>
+        </div>
         {{ home_cards_html | safe }}
         <div class="section-label">Substitutes</div>
         {{ home_bench_html | safe }}
@@ -47,9 +60,10 @@
         <h3 class="lineup-header">
             {% if match.core.away_logo %}<img src="{{ match.core.away_logo }}" alt="{{ match.core.away_team }}"
                 class="team-logo">{% endif %}
-            {{ match.core.away_team }}（{{ match.facts.away_formation }}）
+            {{ match.core.away_team }}
         </h3>
-        <div class="section-label">Starting XI</div>
+        <div class="section-label">Starting XI <span class="formation-badge">({{ match.facts.away_formation }})</span>
+        </div>
         {{ away_cards_html | safe }}
         <div class="section-label">Substitutes</div>
         {{ away_bench_html | safe }}
@@ -106,12 +120,7 @@
 {{ former_club_html | safe }}
 {% endif %}
 
-<details class="collapsible-section" open>
-    <summary>📰 ニュース要約</summary>
-    <div class="section-content">
-        {{ news_html | safe }}
-    </div>
-</details>
+{# News summary moved to top #}
 
 <details class="collapsible-section" open>
     <summary>📊 戦術プレビュー</summary>
