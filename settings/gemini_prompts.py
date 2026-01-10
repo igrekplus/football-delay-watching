@@ -57,6 +57,11 @@ PROMPT_METADATA: Dict[str, Dict[str, Any]] = {
         "char_limit": (100, 300),  # 最大3件×80字+余白
         "use_grounding": True,  # リアルタイム検索で確定
     },
+
+    "name_translation": {
+        "label": "選手名翻訳",
+        "use_grounding": False,
+    },
 }
 
 

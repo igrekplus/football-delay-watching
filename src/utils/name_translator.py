@@ -122,21 +122,10 @@ class NameTranslator:
     
     def _translate_batch(self, names: List[str]) -> Dict[str, str]:
         """単一バッチの変換"""
-        names_list = "\n".join(f"- {name}" for name in names)
+        from settings.gemini_prompts import build_prompt
         
-        prompt = f"""以下のサッカー選手名を日本語（カタカナ）に変換してください。
-
-ルール:
-1. 一般的に使われる表記を優先（例: Mohamed Salah → モハメド・サラー）
-2. 姓名の間は中黒（・）で区切る
-3. 不明な場合はローマ字読みをカタカナ化
-
-JSON形式で出力してください（余計な説明は不要）:
-{{"選手名（元）": "カタカナ", ...}}
-
-選手名リスト:
-{names_list}
-"""
+        names_list = "\n".join(f"- {name}" for name in names)
+        prompt = build_prompt("name_translation", names_list=names_list)
         
         try:
             response = self.gemini.generate_content(prompt)
