@@ -78,17 +78,21 @@ return self.DEBUG_MODE and not self.USE_MOCK_DATA
 
 レポート作成状況を GCS 上の CSV で管理し、重複処理を防止する。
 
-**保存先**: `gs://football-delay-watching-cache/schedule/report_status.csv`
+**保存先**: `gs://football-delay-watching-cache/schedule/fixture_status.csv`
 
 | カラム | 説明 |
 |--------|------|
-| `date` | 対象日付 (YYYY-MM-DD) |
-| `status` | `pending` / `complete` / `skipped` |
-| `processed_at` | 処理完了日時 (ISO8601) |
-| `match_count` | 処理した試合数 |
+| `fixture_id` | API-FootballのFixture ID |
+| `date` | 試合日 (YYYY-MM-DD) |
+| `kickoff_jst` | キックオフ日時 (ISO8601) |
+| `status` | `pending` / `processing` / `complete` / `partial` / `failed` |
+| `first_attempt_at` | 初回処理日時 |
+| `last_attempt_at` | 最終処理日時 |
+| `attempts` | 再試行回数 (0-3) |
+| `error_message` | エラー内容（失敗時） |
 
 > [!NOTE]
-> 直近30日分のみ保持。古いデータは自動削除される。
+> 直近30日分のみ保持。古いデータは自動削除される。詳細は [レポートステータス管理](./report_status.md) を参照。
 
 ---
 

@@ -36,7 +36,6 @@ gsutil rm gs://football-delay-watching-cache/fixtures/league_*_date_${DATE}.json
 
 # 処理済みステータスCSV
 gsutil rm gs://football-delay-watching-cache/schedule/fixture_status.csv
-gsutil rm gs://football-delay-watching-cache/schedule/report_status.csv
 ```
 
 3. manifest.jsonからエントリを削除
@@ -98,7 +97,6 @@ gsutil rm gs://football-delay-watching-cache/fixtures/id_${FIXTURE_ID}.json
 gsutil rm gs://football-delay-watching-cache/lineups/fixture_${FIXTURE_ID}.json
 gsutil rm gs://football-delay-watching-cache/fixtures/league_*_date_${DATE}.json
 gsutil rm gs://football-delay-watching-cache/schedule/fixture_status.csv
-gsutil rm gs://football-delay-watching-cache/schedule/report_status.csv
 
 # 3. manifest更新 & デプロイ
 # (上記のpythonスクリプトを実行)
