@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}サッカー観戦ガイド{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/report_styles.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
+        {% block mode_banner %}{% endblock %}
+        {% block content %}{% endblock %}
+        <div class="timestamp">
+            生成日時: {{ timestamp }}
+        </div>
+    </div>
+</body>
+</html>
