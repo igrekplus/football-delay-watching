@@ -135,15 +135,23 @@ flowchart TD
 
 ```json
 {
-  "reports": [
-    {
-      "filename": "2025-12-27_ManchesterCity_vs_Arsenal_20251228_071500.html",
-      "title": "[DEBUG] Manchester City vs Arsenal - EPL",
-      "date": "2025-12-28T07:15:00+09:00",
-      "match_date": "2025-12-27"
+  "reports_by_date": {
+    "2025-12-27": {
+      "generation_datetime": "2025-12-28T07:15:00+09:00",
+      "is_debug": false,
+      "is_mock": false,
+      "matches": [
+        {
+          "fixture_id": 12345,
+          "file": "2025-12-27_ManchesterCity_vs_Arsenal_20251228_071500.html",
+          "home_team": "Manchester City",
+          "away_team": "Arsenal",
+          "competition": "EPL",
+          "kickoff_jst": "2025-12-28 01:30"
+        }
+      ]
     }
-  ],
-  "generated_at": "2025-12-28T07:15:00+09:00"
+  }
 }
 ```
 

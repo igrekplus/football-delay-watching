@@ -111,8 +111,6 @@ def generate_html_report(content: str, report_datetime: str = None) -> str:
     # manifest.json更新
     manifest_manager = ManifestManager()
     manifest_manager.load_with_remote_merge()
-    manifest_manager.add_legacy_report(report_datetime, filename, timestamp)
-    manifest_manager.deduplicate_legacy_reports()
     manifest_manager.save()
     
     return output_path
@@ -187,7 +185,6 @@ def generate_html_reports(report_list: list) -> list:
     manifest_manager = ManifestManager()
     manifest_manager.load_with_remote_merge()
     manifest_manager.add_match_entries(match_entries, generation_datetime)
-    manifest_manager.migrate_legacy_reports()
     manifest_manager.save()
     
     return html_paths

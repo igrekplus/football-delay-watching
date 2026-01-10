@@ -27,7 +27,7 @@ class ManifestManager:
     ):
         self.manifest_path = manifest_path
         self.firebase_client = firebase_client or FirebaseSyncClient()
-        self._manifest: dict = {"reports_by_date": {}, "legacy_reports": [], "reports": []}
+        self._manifest: dict = {"reports_by_date": {}}
     
     def load_local(self) -> dict:
         """
@@ -52,8 +52,6 @@ class ManifestManager:
         remote_manifest = self.firebase_client.fetch_manifest()
         if remote_manifest:
             self._manifest["reports_by_date"] = remote_manifest.get("reports_by_date", {})
-            self._manifest["legacy_reports"] = remote_manifest.get("legacy_reports", [])
-            self._manifest["reports"] = remote_manifest.get("reports", [])
             logger.info("Fetched existing manifest from Firebase")
         
         # ローカルをマージ
@@ -76,29 +74,9 @@ class ManifestManager:
                         key = f"{match.get('fixture_id')}_{match.get('file')}"
                         if key not in existing_keys:
                             self._manifest["reports_by_date"][date_key]["matches"].append(match)
-            
-            self._manifest["legacy_reports"].extend(local_manifest.get("legacy_reports", []))
-            self._manifest["reports"].extend(local_manifest.get("reports", []))
         
         return self._manifest
     
-    def add_legacy_report(self, report_datetime: str, filename: str, timestamp: str) -> None:
-        """
-        レガシー形式のレポートを追加
-        
-        Args:
-            report_datetime: レポート日時
-            filename: ファイル名
-            timestamp: 生成タイムスタンプ
-        """
-        new_report = {
-            "datetime": report_datetime, 
-            "file": filename, 
-            "generated": timestamp,
-            "is_debug": config.DEBUG_MODE,
-            "is_mock": config.USE_MOCK_DATA
-        }
-        self._manifest.setdefault("reports", []).append(new_report)
     
     def add_match_entries(
         self, 
@@ -127,46 +105,13 @@ class ManifestManager:
             
             reports_by_date[match_date]["matches"].append(entry)
     
-    def migrate_legacy_reports(self) -> None:
-        """旧形式レポート（reports）をlegacy_reportsに移行"""
-        legacy_reports = self._manifest.setdefault("legacy_reports", [])
-        old_reports = self._manifest.get("reports", [])
-        
-        # 重複除去してlegacy_reportsに統合
-        legacy_seen = {r.get("datetime") for r in legacy_reports}
-        for r in old_reports:
-            if r.get("datetime") not in legacy_seen:
-                legacy_reports.append(r)
-                legacy_seen.add(r.get("datetime"))
-        
-        # 日時でソート（新しい順）
-        legacy_reports.sort(key=lambda x: x.get("datetime", ""), reverse=True)
-        
-        self._manifest["legacy_reports"] = legacy_reports
-    
-    def deduplicate_legacy_reports(self) -> None:
-        """レガシーレポートの重複を除去しソート"""
-        reports = self._manifest.get("reports", [])
-        
-        seen = set()
-        unique_reports = []
-        for r in reports:
-            dt = r.get("datetime")
-            if dt and dt not in seen:
-                seen.add(dt)
-                unique_reports.append(r)
-        
-        unique_reports.sort(key=lambda x: x.get("datetime", ""), reverse=True)
-        self._manifest["reports"] = unique_reports
-    
     def save(self) -> None:
         """manifestを保存"""
         self.manifest_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # reportsフィールドを除外して保存（legacy_reportsに移行済み）
+        # manifestを保存
         manifest_to_save = {
-            "reports_by_date": self._manifest.get("reports_by_date", {}),
-            "legacy_reports": self._manifest.get("legacy_reports", [])
+            "reports_by_date": self._manifest.get("reports_by_date", {})
         }
         
         with open(self.manifest_path, "w", encoding="utf-8") as f:
@@ -178,7 +123,7 @@ class ManifestManager:
         )
         logger.info(
             f"Updated manifest: {len(self._manifest.get('reports_by_date', {}))} dates, "
-            f"{total_matches} matches, {len(self._manifest.get('legacy_reports', []))} legacy reports"
+            f"{total_matches} matches"
         )
     
     @property

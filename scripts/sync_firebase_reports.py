@@ -44,10 +44,10 @@ def fetch_remote_manifest() -> Dict:
             return response.json()
         else:
             logger.warning(f"Failed to fetch remote manifest: {response.status_code}")
-            return {"reports": []}
+            return {"reports_by_date": {}}
     except Exception as e:
         logger.error(f"Error fetching remote manifest: {e}")
-        return {"reports": []}
+        return {"reports_by_date": {}}
 
 
 def fetch_local_manifest() -> Dict:
@@ -61,7 +61,7 @@ def fetch_local_manifest() -> Dict:
         except Exception as e:
             logger.warning(f"Failed to read local manifest: {e}")
     
-    return {"reports": []}
+    return {"reports_by_date": {}}
 
 
 def get_local_files() -> Set[str]:
@@ -142,41 +142,6 @@ def merge_manifests(local: Dict, remote: Dict) -> Dict:
                 if key not in existing_keys:
                     merged["reports_by_date"][date_key]["matches"].append(match)
     
-    # --- legacy_reports のマージ ---
-    # 旧形式（reports）も含めてすべてlegacy_reportsに統合
-    legacy_files = {}
-    
-    # リモートのlegacy_reports
-    for report in remote.get("legacy_reports", []):
-        file_name = report.get("file")
-        if file_name:
-            legacy_files[file_name] = report
-    
-    # リモートの旧形式（reports）
-    for report in remote.get("reports", []):
-        file_name = report.get("file")
-        if file_name and file_name not in legacy_files:
-            legacy_files[file_name] = report
-    
-    # ローカルのlegacy_reports
-    for report in local.get("legacy_reports", []):
-        file_name = report.get("file")
-        if file_name and file_name not in legacy_files:
-            legacy_files[file_name] = report
-    
-    # ローカルの旧形式（reports）
-    for report in local.get("reports", []):
-        file_name = report.get("file")
-        if file_name and file_name not in legacy_files:
-            legacy_files[file_name] = report
-    
-    # 日付でソート（新しい順）
-    merged["legacy_reports"] = sorted(
-        legacy_files.values(),
-        key=lambda r: r.get("datetime", r.get("file", "")),
-        reverse=True
-    )
-    
     return merged
 
 
@@ -192,11 +157,9 @@ def sync_reports() -> None:
     remote_manifest = fetch_remote_manifest()
     local_manifest = fetch_local_manifest()
     
-    # 新形式対応: reports_by_dateとlegacy_reportsから件数を取得
-    remote_reports = remote_manifest.get("reports", [])
-    remote_legacy = remote_manifest.get("legacy_reports", [])
+    # 新形式対応: reports_by_dateから件数を取得
     remote_by_date = remote_manifest.get("reports_by_date", {})
-    remote_total = len(remote_reports) + len(remote_legacy) + sum(
+    remote_total = sum(
         len(d.get("matches", [])) for d in remote_by_date.values()
     )
     logger.info(f"Remote reports: {remote_total}")
@@ -208,21 +171,6 @@ def sync_reports() -> None:
     # 不足しているレポートをダウンロード
     downloaded_count = 0
     
-    # 旧形式のreportsから
-    for report in remote_reports:
-        file_name = report.get("file")
-        if file_name and file_name not in local_files:
-            local_path = LOCAL_REPORTS_DIR / file_name
-            if download_file(file_name, local_path):
-                downloaded_count += 1
-    
-    # legacy_reportsから
-    for report in remote_legacy:
-        file_name = report.get("file")
-        if file_name and file_name not in local_files:
-            local_path = LOCAL_REPORTS_DIR / file_name
-            if download_file(file_name, local_path):
-                downloaded_count += 1
     
     # reports_by_dateから
     for date_key, date_data in remote_by_date.items():
@@ -244,8 +192,7 @@ def sync_reports() -> None:
     
     # 新構造対応のログ出力
     match_count = sum(len(d.get("matches", [])) for d in merged.get("reports_by_date", {}).values())
-    legacy_count = len(merged.get("legacy_reports", []))
-    logger.info(f"Manifest updated: {match_count} matches, {legacy_count} legacy reports")
+    logger.info(f"Manifest updated: {match_count} matches")
     logger.info("=== Sync Complete ===")
 
 

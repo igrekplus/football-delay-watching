@@ -1,6 +1,0 @@
-Issue #143「ドメインモデルのリファクタリング」の状況を調査しました。
-
-すでに `MatchData` から `MatchAggregate` への移行は `src/report_generator.py` および `src/html_generator.py` において完了しており、`main` ブランチにマージ済みであることを確認しました。
-本リファクタリングに基づき、後続の Issue #144 (FactsService Refactor) も完了し、現在は Issue #145 (Jinja2 Migration) が進行中です。
-
-追加の作業は不要と判断し、本 Issue をクローズします。

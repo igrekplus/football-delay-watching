@@ -246,6 +246,36 @@
             font-size: 0.85rem;
             color: #ff6b6b;
         }
+
+        /* タブフィルタUI */
+        .filter-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .filter-tab:hover {
+            color: #fff;
+        }
+
+        .filter-tab.active {
+            color: #feca57;
+            border-bottom-color: #feca57;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -293,6 +323,11 @@
         <div id="content" class="content">
             <div class="report-list">
                 <h2>📋 レポート一覧</h2>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">全て表示</button>
+                    <button class="filter-tab" data-filter="production"
+                        onclick="setFilter('production')">本番レポート</button>
+                </div>
                 <div id="reports-container" class="loading">
                     レポートを読み込み中...
                 </div>
@@ -305,6 +340,20 @@
     </div>
 
     <script>
+        // フィルタ状態（'all' または 'production'）
+        let currentFilter = 'all';
+
+        // タブ切り替え
+        function setFilter(filter) {
+            currentFilter = filter;
+            // タブのactive状態を更新
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.filter === filter);
+            });
+            // レポート再描画
+            loadReportList();
+        }
+
         // Firebase設定を外部ファイルから読み込み
         let firebaseConfig = {};
 
@@ -474,9 +523,8 @@
 
                 const manifest = await response.json();
 
-                // 新構造（reports_by_date）と旧構造（reports/legacy_reports）の両方に対応
+                // レポート一覧取得（reports_by_date）
                 const reportsByDate = manifest.reports_by_date || {};
-                const legacyReports = manifest.legacy_reports || manifest.reports || [];
 
                 let html = '';
                 let totalCount = 0;
@@ -492,11 +540,17 @@
                         const matches = dateData.matches || [];
                         if (matches.length === 0) return;
 
+                        // フィルタ適用後の試合数チェック
+                        const visibleMatches = currentFilter === 'production'
+                            ? matches.filter(m => !m.is_debug && !m.is_mock)
+                            : matches;
+                        if (visibleMatches.length === 0) return;
+
                         // 日付ヘッダー（バッジは各レポートに表示するため削除）
                         html += `<div style="margin:10px 0 5px 0;font-weight:bold;color:#74b9ff;font-size:0.95rem;">${date}</div>`;
 
                         // ファイル名の実行時刻で降順ソート（新しい順）
-                        const sortedMatches = [...matches].sort((a, b) => {
+                        const sortedMatches = [...visibleMatches].sort((a, b) => {
                             const timeA = a.file.match(/_(\d{8})_(\d{6})\.html$/);
                             const timeB = b.file.match(/_(\d{8})_(\d{6})\.html$/);
                             const keyA = timeA ? timeA[1] + timeA[2] : '';
@@ -534,27 +588,7 @@
                     });
                 }
 
-                // 2. 旧形式: 既存レポート表示
-                if (legacyReports.length > 0) {
-                    html += '<h3 style="color:#feca57;margin:25px 0 10px 0;font-size:1.2rem;border-top:1px solid #444;padding-top:15px;">📋 過去のレポート</h3>';
 
-                    legacyReports.forEach(report => {
-                        const displayDate = report.datetime || report.date || '不明';
-                        let badge = '';
-                        if (report.is_mock) {
-                            badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">MOCK</span>';
-                        } else if (report.is_debug) {
-                            badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:8px;">DEBUG</span>';
-                        }
-                        html += `
-                            <div class="report-item">
-                                <a href="/reports/${report.file}">${displayDate} のレポート${badge}</a>
-                                <span class="report-meta">生成: ${report.generated || '不明'}</span>
-                            </div>
-                        `;
-                        totalCount++;
-                    });
-                }
 
                 if (totalCount === 0) {
                     container.innerHTML = '<div class="no-reports">レポートがまだありません。</div>';
@@ -565,9 +599,15 @@
 
                 // デバッグ情報表示
                 debugInfo.style.display = 'block';
+                const currentMatchesCount = Object.values(reportsByDate).reduce((sum, d) => {
+                    const matches = d.matches || [];
+                    const filtered = currentFilter === 'production' ? matches.filter(m => !m.is_debug && !m.is_mock) : matches;
+                    return sum + filtered.length;
+                }, 0);
                 debugContent.innerHTML = `
-                    <p>試合数: ${Object.values(reportsByDate).reduce((sum, d) => sum + (d.matches?.length || 0), 0)} / 日付数: ${sortedDates.length}</p>
-                    <p>過去レポート数: ${legacyReports.length}</p>
+                    <p>表示中のレポート数: ${currentMatchesCount} 試合</p>
+                    <p>フィルタ設定: ${currentFilter === 'production' ? '本番レポートのみ' : '全て表示'}</p>
+                    <p>合計日付数: ${sortedDates.length}</p>
                 `;
 
             } catch (e) {
