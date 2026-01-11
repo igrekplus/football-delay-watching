@@ -80,9 +80,8 @@
     <div class="form-column">
         <h4>{{ match.core.home_team }}</h4>
         {% if match.facts.home_recent_form_details %}
-        {% include "partials/form_table.html" with context %}
-        {% set form_details = match.facts.home_recent_form_details %} {# Reset for next include if needed, but we should
-        handle it better #}
+        {% set form_details = match.facts.home_recent_form_details %}
+        {% include "partials/form_table.html" %}
         {% else %}
         <p class="form-empty">データなし</p>
         {% endif %}
@@ -136,6 +135,13 @@
     <summary>🎙️ 監督プレビュー</summary>
     <div class="section-content">
         {{ manager_section_html | safe }}
+    </div>
+</details>
+
+<details class="collapsible-section" open>
+    <summary>🔄 移籍情報</summary>
+    <div class="section-content">
+        {{ transfer_section_html | safe }}
     </div>
 </details>
 

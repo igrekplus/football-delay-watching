@@ -1,8 +1,81 @@
 <div class="formation-container">
-    {% if home_img %}
-    <img src="{{ home_img }}" alt="{{ home_team }}">
+    {% if home %}
+    <div class="formation-pitch-side">
+        <div class="formation-header">
+            <span class="formation-team-name">{{ home.team_name }}</span>
+            <span class="formation-style-label">({{ home.formation }})</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+            {% for player in home.players %}
+            <div class="player-card-horizontal"
+                style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
+                <div class="card-top-row">
+                    <div class="player-photo-container">
+                        {% if player.photo %}
+                        <img src="{{ player.photo }}" class="player-photo-circle" alt="">
+                        {% else %}
+                        <div class="player-photo-placeholder-circle"></div>
+                        {% endif %}
+                    </div>
+                    <span class="player-number-badge">{{ player.number }}</span>
+                </div>
+                <div class="card-bottom-row">
+                    <span class="player-name-text">{{ player.name }}</span>
+                    {% if player.flag_url %}
+                    <img src="{{ player.flag_url }}" class="player-flag" alt="">
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endif %}
-    {% if away_img %}
-    <img src="{{ away_img }}" alt="{{ away_team }}">
+
+    {% if away %}
+    <div class="formation-pitch-side">
+        <div class="formation-header">
+            <span class="formation-team-name">{{ away.team_name }}</span>
+            <span class="formation-style-label">({{ away.formation }})</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+            {% for player in away.players %}
+            <div class="player-card-horizontal"
+                style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
+                <div class="card-top-row">
+                    <div class="player-photo-container">
+                        {% if player.photo %}
+                        <img src="{{ player.photo }}" class="player-photo-circle" alt="">
+                        {% else %}
+                        <div class="player-photo-placeholder-circle"></div>
+                        {% endif %}
+                    </div>
+                    <span class="player-number-badge">{{ player.number }}</span>
+                </div>
+                <div class="card-bottom-row">
+                    <span class="player-name-text">{{ player.name }}</span>
+                    {% if player.flag_url %}
+                    <img src="{{ player.flag_url }}" class="player-flag" alt="">
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endif %}
 </div>

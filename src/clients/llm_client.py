@@ -251,6 +251,53 @@ class LLMClient:
             error_type = type(e).__name__
             logger.error(f"Error summarizing interview for {team_name}: {error_type} - {e}")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
+
+    def generate_transfer_news(
+        self,
+        team_name: str,
+        match_date: str,
+        transfer_window_context: str = "latest"
+    ) -> str:
+        """
+        移籍情報を生成（Grounding機能使用）
+        
+        Args:
+            team_name: チーム名
+            match_date: 試合開催日 (YYYY-MM-DD)
+            transfer_window_context: 検索用コンテキスト（デフォルト "latest"）
+        """
+        if self.use_mock:
+            return f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 選手の獲得や放出に関する情報がここに表示されます。"
+
+        prompt = build_prompt(
+            'transfer_news',
+            team_name=team_name,
+            match_date=match_date,
+            transfer_window_context=transfer_window_context
+        )
+
+        # Groundingキャッシュチェック
+        cache_key = self._build_grounding_cache_key("transfer_news", team_name, match_date)
+        cached_result = self._read_grounding_cache(cache_key, "transfer_news")
+        if cached_result:
+            return cached_result
+
+        try:
+            from src.clients.gemini_rest_client import GeminiRestClient
+            rest_client = GeminiRestClient(api_key=self.api_key)
+            result = rest_client.generate_content_with_grounding(prompt)
+            
+            # API呼び出しを記録
+            ApiStats.record_call("Gemini Grounding")
+            
+            # キャッシュ保存
+            self._write_grounding_cache(cache_key, result)
+            return result
+            
+        except Exception as e:
+            error_type = type(e).__name__
+            logger.error(f"Error generating transfer news for {team_name}: {error_type} - {e}")
+            return "エラーにつき取得不可（情報の取得に失敗しました）"
     
     # ========== Grounding キャッシュヘルパー ==========
 

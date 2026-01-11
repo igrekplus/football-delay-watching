@@ -107,6 +107,8 @@ class MatchPreview:
     preview_url: str = ""
     home_interview: str = ""
     away_interview: str = ""
+    home_transfer_news: str = ""
+    away_transfer_news: str = ""
 
 
 @dataclass
@@ -515,6 +517,22 @@ class MatchAggregate:
     def away_interview(self, value: str):
         self.preview.away_interview = value
     
+    @property
+    def home_transfer_news(self) -> str:
+        return self.preview.home_transfer_news
+    
+    @home_transfer_news.setter
+    def home_transfer_news(self, value: str):
+        self.preview.home_transfer_news = value
+        
+    @property
+    def away_transfer_news(self) -> str:
+        return self.preview.away_transfer_news
+    
+    @away_transfer_news.setter
+    def away_transfer_news(self, value: str):
+        self.preview.away_transfer_news = value
+    
     # =========================================================================
     # ユーティリティメソッド
     # =========================================================================
@@ -629,6 +647,8 @@ class MatchData:
     preview_url: str = ""
     home_interview: str = ""  # ホームチーム監督・選手インタビュー要約
     away_interview: str = ""  # アウェイチーム監督・選手インタビュー要約
+    home_transfer_news: str = ""
+    away_transfer_news: str = ""
     
     # =========================================================================
     # エラー状態

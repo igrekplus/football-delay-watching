@@ -59,6 +59,9 @@ class NewsService:
                 
                 # 4. Process Interviews (Grounding機能で直接検索)
                 self._process_interviews(match)
+                
+                # 5. Process Transfer News (Issue #140)
+                self._process_transfer_news(match)
 
     def _generate_summary(self, match: MatchAggregate) -> str:
         """ニュース要約を生成"""
@@ -99,3 +102,42 @@ class NewsService:
                 match.preview.home_interview = summary
             else:
                 match.preview.away_interview = summary
+
+    def _process_transfer_news(self, match: MatchAggregate):
+        """移籍情報を生成（Grounding機能で直接検索）"""
+        match_date = match.core.match_date_local
+        if not match_date:
+            # kickoff_local から抽出試行
+            if match.core.kickoff_local:
+                match_date = match.core.kickoff_local.split()[0]
+            else:
+                from src.utils.datetime_util import DateTimeUtil
+                match_date = DateTimeUtil.now_jst().strftime('%Y-%m-%d')
+        
+        # 移籍ウィンドウのコンテキスト判定（簡易版）
+        from datetime import datetime
+        try:
+            dt = datetime.strptime(match_date, '%Y-%m-%d')
+            month = dt.month
+            if month == 1:
+                context = f"winter transfer window {dt.year}"
+            elif 6 <= month <= 8:
+                context = f"summer transfer window {dt.year}"
+            else:
+                context = "latest transfer news"
+        except:
+            context = "latest transfer news"
+
+        for is_home in [True, False]:
+            team_name = match.core.home_team if is_home else match.core.away_team
+            news = self.llm.generate_transfer_news(
+                team_name,
+                match_date=match_date,
+                transfer_window_context=context
+            )
+            news = self.filter.check_text(news)
+            
+            if is_home:
+                match.preview.home_transfer_news = news
+            else:
+                match.preview.away_transfer_news = news

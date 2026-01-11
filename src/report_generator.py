@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import List, Dict
 from src.domain.models import MatchAggregate
 import logging
-from src.utils.formation_image import generate_formation_image
+from src.utils.formation_image import get_formation_layout_data
 from src.utils.nationality_flags import format_player_with_flag
 from src.utils.api_stats import ApiStats
 from src.utils.datetime_util import DateTimeUtil
 from src.formatters import PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter, MatchupFormatter
-from src.parsers.matchup_parser import parse_matchup_text
+from src.parsers import parse_matchup_text, parse_key_player_text
 from config import config
 import re
 
@@ -215,23 +215,31 @@ class ReportGenerator:
         home_injury_html = self.player_formatter.format_injury_cards(home_injuries, match.facts.player_photos, css_class="player-cards-scroll")
         away_injury_html = self.player_formatter.format_injury_cards(away_injuries, match.facts.player_photos, css_class="player-cards-scroll")
         
-        # フォーメーション図
-        home_img = generate_formation_image(
-            match.facts.home_formation, match.facts.home_lineup, match.core.home_team,
-            is_home=True, output_dir=self.WEB_IMAGE_DIR, match_id=match.core.id,
-            player_numbers=match.facts.player_numbers
+        # フォーメーションデータ
+        home_formation_data = get_formation_layout_data(
+            formation=match.facts.home_formation,
+            players=match.facts.home_lineup,
+            team_name=match.core.home_team,
+            team_logo=match.core.home_logo,
+            is_home=True,
+            player_nationalities=match.facts.player_nationalities,
+            player_numbers=match.facts.player_numbers,
+            player_photos=match.facts.player_photos
         )
-        away_img = generate_formation_image(
-            match.facts.away_formation, match.facts.away_lineup, match.core.away_team,
-            is_home=False, output_dir=self.WEB_IMAGE_DIR, match_id=match.core.id,
-            player_numbers=match.facts.player_numbers
+        away_formation_data = get_formation_layout_data(
+            formation=match.facts.away_formation,
+            players=match.facts.away_lineup,
+            team_name=match.core.away_team,
+            team_logo=match.core.away_logo,
+            is_home=False,
+            player_nationalities=match.facts.player_nationalities,
+            player_numbers=match.facts.player_numbers,
+            player_photos=match.facts.player_photos
         )
-        
+
         formation_html = render_template("partials/formation_section.html",
-                                          home_img=home_img, away_img=away_img,
-                                          home_team=match.core.home_team, away_team=match.core.away_team)
-        if home_img: image_paths.append(f"{self.WEB_IMAGE_DIR}/{home_img}")
-        if away_img: image_paths.append(f"{self.WEB_IMAGE_DIR}/{away_img}")
+                                          home=home_formation_data, 
+                                          away=away_formation_data)
         
         # 同国対決
         same_country_html = ""
@@ -275,6 +283,17 @@ class ReportGenerator:
                                                away_manager=match.facts.away_manager,
                                                away_interview=away_interview_html)
 
+        # 移籍情報
+        home_transfer_html = md_lib.markdown(match.preview.home_transfer_news, extensions=['nl2br']) if match.preview.home_transfer_news else ''
+        away_transfer_html = md_lib.markdown(match.preview.away_transfer_news, extensions=['nl2br']) if match.preview.away_transfer_news else ''
+        transfer_section_html = render_template("partials/transfer_section.html",
+                                                home_team_logo=match.core.home_logo,
+                                                home_team=match.core.home_team,
+                                                home_transfer_html=home_transfer_html,
+                                                away_team_logo=match.core.away_logo,
+                                                away_team=match.core.away_team,
+                                                away_transfer_html=away_transfer_html)
+
         # YouTube
         match_key = f"{match.core.home_team} vs {match.core.away_team}"
         video_data = youtube_videos.get(match_key, {})
@@ -296,6 +315,7 @@ class ReportGenerator:
             "news_html": news_html,
             "tactical_html": tactical_html,
             "manager_section_html": manager_section_html,
+            "transfer_section_html": transfer_section_html,
             "former_club_html": former_club_html,
             "youtube_html": youtube_html,
             "debug_youtube_html": debug_youtube_html
@@ -304,13 +324,46 @@ class ReportGenerator:
         return context, image_paths
 
     def _format_tactical_preview_with_visuals(self, match, md_lib) -> str:
-        """戦術プレビュー内のキーマッチアップをビジュアル化"""
+        """戦術プレビュー内のキープレイヤーとキーマッチアップをビジュアル化"""
         text = match.preview.tactical_preview
         if not text:
             return ""
+        
+        team_logos = {
+            match.core.home_team: match.core.home_logo,
+            match.core.away_team: match.core.away_logo,
+        }
+        
+        # 1. キープレイヤーセクションの処理
+        kp_separator = "### ⚽ キープレイヤー"
+        if kp_separator in text:
+            parts = text.split(kp_separator)
+            pre_text = parts[0]
+            rest_text = parts[1]
             
-        separator = "### 🔥 キーマッチアップ"
-        parts = text.split(separator)
+            # キープレイヤー部分とそれ降のセクションに分ける
+            import re
+            next_section_match = re.search(r'\n### ', rest_text)
+            if next_section_match:
+                kp_content = rest_text[:next_section_match.start()]
+                post_kp_text = rest_text[next_section_match.start():]
+            else:
+                kp_content = rest_text
+                post_kp_text = ""
+                
+            key_players = parse_key_player_text(kp_content)
+            if key_players:
+                kp_html = self.matchup_formatter.format_key_player_section(
+                    key_players=key_players,
+                    player_photos=match.facts.player_photos,
+                    team_logos=team_logos,
+                    section_title="⚽ キープレイヤー"
+                )
+                text = pre_text + kp_html + post_kp_text
+
+        # 2. キーマッチアップセクションの処理
+        km_separator = "### 🔥 キーマッチアップ"
+        parts = text.split(km_separator)
         
         if len(parts) < 2:
             return md_lib.markdown(text, extensions=['nl2br'])
@@ -330,11 +383,6 @@ class ReportGenerator:
         if not matchups:
             return md_lib.markdown(text, extensions=['nl2br'])
             
-        team_logos = {
-            match.core.home_team: match.core.home_logo,
-            match.core.away_team: match.core.away_logo,
-        }
-        
         matchup_html = self.matchup_formatter.format_matchup_section(
             matchups=matchups,
             player_photos=match.facts.player_photos,
@@ -388,6 +436,20 @@ class ReportGenerator:
             for m in matchups:
                 names.extend([m.player1_name, m.player2_name])
         
+        # 戦術プレビューのキープレイヤーから抽出
+        if match.preview.tactical_preview:
+            kp_separator = "### ⚽ キープレイヤー"
+            parts = match.preview.tactical_preview.split(kp_separator)
+            if len(parts) >= 2:
+                kp_content = parts[1]
+                next_section_match = re.search(r'\n### ', kp_content)
+                if next_section_match:
+                    kp_content = kp_content[:next_section_match.start()]
+                
+                key_players = parse_key_player_text(kp_content)
+                for p in key_players:
+                    names.append(p.name)
+
         # 戦術プレビューのキーマッチアップから抽出
         if match.preview.tactical_preview:
              # キーマッチアップ部分を抽出（_format_tactical_preview_with_visuals と同じロジック）

@@ -62,6 +62,11 @@ PROMPT_METADATA: Dict[str, Dict[str, Any]] = {
         "label": "選手名翻訳",
         "use_grounding": False,
     },
+
+    "transfer_news": {
+        "label": "移籍情報",
+        "use_grounding": True,
+    },
 }
 
 

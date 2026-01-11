@@ -4,7 +4,7 @@ Generates formation diagram images using Pillow (PIL)
 """
 
 from PIL import Image, ImageDraw, ImageFont
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 import os
 import logging
 
@@ -30,15 +30,20 @@ FORMATION_LAYOUTS = {
     "4-1-4-1": [(0.15, 1), (0.35, 4), (0.45, 1), (0.60, 4), (0.85, 1)],
     "4-5-1": [(0.15, 1), (0.35, 4), (0.55, 5), (0.80, 1)],
     "4-4-1-1": [(0.15, 1), (0.35, 4), (0.50, 4), (0.70, 1), (0.85, 1)],
+    "4-3-2-1": [(0.12, 1), (0.30, 4), (0.50, 3), (0.70, 2), (0.88, 1)],  # Christmas tree
+    "4-3-1-2": [(0.12, 1), (0.30, 4), (0.48, 3), (0.68, 1), (0.88, 2)],
+    "4-1-2-1-2": [(0.10, 1), (0.25, 4), (0.40, 1), (0.55, 2), (0.70, 1), (0.88, 2)],
     # 3 defenders
     "3-4-3": [(0.15, 1), (0.35, 3), (0.55, 4), (0.80, 3)],
     "3-5-2": [(0.15, 1), (0.35, 3), (0.55, 5), (0.80, 2)],
     "3-4-2-1": [(0.12, 1), (0.28, 3), (0.48, 4), (0.70, 2), (0.90, 1)],
     "3-4-1-2": [(0.15, 1), (0.35, 3), (0.50, 4), (0.65, 1), (0.85, 2)],
+    "3-1-4-2": [(0.12, 1), (0.28, 3), (0.42, 1), (0.60, 4), (0.85, 2)],
     # 5 defenders
     "5-3-2": [(0.15, 1), (0.35, 5), (0.55, 3), (0.80, 2)],
     "5-4-1": [(0.15, 1), (0.35, 5), (0.55, 4), (0.80, 1)],
     "5-2-3": [(0.15, 1), (0.35, 5), (0.55, 2), (0.80, 3)],
+    "5-2-1-2": [(0.12, 1), (0.28, 5), (0.48, 2), (0.68, 1), (0.88, 2)],
 }
 
 
@@ -246,7 +251,108 @@ class FormationImageGenerator:
         draw.text((x, y), title, fill=PLAYER_COLOR, font=font)
 
 
-# Utility function for easy use
+def distribute_x_percent(num_players: int) -> List[float]:
+    """Calculate X positions as percentages (0-100)"""
+    margin_percent = 18.0  # Increased from 10% to prevent edge clipping
+    available_percent = 100.0 - 2 * margin_percent
+    
+    if num_players == 1:
+        return [50.0]
+    
+    spacing = available_percent / (num_players - 1)
+    return [margin_percent + i * spacing for i in range(num_players)]
+
+# Country name to ISO Alpha-2 code mapping (for flagcdn)
+COUNTRY_TO_ISO = {
+    "Spain": "es",
+    "England": "gb-eng",
+    "France": "fr",
+    "Germany": "de",
+    "Italy": "it",
+    "Portugal": "pt",
+    "Brazil": "br",
+    "Argentina": "ar",
+    "Netherlands": "nl",
+    "Belgium": "be",
+    "Japan": "jp",
+    "South Korea": "kr",
+    "Norway": "no",
+    "Sweden": "se",
+    "Denmark": "dk",
+    "Croatia": "hr",
+    "Switzerland": "ch",
+    "Uruguay": "uy",
+    "Colombia": "co",
+    "Senegal": "sn",
+    "Nigeria": "ng",
+    "Egypt": "eg",
+    "Morocco": "ma",
+    "Ukraine": "ua",
+    "Poland": "pl",
+    "Scotland": "gb-sct",
+    "Wales": "gb-wls",
+    "Northern Ireland": "gb-nir",
+    "Ireland": "ie",
+    "USA": "us",
+    "Canada": "ca",
+    "Mexico": "mx",
+    "Australia": "au",
+}
+
+def get_formation_layout_data(
+    formation: str,
+    players: List[str],
+    team_name: str,
+    team_logo: str,
+    is_home: bool,
+    player_nationalities: Dict[str, str],
+    player_numbers: Dict[str, int],
+    player_photos: Dict[str, str]
+) -> Dict:
+    """
+    Get formation layout data for HTML rendering.
+    """
+    # Normalize formation string
+    fmt = formation.strip().replace(" ", "")
+    layout = FORMATION_LAYOUTS.get(fmt)
+    if not layout:
+        logger.warning(f"Unknown formation: {formation}, using 4-4-2")
+        layout = FORMATION_LAYOUTS["4-4-2"]
+    
+    player_data = []
+    player_idx = 0
+    
+    for line_y_ratio, num_players in layout:
+        top_percent = line_y_ratio * 100
+        x_percents = distribute_x_percent(num_players)
+        
+        for left_percent in x_percents:
+            if player_idx < len(players):
+                name = players[player_idx]
+                nationality_name = player_nationalities.get(name, "")
+                nationality_code = COUNTRY_TO_ISO.get(nationality_name, "")
+                # Generate full flag URL in Python (avoid Jinja2 filter issues)
+                flag_url = f"https://flagcdn.com/20x15/{nationality_code}.png" if nationality_code else ""
+                
+                player_data.append({
+                    "name": name,
+                    "number": player_numbers.get(name, ""),
+                    "photo": player_photos.get(name, ""),
+                    "nationality": nationality_code,
+                    "flag_url": flag_url,
+                    "top_percent": round(top_percent, 1),
+                    "left_percent": round(left_percent, 1)
+                })
+                player_idx += 1
+    
+    return {
+        "team_name": team_name,
+        "team_logo": team_logo,
+        "formation": formation,
+        "is_home": is_home,
+        "players": player_data
+    }
+
 def generate_formation_image(
     formation: str,
     players: List[str],
@@ -258,9 +364,7 @@ def generate_formation_image(
 ) -> Optional[str]:
     """
     Generate formation image and return relative path for markdown.
-    
-    Returns:
-        Relative path like "images/match_id_home.png" or None on error
+    (Legacy function, will be replaced by get_formation_layout_data)
     """
     suffix = "home" if is_home else "away"
     filename = f"{match_id}_{suffix}.png"

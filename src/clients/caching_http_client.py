@@ -141,6 +141,8 @@ class CachingHttpClient:
         elif endpoint == "fixtures":
             if "id" in params:
                 return endpoint, f"fixtures/id_{params['id']}.json"
+            elif "team" in params and "last" in params:
+                return endpoint, f"fixtures/team_{params['team']}_last_{params['last']}.json"
             elif "league" in params and "date" in params:
                 return endpoint, f"fixtures/league_{params['league']}_date_{params['date']}.json"
             elif "league" in params and "season" in params:
