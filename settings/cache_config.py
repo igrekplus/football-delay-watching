@@ -52,6 +52,9 @@ ENDPOINT_TTL_DAYS = {
     
     # 選手名翻訳: 静的データなので無期限
     "name_translation": None,
+    
+    # YouTube検索結果: 7日間
+    "youtube": 7,
 }
 
 # =============================================================================
@@ -70,3 +73,6 @@ GROUNDING_TTL_DAYS = {
 
 # Falseにするとキャッシュを完全にバイパス
 USE_API_CACHE = os.getenv("USE_API_CACHE", "True").lower() == "true"
+
+# YouTubeキャッシュ有効化フラグ
+USE_YOUTUBE_CACHE = os.getenv("USE_YOUTUBE_CACHE", "True").lower() == "true"

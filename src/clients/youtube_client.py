@@ -16,13 +16,11 @@ from typing import Dict, List, Optional, Callable
 import requests
 
 from config import config
+from src.clients.cache_store import CacheStore, create_cache_store
+from settings.cache_config import ENDPOINT_TTL_DAYS, USE_YOUTUBE_CACHE
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
-
-# YouTube検索結果のキャッシュ設定
-YOUTUBE_CACHE_DIR = Path("api_cache/youtube")
-YOUTUBE_CACHE_TTL_HOURS = 168  # キャッシュ有効期限（1週間）
 
 
 class YouTubeSearchClient:
@@ -35,22 +33,25 @@ class YouTubeSearchClient:
         api_key: str = None,
         http_get: Optional[Callable] = None,
         cache_enabled: Optional[bool] = None,
+        cache_store: CacheStore = None,
     ):
         """
         Args:
             api_key: YouTube API Key（省略時は環境変数 or config）
             http_get: HTTPリクエスト関数（テスト用DI）
             cache_enabled: キャッシュ有効化フラグ
+            cache_store: キャッシュストア（省略時は自動生成）
         """
         self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
         self._http_get = http_get or requests.get
-        self._cache_enabled = config.USE_API_CACHE if cache_enabled is None else cache_enabled
+        self.use_youtube_cache = USE_YOUTUBE_CACHE if cache_enabled is None else cache_enabled
+        self.cache_store = cache_store or create_cache_store()
         
         # API呼び出し/キャッシュヒットカウンター
         self.api_call_count = 0
         self.cache_hit_count = 0
     
-    def _get_cache_key(
+    def _get_cache_path(
         self, 
         query: str, 
         channel_id: Optional[str],
@@ -59,7 +60,7 @@ class YouTubeSearchClient:
         relevance_language: Optional[str] = None,
         region_code: Optional[str] = None,
     ) -> str:
-        """検索条件からキャッシュキーを生成"""
+        """検索条件からキャッシュパス（キー）を生成"""
         key_parts = [
             query,
             channel_id or "",
@@ -69,56 +70,58 @@ class YouTubeSearchClient:
             region_code or "",
         ]
         key_str = "|".join(key_parts)
-        return hashlib.md5(key_str.encode()).hexdigest()
+        query_hash = hashlib.md5(key_str.encode()).hexdigest()
+        return f"youtube/{query_hash}.json"
     
-    def _read_cache(self, cache_key: str) -> Optional[List[Dict]]:
+    def _read_cache(self, cache_path: str) -> Optional[List[Dict]]:
         """キャッシュから読み込み（TTLチェック付き）"""
-        if not self._cache_enabled:
-            return None
-        
-        cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
-        
-        if not cache_file.exists():
+        if not self.use_youtube_cache:
             return None
         
         try:
-            with open(cache_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            
-            # TTLチェック
-            cached_at = datetime.fromisoformat(data.get("cached_at", "2000-01-01"))
-            if datetime.now() - cached_at > timedelta(hours=YOUTUBE_CACHE_TTL_HOURS):
-                logger.debug(f"Cache expired: {cache_key}")
+            data = self.cache_store.read(cache_path)
+            if not data:
                 return None
             
-            logger.info(f"YouTube cache HIT: {cache_key[:8]}...")
-            self.cache_hit_count += 1
-            ApiStats.record_cache_hit("YouTube Data API")
-            return data.get("results", [])
+            # TTLチェック
+            cached_at_str = data.get("cached_at")
+            ttl_days = ENDPOINT_TTL_DAYS.get("youtube", 7)
+            
+            if cached_at_str:
+                cached_at = datetime.fromisoformat(cached_at_str)
+                if datetime.now() - cached_at < timedelta(days=ttl_days):
+                    logger.info(f"YouTube cache HIT: {cache_path}")
+                    self.cache_hit_count += 1
+                    ApiStats.record_cache_hit("YouTube Data API")
+                    return data.get("results", [])
+                else:
+                    logger.debug(f"YouTube cache expired: {cache_path}")
+            else:
+                # タイムスタンプがない場合は古い形式か無期限扱い
+                logger.info(f"YouTube cache HIT (no timestamp): {cache_path}")
+                self.cache_hit_count += 1
+                ApiStats.record_cache_hit("YouTube Data API")
+                return data.get("results", [])
+                
         except Exception as e:
-            logger.warning(f"Failed to read YouTube cache: {e}")
-            return None
+            logger.warning(f"Failed to read YouTube cache {cache_path}: {e}")
+        
+        return None
     
-    def _write_cache(self, cache_key: str, results: List[Dict]):
+    def _write_cache(self, cache_path: str, results: List[Dict]):
         """キャッシュに書き込み"""
-        if not self._cache_enabled:
+        if not self.use_youtube_cache or not results:
             return
         
         try:
-            YOUTUBE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-            cache_file = YOUTUBE_CACHE_DIR / f"{cache_key}.json"
-            
             data = {
                 "cached_at": datetime.now().isoformat(),
                 "results": results,
             }
-            
-            with open(cache_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            
-            logger.debug(f"YouTube cache saved: {cache_key[:8]}...")
+            self.cache_store.write(cache_path, data)
+            logger.debug(f"YouTube cache saved: {cache_path}")
         except Exception as e:
-            logger.warning(f"Failed to write YouTube cache: {e}")
+            logger.warning(f"Failed to write YouTube cache {cache_path}: {e}")
     
     def search(
         self,
@@ -146,7 +149,7 @@ class YouTubeSearchClient:
             動画情報のリスト
         """
         # キャッシュチェック
-        cache_key = self._get_cache_key(
+        cache_path = self._get_cache_path(
             query,
             channel_id,
             published_after,
@@ -154,7 +157,7 @@ class YouTubeSearchClient:
             relevance_language,
             region_code,
         )
-        cached = self._read_cache(cache_key)
+        cached = self._read_cache(cache_path)
         if cached is not None:
             return cached[:max_results]
         
@@ -204,7 +207,7 @@ class YouTubeSearchClient:
                         })
                 
                 # キャッシュ保存
-                self._write_cache(cache_key, results)
+                self._write_cache(cache_path, results)
                 self.api_call_count += 1
                 ApiStats.record_call("YouTube Data API")
                 logger.info(f"YouTube API: '{query}' -> {len(results)} results (API calls: {self.api_call_count})")
