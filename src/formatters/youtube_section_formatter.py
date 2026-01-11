@@ -37,12 +37,17 @@ class YouTubeSectionFormatter:
             cat_videos = [v for v in videos if v.get("category") == cat_key]
             
             if cat_videos:
-                # Issue #160: 戦術分析は公開日順（新しい順）でソート
+                # Issue #160: 戦術分析はランク優先（is_trusted）、その中で公開日順にソート
+                # 安定ソートを利用: まず日付で降順ソート、次に信頼フラグで昇順ソート
                 if cat_key == "tactical":
                     cat_videos = sorted(
                         cat_videos, 
                         key=lambda v: v.get("published_at", ""), 
                         reverse=True
+                    )
+                    cat_videos = sorted(
+                        cat_videos,
+                        key=lambda v: 0 if v.get("is_trusted", False) else 1
                     )
 
                 # メインセクション（表示件数）
