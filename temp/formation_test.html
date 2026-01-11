@@ -19,13 +19,108 @@
             align-items: flex-start;
         }
 
+        /* ====== PITCH CONTAINER ====== */
+        .formation-pitch-side {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .formation-team-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .formation-style-label {
+            font-size: 1.1rem;
+            color: #74b9ff;
+            font-weight: 500;
+        }
+
         .pitch-visual-area {
             position: relative;
             width: 580px;
             height: 700px;
-            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
+            background: linear-gradient(180deg, #0a0a0f 0%, #151520 50%, #0a0a0f 100%);
+            border: 2px solid #c8102e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* ====== PITCH MARKINGS ====== */
+        .pitch-markings-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .pitch-line.center-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(200, 16, 46, 0.6);
+        }
+
+        .pitch-circle.center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(200, 16, 46, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .pitch-area {
+            position: absolute;
+            border: 2px solid rgba(200, 16, 46, 0.6);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .penalty-area-top {
+            top: 0;
+            width: 45%;
+            height: 14%;
+        }
+
+        .goal-area-top {
+            top: 0;
+            width: 20%;
+            height: 5%;
+        }
+
+        .penalty-area-bottom {
+            bottom: 0;
+            width: 45%;
+            height: 14%;
+        }
+
+        .goal-area-bottom {
+            bottom: 0;
+            width: 20%;
+            height: 5%;
         }
 
         /* ====== PLAYER CARD - 3 ROW LAYOUT REFINED ====== */
@@ -35,12 +130,10 @@
             display: grid;
             grid-template-columns: 52px 1fr;
             grid-template-rows: auto auto auto;
-            background: linear-gradient(135deg, #3a6ea5 0%, #2a4a7f 100%);
+            background: linear-gradient(135deg, #c8102e 0%, #8b0000 100%);
             border-radius: 10px;
             padding: 1% 1%;
-            /* Reduced padding */
             width: 130px;
-            /* Removed min-height to allow tight spacing */
             height: 125px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.25);
@@ -73,7 +166,6 @@
             align-items: flex-end;
             justify-content: flex-start;
             gap: 1px;
-            /* 1px gap per request */
         }
 
         .player-flag {
@@ -81,6 +173,8 @@
             height: 55%;
             border-radius: 2px;
             margin-top: 2px;
+            border: 1px solid #fff;
+            box-sizing: border-box;
         }
 
         .player-number-badge {
@@ -89,7 +183,6 @@
             color: rgba(255, 255, 255, 0.9);
             letter-spacing: -0.5px;
             line-height: 1;
-            /* Minimize spacing */
             margin-top: 6px;
         }
 
@@ -106,7 +199,6 @@
             text-overflow: ellipsis;
             text-align: center;
             margin-top: 9px;
-            /* 2px per request */
             letter-spacing: 0.5px;
         }
 
@@ -119,34 +211,31 @@
 </head>
 
 <body>
-    <h1>Formation Card Debug - Layout Refinement</h1>
-    <p>3-Row Layout: [Photo][Flag] / [ ][#Number] / [Name]</p>
+    <h1>Formation Card Debug - Full 11 Players</h1>
+    <p>Liverpool FC 4-3-3 Formation</p>
 
     <div class="test-container">
-        <!-- Single card for testing -->
-        <div>
-            <h2>Single Card</h2>
-            <div style="position: relative; width: 220px; height: 180px;">
-                <div class="player-card-horizontal" style="left: 50%; top: 50%;">
-                    <div class="player-photo-container">
-                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/1100.png"
-                            alt="Player">
-                    </div>
-                    <div class="card-right-side">
-                        <img class="player-flag" src="https://flagcdn.com/w80/eg.png" alt="EG">
-                        <span class="player-number-badge">#10</span>
-                    </div>
-                    <span class="player-name-text">M. SALAH</span>
-                </div>
+        <!-- Full pitch with 11 players -->
+        <div class="formation-pitch-side">
+            <div class="formation-header">
+                <img class="team-logo" src="https://media.api-sports.io/football/teams/40.png" alt="Liverpool">
+                <span class="formation-team-name">Liverpool</span>
+                <span class="formation-style-label">(4-3-3)</span>
             </div>
-        </div>
 
-        <!-- Multiple cards in pitch -->
-        <div>
-            <h2>Pitch with 5 Players</h2>
             <div class="pitch-visual-area">
+                <!-- Pitch Markings -->
+                <div class="pitch-markings-overlay">
+                    <div class="pitch-line center-line"></div>
+                    <div class="pitch-circle center-circle"></div>
+                    <div class="pitch-area penalty-area-top"></div>
+                    <div class="pitch-area goal-area-top"></div>
+                    <div class="pitch-area penalty-area-bottom"></div>
+                    <div class="pitch-area goal-area-bottom"></div>
+                </div>
+
                 <!-- GK -->
-                <div class="player-card-horizontal" style="left: 50%; top: 10%;">
+                <div class="player-card-horizontal" style="left: 50%; top: 12%;">
                     <div class="player-photo-container">
                         <img class="player-photo-circle" src="https://media.api-sports.io/football/players/617.png"
                             alt="Player">
@@ -159,7 +248,7 @@
                 </div>
 
                 <!-- Defender line (4 players) -->
-                <div class="player-card-horizontal" style="left: 12%; top: 30%;">
+                <div class="player-card-horizontal" style="left: 12%; top: 32%;">
                     <div class="player-photo-container">
                         <img class="player-photo-circle" src="https://media.api-sports.io/football/players/284363.png"
                             alt="Player">
@@ -171,7 +260,7 @@
                     <span class="player-name-text">ALEXANDER-ARNOLD</span>
                 </div>
 
-                <div class="player-card-horizontal" style="left: 37%; top: 30%;">
+                <div class="player-card-horizontal" style="left: 37%; top: 32%;">
                     <div class="player-photo-container">
                         <img class="player-photo-circle" src="https://media.api-sports.io/football/players/1093.png"
                             alt="Player">
@@ -183,7 +272,7 @@
                     <span class="player-name-text">VAN DIJK</span>
                 </div>
 
-                <div class="player-card-horizontal" style="left: 63%; top: 30%;">
+                <div class="player-card-horizontal" style="left: 63%; top: 32%;">
                     <div class="player-photo-container">
                         <img class="player-photo-circle" src="https://media.api-sports.io/football/players/169.png"
                             alt="Player">
@@ -195,7 +284,7 @@
                     <span class="player-name-text">KONATÉ</span>
                 </div>
 
-                <div class="player-card-horizontal" style="left: 88%; top: 30%;">
+                <div class="player-card-horizontal" style="left: 88%; top: 32%;">
                     <div class="player-photo-container">
                         <img class="player-photo-circle" src="https://media.api-sports.io/football/players/289714.png"
                             alt="Player">
@@ -206,19 +295,251 @@
                     </div>
                     <span class="player-name-text">ROBERTSON</span>
                 </div>
+
+                <!-- Midfielder line (3 players) -->
+                <div class="player-card-horizontal" style="left: 25%; top: 55%;">
+                    <div class="player-photo-container">
+                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/180.png"
+                            alt="Player">
+                    </div>
+                    <div class="card-right-side">
+                        <img class="player-flag" src="https://flagcdn.com/w80/hu.png" alt="HU">
+                        <span class="player-number-badge">#8</span>
+                    </div>
+                    <span class="player-name-text">SZOBOSZLAI</span>
+                </div>
+
+                <div class="player-card-horizontal" style="left: 50%; top: 55%;">
+                    <div class="player-photo-container">
+                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/174.png"
+                            alt="Player">
+                    </div>
+                    <div class="card-right-side">
+                        <img class="player-flag" src="https://flagcdn.com/w80/nl.png" alt="NL">
+                        <span class="player-number-badge">#38</span>
+                    </div>
+                    <span class="player-name-text">GRAVENBERCH</span>
+                </div>
+
+                <div class="player-card-horizontal" style="left: 75%; top: 55%;">
+                    <div class="player-photo-container">
+                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/152787.png"
+                            alt="Player">
+                    </div>
+                    <div class="card-right-side">
+                        <img class="player-flag" src="https://flagcdn.com/w80/gb-eng.png" alt="ENG">
+                        <span class="player-number-badge">#17</span>
+                    </div>
+                    <span class="player-name-text">JONES</span>
+                </div>
+
+                <!-- Forward line (3 players) -->
+                <div class="player-card-horizontal" style="left: 20%; top: 78%;">
+                    <div class="player-photo-container">
+                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/642.png"
+                            alt="Player">
+                    </div>
+                    <div class="card-right-side">
+                        <img class="player-flag" src="https://flagcdn.com/w80/co.png" alt="CO">
+                        <span class="player-number-badge">#7</span>
+                    </div>
+                    <span class="player-name-text">DÍAZ</span>
+                </div>
+
+                <div class="player-card-horizontal" style="left: 50%; top: 78%;">
+                    <div class="player-photo-container">
+                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/306.png"
+                            alt="Player">
+                    </div>
+                    <div class="card-right-side">
+                        <img class="player-flag" src="https://flagcdn.com/w80/uy.png" alt="UY">
+                        <span class="player-number-badge">#9</span>
+                    </div>
+                    <span class="player-name-text">NÚÑEZ</span>
+                </div>
+
+                <div class="player-card-horizontal" style="left: 80%; top: 78%;">
+                    <div class="player-photo-container">
+                        <img class="player-photo-circle" src="https://media.api-sports.io/football/players/1100.png"
+                            alt="Player">
+                    </div>
+                    <div class="card-right-side">
+                        <img class="player-flag" src="https://flagcdn.com/w80/eg.png" alt="EG">
+                        <span class="player-number-badge">#11</span>
+                    </div>
+                    <span class="player-name-text">SALAH</span>
+                </div>
+            </div>
+
+            <!-- Manchester City Formation -->
+            <div class="formation-pitch-side">
+                <div class="formation-header">
+                    <img class="team-logo" src="https://media.api-sports.io/football/teams/50.png" alt="Man City">
+                    <span class="formation-team-name">Manchester City</span>
+                    <span class="formation-style-label">(4-3-3)</span>
+                </div>
+
+                <div class="pitch-visual-area" style="border-color: #6CABDD;">
+                    <!-- Pitch Markings (Sky Blue) -->
+                    <div class="pitch-markings-overlay">
+                        <div class="pitch-line center-line" style="background: rgba(108, 171, 221, 0.6);"></div>
+                        <div class="pitch-circle center-circle" style="border-color: rgba(108, 171, 221, 0.6);"></div>
+                        <div class="pitch-area penalty-area-top" style="border-color: rgba(108, 171, 221, 0.6);"></div>
+                        <div class="pitch-area goal-area-top" style="border-color: rgba(108, 171, 221, 0.6);"></div>
+                        <div class="pitch-area penalty-area-bottom" style="border-color: rgba(108, 171, 221, 0.6);">
+                        </div>
+                        <div class="pitch-area goal-area-bottom" style="border-color: rgba(108, 171, 221, 0.6);"></div>
+                    </div>
+
+                    <!-- GK -->
+                    <div class="player-card-horizontal"
+                        style="left: 50%; top: 12%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/617.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/br.png" alt="BR">
+                            <span class="player-number-badge">#31</span>
+                        </div>
+                        <span class="player-name-text">EDERSON</span>
+                    </div>
+
+                    <!-- Defender line (4 players) -->
+                    <div class="player-card-horizontal"
+                        style="left: 12%; top: 32%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/627.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/gb-eng.png" alt="ENG">
+                            <span class="player-number-badge">#2</span>
+                        </div>
+                        <span class="player-name-text">WALKER</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 37%; top: 32%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/626.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/pt.png" alt="PT">
+                            <span class="player-number-badge">#3</span>
+                        </div>
+                        <span class="player-name-text">DIAS</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 63%; top: 32%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/629.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/gb-eng.png" alt="ENG">
+                            <span class="player-number-badge">#6</span>
+                        </div>
+                        <span class="player-name-text">STONES</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 88%; top: 32%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/640.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/de.png" alt="DE">
+                            <span class="player-number-badge">#25</span>
+                        </div>
+                        <span class="player-name-text">AKANJI</span>
+                    </div>
+
+                    <!-- Midfielder line (3 players) -->
+                    <div class="player-card-horizontal"
+                        style="left: 25%; top: 55%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/631.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/es.png" alt="ES">
+                            <span class="player-number-badge">#16</span>
+                        </div>
+                        <span class="player-name-text">RODRI</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 50%; top: 55%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/623.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/be.png" alt="BE">
+                            <span class="player-number-badge">#17</span>
+                        </div>
+                        <span class="player-name-text">DE BRUYNE</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 75%; top: 55%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/643.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/pt.png" alt="PT">
+                            <span class="player-number-badge">#20</span>
+                        </div>
+                        <span class="player-name-text">B. SILVA</span>
+                    </div>
+
+                    <!-- Forward line (3 players) -->
+                    <div class="player-card-horizontal"
+                        style="left: 20%; top: 78%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/186.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/gb-eng.png" alt="ENG">
+                            <span class="player-number-badge">#10</span>
+                        </div>
+                        <span class="player-name-text">GREALISH</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 50%; top: 78%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/158.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/no.png" alt="NO">
+                            <span class="player-number-badge">#9</span>
+                        </div>
+                        <span class="player-name-text">HAALAND</span>
+                    </div>
+
+                    <div class="player-card-horizontal"
+                        style="left: 80%; top: 78%; background: linear-gradient(135deg, #6CABDD 0%, #1C2C5B 100%);">
+                        <div class="player-photo-container">
+                            <img class="player-photo-circle" src="https://media.api-sports.io/football/players/645.png"
+                                alt="Player">
+                        </div>
+                        <div class="card-right-side">
+                            <img class="player-flag" src="https://flagcdn.com/w80/gb-eng.png" alt="ENG">
+                            <span class="player-number-badge">#47</span>
+                        </div>
+                        <span class="player-name-text">FODEN</span>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Reference mockup image -->
-        <div>
-            <h2>Target Mockup</h2>
-            <img src="mockup_reference.png" style="max-height: 700px; border: 2px solid #444; border-radius: 8px;"
-                alt="Reference Mockup">
-        </div>
-    </div>
-</body>
-
-</html>
 </body>
 
 </html>
