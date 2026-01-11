@@ -10,10 +10,10 @@ class YouTubeSectionFormatter:
     
     # カテゴリラベル定義
     CATEGORY_LABELS = {
-        "press_conference": "🎤 記者会見",
-        "historic": "⚔️ 因縁",
         "tactical": "📊 戦術分析",
+        "historic": "🎬 過去ハイライト",
         "player_highlight": "⭐ 選手紹介",
+        "press_conference": "🎤 記者会見",
         "training": "🏃 練習風景",
     }
 
@@ -37,6 +37,14 @@ class YouTubeSectionFormatter:
             cat_videos = [v for v in videos if v.get("category") == cat_key]
             
             if cat_videos:
+                # Issue #160: 戦術分析は公開日順（新しい順）でソート
+                if cat_key == "tactical":
+                    cat_videos = sorted(
+                        cat_videos, 
+                        key=lambda v: v.get("published_at", ""), 
+                        reverse=True
+                    )
+
                 # メインセクション（表示件数）
                 lines.append(f"<details open>")
                 lines.append(f"<summary><strong>{cat_label} ({len(cat_videos)}件)</strong></summary>")
