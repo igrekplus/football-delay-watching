@@ -55,7 +55,7 @@ class EmailService:
             filename = Path(path).name
             return f'![{alt}](cid:{filename})'
         
-        md_content = re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', replace_image_path, md_content)
+        md_content = re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', replace_image_path, content)
         
         # HTML変換
         html_content = markdown.markdown(
@@ -64,6 +64,23 @@ class EmailService:
         )
         
         return self._template.format(content=html_content)
+
+    def send_report(
+        self,
+        to_email: str,
+        subject: str,
+        markdown_content: str,
+        image_paths: List[str] = None
+    ) -> bool:
+        """
+        レポートを送信（send_match_report_emailへのエイリアス）
+        """
+        return self.send_match_report_email(
+            to_email=to_email,
+            subject=subject,
+            content=markdown_content,
+            image_paths=image_paths
+        )
     
     def send_match_report_email(
         self,
