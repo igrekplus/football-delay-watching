@@ -1045,6 +1045,31 @@ pre {
     font-size: 0.85rem;
 }
 
+.form-team-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.opponent-logo-cell {
+    width: 30px;
+    padding-right: 0 !important;
+}
+
+.form-summary-badge {
+    display: inline-block;
+    background: var(--card-bg-code);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+    margin-left: 10px;
+    font-weight: normal;
+    border: 1px solid var(--card-border-light);
+}
+
+
 .form-table thead th {
     background: var(--card-bg-code);
     color: var(--color-primary);

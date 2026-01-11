@@ -78,7 +78,7 @@
 {% if has_recent_form %}
 <div class="two-column-section">
     <div class="form-column">
-        <h4>{{ match.core.home_team }}</h4>
+        <h4>{{ match.core.home_team }} <span class="form-summary-badge">{{ match.facts.home_form_summary }}</span></h4>
         {% if match.facts.home_recent_form_details %}
         {% set form_details = match.facts.home_recent_form_details %}
         {% include "partials/form_table.html" %}
@@ -87,7 +87,7 @@
         {% endif %}
     </div>
     <div class="form-column">
-        <h4>{{ match.core.away_team }}</h4>
+        <h4>{{ match.core.away_team }} <span class="form-summary-badge">{{ match.facts.away_form_summary }}</span></h4>
         {% if match.facts.away_recent_form_details %}
         {% set form_details = match.facts.away_recent_form_details %}
         {% include "partials/form_table.html" %}

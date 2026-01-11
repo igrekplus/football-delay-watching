@@ -2,7 +2,7 @@
     <thead>
         <tr>
             <th>日付</th>
-            <th>対戦相手</th>
+            <th colspan="2">対戦相手</th>
             <th>大会</th>
             <th>スコア</th>
             <th>結果</th>
@@ -15,13 +15,30 @@
         "D": "result-draw",
         "L": "result-loss"
         }.get(detail.result, "") %}
-        {% set comp_display = detail.competition ~ ((' (' ~ detail.round ~ ')') if detail.round else '') %}
+        {% set result_display = {
+        "W": "Win 🟢",
+        "D": "Draw ⚪",
+        "L": "Loss 🔴"
+        }.get(detail.result, detail.result) %}
+        {% set comp_display = {
+        "Premier League": "EPL",
+        "UEFA Champions League": "CL",
+        "La Liga": "LaLiga",
+        "FA Cup": "FA",
+        "Copa del Rey": "Copa",
+        "EFL Cup": "EFL"
+        }.get(detail.competition, detail.competition) %}
         <tr>
             <td>{{ detail.date }}</td>
+            <td class="opponent-logo-cell">
+                {% if detail.opponent_logo %}
+                <img src="{{ detail.opponent_logo }}" class="form-team-logo" alt="{{ detail.opponent }}">
+                {% endif %}
+            </td>
             <td>{{ detail.opponent }}</td>
             <td>{{ comp_display }}</td>
             <td>{{ detail.score }}</td>
-            <td class="{{ result_class }}">{{ detail.result }}</td>
+            <td class="{{ result_class }}">{{ result_display }}</td>
         </tr>
         {% endfor %}
     </tbody>

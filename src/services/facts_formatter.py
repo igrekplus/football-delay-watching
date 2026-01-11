@@ -113,6 +113,22 @@ class FactsFormatter:
         """直近フォーム情報を整形"""
         match.facts.home_recent_form_details = self._parse_form(home_raw, match.core.home_team)
         match.facts.away_recent_form_details = self._parse_form(away_raw, match.core.away_team)
+        
+        # サマリー集計
+        match.facts.home_form_summary = self._calculate_form_summary(match.facts.home_recent_form_details)
+        match.facts.away_form_summary = self._calculate_form_summary(match.facts.away_recent_form_details)
+
+    def _calculate_form_summary(self, form_details: List[Dict]) -> str:
+        """勝・分・負の数をカウントしてサマリー文字列を生成"""
+        if not form_details:
+            return ""
+        
+        wins = sum(1 for d in form_details if d.get('result') == 'W')
+        draws = sum(1 for d in form_details if d.get('result') == 'D')
+        losses = sum(1 for d in form_details if d.get('result') == 'L')
+        
+        return f"{wins}勝{draws}分{losses}負"
+
 
     def format_h2h(self, match: MatchAggregate, data: Dict[str, Any], home_id: int):
         """H2H情報を整形"""
@@ -227,7 +243,18 @@ class FactsFormatter:
             teams = fixture_item.get('teams', {})
             
             fixture_date = fixture_item.get('fixture', {}).get('date', '')[:10]
-            opponent = teams.get('away', {}).get('name', '') if teams.get('home', {}).get('name', '') == team_name else teams.get('home', {}).get('name', '')
+            
+            # 対戦相手とロゴ
+            home_team_data = teams.get('home', {})
+            away_team_data = teams.get('away', {})
+            
+            if home_team_data.get('name') == team_name:
+                opponent = away_team_data.get('name', '')
+                opponent_logo = away_team_data.get('logo', '')
+            else:
+                opponent = home_team_data.get('name', '')
+                opponent_logo = home_team_data.get('logo', '')
+
             
             home_goals = goals.get('home', 0) or 0
             away_goals = goals.get('away', 0) or 0
@@ -248,6 +275,7 @@ class FactsFormatter:
             form_details.append({
                 "date": fixture_date,
                 "opponent": opponent,
+                "opponent_logo": opponent_logo,
                 "competition": league_info.get('name', 'Unknown'),
                 "round": league_info.get('round', ''),
                 "score": score,

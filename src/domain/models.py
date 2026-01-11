@@ -62,6 +62,9 @@ class MatchFacts:
     # [{"date": "2026-01-01", "opponent": "Arsenal", "competition": "Premier League", 
     #   "round": "Matchday 19", "score": "2-1", "result": "W"}, ...]
     
+    home_form_summary: str = ""
+    away_form_summary: str = ""
+    
     # 選手詳細情報
     player_nationalities: Dict[str, str] = field(default_factory=dict)
     player_numbers: Dict[str, int] = field(default_factory=dict)
@@ -645,6 +648,9 @@ class MatchData:
     # 対戦成績
     h2h_summary: str = ""  # 例: "5試合: Home 2勝, Draw 1, Away 2勝"
     h2h_details: list = None  # [{"date": str, "competition": str, "home": str, "away": str, "score": str, "winner": str}, ...]
+    
+    home_form_summary: str = ""
+    away_form_summary: str = ""
     
     # 監督情報
     home_manager: str = ""
