@@ -93,6 +93,10 @@ class MatchFacts:
     home_manager_photo: str = ""
     away_manager_photo: str = ""
 
+    # チームカラー (Issue #165)
+    home_team_color: str = "#3a6ea5"
+    away_team_color: str = "#e74c3c"
+
 
 
 @dataclass
@@ -476,6 +480,22 @@ class MatchAggregate:
     def away_manager_photo(self, value: str):
         self.facts.away_manager_photo = value
     
+    @property
+    def home_team_color(self) -> str:
+        return self.facts.home_team_color
+
+    @home_team_color.setter
+    def home_team_color(self, value: str):
+        self.facts.home_team_color = value
+
+    @property
+    def away_team_color(self) -> str:
+        return self.facts.away_team_color
+
+    @away_team_color.setter
+    def away_team_color(self, value: str):
+        self.facts.away_team_color = value
+    
     # --- Preview プロパティ ---
     @property
     def news_summary(self) -> str:
@@ -635,6 +655,10 @@ class MatchData:
     # チームロゴ
     home_logo: str = ""
     away_logo: str = ""
+    
+    # チームカラー
+    home_team_color: str = "#3a6ea5"
+    away_team_color: str = "#e74c3c"
     
     # 大会ロゴ
     competition_logo: str = ""

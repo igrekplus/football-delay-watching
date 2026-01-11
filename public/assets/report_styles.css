@@ -1304,8 +1304,7 @@ pre {
 }
 
 .formation-pitch-side {
-    width: 520px;
-    /* LARGE - will shrink later for mobile */
+    width: 620px;
     background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
     border-radius: var(--card-radius);
     padding: 20px;
@@ -1334,14 +1333,12 @@ pre {
 
 .pitch-visual-area {
     position: relative;
-    width: 480px;
-    /* LARGE */
+    width: 580px;
     height: 700px;
-    /* LARGE */
-    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    overflow: visible;
+    background: linear-gradient(180deg, #0a0a0f 0%, #151520 50%, #0a0a0f 100%);
+    border: 2px solid var(--team-color, #c8102e);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 /* Pitch Markings */
@@ -1359,49 +1356,52 @@ pre {
     top: 50%;
     left: 0;
     width: 100%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.2);
+    height: 2px;
+    background: var(--team-color, rgba(200, 16, 46, 0.6));
+    opacity: 0.6;
 }
 
 .pitch-circle.center-circle {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 70px;
-    height: 70px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100px;
+    height: 100px;
+    border: 2px solid var(--team-color, rgba(200, 16, 46, 0.6));
     border-radius: 50%;
+    opacity: 0.6;
     transform: translate(-50%, -50%);
 }
 
 .pitch-area {
     position: absolute;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid var(--team-color, rgba(200, 16, 46, 0.6));
     left: 50%;
     transform: translateX(-50%);
+    opacity: 0.6;
 }
 
 .penalty-area-top {
     top: 0;
-    width: 40%;
-    height: 16%;
+    width: 45%;
+    height: 14%;
 }
 
 .goal-area-top {
     top: 0;
-    width: 18%;
+    width: 20%;
     height: 5%;
 }
 
 .penalty-area-bottom {
     bottom: 0;
-    width: 40%;
-    height: 16%;
+    width: 45%;
+    height: 14%;
 }
 
 .goal-area-bottom {
     bottom: 0;
-    width: 18%;
+    width: 20%;
     height: 5%;
 }
 
@@ -1410,19 +1410,18 @@ pre {
     position: absolute;
     transform: translate(-50%, -50%);
     display: grid;
-    grid-template-columns: 52px 1fr;
+    grid-template-columns: 60px 1fr;
     grid-template-rows: auto auto auto;
-    background: linear-gradient(135deg, #3a6ea5 0%, #2a4a7f 100%);
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--team-color, #3a6ea5) 0%, color-mix(in srgb, var(--team-color, #3a6ea5), black 30%) 100%);
     border-radius: 10px;
     padding: 1% 1%;
     /* Reduced padding */
     width: 130px;
-    /* Removed min-height to allow tight spacing */
     height: 125px;
+    box-sizing: border-box;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    box-sizing: border-box;
-    z-index: 10;
 }
 
 /* Photo: top-left, spans 2 rows */
@@ -1476,6 +1475,8 @@ pre {
     height: 55%;
     border-radius: 2px;
     margin-top: 2px;
+    border: 1px solid #fff;
+    box-sizing: border-box;
 }
 
 .player-number-badge {
@@ -1485,7 +1486,7 @@ pre {
     letter-spacing: -0.5px;
     line-height: 1;
     /* Minimize spacing */
-    margin-top: 6px;
+    margin-top: 2px;
 }
 
 /* Row 3: Name (full width) */
@@ -1500,7 +1501,8 @@ pre {
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: center;
-    margin-top: 9px;
+    margin-top: 4px;
+    line-height: 1.2;
     letter-spacing: 0.5px;
 }
 

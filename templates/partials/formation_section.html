@@ -1,6 +1,6 @@
 <div class="formation-container">
     {% if home %}
-    <div class="formation-pitch-side">
+    <div class="formation-pitch-side" style="--team-color: {{ home.team_color }};">
         <div class="formation-header">
             <span class="formation-team-name">{{ home.team_name }}</span>
             <span class="formation-style-label">({{ home.formation }})</span>
@@ -17,22 +17,20 @@
             {% for player in home.players %}
             <div class="player-card-horizontal"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
-                <div class="card-top-row">
-                    <div class="player-photo-container">
-                        {% if player.photo %}
-                        <img src="{{ player.photo }}" class="player-photo-circle" alt="">
-                        {% else %}
-                        <div class="player-photo-placeholder-circle"></div>
-                        {% endif %}
-                    </div>
-                    <span class="player-number-badge">{{ player.number }}</span>
+                <div class="player-photo-container">
+                    {% if player.photo %}
+                    <img src="{{ player.photo }}" class="player-photo-circle" alt="">
+                    {% else %}
+                    <div class="player-photo-placeholder-circle"></div>
+                    {% endif %}
                 </div>
-                <div class="card-bottom-row">
-                    <span class="player-name-text">{{ player.name }}</span>
+                <div class="card-right-side">
                     {% if player.flag_url %}
                     <img src="{{ player.flag_url }}" class="player-flag" alt="">
                     {% endif %}
+                    <span class="player-number-badge">#{{ player.number }}</span>
                 </div>
+                <span class="player-name-text">{{ player.name }}</span>
             </div>
             {% endfor %}
         </div>
@@ -40,7 +38,7 @@
     {% endif %}
 
     {% if away %}
-    <div class="formation-pitch-side">
+    <div class="formation-pitch-side" style="--team-color: {{ away.team_color }};">
         <div class="formation-header">
             <span class="formation-team-name">{{ away.team_name }}</span>
             <span class="formation-style-label">({{ away.formation }})</span>
@@ -57,22 +55,20 @@
             {% for player in away.players %}
             <div class="player-card-horizontal"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
-                <div class="card-top-row">
-                    <div class="player-photo-container">
-                        {% if player.photo %}
-                        <img src="{{ player.photo }}" class="player-photo-circle" alt="">
-                        {% else %}
-                        <div class="player-photo-placeholder-circle"></div>
-                        {% endif %}
-                    </div>
-                    <span class="player-number-badge">{{ player.number }}</span>
+                <div class="player-photo-container">
+                    {% if player.photo %}
+                    <img src="{{ player.photo }}" class="player-photo-circle" alt="">
+                    {% else %}
+                    <div class="player-photo-placeholder-circle"></div>
+                    {% endif %}
                 </div>
-                <div class="card-bottom-row">
-                    <span class="player-name-text">{{ player.name }}</span>
+                <div class="card-right-side">
                     {% if player.flag_url %}
                     <img src="{{ player.flag_url }}" class="player-flag" alt="">
                     {% endif %}
+                    <span class="player-number-badge">#{{ player.number }}</span>
                 </div>
+                <span class="player-name-text">{{ player.name }}</span>
             </div>
             {% endfor %}
         </div>

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import List, Tuple, Dict, Any
 from config import config
 from src.domain.models import MatchAggregate
+from src.utils.team_colors import get_team_color
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,12 @@ class FactsFormatter:
             logger.error(f"No lineup data for match {match.core.id}")
             if hasattr(config, 'ERROR_PARTIAL'):
                 match.error_status = config.ERROR_PARTIAL
+            match.error_status = config.ERROR_PARTIAL
             return []
+
+        # Populate Team Colors
+        match.facts.home_team_color = get_team_color(match.core.home_team)
+        match.facts.away_team_color = get_team_color(match.core.away_team)
 
         player_id_name_pairs = []
         
