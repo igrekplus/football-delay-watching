@@ -18,7 +18,7 @@ Google Cloud Storage (GCS) をプライマリバックエンドとして使用�
 | API | 実装クライアント | キャッシュ対応 |
 |-----|-----------------|--------------|
 | API-Football | `CachingHttpClient` | ✅ GCS対応 |
-| YouTube Data API | `YouTubeSearchClient` | ✅ ローカル（`api_cache/youtube/`） |
+| YouTube Data API | `YouTubeSearchClient` | ✅ GCS対応 |
 | Gemini Grounding | `LLMClient` | ✅ GCS対応 |
 
 ---
@@ -31,8 +31,8 @@ Google Cloud Storage (GCS) をプライマリバックエンドとして使用�
 graph TD
     subgraph "高レベル層"
         A[ApiFootballClient] --> B[CachingHttpClient]
-        Y[YouTubeSearchClient] --> B
-        L[LLMClient] --> C[CacheStore]
+        Y[YouTubeSearchClient] --> C[CacheStore]
+        L[LLMClient] --> C
     end
     
     subgraph "キャッシュ層"
@@ -54,7 +54,7 @@ graph TD
 | **CacheStore** | `src/clients/cache_store.py` | ストレージバックエンド抽象化（GCS/Local） |
 | **HttpClient** | `src/clients/http_client.py` | HTTP通信抽象化 |
 | **CachingHttpClient** | `src/clients/caching_http_client.py` | キャッシュ付きHTTP実行、TTL判定 |
-| **YouTubeSearchClient** | `src/clients/youtube_client.py` | YouTube検索・ローカルキャッシュ管理 |
+| **YouTubeSearchClient** | `src/clients/youtube_client.py` | YouTube検索・GCSキャッシュ管理 |
 | **LLMClient** | `src/clients/llm_client.py` | Gemini Grounding呼び出し・キャッシュ管理 |
 | **cache_config** | `settings/cache_config.py` | TTL設定、バックエンド設定 |
 
@@ -95,6 +95,7 @@ sequenceDiagram
 | `CACHE_BACKEND` | `gcs` | `local` or `gcs` |
 | `USE_API_CACHE` | `True` | キャッシュ有効化フラグ |
 | `USE_GROUNDING_CACHE` | `True` | Groundingキャッシュ有効化フラグ |
+| `USE_YOUTUBE_CACHE` | `True` | YouTubeキャッシュ有効化フラグ |
 
 ### 3.2 TTL設定 (`settings/cache_config.py`)
 
@@ -107,6 +108,7 @@ ENDPOINT_TTL_DAYS = {
     "statistics": 10,     # 10日間
     "injuries": 0,        # キャッシュしない
     "squads": 7,          # 7日間
+    "youtube": 7,         # 7日間（新着動画の反映）
 }
 ```
 
@@ -205,6 +207,8 @@ gs://football-delay-watching-cache/
 │   │   └── {home_vs_away}.json
 │   └── interview/
 │       └── {home_vs_away}.json
+├── youtube/
+│   └── {query_hash}.json
 └── name_translation/
     └── {name_hash}.json
 ```
@@ -217,6 +221,7 @@ gs://football-delay-watching-cache/
 | `/fixtures/lineups` | `lineups/{fixture_id}_{home}_vs_{away}.json` | `lineups/1234567_ManCity_vs_WestHam.json` |
 | `/players` | `players/{team_name}/{player_id}.json` | `players/Manchester_City/123.json` |
 | YouTube | `youtube/{query_hash}.json` | `youtube/abc123def456.json` |
+| Gemini Grounding | `grounding/{type}/{home}_vs_{away}.json` | `grounding/tactical_preview/ManCity_vs_Chelsea.json` |
 
 ---
 
