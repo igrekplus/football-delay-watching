@@ -122,6 +122,20 @@ class PlayerFormatter:
         
         return 'FW'
 
+    def _sanitize_photo_url(self, url: str) -> str:
+        """
+        画像URLをクリーンアップする。
+        "NO PHOTO YET" などの無効な文字列を空文字に変換し、プレースホルダーが表示されるようにする。
+        """
+        if not url:
+            return ""
+        
+        invalid_markers = ["no photo yet", "null", "none"]
+        if url.lower().strip() in invalid_markers:
+            return ""
+            
+        return url
+
     def format_player_cards(self, lineup: List[str], formation: str, team_name: str,
                              nationalities: Dict[str, str] = None,
                              player_numbers: Dict[str, int] = None,
@@ -167,7 +181,7 @@ class PlayerFormatter:
             number = player_numbers.get(name)
             nationality = nationalities.get(name, "")
             birthdate = player_birthdates.get(name, "")
-            photo_url = player_photos.get(name, "")
+            photo_url = self._sanitize_photo_url(player_photos.get(name, ""))
             instagram_url = player_instagram.get(name, "")
             age = self.calculate_age(birthdate)
             
@@ -213,7 +227,8 @@ class PlayerFormatter:
             name = injury.get("name", "Unknown")
             team = injury.get("team", "")
             reason = injury.get("reason", "")
-            photo_url = injury.get("photo", "") or player_photos.get(name, "")
+            raw_photo_url = injury.get("photo", "") or player_photos.get(name, "")
+            photo_url = self._sanitize_photo_url(raw_photo_url)
             
             injuries_data.append({
                 "name": name,
