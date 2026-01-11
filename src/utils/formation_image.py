@@ -334,7 +334,7 @@ def get_formation_layout_data(
                 nationality_name = player_nationalities.get(name, "")
                 nationality_code = COUNTRY_TO_ISO.get(nationality_name, "")
                 # Generate full flag URL in Python (avoid Jinja2 filter issues)
-                flag_url = f"https://flagcdn.com/20x15/{nationality_code}.png" if nationality_code else ""
+                flag_url = f"https://flagcdn.com/{nationality_code}.svg" if nationality_code else ""
                 
                 player_data.append({
                     "name": name,

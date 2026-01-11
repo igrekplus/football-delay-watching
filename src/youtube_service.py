@@ -568,6 +568,10 @@ class YouTubeService:
         
         for match in matches:
             if match.core.is_target:
+                # Issue #163: S/Aランクの試合のみ動画検索を実行（クォータ最適化）
+                if match.core.rank not in ["S", "A", "Absolute"]:
+                    logger.info(f"Skipping YouTube search for low-rank match: {match.core.home_team} vs {match.core.away_team} (rank={match.core.rank})")
+                    continue
                 match_key = f"{match.core.home_team} vs {match.core.away_team}"
                 results[match_key] = self.get_videos_for_match(match)
         

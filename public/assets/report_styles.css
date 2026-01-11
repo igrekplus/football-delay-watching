@@ -1471,8 +1471,9 @@ pre {
 }
 
 .player-flag {
-    width: 55%;
-    height: 55%;
+    width: 28px;
+    height: 21px;
+    object-fit: cover;
     border-radius: 2px;
     margin-top: 2px;
     border: 1px solid #fff;
