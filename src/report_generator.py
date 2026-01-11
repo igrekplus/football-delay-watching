@@ -324,78 +324,77 @@ class ReportGenerator:
         return context, image_paths
 
     def _format_tactical_preview_with_visuals(self, match, md_lib) -> str:
-        """戦術プレビュー内のキープレイヤーとキーマッチアップをビジュアル化"""
+        """戦術プレビュー内の各セクションを個別にビジュアル化して結合"""
+        import re
+        from src.parsers.tactical_style_parser import parse_tactical_style_text
+        
         text = match.preview.tactical_preview
         if not text:
             return ""
-        
+
         team_logos = {
             match.core.home_team: match.core.home_logo,
             match.core.away_team: match.core.away_logo,
         }
-        
-        # 1. キープレイヤーセクションの処理
-        kp_separator = "### ⚽ キープレイヤー"
-        if kp_separator in text:
-            parts = text.split(kp_separator)
-            pre_text = parts[0]
-            rest_text = parts[1]
-            
-            # キープレイヤー部分とそれ降のセクションに分ける
-            import re
-            next_section_match = re.search(r'\n### ', rest_text)
-            if next_section_match:
-                kp_content = rest_text[:next_section_match.start()]
-                post_kp_text = rest_text[next_section_match.start():]
-            else:
-                kp_content = rest_text
-                post_kp_text = ""
-                
-            key_players = parse_key_player_text(kp_content)
-            if key_players:
-                kp_html = self.matchup_formatter.format_key_player_section(
-                    key_players=key_players,
-                    player_photos=match.facts.player_photos,
-                    team_logos=team_logos,
-                    section_title="⚽ キープレイヤー"
-                )
-                text = pre_text + kp_html + post_kp_text
 
-        # 2. キーマッチアップセクションの処理
-        km_separator = "### 🔥 キーマッチアップ"
-        parts = text.split(km_separator)
+        # セクション見出しで分割
+        # 戻り値は [リード文, 見出し1, 内容1, 見出し2, 内容2, ...] の形式
+        parts = re.split(r'\n(### .+)', "\n" + text)
         
-        if len(parts) < 2:
-            return md_lib.markdown(text, extensions=['nl2br'])
+        lead_text = parts[0].strip()
+        final_html = ""
+        
+        if lead_text:
+            final_html += md_lib.markdown(lead_text, extensions=['nl2br'])
+
+        # セクションごとに処理
+        for i in range(1, len(parts), 2):
+            # 見出しから "### " と余分な空白を削除
+            title_raw = parts[i].strip()
+            title = re.sub(r'^###\s*', '', title_raw)
+            content = parts[i+1].strip() if i+1 < len(parts) else ""
             
-        pre_text = parts[0]
-        matchup_text = parts[1]
-        rest_text = ""
-        
-        import re
-        next_section_match = re.search(r'\n### ', matchup_text)
-        if next_section_match:
-             rest_text = matchup_text[next_section_match.start():]
-             matchup_text = matchup_text[:next_section_match.start()]
-             
-        matchups = parse_matchup_text(matchup_text)
-        
-        if not matchups:
-            return md_lib.markdown(text, extensions=['nl2br'])
+            if "⚽ キープレイヤー" in title:
+                key_players = parse_key_player_text(content)
+                if key_players:
+                    final_html += self.matchup_formatter.format_key_player_section(
+                        key_players=key_players,
+                        player_photos=match.facts.player_photos,
+                        team_logos=team_logos,
+                        section_title=title
+                    )
+                else:
+                    final_html += md_lib.markdown(f"### {title}\n{content}", extensions=['nl2br'])
             
-        matchup_html = self.matchup_formatter.format_matchup_section(
-            matchups=matchups,
-            player_photos=match.facts.player_photos,
-            team_logos=team_logos,
-            section_title="🔥 キーマッチアップ"
-        )
-        
-        html = md_lib.markdown(pre_text, extensions=['nl2br'])
-        html += matchup_html
-        if rest_text:
-            html += md_lib.markdown(rest_text, extensions=['nl2br'])
+            elif "🎯 戦術スタイル" in title:
+                tactical_styles = parse_tactical_style_text(content, match.core.home_team, match.core.away_team)
+                if tactical_styles:
+                    final_html += self.matchup_formatter.format_tactical_style_section(
+                        tactical_styles=tactical_styles,
+                        team_logos=team_logos,
+                        section_title=title
+                    )
+                else:
+                    final_html += md_lib.markdown(f"### {title}\n{content}", extensions=['nl2br'])
+                    
+            elif "🔥 キーマッチアップ" in title:
+                matchups = parse_matchup_text(content)
+                if matchups:
+                    final_html += self.matchup_formatter.format_matchup_section(
+                        matchups=matchups,
+                        player_photos=match.facts.player_photos,
+                        team_logos=team_logos,
+                        section_title=title
+                    )
+                else:
+                    final_html += md_lib.markdown(f"### {title}\n{content}", extensions=['nl2br'])
             
-        return html
+            else:
+                # 未知のセクションはそのままMarkdownとして処理
+                final_html += md_lib.markdown(f"### {title}\n{content}", extensions=['nl2br'])
+
+        return final_html
+
 
     def _extract_player_names(self, match: MatchAggregate) -> List[str]:
         """

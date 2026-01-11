@@ -17,8 +17,12 @@ def parse_key_player_text(text: str) -> List[KeyPlayer]:
     """
     LLM出力のキープレイヤーセクションをパースする
     
-    形式例:
+    形式例1: (同一行形式)
     **Bukayo Saka** (Arsenal): サマリテキスト...
+    
+    形式例2: (改行形式)
+    **Takefusa Kubo** (Real Sociedad)
+    サマリテキスト...
     **詳細**
     詳細テキスト...
     """
@@ -27,16 +31,13 @@ def parse_key_player_text(text: str) -> List[KeyPlayer]:
         
     key_players = []
     
-    # 選手ごとのチャンクに分割する簡易ロジック
-    # 行頭が `**Name** (Team)` で始まるものを基準にする
-    
     lines = [line.strip() for line in text.strip().split('\n') if line.strip()]
     current_player = None
     buffer = []
     
     for line in lines:
-        # 新しい選手の開始判定
-        match = re.match(r'\*\*([^*]+)\*\*\s*\(([^)]+)\)[:\s-](.+)', line)
+        # パターン1: 同一行形式 **Name** (Team): description
+        match = re.match(r'\*\*([^*]+)\*\*\s*\(([^)]+)\)[:\s-]+(.+)', line)
         if match:
             # 前の選手を保存
             if current_player:
@@ -49,10 +50,27 @@ def parse_key_player_text(text: str) -> List[KeyPlayer]:
                 "team": match.group(2).strip()
             }
             buffer = [match.group(3).strip()]
-        else:
-            # 継続行としてバッファに追加
+            continue
+        
+        # パターン2: 改行形式 **Name** (Team) だけの行
+        match2 = re.match(r'^\*\*([^*]+)\*\*\s*\(([^)]+)\)\s*$', line)
+        if match2:
+            # 前の選手を保存
             if current_player:
-                buffer.append(line)
+                full_desc = "\n".join(buffer)
+                _finalize_player(current_player, full_desc, key_players)
+            
+            # 新しい選手を開始（説明は次行以降）
+            current_player = {
+                "name": match2.group(1).strip(),
+                "team": match2.group(2).strip()
+            }
+            buffer = []
+            continue
+        
+        # 継続行としてバッファに追加
+        if current_player:
+            buffer.append(line)
     
     # 最後の選手を保存
     if current_player:
@@ -61,6 +79,7 @@ def parse_key_player_text(text: str) -> List[KeyPlayer]:
             
     logger.info(f"Parsed {len(key_players)} key players")
     return key_players
+
 
 def _finalize_player(player_dict, full_desc, players_list):
     """説明文をサマリと詳細に分割してリストに追加"""

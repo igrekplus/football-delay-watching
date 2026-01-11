@@ -178,3 +178,47 @@ class MatchupFormatter:
     </div>
 </div>
 '''
+
+    def format_tactical_style_section(self, tactical_styles: List, team_logos: Dict[str, str], 
+                                     section_title: str = "🎯 戦術スタイル") -> str:
+        """戦術スタイルセクション全体のHTMLを生成"""
+        if not tactical_styles:
+            return ""
+            
+        html = f'<div class="matchup-section tactical-style-section">\n<h3 class="section-title">{section_title}</h3>\n<div class="matchup-container">\n'
+        
+        for style in tactical_styles:
+            html += self.format_single_tactical_style(style, team_logos)
+            
+        html += '</div>\n</div>'
+        return html
+
+    def format_single_tactical_style(self, style, team_logos: dict) -> str:
+        """1チームの戦術スタイルをHTMLカードとしてフォーマット"""
+        logo = self._get_logo(style.team, team_logos)
+        
+        # description内のMarkdown的な箇条書きを一部調整（簡易変換）
+        formatted_desc = style.description.replace('\n- ', '<br>• ').replace('\n* ', '<br>• ')
+        if formatted_desc.startswith('- '):
+            formatted_desc = '• ' + formatted_desc[2:]
+        elif formatted_desc.startswith('* '):
+            formatted_desc = '• ' + formatted_desc[2:]
+        formatted_desc = formatted_desc.replace('\n', '<br>')
+
+        return f'''
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="{logo}" alt="{style.team}" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display=\'none\';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">{style.team}</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        {formatted_desc}
+    </div>
+</div>
+'''
