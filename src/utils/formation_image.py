@@ -107,7 +107,7 @@ class FormationImageGenerator:
                         player_idx += 1
             
             # Add team name and formation title
-            self._draw_title(draw, f"{team_name} ({formation})", is_home)
+            self._draw_title(draw, f"{team_name} （{formation}）", is_home)
             
             # Save image
             os.makedirs(os.path.dirname(output_path), exist_ok=True)

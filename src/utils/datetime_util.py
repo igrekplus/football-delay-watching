@@ -122,7 +122,7 @@ class DateTimeUtil:
         
         if include_weekday:
             weekday_ja = ['月', '火', '水', '木', '金', '土', '日'][jst_dt.weekday()]
-            return jst_dt.strftime(f"%Y/%m/%d({weekday_ja}) %H:%M JST")
+            return jst_dt.strftime(f"%Y/%m/%d（{weekday_ja}） %H:%M JST")
         else:
             return jst_dt.strftime("%Y/%m/%d %H:%M JST")
     

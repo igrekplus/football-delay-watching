@@ -103,7 +103,7 @@ class FactsFormatter:
         if injuries:
             match.facts.injuries_list = injuries[:5]
             match.facts.injuries_info = ", ".join(
-                f"{i['name']}({i['team']}): {i['reason']}" for i in match.facts.injuries_list
+                f"{i['name']}（{i['team']}）： {i['reason']}" for i in match.facts.injuries_list
             )
         else:
             match.facts.injuries_list = []
