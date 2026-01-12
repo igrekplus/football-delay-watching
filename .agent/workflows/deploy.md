@@ -1,5 +1,5 @@
 ---
-description:firebase上へのデプロイを行い、URLを返す
+description: firebase上へのデプロイを行い、URLを返す
 ---
 
 このworkflowが呼ばれるときは、基本的にセッションで修正が行われた状態になっている。

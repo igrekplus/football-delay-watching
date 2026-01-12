@@ -1,3 +1,7 @@
+---
+description: デバッグ実行用
+---
+
 # Debug Run & Deploy (絶対遵守)
 
 デバッグモードでレポートを生成し、Firebase Hostingにデプロイする。
