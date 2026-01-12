@@ -1046,8 +1046,15 @@ pre {
 }
 
 .form-team-logo {
-    width: 22px;
-    height: 22px;
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.form-team-logo-small {
+    width: 20px;
+    height: 20px;
     object-fit: contain;
     vertical-align: middle;
 }
@@ -1057,16 +1064,11 @@ pre {
     padding-right: 0 !important;
 }
 
-.form-summary-badge {
-    display: inline-block;
-    background: var(--card-bg-code);
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+.form-summary-text {
+    font-size: 0.9rem;
     color: var(--color-text-subtle);
-    margin-left: 10px;
+    margin-left: 8px;
     font-weight: normal;
-    border: 1px solid var(--card-border-light);
 }
 
 
@@ -1098,7 +1100,10 @@ pre {
 .form-column h4 {
     margin: 0 0 var(--spacing-md) 0;
     color: var(--color-secondary);
-    font-size: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .form-empty {
@@ -1358,8 +1363,14 @@ pre {
 .formation-header {
     margin-bottom: 20px;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
+}
+
+.formation-header-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
 }
 
 .formation-team-name {
@@ -1377,7 +1388,7 @@ pre {
 .pitch-visual-area {
     position: relative;
     width: 580px;
-    height: 700px;
+    height: 500px;
     background: linear-gradient(180deg, #0a0a0f 0%, #151520 50%, #0a0a0f 100%);
     border: 2px solid var(--team-color, #c8102e);
     border-radius: 8px;

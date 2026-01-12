@@ -2,6 +2,7 @@
     {% if home %}
     <div class="formation-pitch-side" style="--team-color: {{ home.team_color }};">
         <div class="formation-header">
+            {% if home.team_logo %}<img src="{{ home.team_logo }}" class="formation-header-logo" alt="">{% endif %}
             <span class="formation-team-name">{{ home.team_name }}</span>
             <span class="formation-style-label">({{ home.formation }})</span>
         </div>
@@ -40,6 +41,7 @@
     {% if away %}
     <div class="formation-pitch-side" style="--team-color: {{ away.team_color }};">
         <div class="formation-header">
+            {% if away.team_logo %}<img src="{{ away.team_logo }}" class="formation-header-logo" alt="">{% endif %}
             <span class="formation-team-name">{{ away.team_name }}</span>
             <span class="formation-style-label">({{ away.formation }})</span>
         </div>

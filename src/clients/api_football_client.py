@@ -45,6 +45,13 @@ class ApiFootballClient:
         params = {"fixture": fixture_id}
         return self._fetch(url, params=params, label=f"lineups {fixture_id}")
 
+    def delete_lineup_cache(self, fixture_id: str) -> bool:
+        """Delete lineups cache for a fixture."""
+        url = f"{self.base_url}/fixtures/lineups"
+        params = {"fixture": fixture_id}
+        logger.info(f"Deleting lineup cache for fixture {fixture_id}")
+        return self.http_client.delete_cache(url, params)
+
     def fetch_injuries(self, fixture_id: str) -> Dict[str, Any]:
         """Fetch injuries for a fixture."""
         url = f"{self.base_url}/injuries"

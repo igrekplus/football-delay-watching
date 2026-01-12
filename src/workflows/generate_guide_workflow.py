@@ -170,6 +170,13 @@ class GenerateGuideWorkflow:
                         status_manager.mark_complete(match.id)
                         logger.info(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を処理完了としてマーク")
                     else:
+                        # partial の場合、スタメン欠損ならキャッシュをクリアして次回実行時に再取得を促す
+                        if "home_lineup" in missing or "away_lineup" in missing:
+                            from src.clients.api_football_client import ApiFootballClient
+                            api_client = ApiFootballClient()
+                            api_client.delete_lineup_cache(match.id)
+                            logger.info(f"試合 {match.id} のスタメンキャッシュをクリアしました（欠損があるため）")
+                            
                         status_manager.mark_partial(match.id, ", ".join(missing))
                         logger.warning(f"試合 {match.id} ({match.home_team} vs {match.away_team}) を部分完了としてマーク (欠損: {missing})")
                 else:

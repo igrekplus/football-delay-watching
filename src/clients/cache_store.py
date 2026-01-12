@@ -55,6 +55,19 @@ class CacheStore(ABC):
         """
         pass
 
+    @abstractmethod
+    def delete(self, path: str) -> bool:
+        """
+        キャッシュを削除
+        
+        Args:
+            path: キャッシュパス
+            
+        Returns:
+            削除に成功した場合True
+        """
+        pass
+
 
 class LocalCacheStore(CacheStore):
     """ローカルファイルシステムを使用するキャッシュストア"""
@@ -92,6 +105,17 @@ class LocalCacheStore(CacheStore):
     
     def exists(self, path: str) -> bool:
         return self._get_full_path(path).exists()
+
+    def delete(self, path: str) -> bool:
+        cache_path = self._get_full_path(path)
+        try:
+            if cache_path.exists():
+                cache_path.unlink()
+                logger.info(f"Local cache deleted: {cache_path}")
+                return True
+        except Exception as e:
+            logger.warning(f"Failed to delete local cache {cache_path}: {e}")
+        return False
 
 
 class GcsCacheStore(CacheStore):
@@ -150,6 +174,18 @@ class GcsCacheStore(CacheStore):
         except Exception as e:
             logger.warning(f"Failed to check GCS existence {path}: {e}")
             return False
+
+    def delete(self, path: str) -> bool:
+        try:
+            bucket = self._get_bucket()
+            blob = bucket.blob(path)
+            if blob.exists():
+                blob.delete()
+                logger.info(f"GCS cache deleted: {path}")
+                return True
+        except Exception as e:
+            logger.warning(f"Failed to delete GCS cache {path}: {e}")
+        return False
 
 
 def create_cache_store(backend: str = None) -> CacheStore:

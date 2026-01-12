@@ -80,7 +80,7 @@ class CachingHttpClient:
             return response
         
         # キャッシュパス生成
-        endpoint, cache_path = self._get_readable_cache_path(url, params)
+        endpoint, cache_path = self.get_cache_path(url, params)
         
         # キャッシュ読み込み試行
         cached_data = self.store.read(cache_path)
@@ -112,7 +112,7 @@ class CachingHttpClient:
             
             # 成功時のみキャッシュ保存
             if response.ok:
-                endpoint, cache_path = self._get_readable_cache_path(url, params)
+                endpoint, cache_path = self.get_cache_path(url, params)
                 wrapped_data = self._wrap_with_metadata(response.json())
                 self.store.write(cache_path, wrapped_data)
             
@@ -121,13 +121,20 @@ class CachingHttpClient:
         except Exception as e:
             logger.error(f"[API] Request failed: {e}")
             raise
+
+    def delete_cache(self, url: str, params: Dict[str, Any]) -> bool:
+        """
+        特定のキャッシュを削除
+        """
+        _, cache_path = self.get_cache_path(url, params)
+        return self.store.delete(cache_path)
     
     def _get_endpoint_from_url(self, url: str) -> str:
         """URLからエンドポイント名を抽出"""
         url_suffix = url.split('/')[-1] if '/' in url else "api"
         return "".join(c for c in url_suffix if c.isalnum() or c in ('_', '-'))
     
-    def _get_readable_cache_path(self, url: str, params: Dict[str, Any]) -> Tuple[str, str]:
+    def get_cache_path(self, url: str, params: Dict[str, Any]) -> Tuple[str, str]:
         """URLとパラメータから可読なキャッシュパスを生成"""
         endpoint = self._get_endpoint_from_url(url)
         
