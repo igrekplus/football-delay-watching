@@ -1,0 +1,222 @@
+{
+    "default": {
+        "venue": "Etihad Stadium, Manchester",
+        "referee": "Unknown",
+        "home_formation": "4-1-4-1",
+        "away_formation": "3-4-1-2",
+        "home_manager": "Pep Guardiola",
+        "away_manager": "Gary Caldwell",
+        "home_lineup": [
+            "ジェームズ・トラフォード",
+            "リコ・ルイス",
+            "アブドゥコディル・フサノフ",
+            "マックス・アレーン",
+            "ナタン・アケ",
+            "ロドリ",
+            "ライアン・マカドゥー",
+            "ティジャーニ・ラインデルス",
+            "ラヤン・シェルキ",
+            "アントワーヌ・セメニョ",
+            "アーリング・ハーランド"
+        ],
+        "away_lineup": [
+            "ジョー・ウィットワース",
+            "エド・ターンズ",
+            "ジャック・フィッツウォーター",
+            "ルカ・ウッドハウス",
+            "イルマリ・ニスカネン",
+            "ジェイク・ドイル・ヘイズ",
+            "イーサン・ブライアリー",
+            "リアム・オークス",
+            "リース・コール",
+            "ジェイデン・ウェアハム",
+            "ジャック・エイチソン"
+        ],
+        "home_bench": [
+            "ジャンルイジ・ドンナルンマ",
+            "マテウス・ヌネス",
+            "Nico O'Reilly",
+            "ステファン・ムフニ",
+            "ベルナルド・シウバ",
+            "フィル・フォーデン",
+            "ジェレミー・ドク",
+            "ニコ・ゴンサレス",
+            "ディヴァイン・ムカサ"
+        ],
+        "away_bench": [
+            "ジャック・バイクロフト",
+            "エドワード・フランシス",
+            "ジョージ・バーチ",
+            "トム・ディーン",
+            "ジャック・マクミラン",
+            "アキール・ヒギンズ",
+            "カルロス・メンデス・ゴメス",
+            "ジョシュ・マゲニス",
+            "ソニー・コックス"
+        ],
+        "home_recent_form": "WWWWW",
+        "away_recent_form": "WWDWL",
+        "home_recent_form_details": [
+            {
+                "date": "2026-01-03",
+                "opponent": "Newcastle",
+                "competition": "Premier League",
+                "round": "Matchday 20",
+                "score": "2-0",
+                "result": "W"
+            },
+            {
+                "date": "2025-12-29",
+                "opponent": "Liverpool",
+                "competition": "Premier League",
+                "round": "Matchday 19",
+                "score": "3-1",
+                "result": "W"
+            }
+        ],
+        "away_recent_form_details": [
+            {
+                "date": "2026-01-01",
+                "opponent": "Reading",
+                "competition": "League One",
+                "round": "Matchday 24",
+                "score": "2-1",
+                "result": "W"
+            }
+        ],
+        "h2h_summary": "過去5年間の対戦なし",
+        "injuries_list": [
+            {
+                "name": "O. Bobb",
+                "team": "Manchester City",
+                "reason": "Unknown",
+                "photo": "https://media.api-sports.io/football/players/278133.png"
+            },
+            {
+                "name": "Savio",
+                "team": "Manchester City",
+                "reason": "Unknown",
+                "photo": ""
+            },
+            {
+                "name": "Ruben Dias",
+                "team": "Manchester City",
+                "reason": "Hamstring",
+                "photo": "https://media.api-sports.io/football/players/567.png"
+            },
+            {
+                "name": "J. Gvardiol",
+                "team": "Manchester City",
+                "reason": "Tibia Fracture",
+                "photo": "https://media.api-sports.io/football/players/129033.png"
+            },
+            {
+                "name": "J. Stones",
+                "team": "Manchester City",
+                "reason": "Thigh",
+                "photo": "https://media.api-sports.io/football/players/566.png"
+            },
+            {
+                "name": "M. Kovacic",
+                "team": "Manchester City",
+                "reason": "Ankle/Heel",
+                "photo": "https://media.api-sports.io/football/players/2291.png"
+            },
+            {
+                "name": "O. Marmoush",
+                "team": "Manchester City",
+                "reason": "AFCON",
+                "photo": "https://media.api-sports.io/football/players/81573.png"
+            },
+            {
+                "name": "R. Ait-Nouri",
+                "team": "Manchester City",
+                "reason": "AFCON",
+                "photo": ""
+            }
+        ],
+        "player_numbers": {
+            "ジェームズ・トラフォード": 1,
+            "リコ・ルイス": 82,
+            "アブドゥコディル・フサノフ": 45,
+            "マックス・アレーン": 68,
+            "ナタン・アケ": 6,
+            "ロドリ": 16,
+            "ライアン・マカドゥー": 56,
+            "ティジャーニ・ラインデルス": 4,
+            "ラヤン・シェルキ": 10,
+            "アントワーヌ・セメニョ": 42,
+            "アーリング・ハーランド": 9,
+            "ジャンルイジ・ドンナルンマ": 25,
+            "マテウス・ヌネス": 27,
+            "Nico O'Reilly": 33,
+            "ステファン・ムフニ": 91,
+            "ベルナルド・シウバ": 20,
+            "フィル・フォーデン": 47,
+            "ジェレミー・ドク": 11,
+            "ニコ・ゴンサレス": 14,
+            "ディヴァイン・ムカサ": 63,
+            "ジョー・ウィットワース": 1,
+            "エド・ターンズ": 4,
+            "ジャック・フィッツウォーター": 5,
+            "ルカ・ウッドハウス": 20,
+            "イルマリ・ニスカネン": 14,
+            "ジェイク・ドイル・ヘイズ": 31,
+            "イーサン・ブライアリー": 6,
+            "リアム・オークス": 34,
+            "リース・コール": 12,
+            "ジェイデン・ウェアハム": 9,
+            "ジャック・エイチソン": 10,
+            "ジャック・バイクロフト": 23,
+            "エドワード・フランシス": 8,
+            "ジョージ・バーチ": 42,
+            "トム・ディーン": 33,
+            "ジャック・マクミラン": 2,
+            "アキール・ヒギンズ": 17,
+            "カルロス・メンデス・ゴメス": 7,
+            "ジョシュ・マゲニス": 27,
+            "ソニー・コックス": 19
+        },
+        "same_country_text": "",
+        "former_club_trivia": "- **エドワード・フランシス**（Exeter City）はManchester Cityのアカデミー出身。6歳からシティに在籍し、U-18チームではキャプテンも務めた。トップチームでの出場機会は得られず、オランダへのローン移籍などを経て2019年に退団した。\n- **ライアン・マカドゥー** (Manchester City) は、かつてExeter Cityに所属していた。 17歳の彼は、エティハド・スタジアムで古巣を相手にデビューを飾り、ゴールを決めた。\n- **イーサン・ブライアリー** (Exeter City) は、以前Manchester City でトレーニングを行っていた。",
+        "home_manager_photo": "https://media.api-sports.io/football/coachs/4.png",
+        "away_manager_photo": "https://media.api-sports.io/football/coachs/2052.png",
+        "player_photos": {
+            "Ederson": "https://media.api-sports.io/football/players/1622.png",
+            "G. Donnarumma": "https://media.api-sports.io/football/players/1622.png",
+            "K. Walker": "https://media.api-sports.io/football/players/171.png",
+            "R. Lewis": "https://media.api-sports.io/football/players/284230.png",
+            "M. Akanji": "https://media.api-sports.io/football/players/18744.png",
+            "N. Ake": "https://media.api-sports.io/football/players/18861.png",
+            "Rodri": "https://media.api-sports.io/football/players/44.png",
+            "K. De Bruyne": "https://media.api-sports.io/football/players/629.png",
+            "B. Silva": "https://media.api-sports.io/football/players/636.png",
+            "P. Foden": "https://media.api-sports.io/football/players/631.png",
+            "A. Semenyo": "https://media.api-sports.io/football/players/19281.png",
+            "E. Haaland": "https://media.api-sports.io/football/players/1100.png",
+            "S. Ortega": "https://media.api-sports.io/football/players/15870.png",
+            "J. McAtee": "https://media.api-sports.io/football/players/284236.png",
+            "N. O'Reilly": "https://media.api-sports.io/football/players/307123.png",
+            "J. Grealish": "https://media.api-sports.io/football/players/1043.png",
+            "M. Nunes": "https://media.api-sports.io/football/players/41621.png",
+            "J. Wilson-Esbrand": "https://media.api-sports.io/football/players/278130.png",
+            "J. Whitworth": "https://media.api-sports.io/football/players/284549.png",
+            "I. Ceesay": "https://media.api-sports.io/football/players/1.png",
+            "P. Jones": "https://media.api-sports.io/football/players/19728.png",
+            "T. Diabate": "https://media.api-sports.io/football/players/138.png",
+            "B. Purrington": "https://media.api-sports.io/football/players/18991.png",
+            "J. Niskanen": "https://media.api-sports.io/football/players/55375.png",
+            "R. Woods": "https://media.api-sports.io/football/players/19176.png",
+            "E. Francis": "https://media.api-sports.io/football/players/92984.png",
+            "D. Mitchell": "https://media.api-sports.io/football/players/18844.png",
+            "M. Alli": "https://media.api-sports.io/football/players/184.png",
+            "S. Muskwe": "https://media.api-sports.io/football/players/16035.png",
+            "S. MacDonald": "https://media.api-sports.io/football/players/19712.png",
+            "K. Taylor": "https://media.api-sports.io/football/players/18903.png",
+            "V. Harper": "https://media.api-sports.io/football/players/283353.png",
+            "J. Rankine": "https://media.api-sports.io/football/players/283348.png",
+            "C. Watts": "https://media.api-sports.io/football/players/138856.png",
+            "S. Borges": "https://media.api-sports.io/football/players/284443.png"
+        }
+    }
+}

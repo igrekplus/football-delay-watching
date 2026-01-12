@@ -93,6 +93,14 @@ class MockProvider:
         
         return matches
     
+    @staticmethod
+    def _normalize_team_name(team_name: str) -> str:
+        """チーム名をファイル名用に正規化"""
+        import re
+        normalized = team_name.replace(" ", "")
+        normalized = re.sub(r'[^a-zA-Z0-9\-]', '', normalized)
+        return normalized
+
     @classmethod
     def apply_facts(cls, match: Union["MatchData", "MatchAggregate"]) -> None:
         """
@@ -101,7 +109,20 @@ class MockProvider:
         Args:
             match: MatchData オブジェクト（in-place で更新）
         """
-        data = cls._load_json("facts/default.json")
+        # Try to load match-specific facts
+        match_id_facts = f"facts/{match.id}.json"
+        data = cls._load_json(match_id_facts)
+        
+        if not data and hasattr(match, "home_team") and hasattr(match, "away_team"):
+             # Fallback to team-based naming if ID not found (optional, but good for flexibility)
+             home = cls._normalize_team_name(match.home_team)
+             away = cls._normalize_team_name(match.away_team)
+             team_facts = f"facts/{home}_{away}.json"
+             data = cls._load_json(team_facts)
+
+        if not data:
+            data = cls._load_json("facts/default.json")
+            
         if not data or "default" not in data:
             return
         
@@ -127,6 +148,7 @@ class MockProvider:
         match.h2h_summary = facts.get("h2h_summary", "")
         match.h2h_details = facts.get("h2h_details", [])
         match.same_country_text = facts.get("same_country_text", "")
+        match.former_club_trivia = facts.get("former_club_trivia", "")
         
         # 怪我人情報
         match.injuries_list = facts.get("injuries_list", [])
@@ -165,7 +187,15 @@ class MockProvider:
         Returns:
             動画データのリスト
         """
-        data = cls._load_json("youtube/default.json")
+        # Try match-specific
+        home = cls._normalize_team_name(home_team)
+        away = cls._normalize_team_name(away_team)
+        specific_file = f"youtube/{home}_{away}.json"
+        data = cls._load_json(specific_file)
+
+        if not data:
+            data = cls._load_json("youtube/default.json")
+
         if not data or "default" not in data:
             return []
         
@@ -203,7 +233,14 @@ class MockProvider:
         Returns:
             記事データのリスト（プレースホルダーを置換済み）
         """
-        data = cls._load_json("news/default.json")
+        home = cls._normalize_team_name(home_team)
+        away = cls._normalize_team_name(away_team)
+        specific_file = f"news/{home}_{away}.json"
+        
+        data = cls._load_json(specific_file)
+        if not data:
+            data = cls._load_json("news/default.json")
+            
         if not data or "default" not in data:
             return []
         
@@ -227,7 +264,14 @@ class MockProvider:
         Returns:
             要約テキスト（プレースホルダーを置換済み）
         """
-        data = cls._load_json("llm/default.json")
+        home = cls._normalize_team_name(home_team)
+        away = cls._normalize_team_name(away_team)
+        specific_file = f"llm/{home}_{away}.json"
+        
+        data = cls._load_json(specific_file)
+        if not data:
+             data = cls._load_json("llm/default.json")
+
         if not data or "news_summary" not in data:
             return f"[MOCK] ニュース要約: {home_team} vs {away_team}"
         
@@ -241,12 +285,63 @@ class MockProvider:
         Returns:
             プレビューテキスト（プレースホルダーを置換済み）
         """
-        data = cls._load_json("llm/default.json")
+        home = cls._normalize_team_name(home_team)
+        away = cls._normalize_team_name(away_team)
+        specific_file = f"llm/{home}_{away}.json"
+        
+        data = cls._load_json(specific_file)
+        if not data:
+            data = cls._load_json("llm/default.json")
+
         if not data or "tactical_preview" not in data:
             return f"[MOCK] 戦術プレビュー: {home_team} vs {away_team}"
         
         return data["tactical_preview"].format(home_team=home_team, away_team=away_team)
     
+    @classmethod
+    def get_interview_summary(cls, team_name: str, opponent_team: str, is_home: bool) -> str:
+        """インタビュー要約を取得"""
+        home = cls._normalize_team_name(team_name if is_home else opponent_team)
+        away = cls._normalize_team_name(opponent_team if is_home else team_name)
+        specific_file = f"llm/{home}_{away}.json"
+        
+        data = cls._load_json(specific_file)
+        if not data:
+            return "監督: 『重要な試合になる。選手たちは準備できている。』"
+            
+        key = "home_interview" if is_home else "away_interview"
+        return data.get(key, "監督: 『重要な試合になる。選手たちは準備できている。』")
+
+    @classmethod
+    def get_transfer_news(cls, team_name: str, match_date: str, is_home: bool) -> str:
+        """移籍情報を取得"""
+        # Note: In a real scenario we might need robust mapping, but for mock we assume current match
+        # We can try to derive the match from the context or just check formatted files
+        
+        # This part is tricky because we don't have the opponent name passed easily without changing signature
+        # But commonly we are processing a specific match context. 
+        # For simplicity in this mock-specific task, we'll try to find the match that contains this team.
+        matches = cls.get_matches()
+        target_match = None
+        for m in matches:
+            if m.core.home_team == team_name or m.core.away_team == team_name:
+                target_match = m
+                break
+        
+        if not target_match:
+             return f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 情報なし"
+
+        home = cls._normalize_team_name(target_match.core.home_team)
+        away = cls._normalize_team_name(target_match.core.away_team)
+        specific_file = f"llm/{home}_{away}.json"
+        
+        data = cls._load_json(specific_file)
+        if not data:
+             return f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 情報なし"
+
+        key = "home_transfer_news" if target_match.core.home_team == team_name else "away_transfer_news"
+        return data.get(key, f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 情報なし")
+
     @classmethod
     def clear_cache(cls) -> None:
         """キャッシュをクリア（テスト用）"""
