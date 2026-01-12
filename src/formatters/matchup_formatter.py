@@ -158,12 +158,18 @@ class MatchupFormatter:
             </details>
             '''
         
+        # Generate photo HTML: use placeholder if no photo URL
+        if photo:
+            photo_html = f'<img src="{photo}" alt="{player.name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">'
+        else:
+            photo_html = '<div class="matchup-photo-placeholder"></div>'
+        
         return f'''
 <div class="matchup-country key-player-card">
     <div class="matchup-header-row">
         <div class="matchup-player-item">
             <div class="matchup-photo-wrapper">
-                <img src="{photo}" alt="{player.name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">
+                {photo_html}
                 <img src="{logo}" alt="{player.team}" class="matchup-badge" onerror="this.style.display=\'none\';">
             </div>
             <div class="matchup-player-info">

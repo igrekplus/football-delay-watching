@@ -1213,6 +1213,24 @@ pre {
     background: var(--card-bg-code);
 }
 
+/* Placeholder for missing player photos */
+.matchup-photo-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: var(--card-bg-code);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--color-text-dark);
+}
+
+.matchup-photo-placeholder::before {
+    content: '👤';
+}
+
 .matchup-badge {
     position: absolute;
     top: -8px;
