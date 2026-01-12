@@ -257,12 +257,8 @@ def distribute_x_percent(num_players: int) -> List[float]:
     # Default margin for standard layouts
     margin_percent = 12.0
     
-    # 4 Players: More centered (26.5% margin as requested)
-    if num_players == 4:
-        margin_percent = 26.5
-    
     # 2 Players: More centered (35% margin as requested)
-    elif num_players == 2:
+    if num_players == 2:
         margin_percent = 35.0
         
     available_percent = 100.0 - 2 * margin_percent
@@ -271,7 +267,14 @@ def distribute_x_percent(num_players: int) -> List[float]:
         return [50.0]
     
     spacing = available_percent / (num_players - 1)
-    return [margin_percent + i * spacing for i in range(num_players)]
+    positions = [margin_percent + i * spacing for i in range(num_players)]
+
+    # 3 or 4 Players: Only adjust outer positions by ±1.5%
+    if num_players in [3, 4]:
+        positions[0] += 1.5  # Left-most moves right
+        positions[-1] -= 1.5  # Right-most moves left
+    
+    return positions
 
 # Country name to ISO Alpha-2 code mapping (for flagcdn)
 COUNTRY_TO_ISO = {

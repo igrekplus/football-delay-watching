@@ -177,9 +177,9 @@ class NameTranslator:
             cache_path = self._get_cache_path(name)
             data = self.cache_store.read(cache_path)
             if data and data.get("original") == name:
-                # 旧形式互換
-                if "katakana" in data and "short" not in data:
-                    return {"full": data["katakana"], "short": data["katakana"]}
+                # 旧形式: shortがない場合はキャッシュミス扱いにして再取得を促す
+                if "short" not in data:
+                    return None
                 # 新形式
                 if "full" in data and "short" in data:
                     return {"full": data["full"], "short": data["short"]}
@@ -191,12 +191,22 @@ class NameTranslator:
         """翻訳をキャッシュに書き込む"""
         try:
             cache_path = self._get_cache_path(name)
+            
+            # 既存データがあれば読み込んでマージ（既存のfullを尊重）
+            existing = self.cache_store.read(cache_path)
+            full_name = translation.get("full")
+            if existing and existing.get("original") == name:
+                if "katakana" in existing and not full_name:
+                    full_name = existing["katakana"]
+                elif "full" in existing and not full_name:
+                    full_name = existing["full"]
+            
             data = {
                 "original": name,
-                "full": translation["full"],
-                "short": translation["short"],
+                "full": full_name or name,
+                "short": translation.get("short") or full_name or name,
                 # 下位互換用
-                "katakana": translation["full"]
+                "katakana": full_name or name
             }
             self.cache_store.write(cache_path, data)
         except Exception as e:
