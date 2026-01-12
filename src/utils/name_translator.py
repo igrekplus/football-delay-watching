@@ -101,8 +101,8 @@ class NameTranslator:
             {英語名: カタカナ名} のマッピング
         """
         if self.use_mock:
-            # モックモードではそのまま返す
-            return {name: f"[MOCK]{name}" for name in names}
+            # モックモードでも「full」と「short」を持つ辞書を返す
+            return {name: {"full": f"[MOCK]{name}", "short": f"{name}"} for name in names}
         
         if not names:
             return {}
