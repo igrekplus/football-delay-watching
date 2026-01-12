@@ -84,7 +84,10 @@ class ReportGenerator:
         from src.utils.datetime_util import DateTimeUtil
         timestamp = DateTimeUtil.format_display_timestamp()
         
-        # コンテキストデータの準備
+        # 選手名をカタカナに変換（フォーメーション図の短縮名用にも必要）
+        player_names = self._extract_player_names(match)
+        translator = NameTranslator()
+        
         image_paths = []
         match_report_context, match_images = self._get_match_report_context(match, youtube_videos)
         image_paths.extend(match_images)
@@ -102,8 +105,6 @@ class ReportGenerator:
         html_content = render_template("report.html", **match_report_context)
         
         # 選手名をカタカナに変換（全体）
-        player_names = self._extract_player_names(match)
-        translator = NameTranslator()
         if player_names:
             html_content = translator.translate_names_in_html(html_content, player_names)
         
