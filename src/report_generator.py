@@ -102,6 +102,8 @@ class ReportGenerator:
         html_content = render_template("report.html", **match_report_context)
         
         # 選手名をカタカナに変換（全体）
+        player_names = self._extract_player_names(match)
+        translator = NameTranslator()
         if player_names:
             html_content = translator.translate_names_in_html(html_content, player_names)
         
@@ -174,6 +176,7 @@ class ReportGenerator:
             (context_dict, image_paths)
         """
         from src.template_engine import render_template
+        from src.utils.name_translator import NameTranslator
         import markdown as md_lib
         
         image_paths = []
@@ -196,10 +199,13 @@ class ReportGenerator:
         image_paths = []
         
         # 選手名をカタカナに変換（フォーメーション図の短縮名用にも必要）
+        from src.utils.name_translator import NameTranslator
         player_names = self._extract_player_names(match)
         translator = NameTranslator()
         # フォーメーション図用の短縮名辞書を取得
         short_names_dict = translator.get_short_names(player_names)
+
+        print(f"DEBUG: Home Logo: {match.core.home_logo}, Away Logo: {match.core.away_logo}")
 
         # 選手カードの生成（Jinja2版 format_player_cards は既に内部で render_template している）
         home_cards_html = self.player_formatter.format_player_cards(

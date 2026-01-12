@@ -254,7 +254,17 @@ class FormationImageGenerator:
 
 def distribute_x_percent(num_players: int) -> List[float]:
     """Calculate X positions as percentages (0-100)"""
-    margin_percent = 12.0  # Match mock HTML: 12%, 37%, 63%, 88% for 4 players
+    # Default margin for standard layouts
+    margin_percent = 12.0
+    
+    # 4 Players: More centered (26.5% margin as requested)
+    if num_players == 4:
+        margin_percent = 26.5
+    
+    # 2 Players: More centered (35% margin as requested)
+    elif num_players == 2:
+        margin_percent = 35.0
+        
     available_percent = 100.0 - 2 * margin_percent
     
     if num_players == 1:
@@ -309,7 +319,8 @@ def get_formation_layout_data(
     is_home: bool,
     player_nationalities: Dict[str, str],
     player_numbers: Dict[str, int],
-    player_photos: Dict[str, str]
+    player_photos: Dict[str, str],
+    player_short_names: Dict[str, str] = None  # New argument
 ) -> Dict:
     """
     Get formation layout data for HTML rendering.
@@ -325,10 +336,20 @@ def get_formation_layout_data(
     player_idx = 0
     
     for line_y_ratio, num_players in layout:
-        top_percent = line_y_ratio * 100
+        base_top_percent = line_y_ratio * 100
         x_percents = distribute_x_percent(num_players)
         
-        for left_percent in x_percents:
+        # 5 Player W-shape logic
+        # 2nd and 4th players slightly up (-3%), others slightly down (+3%)
+        y_offsets = [0.0] * num_players
+        if num_players == 5:
+            for i in range(num_players):
+                if i in [1, 3]:  # 2nd (index 1) and 4th (index 3)
+                    y_offsets[i] = -3.0
+                else:
+                    y_offsets[i] = 3.0
+        
+        for i, left_percent in enumerate(x_percents):
             if player_idx < len(players):
                 name = players[player_idx]
                 nationality_name = player_nationalities.get(name, "")
@@ -336,13 +357,24 @@ def get_formation_layout_data(
                 # Generate full flag URL in Python (avoid Jinja2 filter issues)
                 flag_url = f"https://flagcdn.com/{nationality_code}.svg" if nationality_code else ""
                 
+                # Use provided short name, fallback to manual shortening if not provided
+                short_name = name
+                if player_short_names and name in player_short_names:
+                    short_name = player_short_names[name]
+                else:
+                    # Fallback manual shortening logic
+                    parts = name.split()
+                    if len(parts) > 1:
+                        short_name = f"{parts[0][0]}. {parts[-1][:8]}"
+                
                 player_data.append({
                     "name": name,
+                    "short_name": short_name,  # New field
                     "number": player_numbers.get(name, ""),
                     "photo": player_photos.get(name, ""),
                     "nationality": nationality_code,
                     "flag_url": flag_url,
-                    "top_percent": round(top_percent, 1),
+                    "top_percent": round(base_top_percent + y_offsets[i], 1),
                     "left_percent": round(left_percent, 1)
                 })
                 player_idx += 1

@@ -63,10 +63,8 @@ class NameTranslator:
     
     def _get_translations(self, names: List[str]) -> Dict[str, str]:
         """
-        選手名の翻訳を取得（キャッシュ優先）
-        
-        Returns:
-            {英語名: カタカナ名} のマッピング
+        選手名の翻訳(Full)を取得（キャッシュ優先）
+        Compatibility wrapper for existing code
         """
         translations = {}
         names_to_translate = []
@@ -75,8 +73,8 @@ class NameTranslator:
         for name in names:
             cached = self._read_cache(name)
             if cached:
-                translations[name] = cached
-                logger.debug(f"[NAME_TRANSLATION] Cache HIT: {name} -> {cached}")
+                translations[name] = cached["full"]
+                # logger.debug(f"[NAME_TRANSLATION] Cache HIT: {name} -> {cached['full']}")
             else:
                 names_to_translate.append(name)
         
@@ -86,9 +84,9 @@ class NameTranslator:
             new_translations = self._batch_translate(names_to_translate)
             
             # キャッシュに保存
-            for name, katakana in new_translations.items():
-                self._write_cache(name, katakana)
-                translations[name] = katakana
+            for name, trans_data in new_translations.items():
+                self._write_cache(name, trans_data)
+                translations[name] = trans_data["full"]
         
         return translations
     
@@ -141,16 +139,28 @@ class NameTranslator:
             
             translations = json.loads(json_str)
             logger.info(f"[NAME_TRANSLATION] Translated {len(translations)} names via Gemini")
-            return translations
+            
+            # 形式の正規化（古い形式 {name: full} が返ってきた場合の対策）
+            normalized = {}
+            for k, v in translations.items():
+                if isinstance(v, str):
+                    normalized[k] = {"full": v, "short": v}
+                elif isinstance(v, dict):
+                    normalized[k] = v
+                    # shortがない場合はfullを使う
+                    if "short" not in normalized[k]:
+                        normalized[k]["short"] = normalized[k].get("full", k)
+            
+            return normalized
             
         except json.JSONDecodeError as e:
             logger.error(f"[NAME_TRANSLATION] Failed to parse Gemini response: {e}")
             logger.debug(f"Raw response: {response}")
-            # パース失敗時は元の名前を返す
-            return {name: name for name in names}
+            return {name: {"full": name, "short": name} for name in names}
+            
         except Exception as e:
             logger.error(f"[NAME_TRANSLATION] Translation error: {e}")
-            return {name: name for name in names}
+            return {name: {"full": name, "short": name} for name in names}
     
     def _get_cache_path(self, name: str) -> str:
         """キャッシュパスを生成"""
@@ -158,25 +168,79 @@ class NameTranslator:
         name_hash = hashlib.md5(name.encode()).hexdigest()[:16]
         return f"{self.CACHE_PREFIX}/{name_hash}.json"
     
-    def _read_cache(self, name: str) -> Optional[str]:
-        """キャッシュから翻訳を読み込む"""
+    def _read_cache(self, name: str) -> Optional[dict]:
+        """
+        キャッシュから翻訳を読み込む
+        Returns: {"full": "...", "short": "..."} or None
+        """
         try:
             cache_path = self._get_cache_path(name)
             data = self.cache_store.read(cache_path)
             if data and data.get("original") == name:
-                return data.get("katakana")
+                # 旧形式互換
+                if "katakana" in data and "short" not in data:
+                    return {"full": data["katakana"], "short": data["katakana"]}
+                # 新形式
+                if "full" in data and "short" in data:
+                    return {"full": data["full"], "short": data["short"]}
         except Exception as e:
             logger.debug(f"[NAME_TRANSLATION] Cache read error: {e}")
         return None
     
-    def _write_cache(self, name: str, katakana: str) -> None:
+    def _write_cache(self, name: str, translation: dict) -> None:
         """翻訳をキャッシュに書き込む"""
         try:
             cache_path = self._get_cache_path(name)
             data = {
                 "original": name,
-                "katakana": katakana
+                "full": translation["full"],
+                "short": translation["short"],
+                # 下位互換用
+                "katakana": translation["full"]
             }
             self.cache_store.write(cache_path, data)
         except Exception as e:
             logger.warning(f"[NAME_TRANSLATION] Cache write error: {e}")
+
+    def get_short_names(self, names: List[str]) -> Dict[str, str]:
+        """
+        選手名の短縮名マッピングを取得
+        """
+        if not names:
+            return {}
+            
+        # 翻訳処理（キャッシュ確認含む）を実行
+        # _get_translations は内部でキャッシュ確認とAPIコールを行う
+        # 返り値は現状 {eng: full_katakana} になっているので、
+        # 内部メソッドを修正するか、キャッシュを直接読む必要がある
+        
+        # ここでは _get_translations を修正するのではなく、
+        # 必要な翻訳を確実に行わせた上で、キャッシュから短縮名を引くアプローチを取る
+        
+        # 1. まず翻訳を確保（未キャッシュ分はAPIコール）
+        self._ensure_translations(names)
+        
+        # 2. キャッシュから短縮名を収集
+        result = {}
+        for name in names:
+            cached = self._read_cache(name)
+            if cached:
+                result[name] = cached["short"]
+            else:
+                result[name] = name # フォールバック
+                
+        return result
+
+    def _ensure_translations(self, names: List[str]):
+        """指定された名前の翻訳がキャッシュにあることを保証する"""
+        names_to_translate = []
+        for name in names:
+            if not self._read_cache(name):
+                names_to_translate.append(name)
+        
+        if names_to_translate:
+            logger.info(f"[NAME_TRANSLATION] Translating {len(names_to_translate)} names for short name retrieval")
+            new_translations = self._batch_translate(names_to_translate)
+            for name, trans_data in new_translations.items():
+                # trans_data is {"full": ..., "short": ...}
+                self._write_cache(name, trans_data)

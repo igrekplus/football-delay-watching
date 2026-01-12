@@ -1349,6 +1349,26 @@ pre {
     gap: 20px;
     margin: 25px 0;
     width: 100%;
+    /* Mobile: horizontal scroll */
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* Custom scrollbar for formation container */
+.formation-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.formation-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.formation-container::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
 }
 
 .formation-pitch-side {
@@ -1561,10 +1581,115 @@ pre {
     letter-spacing: 0.5px;
 }
 
-/* Responsive: stack vertically on small screens */
+/* Responsive Layouts (Issue #167) */
+
+/* Mobile (< 768px): 1 team per view with horizontal scroll */
 @media (max-width: 768px) {
+    .formation-container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: var(--spacing-md);
+        gap: 15px;
+    }
+
+    .formation-pitch-side {
+        flex: 0 0 auto !important;
+        /* Each team takes almost full viewport width */
+        width: calc(100vw - 50px) !important;
+        min-width: calc(100vw - 50px) !important;
+        max-width: calc(100vw - 50px) !important;
+        scroll-snap-align: start;
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .pitch-visual-area {
+        width: 100% !important;
+        /* Adequate height for mobile */
+        height: calc((100vw - 74px) * 1.25) !important;
+        min-height: 420px !important;
+        max-height: 550px !important;
+        position: relative;
+    }
+
+    /* Scale player cards for mobile */
+    .player-card-horizontal {
+        width: 90px;
+        height: 85px;
+        padding: 4px;
+    }
+
+    .player-photo-container {
+        width: 45px;
+        height: 45px;
+    }
+
+    .player-name-text {
+        font-size: 10px;
+    }
+
+    .player-number-badge {
+        font-size: 13px;
+    }
+
+    .player-flag {
+        width: 20px;
+        height: 15px;
+    }
+
+    .formation-header {
+        gap: 8px;
+    }
+
+    .formation-team-name {
+        font-size: 1.1rem !important;
+    }
+
+    .formation-style-label {
+        font-size: 0.9rem !important;
+    }
+}
+
+
+
+
+
+/* iPad Portrait (769px - 1024px): 1 team, fits screen width */
+@media (min-width: 769px) and (max-width: 1024px) {
     .formation-container {
         flex-direction: column;
         align-items: center;
+        overflow-x: visible;
+    }
+
+    .formation-pitch-side {
+        width: 100%;
+        max-width: 620px;
+    }
+
+    .pitch-visual-area {
+        width: 100%;
+        max-width: 580px;
+        height: auto;
+        aspect-ratio: 580 / 700;
+    }
+}
+
+/* iPad Landscape / PC (> 1025px): 2 teams side by side */
+@media (min-width: 1025px) {
+    .formation-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow-x: visible;
+    }
+
+    .formation-pitch-side {
+        width: 620px;
     }
 }
