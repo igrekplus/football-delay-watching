@@ -101,10 +101,8 @@ class ReportGenerator:
         # テンプレートでレンダリング
         html_content = render_template("report.html", **match_report_context)
         
-        # 選手名をカタカナに変換
-        player_names = self._extract_player_names(match)
+        # 選手名をカタカナに変換（全体）
         if player_names:
-            translator = NameTranslator()
             html_content = translator.translate_names_in_html(html_content, player_names)
         
         return html_content, image_paths
@@ -180,6 +178,29 @@ class ReportGenerator:
         
         image_paths = []
         
+        # デバッグ/モックモードの見出し設定
+        mode_prefix = ""
+        mode_banner = ""
+        if config.USE_MOCK_DATA:
+            mode_prefix = "[MOCK] "
+            mode_banner = '<div class="mode-banner mode-banner-mock">🧪 MOCK MODE - このレポートはモックデータです</div>'
+        elif config.DEBUG_MODE:
+            mode_prefix = "[DEBUG] "
+            mode_banner = '<div class="mode-banner mode-banner-debug">🔧 DEBUG MODE - このレポートはデバッグ用です</div>'
+
+        # 生成日時
+        from src.utils.datetime_util import DateTimeUtil
+        timestamp = DateTimeUtil.format_display_timestamp()
+        
+        # コンテキストデータの準備
+        image_paths = []
+        
+        # 選手名をカタカナに変換（フォーメーション図の短縮名用にも必要）
+        player_names = self._extract_player_names(match)
+        translator = NameTranslator()
+        # フォーメーション図用の短縮名辞書を取得
+        short_names_dict = translator.get_short_names(player_names)
+
         # 選手カードの生成（Jinja2版 format_player_cards は既に内部で render_template している）
         home_cards_html = self.player_formatter.format_player_cards(
             match.facts.home_lineup, match.facts.home_formation, match.core.home_team,
@@ -225,7 +246,8 @@ class ReportGenerator:
             is_home=True,
             player_nationalities=match.facts.player_nationalities,
             player_numbers=match.facts.player_numbers,
-            player_photos=match.facts.player_photos
+            player_photos=match.facts.player_photos,
+            player_short_names=short_names_dict
         )
         away_formation_data = get_formation_layout_data(
             formation=match.facts.away_formation,
@@ -236,7 +258,8 @@ class ReportGenerator:
             is_home=False,
             player_nationalities=match.facts.player_nationalities,
             player_numbers=match.facts.player_numbers,
-            player_photos=match.facts.player_photos
+            player_photos=match.facts.player_photos,
+            player_short_names=short_names_dict
         )
 
         formation_html = render_template("partials/formation_section.html",
@@ -400,10 +423,10 @@ class ReportGenerator:
 
     def _extract_player_names(self, match: MatchAggregate) -> List[str]:
         """
-        試合データから選手名を抽出
+        Extract player names from match data
         
         Returns:
-            選手名のリスト（英語）
+            List of player names
         """
         names = []
         
