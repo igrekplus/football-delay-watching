@@ -327,6 +327,7 @@
                     <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">全て表示</button>
                     <button class="filter-tab" data-filter="production"
                         onclick="setFilter('production')">本番レポート</button>
+                    <button class="filter-tab" data-filter="debug" onclick="setFilter('debug')">デバッグ情報</button>
                 </div>
                 <div id="reports-container" class="loading">
                     レポートを読み込み中...
@@ -522,59 +523,100 @@
                 }
 
                 const manifest = await response.json();
-
-                // レポート一覧取得（reports_by_date）
                 const reportsByDate = manifest.reports_by_date || {};
+
+                // 1. レポートデータの抽出とフィルタリング
+                let allMatches = [];
+                Object.values(reportsByDate).forEach(dateData => {
+                    (dateData.matches || []).forEach(match => {
+                        allMatches.push(match);
+                    });
+                });
+
+                let visibleMatches = [];
+                if (currentFilter === 'debug') {
+                    // デバッグ情報: debug/mock のみ
+                    visibleMatches = allMatches.filter(m => m.is_debug || m.is_mock);
+                } else if (currentFilter === 'production') {
+                    // 本番レポート: debug/mock を除外
+                    visibleMatches = allMatches.filter(m => !m.is_debug && !m.is_mock);
+                } else {
+                    // 全て表示
+                    visibleMatches = allMatches;
+                }
 
                 let html = '';
                 let totalCount = 0;
 
-                // 1. 新形式: 日付グループで表示
-                const sortedDates = Object.keys(reportsByDate).sort().reverse();
+                if (currentFilter === 'debug') {
+                    // 2. デバッグモード: 実行日時順のフラットリスト
+                    html += '<h3 style="color:#ff6b6b;margin:15px 0 10px 0;font-size:1.2rem;">🔧 デバッグレポート (実行日時順)</h3>';
 
-                if (sortedDates.length > 0) {
+                    // 実行日時（ファイル名内のタイムスタンプ）でソート
+                    const sortedForDebug = [...visibleMatches].sort((a, b) => {
+                        const timeA = a.file.match(/_(\d{8})_(\d{6})\.html$/);
+                        const timeB = b.file.match(/_(\d{8})_(\d{6})\.html$/);
+                        const keyA = timeA ? timeA[1] + timeA[2] : '';
+                        const keyB = timeB ? timeB[1] + timeB[2] : '';
+                        return keyB.localeCompare(keyA);
+                    });
+
+                    sortedForDebug.forEach(match => {
+                        const timeMatch = match.file.match(/_(\d{8})_(\d{6})\.html$/);
+                        let timeDisplay = '';
+                        if (timeMatch) {
+                            timeDisplay = ` (${timeMatch[1].slice(4, 6)}/${timeMatch[1].slice(6, 8)} ${timeMatch[2].slice(0, 2)}:${timeMatch[2].slice(2, 4)}:${timeMatch[2].slice(4, 6)})`;
+                        }
+
+                        let badge = match.is_mock
+                            ? '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">MOCK</span>'
+                            : '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
+
+                        const title = `${match.home_team} vs ${match.away_team}${timeDisplay}`;
+                        const meta = `${match.match_date || ''} / ${match.competition || ''} / ${match.kickoff_jst || ''}`;
+
+                        html += `
+                            <div class="report-item">
+                                <a href="/reports/${match.file}">${title}${badge}</a>
+                                <span class="report-meta">${meta}</span>
+                            </div>
+                        `;
+                        totalCount++;
+                    });
+                } else {
+                    // 3. 通常モード: 試合日グループ表示
                     html += '<h3 style="color:#feca57;margin:15px 0 10px 0;font-size:1.2rem;">📅 試合別レポート</h3>';
 
+                    const sortedDates = Object.keys(reportsByDate).sort().reverse();
                     sortedDates.forEach(date => {
-                        const dateData = reportsByDate[date];
-                        const matches = dateData.matches || [];
-                        if (matches.length === 0) return;
-
-                        // フィルタ適用後の試合数チェック
-                        const visibleMatches = currentFilter === 'production'
+                        const matches = reportsByDate[date].matches || [];
+                        const dateVisibleMatches = currentFilter === 'production'
                             ? matches.filter(m => !m.is_debug && !m.is_mock)
                             : matches;
-                        if (visibleMatches.length === 0) return;
 
-                        // 日付ヘッダー（バッジは各レポートに表示するため削除）
+                        if (dateVisibleMatches.length === 0) return;
+
                         html += `<div style="margin:10px 0 5px 0;font-weight:bold;color:#74b9ff;font-size:0.95rem;">${date}</div>`;
 
-                        // ファイル名の実行時刻で降順ソート（新しい順）
-                        const sortedMatches = [...visibleMatches].sort((a, b) => {
+                        const sortedMatches = [...dateVisibleMatches].sort((a, b) => {
                             const timeA = a.file.match(/_(\d{8})_(\d{6})\.html$/);
                             const timeB = b.file.match(/_(\d{8})_(\d{6})\.html$/);
                             const keyA = timeA ? timeA[1] + timeA[2] : '';
                             const keyB = timeB ? timeB[1] + timeB[2] : '';
-                            return keyB.localeCompare(keyA);  // 降順
+                            return keyB.localeCompare(keyA);
                         });
 
-                        // 各試合
                         sortedMatches.forEach(match => {
-                            // ファイル名から実行日時を抽出（例: 2025-12-20_Team_vs_Team_20251228_201958.html → 12/28 20:19:58）
                             const timeMatch = match.file.match(/_(\d{8})_(\d{6})\.html$/);
                             let timeDisplay = '';
-                            if (timeMatch && timeMatch[1] && timeMatch[2]) {
-                                const d = timeMatch[1];  // YYYYMMDD
-                                const t = timeMatch[2];  // HHMMSS
-                                timeDisplay = ` (${d.slice(4, 6)}/${d.slice(6, 8)} ${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)})`;
+                            if (timeMatch) {
+                                timeDisplay = ` (${timeMatch[1].slice(4, 6)}/${timeMatch[1].slice(6, 8)} ${timeMatch[2].slice(0, 2)}:${timeMatch[2].slice(2, 4)}:${timeMatch[2].slice(4, 6)})`;
                             }
-                            // レポートごとにMOCK/DEBUGバッジを表示
+
                             let badge = '';
-                            if (match.is_mock) {
-                                badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">MOCK</span>';
-                            } else if (match.is_debug) {
-                                badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
-                            }
+                            if (match.is_mock) badge = '<span style="background:#9b59b6;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">MOCK</span>';
+                            else if (match.is_debug) badge = '<span style="background:#ff6b6b;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.65rem;margin-left:8px;">DEBUG</span>';
+
                             const title = `${match.home_team} vs ${match.away_team}${timeDisplay}`;
                             const meta = `${match.competition || ''} / ${match.kickoff_jst || ''}`;
                             html += `
