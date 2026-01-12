@@ -1388,7 +1388,7 @@ pre {
 .pitch-visual-area {
     position: relative;
     width: 580px;
-    height: 500px;
+    height: 700px;
     background: linear-gradient(180deg, #0a0a0f 0%, #151520 50%, #0a0a0f 100%);
     border: 2px solid var(--team-color, #c8102e);
     border-radius: 8px;
