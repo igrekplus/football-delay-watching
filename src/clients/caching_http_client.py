@@ -188,6 +188,12 @@ class CachingHttpClient:
         """TTLチェック: キャッシュが有効期限内かどうかを判定"""
         ttl_days = self.ttl_config.get(endpoint)
         
+        # 直近N試合取得（fixtures + last パラメータ）は TTL=2日 (Issue #176)
+        # 「最新N試合」は日々変化するため、長期キャッシュは stale になりやすい
+        params = cached_data.get("parameters", {})
+        if endpoint == "fixtures" and "last" in params:
+            ttl_days = 2
+        
         # None = 無期限
         if ttl_days is None:
             return True

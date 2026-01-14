@@ -111,8 +111,11 @@ class FactsFormatter:
 
     def format_recent_form(self, match: MatchAggregate, home_raw: Dict[str, Any], away_raw: Dict[str, Any]):
         """直近フォーム情報を整形"""
-        match.facts.home_recent_form_details = self._parse_form(home_raw, match.core.home_team)
-        match.facts.away_recent_form_details = self._parse_form(away_raw, match.core.away_team)
+        # 試合開催日の前日までを対象 (Issue #176)
+        match_date = match.core.kickoff_at_utc
+        
+        match.facts.home_recent_form_details = self._parse_form(home_raw, match.core.home_team, match_date)
+        match.facts.away_recent_form_details = self._parse_form(away_raw, match.core.away_team, match_date)
         
         # サマリー集計
         match.facts.home_form_summary = self._calculate_form_summary(match.facts.home_recent_form_details)
@@ -215,13 +218,18 @@ class FactsFormatter:
         total = home_wins + draws + away_wins
         match.facts.h2h_summary = f"過去5年間 {total}試合: {match.core.home_team} {home_wins}勝, 引分 {draws}, {match.core.away_team} {away_wins}勝"
 
-    def _parse_form(self, data: Dict[str, Any], team_name: str) -> List[Dict[str, Any]]:
+    def _parse_form(self, data: Dict[str, Any], team_name: str, match_date: datetime = None) -> List[Dict[str, Any]]:
         """個別チームのフォーム情報を解析"""
         if not data.get('response'):
             return []
 
         finished_statuses = {"FT", "AET", "PEN"}
-        max_date = config.TARGET_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # 試合開催日が渡された場合はその前日（00:00:00）を基準に、なければ報告生成日
+        if match_date:
+            max_date = match_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            max_date = config.TARGET_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
         form_details = []
         
         for fixture_item in data['response']:
