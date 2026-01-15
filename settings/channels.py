@@ -70,6 +70,11 @@ TRUSTED_CHANNELS: Dict[str, Dict] = {
     "UCkWccBKBP0pvnUhuplw3lIA": {"name": "スポルティーバ", "handle": "@sportiva", "category": "media"},
     "UC8yHePe_RgUBE-waRWy6olw": {"name": "PIVOT 公式チャンネル", "handle": "@pivot00", "category": "media"},
     "UC5a1Zmq6dNNKKaW_sL6tjIA": {"name": "レオザマニア【Leothefootball】公認切り抜き", "handle": "@レオザマニア", "category": "tactics"},
+    # ====== 新規追加 (Aランク優先候補) ======
+    "UCqZQlzSHbVJrwrn5XvzrzcA": {"name": "NBC Sports", "handle": "@nbcsports", "category": "broadcaster"},
+    "UC_r3a2tv0Z4NMGIyV3HoqKg": {"name": "Sunderland AFC", "handle": "@SunderlandAFC", "category": "team"},
+    "UC2scTsYOgxGHx0uEsHFrqfQ": {"name": "HaytersTV", "handle": "@HaytersTV", "category": "media"},
+    "UCiVg6vRhuyjsWgHkDNOig6A": {"name": "BeanymanSports", "handle": "@BeanymanSports", "category": "media"},
 }
 
 # =============================================================================

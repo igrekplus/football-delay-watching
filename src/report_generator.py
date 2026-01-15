@@ -465,7 +465,7 @@ class ReportGenerator:
         if match.facts.same_country_text:
             matchups = parse_matchup_text(match.facts.same_country_text)
             for m in matchups:
-                names.extend([m.player1_name, m.player2_name])
+                names.extend([p[0] for p in m.players])
         
         # 戦術プレビューのキープレイヤーから抽出
         if match.preview.tactical_preview:
@@ -494,6 +494,6 @@ class ReportGenerator:
                 
                 matchups = parse_matchup_text(matchup_text)
                 for m in matchups:
-                    names.extend([m.player1_name, m.player2_name])
+                    names.extend([p[0] for p in m.players])
         
         return names
