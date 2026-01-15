@@ -81,52 +81,38 @@ class MatchupFormatter:
         return ""
 
     def format_single_matchup(self, matchup: PlayerMatchup, player_photos: dict, team_logos: dict) -> str:
-        """1つのマッチアップをHTMLカードとしてフォーマット"""
-        p1_photo = self._get_photo(matchup.player1_name, player_photos)
-        p2_photo = self._get_photo(matchup.player2_name, player_photos)
-        
-        p1_logo = self._get_logo(matchup.player1_team, team_logos)
-        p2_logo = self._get_logo(matchup.player2_team, team_logos)
-        
-        # Generate photo HTML with placeholder fallback
-        if p1_photo:
-            p1_photo_html = f'<img src="{p1_photo}" alt="{matchup.player1_name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">'
-        else:
-            p1_photo_html = '<div class="matchup-photo-placeholder"></div>'
-            
-        if p2_photo:
-            p2_photo_html = f'<img src="{p2_photo}" alt="{matchup.player2_name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">'
-        else:
-            p2_photo_html = '<div class="matchup-photo-placeholder"></div>'
-            
-        # ヘッダーを表示（空でない場合）
+        """1つのマッチアップをHTMLカードとしてフォーマット（最大4名対応）"""
         header_html = f'<div class="matchup-country-header">{matchup.header}</div>' if matchup.header else ""
         
+        players_html = ""
+        for player_name, player_team in matchup.players:
+            photo = self._get_photo(player_name, player_photos)
+            logo = self._get_logo(player_team, team_logos)
+            
+            if photo:
+                photo_html = f'<img src="{photo}" alt="{player_name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">'
+            else:
+                photo_html = '<div class="matchup-photo-placeholder"></div>'
+                
+            players_html += f'''
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    {photo_html}
+                    <img src="{logo}" alt="{player_team}" class="matchup-badge" onerror="this.style.display=\'none\';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">{player_name}</div>
+                    <div class="matchup-team-name">{player_team}</div>
+                </div>
+            </div>
+            '''
+            
         return f'''
 <div class="matchup-country">
     <div class="matchup-header-row">
         {header_html}
         <div class="matchup-players">
-            <div class="matchup-player-item">
-                <div class="matchup-photo-wrapper">
-                    {p1_photo_html}
-                    <img src="{p1_logo}" alt="{matchup.player1_team}" class="matchup-badge" onerror="this.style.display=\'none\';">
-                </div>
-                <div class="matchup-player-info">
-                    <div class="matchup-player-name">{matchup.player1_name}</div>
-                    <div class="matchup-team-name">{matchup.player1_team}</div>
-                </div>
-            </div>
-            <div class="matchup-player-item">
-                <div class="matchup-photo-wrapper">
-                    {p2_photo_html}
-                    <img src="{p2_logo}" alt="{matchup.player2_team}" class="matchup-badge" onerror="this.style.display=\'none\';">
-                </div>
-                <div class="matchup-player-info">
-                    <div class="matchup-player-name">{matchup.player2_name}</div>
-                    <div class="matchup-team-name">{matchup.player2_team}</div>
-                </div>
-            </div>
+            {players_html}
         </div>
     </div>
     <div class="matchup-description">

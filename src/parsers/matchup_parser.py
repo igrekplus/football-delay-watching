@@ -1,6 +1,6 @@
 import re
 import logging
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 from html import escape
 
@@ -8,12 +8,9 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class PlayerMatchup:
-    """選手マッチアップ情報"""
+    """選手マッチアップ情報（最大4名対応）"""
     header: str # "🇯🇵 Japan" や "1." など
-    player1_name: str
-    player1_team: str
-    player2_name: str
-    player2_team: str
+    players: List[Tuple[str, str]]  # [(選手名, チーム名), ...] 最大4名
     description: str
 
 def _extract_players(text: str) -> List[tuple]:
@@ -89,10 +86,10 @@ def parse_matchup_text(llm_output: str) -> List[PlayerMatchup]:
             # 全てのフィールドから ** を削除
             matchups.append(PlayerMatchup(
                 header="",
-                player1_name=escape(match.group(1).strip()),
-                player1_team=escape(match.group(2).strip()),
-                player2_name=escape(match.group(3).strip()),
-                player2_team=escape(match.group(4).strip()),
+                players=[
+                    (escape(match.group(1).strip()), escape(match.group(2).strip())),
+                    (escape(match.group(3).strip()), escape(match.group(4).strip()))
+                ],
                 description=escape(description.replace('**', ''))
             ))
     
@@ -100,21 +97,19 @@ def parse_matchup_text(llm_output: str) -> List[PlayerMatchup]:
     return matchups
 
 def _process_section(header: str, content: str) -> Optional[PlayerMatchup]:
-    """セクション（ヘッダー + コンテンツ）から1つのマッチアップを抽出"""
+    """セクション（ヘッダー + コンテンツ）から1つのマッチアップを抽出（最大4名）"""
     players = _extract_players(content)
     
     if len(players) < 2:
         logger.debug(f"Less than 2 players found in section: {content[:50]}...")
         return None
     
-    # 最初の2選手をペアとして扱う
-    player1_name, player1_team = players[0]
-    player2_name, player2_team = players[1]
+    # 最大4選手を取得
+    players_limited = players[:4]
     
-    # 説明文: 2番目の選手情報以降のテキスト
-    # 選手情報パターンを全て除去した残りのテキストを取得
+    # 説明文を抽出（全選手情報を除去した残り）
     description = content
-    for name, team in players[:2]:
+    for name, team in players_limited:
         pattern = rf'\*\*{re.escape(name)}\*\*\s*[（\(]{re.escape(team)}[）\)]'
         description = re.sub(pattern, '', description)
     
@@ -128,10 +123,7 @@ def _process_section(header: str, content: str) -> Optional[PlayerMatchup]:
     # 全てのフィールドから ** を削除
     return PlayerMatchup(
         header=escape(header.replace('**', '')) if header else "",
-        player1_name=escape(player1_name.strip()),
-        player1_team=escape(player1_team.strip()),
-        player2_name=escape(player2_name.strip()),
-        player2_team=escape(player2_team.strip()),
+        players=[(escape(n.strip()), escape(t.strip())) for n, t in players_limited],
         description=escape(description.replace('**', ''))
     )
 
