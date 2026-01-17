@@ -18,6 +18,7 @@ from settings.search_specs import (
     get_youtube_exclude_filters,
     get_youtube_time_window,
 )
+from src.clients.http_client import HttpClient
 from src.clients.youtube_client import YouTubeSearchClient
 from src.domain.models import MatchAggregate
 from src.youtube_filter import YouTubePostFilter
@@ -37,7 +38,7 @@ class YouTubeService:
     def __init__(
         self,
         api_key: str = None,
-        http_get: Callable | None = None,
+        http_client: HttpClient | None = None,
         search_override: Callable[[dict], list[dict]] | None = None,
         cache_enabled: bool | None = None,
         youtube_client: YouTubeSearchClient | None = None,
@@ -60,7 +61,7 @@ class YouTubeService:
         else:
             self._youtube_client = YouTubeSearchClient(
                 api_key=api_key,
-                http_get=http_get,
+                http_client=http_client,
                 cache_enabled=effective_cache_enabled,
             )
 

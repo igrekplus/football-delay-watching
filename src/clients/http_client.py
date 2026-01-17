@@ -19,14 +19,6 @@ from tenacity import (
 logger = logging.getLogger(__name__)
 
 
-def is_retriable_exception(e):
-    """リトライすべき例外かどうかを判定"""
-    # ネットワーク関連のエラーやタイムアウトはリトライ対象
-    if isinstance(e, requests.exceptions.Timeout | requests.exceptions.ConnectionError):
-        return True
-    return False
-
-
 class HttpResponse:
     """HTTPレスポンスの抽象化"""
 
@@ -112,7 +104,7 @@ class RequestsHttpClient(HttpClient):
 
     @retry(
         stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=4, max=10),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
         retry=retry_if_exception_type(
             (requests.exceptions.Timeout, requests.exceptions.ConnectionError)
         ),
@@ -129,24 +121,25 @@ class RequestsHttpClient(HttpClient):
         params: dict[str, Any] = None,
         timeout: int = 30,
     ) -> HttpResponse:
+        response = requests.get(
+            url, headers=headers or {}, params=params or {}, timeout=timeout
+        )
         try:
-            response = requests.get(
-                url, headers=headers or {}, params=params or {}, timeout=timeout
-            )
-            return HttpResponse(
-                status_code=response.status_code,
-                json_data=response.json() if response.ok else {},
-                ok=response.ok,
-                headers=dict(response.headers),
-                content=response.content,
-            )
-        except Exception:
-            # logger.error(f"HTTP request failed: {e}") # ログはtenacityのbefore_sleep等に任せる
-            raise
+            json_data = response.json() if response.ok else {}
+        except ValueError:
+            json_data = {}
+
+        return HttpResponse(
+            status_code=response.status_code,
+            json_data=json_data,
+            ok=response.ok,
+            headers=dict(response.headers),
+            content=response.content,
+        )
 
     @retry(
         stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=4, max=10),
+        wait=wait_exponential(multiplier=1, min=1, max=5),
         retry=retry_if_exception_type(
             (requests.exceptions.Timeout, requests.exceptions.ConnectionError)
         ),
@@ -163,19 +156,19 @@ class RequestsHttpClient(HttpClient):
         json: dict[str, Any] = None,
         timeout: int = 30,
     ) -> HttpResponse:
+        response = requests.post(url, headers=headers or {}, json=json, timeout=timeout)
         try:
-            response = requests.post(
-                url, headers=headers or {}, json=json or {}, timeout=timeout
-            )
-            return HttpResponse(
-                status_code=response.status_code,
-                json_data=response.json() if response.ok else {},
-                ok=response.ok,
-                headers=dict(response.headers),
-                content=response.content,
-            )
-        except Exception:
-            raise
+            json_data = response.json() if response.ok else {}
+        except ValueError:
+            json_data = {}
+
+        return HttpResponse(
+            status_code=response.status_code,
+            json_data=json_data,
+            ok=response.ok,
+            headers=dict(response.headers),
+            content=response.content,
+        )
 
 
 _default_http_client = None
