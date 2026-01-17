@@ -22,9 +22,8 @@ HOME_TEAM = "Newcastle"
 AWAY_TEAM = "Manchester City"
 MATCH_DATE = "2026-01-13"
 
-# Newcastle スタメン・ベンチ (Starting XI + Substitutes)
+# スタメン・ベンチから抽出
 HOME_PLAYERS = [
-    # Starting XI
     "Nick Pope",
     "Lewis Miley",
     "Malick Thiaw",
@@ -36,7 +35,6 @@ HOME_PLAYERS = [
     "Jacob Murphy",
     "Yoane Wissa",
     "Anthony Gordon",
-    # Substitutes
     "Aaron Ramsdale",
     "Kieran Trippier",
     "Alex Murphy",
@@ -48,9 +46,7 @@ HOME_PLAYERS = [
     "Sean Neave",
 ]
 
-# Manchester City スタメン・ベンチ (Starting XI + Substitutes)
 AWAY_PLAYERS = [
-    # Starting XI
     "James Trafford",
     "Matheus Nunes",
     "Abdukodir Khusanov",
@@ -62,7 +58,6 @@ AWAY_PLAYERS = [
     "Phil Foden",
     "Jeremy Doku",
     "Erling Haaland",
-    # Substitutes
     "Gianluigi Donnarumma",
     "Rico Lewis",
     "Rayan Cherki",

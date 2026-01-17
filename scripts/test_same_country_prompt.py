@@ -18,12 +18,10 @@ from settings.gemini_prompts import build_prompt  # noqa: E402
 from src.clients.gemini_rest_client import GeminiRestClient  # noqa: E402
 
 # === テストデータ (Newcastle vs Manchester City の同国選手) ===
-# HTMLレポートから抽出した国籍情報に基づく
+# スタメン・ベンチに実在する選手間の対決に限定
 MATCHUP_CONTEXT = """
-Brazil: Bruno Guimaraes (Newcastle), Joelinton (Newcastle)
-England: Lewis Hall (Newcastle), Anthony Gordon (Newcastle), Phil Foden (Manchester City), Jeremy Doku (Manchester City)
-Portugal: Matheus Nunes (Manchester City), Bernardo Silva (Manchester City)
-Netherlands: Nathan Ake (Manchester City)
+England: Lewis Hall (Newcastle), Anthony Gordon (Newcastle) vs Phil Foden (Manchester City), James Trafford (Manchester City)
+Netherlands: Sven Botman (Newcastle) vs Nathan Ake (Manchester City)
 """
 
 
