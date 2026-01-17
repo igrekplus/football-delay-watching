@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-古巣対決プロンプトテストスクリプト
+ニュース要約プロンプトテストスクリプト
 現行プロンプトの動作確認・リファクタ後の品質検証用
 
 データソース: https://football-delay-watching-a8830.web.app/reports/2026-01-13_Newcastle_vs_ManchesterCity_20260115_220154.html
@@ -20,78 +20,21 @@ from src.clients.gemini_rest_client import GeminiRestClient  # noqa: E402
 # === テストデータ (Newcastle vs Manchester City, EFL Cup 2026-01-13) ===
 HOME_TEAM = "Newcastle"
 AWAY_TEAM = "Manchester City"
-MATCH_DATE = "2026-01-13"
-
-# Newcastle スタメン・ベンチ (Starting XI + Substitutes)
-HOME_PLAYERS = [
-    # Starting XI
-    "Nick Pope",
-    "Lewis Miley",
-    "Malick Thiaw",
-    "Sven Botman",
-    "Lewis Hall",
-    "Jacob Ramsey",
-    "Bruno Guimaraes",
-    "Joelinton",
-    "Jacob Murphy",
-    "Yoane Wissa",
-    "Anthony Gordon",
-    # Substitutes
-    "Aaron Ramsdale",
-    "Kieran Trippier",
-    "Alex Murphy",
-    "Sandro Tonali",
-    "Antony Elanga",
-    "Joe Willock",
-    "Harvey Barnes",
-    "Nick Woltemade",
-    "Sean Neave",
-]
-
-# Manchester City スタメン・ベンチ (Starting XI + Substitutes)
-AWAY_PLAYERS = [
-    # Starting XI
-    "James Trafford",
-    "Matheus Nunes",
-    "Abdukodir Khusanov",
-    "Max Alleyne",
-    "Nathan Ake",
-    "Nico O'Reilly",
-    "Antoine Semenyo",
-    "Bernardo Silva",
-    "Phil Foden",
-    "Jeremy Doku",
-    "Erling Haaland",
-    # Substitutes
-    "Gianluigi Donnarumma",
-    "Rico Lewis",
-    "Rayan Cherki",
-    "Rayan Ait-Nouri",
-    "Rodri",
-    "Charlie Gray",
-    "Divine Mukasa",
-    "Tijjani Reijnders",
-    "Ryan McAidoo",
-]
 
 
 def main():
     print("=" * 60)
-    print("古巣対決 プロンプトテスト")
+    print("ニュース要約 プロンプトテスト")
     print("=" * 60)
     print(f"HOME: {HOME_TEAM}")
     print(f"AWAY: {AWAY_TEAM}")
-    print(f"DATE: {MATCH_DATE}")
     print("-" * 60)
 
     # プロンプト構築
     prompt = build_prompt(
-        "former_club_trivia",
+        "news_summary",
         home_team=HOME_TEAM,
         away_team=AWAY_TEAM,
-        home_players=", ".join(HOME_PLAYERS),
-        away_players=", ".join(AWAY_PLAYERS),
-        match_date=MATCH_DATE,
     )
 
     print("📝 生成されたプロンプト:")
@@ -109,6 +52,7 @@ def main():
         print("=" * 60)
         print(result)
         print("=" * 60)
+        print(f"\n文字数: {len(result)}")
     except Exception as e:
         print(f"\n❌ エラー: {e}")
         raise
