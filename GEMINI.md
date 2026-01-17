@@ -78,12 +78,28 @@ python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirem
 
 ### Code Style
 
-> [!NOTE]
-> **TODO**: Black, isort, ruff等のフォーマッタ導入を検討中。
-> 現状は以下の基本方針に従う：
-> - 型ヒント推奨（関数シグネチャ）
-> - import順序: 標準ライブラリ → サードパーティ → ローカル
-> - docstring: Google形式推奨
+本プロジェクトでは**Ruff**を採用している。
+
+```bash
+# リントチェック
+ruff check .
+
+# 自動修正付きリントチェック
+ruff check --fix .
+
+# フォーマット
+ruff format .
+```
+
+**設定方針:**
+- 行長: 88文字（Black互換）
+- ルール: E, F, I, W, UP（pycodestyle, Pyflakes, isort, pyupgrade）
+- 型ヒント推奨（関数シグネチャ）
+- docstring: Google形式推奨
+
+> [!TIP]
+> コミット前に自動でRuffが実行される（pre-commitフック）。
+> 初回のみ `pip install -r requirements-dev.txt && pre-commit install` が必要。
 
 ### Naming Conventions
 
