@@ -75,6 +75,15 @@ TRUSTED_CHANNELS: Dict[str, Dict] = {
     "UC_r3a2tv0Z4NMGIyV3HoqKg": {"name": "Sunderland AFC", "handle": "@SunderlandAFC", "category": "team"},
     "UC2scTsYOgxGHx0uEsHFrqfQ": {"name": "HaytersTV", "handle": "@HaytersTV", "category": "media"},
     "UCiVg6vRhuyjsWgHkDNOig6A": {"name": "BeanymanSports", "handle": "@BeanymanSports", "category": "media"},
+    # ====== 公式クラブ・リーグ・放送 (追加) ======
+    "UCTv-XvfzLX3i4IGWAm4sbmA": {"name": "LALIGA EA SPORTS", "handle": "@LaLiga", "category": "league"},
+    "UCNAf1k0yIjyGu3k9BwAg3lg": {"name": "Sky Sports Premier League", "handle": "@skysportspremierleague", "category": "broadcaster"},
+    "UC6c1z7bA__85CIWZ_jpCK-Q": {"name": "ESPN FC", "handle": "@ESPNFC", "category": "broadcaster"},
+    "UCET00YnetHT7tOpu12v8jxg": {"name": "CBS Sports Golazo", "handle": "@cbssportsgolazo", "category": "broadcaster"},
+    "UC4i_9WvfPRTuRWEaWyfKuFw": {"name": "TNT Sports Football", "handle": "@TNTSportsFootball", "category": "broadcaster"},
+    "UCWB9N0012fG6bGyj486Qxmg": {"name": "Crystal Palace FC", "handle": "@OfficialCPFC", "category": "team"},
+    # ====== 非公式だが大規模（要監視） ======
+    "UCgfxjUYBKLUUjq0oE7DU-Iw": {"name": "FutVibes", "handle": "@FutVibess", "category": "fan"},
 }
 
 # =============================================================================

@@ -225,3 +225,47 @@ class MatchupFormatter:
     </div>
 </div>
 '''
+
+    def format_former_club_section(self, entries: List, player_photos: Dict[str, str], 
+                                    team_logos: Dict[str, str], section_title: str = "■ 古巣対決") -> str:
+        """古巣対決セクション全体のHTMLを生成"""
+        if not entries:
+            return ""
+            
+        html = f'<div class="matchup-section former-club-section">\n<h3 class="section-title">{section_title}</h3>\n<div class="matchup-container">\n'
+        
+        for entry in entries:
+            html += self.format_single_former_club(entry, player_photos, team_logos)
+            
+        html += '</div>\n</div>'
+        return html
+
+    def format_single_former_club(self, entry, player_photos: dict, team_logos: dict) -> str:
+        """1人の古巣対決エントリをHTMLカードとしてフォーマット"""
+        photo = self._get_photo(entry.name, player_photos)
+        logo = self._get_logo(entry.team, team_logos)
+        
+        if photo:
+            photo_html = f'<img src="{photo}" alt="{entry.name}" class="matchup-photo" onerror="this.style.opacity=\'0.3\';">'
+        else:
+            photo_html = '<div class="matchup-photo-placeholder"></div>'
+            
+        return f'''
+<div class="matchup-country former-club-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                {photo_html}
+                <img src="{logo}" alt="{entry.team}" class="matchup-badge" onerror="this.style.display=\'none\';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">{entry.name}</div>
+                <div class="matchup-team-name">{entry.team}</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        {entry.description}
+    </div>
+</div>
+'''
