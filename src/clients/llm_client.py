@@ -485,6 +485,7 @@ class LLMClient:
         away_team: str,
         home_players: list[str],
         away_players: list[str],
+        match_date: str = "",
     ) -> str:
         """
         古巣対決トリビアを生成（Gemini Grounding使用）
@@ -494,6 +495,7 @@ class LLMClient:
             away_team: アウェイチーム名
             home_players: ホームチームの全選手リスト
             away_players: アウェイチームの全選手リスト
+            match_date: 試合開催日 (YYYY-MM-DD)
 
         Returns:
             古巣対決トリビアテキスト（日本語）
@@ -507,6 +509,7 @@ class LLMClient:
             away_team=away_team,
             home_players=", ".join(home_players),
             away_players=", ".join(away_players),
+            match_date=match_date,
         )
 
         try:

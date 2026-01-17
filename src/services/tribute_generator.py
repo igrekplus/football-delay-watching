@@ -44,6 +44,7 @@ class TributeGenerator:
             away_team=match.core.away_team,
             home_players=home_players,
             away_players=away_players,
+            match_date=match.core.match_date_local,
         )
 
         # Gemini Groundingの出典番号を削除
