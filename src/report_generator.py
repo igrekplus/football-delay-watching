@@ -7,7 +7,7 @@ from src.utils.nationality_flags import format_player_with_flag
 from src.utils.api_stats import ApiStats
 from src.utils.datetime_util import DateTimeUtil
 from src.formatters import PlayerFormatter, MatchInfoFormatter, YouTubeSectionFormatter, MatchupFormatter
-from src.parsers import parse_matchup_text, parse_key_player_text
+from src.parsers import parse_matchup_text, parse_key_player_text, parse_former_club_text
 from config import config
 import re
 
@@ -295,10 +295,24 @@ class ReportGenerator:
         news_html = md_lib.markdown(match.preview.news_summary, extensions=['nl2br'])
         tactical_html = self._format_tactical_preview_with_visuals(match, md_lib)
         
-        # 古巣対決（Markdownを変換）
+        # 古巣対決（構造化してパース）
         former_club_html = ""
         if match.facts.former_club_trivia:
-            former_club_html = md_lib.markdown(match.facts.former_club_trivia, extensions=['nl2br'])
+            entries = parse_former_club_text(match.facts.former_club_trivia)
+            if entries:
+                team_logos = {
+                    match.core.home_team: match.core.home_logo,
+                    match.core.away_team: match.core.away_logo,
+                }
+                former_club_html = self.matchup_formatter.format_former_club_section(
+                    entries=entries,
+                    player_photos=match.facts.player_photos,
+                    team_logos=team_logos,
+                    section_title="■ 古巣対決"
+                )
+            else:
+                # パース失敗時はフォールバックとしてMarkdown変換
+                former_club_html = md_lib.markdown(match.facts.former_club_trivia, extensions=['nl2br'])
         
         # 監督コメント
         home_interview_html = md_lib.markdown(match.preview.home_interview, extensions=['nl2br']) if match.preview.home_interview else ''
@@ -495,5 +509,11 @@ class ReportGenerator:
                 matchups = parse_matchup_text(matchup_text)
                 for m in matchups:
                     names.extend([p[0] for p in m.players])
+        
+        # 古巣対決セクションから抽出
+        if match.facts.former_club_trivia:
+            entries = parse_former_club_text(match.facts.former_club_trivia)
+            for e in entries:
+                names.append(e.name)
         
         return names
