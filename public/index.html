@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚽ サッカー観戦ガイド</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -340,12 +339,25 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import {
+            getAuth,
+            setPersistence,
+            browserLocalPersistence,
+            getRedirectResult,
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
         // フィルタ状態（'all' または 'production'）
         let currentFilter = 'all';
 
         // タブ切り替え
-        function setFilter(filter) {
+        window.setFilter = function (filter) {
             currentFilter = filter;
             // タブのactive状態を更新
             document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -362,7 +374,7 @@
         let ALLOWED_EMAILS = [];
 
         // 初期化
-        async function initializeApp() {
+        async function initializeAppMain() {
             try {
                 // Firebase設定を読み込み
                 const configResponse = await fetch('/firebase_config.json');
@@ -381,17 +393,17 @@
                 }
 
                 // Firebase初期化
-                firebase.initializeApp(firebaseConfig);
-                const auth = firebase.auth();
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
 
                 // 明示的にLOCAL永続化を設定（モバイルでのセッション維持を保証）
-                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                await setPersistence(auth, browserLocalPersistence);
                 console.log('[AUTH] Persistence set to LOCAL');
 
                 // Redirect結果を処理（signInWithRedirect使用時のため）
                 try {
-                    const redirectResult = await auth.getRedirectResult();
-                    if (redirectResult.user) {
+                    const redirectResult = await getRedirectResult(auth);
+                    if (redirectResult && redirectResult.user) {
                         console.log('[AUTH] Redirect login completed:', redirectResult.user.email);
                     }
                 } catch (redirectError) {
@@ -399,7 +411,7 @@
                 }
 
                 // 認証状態の監視
-                auth.onAuthStateChanged(async (user) => {
+                onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         // 許可リストが空の場合は再取得を試みる（レースコンディション対策）
                         if (ALLOWED_EMAILS.length === 0) {
@@ -422,7 +434,7 @@
                             setTimeout(() => showContent(user), 300);
                         } else {
                             showError('このアカウントは許可リストに登録されていません: ' + user.email);
-                            auth.signOut();
+                            signOut(auth);
                         }
                     } else {
                         showLogin();
@@ -439,7 +451,7 @@
                         return;
                     }
 
-                    auth.signInWithEmailAndPassword(email, password)
+                    signInWithEmailAndPassword(auth, email, password)
                         .catch((error) => {
                             // Firebaseのエラーコードに応じて日本語メッセージを表示
                             let msg = 'ログインに失敗しました';
@@ -457,8 +469,8 @@
 
                 // Googleログイン関数をグローバルに設定
                 window.googleLogin = function () {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    auth.signInWithPopup(provider)
+                    const provider = new GoogleAuthProvider();
+                    signInWithPopup(auth, provider)
                         .catch((error) => {
                             let msg = 'Googleログインに失敗しました';
                             if (error.code === 'auth/popup-closed-by-user') {
@@ -472,7 +484,7 @@
                 };
 
                 window.logout = function () {
-                    auth.signOut();
+                    signOut(auth);
                 };
 
             } catch (e) {
@@ -481,15 +493,15 @@
             }
         }
 
-        initializeApp();
+        initializeAppMain();
 
-        function showLogin() {
+        window.showLogin = function () {
             document.getElementById('login-section').style.display = 'block';
             document.getElementById('content').classList.remove('visible');
             document.getElementById('user-info').style.display = 'none';
         }
 
-        function showContent(user) {
+        window.showContent = function (user) {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('content').classList.add('visible');
             document.getElementById('user-info').style.display = 'block';
@@ -497,12 +509,12 @@
             loadReportList();
         }
 
-        function showError(message) {
+        window.showError = function (message) {
             document.getElementById('error-message').textContent = message;
             document.getElementById('success-message').textContent = '';
         }
 
-        function showSuccess(message) {
+        window.showSuccess = function (message) {
             document.getElementById('success-message').textContent = message;
             document.getElementById('error-message').textContent = '';
         }
@@ -627,8 +639,6 @@
                     });
                 }
 
-
-
                 if (totalCount === 0) {
                     container.innerHTML = '<div class="no-reports">レポートがまだありません。</div>';
                     return;
@@ -653,7 +663,7 @@
 
         // Enterキーでログイン
         document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') login();
+            if (e.key === 'Enter') window.login();
         });
     </script>
 </body>

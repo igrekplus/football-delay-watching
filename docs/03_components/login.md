@@ -32,7 +32,7 @@
 ### 2.1 使用技術
 
 - **Firebase Authentication**
-  - Firebase JS SDK v10.7.1 (compat版)
+  - Firebase JS SDK v10.7.1 (modular版, ES Modules)
   - Email/Password Provider
   - Google Provider (Popup mode only)
   - **Persistence**: 明示的に `LOCAL` を設定（ブラウザを閉じても維持）
@@ -113,7 +113,7 @@ flowchart TD
 ### 4.1 セッション保持 (Persistence)
 - **Web (ブラウザ)**:
   - **設定**: `LOCAL` (ブラウザを閉じても維持される)
-  - **実装**: 常に明示的に `firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)` を呼び出し、永続化を保証する。
+  - **実装**: 常に明示的に `setPersistence(auth, browserLocalPersistence)` を呼び出し、永続化を保証する。
   - **WebView (Instagram/LINE等)**: ブラウザ仕様に依存するが、基本的にはCookie/LocalStorageがクリアされない限り維持される。ただし、アプリ内ブラウザの仕様でセッションが切れる場合がある。
 
 ### 4.2 マルチデバイス・同時ログイン
@@ -164,6 +164,6 @@ flowchart TD
 | 課題 | 対応状況 | Issue |
 |------|----------|-------|
 | Email/Password認証が機能しない | 未対応 | [#183](https://github.com/igrekplus/football-delay-watching/issues/183) |
-| Firebase SDK v8 → v9 移行 | 未対応 | [#184](https://github.com/igrekplus/football-delay-watching/issues/184) |
+| Firebase SDK v8 → v9 移行 | 対応済み | [#184](https://github.com/igrekplus/football-delay-watching/issues/184) |
 | `allowed_emails.json` の公開露出 | 許容（ドキュメント化済み） | - |
 
