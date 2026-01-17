@@ -60,4 +60,4 @@
 2. **Single Source of Truth**: 要件は `01_requirements`、全体設計は `02_architecture`
 3. **リンク整合性**: ファイル名変更時はリンク切れを確認
 
-> 詳細は [GEMINI.md](../GEMINI.md#-ドキュメント構成と更新ルール) を参照。
+> 詳細は [GEMINI.md](../GEMINI.md#ドキュメント体系) を参照。

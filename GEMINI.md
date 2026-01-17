@@ -15,14 +15,10 @@
 ## 2. Quick Start
 
 ```bash
-# 1. 環境構築
+# 1. 環境構築（初回のみ）
 python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 
-# 2. 初回実行（モックモード・UIレイアウト確認）
-DEBUG_MODE=True USE_MOCK_DATA=True python main.py
-
-# 3. 詳細な実行方法
-# → `/debug-run` ワークフローを参照
+# 2. 詳細な実行方法は `/debug-run` ワークフローを参照
 ```
 
 ---
@@ -56,6 +52,10 @@ DEBUG_MODE=True USE_MOCK_DATA=True python main.py
     └── skills/          # ドメイン知識パッケージ
 ```
 
+> [!TIP]
+> **Project Structureについて**
+> この構成図は概略であり、最新の構成は実際のパスを確認すること。
+
 ---
 
 ## 4. Development
@@ -74,7 +74,7 @@ DEBUG_MODE=True USE_MOCK_DATA=True python main.py
 | `/fetch-instagram` | 選手Instagram URL取得 |
 | `/delete-report` | 誤生成レポート削除 |
 
-> 詳細は [.agent/workflows/](.agent/workflows/) を参照
+> 主要なワークフローのみ記載。全一覧は [.agent/workflows/](.agent/workflows/) を参照
 
 ### Code Style
 
@@ -94,6 +94,13 @@ DEBUG_MODE=True USE_MOCK_DATA=True python main.py
 | 関数・変数 | スネークケース | `get_fixture_data()` |
 | 定数 | 大文字スネーク | `MAX_RETRIES` |
 | Workflow | ケバブケース | `debug-run.md` |
+
+> [!WARNING]
+> **Workflowファイル名の禁止事項**
+> - `_`（アンダースコア）は使用禁止
+> - 常に `-`（ハイフン）で単語を区切ること
+> - ❌ `debug_run.md`, `resolve_issue.md`
+> - ✅ `debug-run.md`, `resolve-issue.md`
 
 ---
 
@@ -127,8 +134,8 @@ python -m unittest tests/test_datetime_util.py
 
 | 問題 | 対策 |
 |------|------|
-| デプロイ後にレポートが消える | デプロイ前に必ず `python scripts/sync_firebase_reports.py` を実行 |
-| TARGET_DATE指定ミス | 必ず「今日より2日以上前」の日付を指定（当日や前日はスタメン情報未取得） |
+| デプロイ後にレポートが消える | `/deploy` ワークフローの手順に従うこと |
+| TARGET_DATE指定ミス | `/debug-run` ワークフローの「TARGET_DATEの計算ガイド」を参照 |
 | キャッシュが古い | `rm -rf .gemini/cache` でローカルキャッシュをクリア |
 | モックモードで実API検証 | ログ開始直後の `Mock: False` を必ず目視確認 |
 
@@ -136,15 +143,36 @@ python -m unittest tests/test_datetime_util.py
 
 ## 7. AI Guidelines
 
+### AI Agent Components (Role & Usage)
+
+作業の目的や性質に応じて、以下のコンポーネントを適切に使い分けること：
+
+| コンポーネント | 役割 (Role) | 性質 (Nature) | 具体例 |
+|---|---|---|---|
+| **GEMINI.md** | メインガイド | 全体ルール・SSOT | プロジェクト全体方針、命名規則 |
+| **Workflows** | 手順・プロセス | **How to perform** (固定手順) | `/deploy`, `/debug-run` |
+| **Skills** | 知識・判断基準 | **How to think/know** (専門知識・判断) | `issue_resolution`, `reviewer_mode` |
+
+> [!TIP]
+> **迷った時の基準**
+> 「特定のコマンドを順番に叩く作業」なら **Workflow**、「特定の観点や専門知識で判断・調査する能力」なら **Skill** として定義する。
+
 ### タスク範囲の厳守
 ユーザーから依頼された特定のIssueやタスクのみに集中すること。明示的な指示がない限り、別のIssueの計画や実装を開始してはならない。
 
 ### プロンプト管理
-システムから実行されるLLMプロンプト(GCPのGeminiを呼ぶ際のプロンプトは `settings/prompts/` 以下のMarkdownファイルとして外部化する。`settings/gemini_prompts.py` でメタデータを管理し、`build_prompt` 関数を通じて呼び出す。
+システムから実行されるLLMプロンプト（GCPのGeminiを呼ぶ際のプロンプト）は `settings/prompts/` 以下のMarkdownファイルとして外部化する。`settings/gemini_prompts.py` でメタデータを管理し、`build_prompt` 関数を通じて呼び出す。
 
 ### 検証の徹底
-原則workflowからセッションはスタートするが、そうでない場合もある。
-その際に修正した際には必ず /debug-runを実行する必要がある。
+以下の変更を行った場合は、必ず `/debug-run` ワークフローを完遂すること:
+
+| 変更種別 | /debug-run必須 |
+|---------|---------------|
+| Geminiプロンプト (`settings/prompts/`) | ✅ 必須 |
+| データ取得ロジック (`src/clients/`, `src/match_processor.py`) | ✅ 必須 |
+| HTML/CSS生成 (`src/html_generator.py`, `public/`) | ✅ 必須 |
+| ドキュメントのみ (`docs/`, `GEMINI.md`) | ❌ 不要 |
+| テストコードのみ (`tests/`) | ❌ 不要 |
 
 ---
 
@@ -169,4 +197,8 @@ python -m unittest tests/test_datetime_util.py
 ### Workflows・Skills一覧
 
 - Workflows: [.agent/workflows/](.agent/workflows/)
+  - `/check-close`: Issueクローズ前の確認
 - Skills: [.agent/skills/](.agent/skills/)
+  - `issue_resolution`: Issue解決のライフサイクル管理
+  - `reviewer_mode`: 高度な技術レビュー
+  - `research_commentary_info`: 実況・解説情報の調査
