@@ -32,9 +32,10 @@
 ### 2.1 使用技術
 
 - **Firebase Authentication**
+  - Firebase JS SDK v10.7.1 (compat版)
   - Email/Password Provider
   - Google Provider (Popup mode only)
-  - **Persistence**: Default (Implicit, depends on browser context)
+  - **Persistence**: 明示的に `LOCAL` を設定（ブラウザを閉じても維持）
 - **認可チェック**: クライアント側で `allowed_emails.json` と照合
 - **Mobile Support**: Limited (Popup may be blocked or fail on some mobile browsers)
 
@@ -107,28 +108,26 @@ flowchart TD
 
 ---
 
-## 4. Firebase Console 設定
+## 4. 詳細仕様
 
-### 1.5 詳細仕様
-
-#### セッション保持 (Persistence)
+### 4.1 セッション保持 (Persistence)
 - **Web (ブラウザ)**:
-  - **デフォルト**: `LOCAL` (ブラウザを閉じても維持される)
-  - **実装方針**: 常に明示的に `firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)` を呼び出し、永続化を保証する。
+  - **設定**: `LOCAL` (ブラウザを閉じても維持される)
+  - **実装**: 常に明示的に `firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)` を呼び出し、永続化を保証する。
   - **WebView (Instagram/LINE等)**: ブラウザ仕様に依存するが、基本的にはCookie/LocalStorageがクリアされない限り維持される。ただし、アプリ内ブラウザの仕様でセッションが切れる場合がある。
 
-#### マルチデバイス・同時ログイン
+### 4.2 マルチデバイス・同時ログイン
 - **仕様**: 1つのユーザーアカウントで**複数端末からの同時ログインが可能**。
 - **排他制御**: なし（PCでログインしてもスマホ側はログアウトされない）。各端末のセッションは独立して管理される。
 - **ログアウト**: クライアント側での `signOut()` は、**操作した端末のみ**ログアウトされる。全端末一斉ログアウト機能は実装しない。
 
 ---
 
-## 4. Firebase Console 設定
+## 5. Firebase Console 設定
 
 管理画面: https://console.firebase.google.com/u/0/project/football-delay-watching-a8830/authentication/providers
 
-### 4.1 必須設定 (Authentication)
+### 5.1 必須設定 (Authentication)
 
 1.  **Sign-in method (プロバイダ設定)**
     -   **Email/Password**: `Enabled` (有効)
@@ -148,7 +147,23 @@ flowchart TD
         -   通常は「同じメールアドレスのアカウントをリンクする」がデフォルトで有効。
         -   GoogleアカウントとEmail/PWアカウントで同じメアドが使われた場合、1つのUIDに統合される設定が望ましい。
 
-### 4.2 Hosting 設定
+### 5.2 ユーザー追加手順
+
+1.  `public/allowed_emails.json` に許可するメールアドレスを追加
+2.  `firebase deploy --only hosting` でデプロイ
+3.  Email/Password認証を使う場合は、Firebase Console > Authentication > Users で事前にユーザーを作成する必要がある
+
+### 5.3 Hosting 設定
 - **Hosting URL**: `https://football-delay-watching-a8830.web.app`
 - **デプロイ**: CLI (`firebase deploy`) 経由で静的ファイル（`public/`）をアップロード。
+
+---
+
+## 6. 既知の課題
+
+| 課題 | 対応状況 | Issue |
+|------|----------|-------|
+| Email/Password認証が機能しない | 未対応 | [#183](https://github.com/igrekplus/football-delay-watching/issues/183) |
+| Firebase SDK v8 → v9 移行 | 未対応 | [#184](https://github.com/igrekplus/football-delay-watching/issues/184) |
+| `allowed_emails.json` の公開露出 | 許容（ドキュメント化済み） | - |
 
