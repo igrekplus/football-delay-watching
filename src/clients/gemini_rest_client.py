@@ -4,12 +4,10 @@ Gemini REST Client with Grounding Support
 
 import json
 import logging
-import time
 from typing import Any
 
-import requests
-
 from config import config
+from src.clients.http_client import HttpClient, get_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -25,70 +23,37 @@ class GeminiRestClient:
     MAX_RETRIES = 2
     TIMEOUT_SECONDS = 60
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: str = None, http_client: HttpClient | None = None):
         self.api_key = api_key or config.GOOGLE_API_KEY
+        self.http_client = http_client or get_http_client()
         if not self.api_key:
             logger.warning("GOOGLE_API_KEY is not set. GeminiRestClient will fail.")
 
     def _make_request(self, payload: dict[str, Any], log_prefix: str = "") -> str:
         """
-        Send a request to Gemini API with retry logic.
-
-        Args:
-            payload: Request payload (contents, tools, etc.)
-            log_prefix: Prefix for log messages (e.g., "[GROUNDING]")
-
-        Returns:
-            Generated text content
-
-        Raises:
-            Exception: If all retries fail
+        Send a request to Gemini API.
+        Retry and Timeout are handled by underlying HttpClient/Tenacity.
         """
         url = f"{self.BASE_URL}/{self.MODEL_NAME}:generateContent"
-
         headers = {"Content-Type": "application/json", "x-goog-api-key": self.api_key}
 
-        last_error = None
+        try:
+            response = self.http_client.post(
+                url, headers=headers, json=payload, timeout=self.TIMEOUT_SECONDS
+            )
 
-        for attempt in range(self.MAX_RETRIES + 1):
-            try:
-                if attempt > 0:
-                    logger.info(
-                        f"{log_prefix} Retrying Gemini API request (Attempt {attempt + 1}/{self.MAX_RETRIES + 1})..."
-                    )
-                    time.sleep(2 * attempt)  # Exponential backoff
-
-                response = requests.post(
-                    url, headers=headers, json=payload, timeout=self.TIMEOUT_SECONDS
+            if response.status_code == 200:
+                return self._parse_response(response.json(), log_prefix)
+            else:
+                error_msg = (
+                    f"Gemini API Error {response.status_code}: {response.json()}"
                 )
+                logger.warning(f"{log_prefix} {error_msg}")
+                raise Exception(error_msg)
 
-                if response.status_code == 200:
-                    return self._parse_response(response.json(), log_prefix)
-                else:
-                    error_msg = (
-                        f"Gemini API Error {response.status_code}: {response.text}"
-                    )
-                    logger.warning(f"{log_prefix} {error_msg}")
-                    last_error = Exception(error_msg)
-
-                    # 400 Bad Request is likely permanent, do not retry
-                    if response.status_code == 400:
-                        raise last_error
-
-            except requests.exceptions.RequestException as e:
-                logger.error(
-                    f"{log_prefix} Gemini Request failed (Attempt {attempt + 1}): {e}"
-                )
-                last_error = e
-            except Exception as e:
-                logger.error(
-                    f"{log_prefix} Gemini Request failed (Attempt {attempt + 1}): {e}"
-                )
-                last_error = e
-
-        # If we reach here, all retries failed
-        logger.error(f"{log_prefix} All retries failed for Gemini request.")
-        raise last_error
+        except Exception as e:
+            logger.error(f"{log_prefix} Gemini Request failed: {e}")
+            raise
 
     def generate_content(self, prompt: str) -> str:
         """

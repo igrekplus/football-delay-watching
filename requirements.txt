@@ -13,3 +13,4 @@ google-cloud-storage
 markdown
 jinja2
 markupsafe
+tenacity

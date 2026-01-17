@@ -67,7 +67,7 @@ class CachingHttpClient:
 
         # TTL=0のエンドポイントはキャッシュしない
         if self.ttl_config.get(endpoint) == 0:
-            response = self.http_client.get(url, headers, params)
+            response = self.http_client.get(url, headers, params, **kwargs)
             duration = time.time() - start_time
             logger.info(
                 f"[API] GET {url} (Duration: {duration:.2f}s) - Cache: DISABLED (no-cache endpoint)"
@@ -76,7 +76,7 @@ class CachingHttpClient:
 
         # キャッシュ無効時は直接リクエスト
         if not self.use_cache:
-            response = self.http_client.get(url, headers, params)
+            response = self.http_client.get(url, headers, params, **kwargs)
             duration = time.time() - start_time
             logger.info(
                 f"[API] GET {url} (Duration: {duration:.2f}s) - Cache: DISABLED"
@@ -112,7 +112,7 @@ class CachingHttpClient:
 
         # キャッシュミス → APIリクエスト
         try:
-            response = self.http_client.get(url, headers, params)
+            response = self.http_client.get(url, headers, params, **kwargs)
             duration = time.time() - start_time
             logger.info(f"[API] GET {url} (Duration: {duration:.2f}s) - Cache: MISS")
 

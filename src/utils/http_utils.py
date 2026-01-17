@@ -13,7 +13,7 @@ Note:
 import logging
 from typing import Any
 
-import requests
+from src.clients.http_client import get_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -26,35 +26,21 @@ def safe_get(
     headers: dict[str, str] = None,
     params: dict[str, Any] = None,
     timeout: int = DEFAULT_TIMEOUT,
-) -> requests.Response | None:
+) -> Any | None:
     """
-    安全なGETリクエスト（タイムアウト・エラー処理付き）
-
-    Args:
-        url: リクエストURL
-        headers: リクエストヘッダー
-        params: クエリパラメータ
-        timeout: タイムアウト秒数
-
-    Returns:
-        requests.Response または None（エラー時）
+    安全なGETリクエスト（タイムアウト・リトライ処理付き）
     """
     try:
-        response = requests.get(
+        http_client = get_http_client()
+        response = http_client.get(
             url, headers=headers or {}, params=params or {}, timeout=timeout
         )
-        response.raise_for_status()
-        return response
-    except requests.exceptions.Timeout:
-        logger.warning(f"Request timeout: {url}")
-        return None
-    except requests.exceptions.ConnectionError:
-        logger.warning(f"Connection error: {url}")
-        return None
-    except requests.exceptions.HTTPError as e:
-        logger.warning(f"HTTP error: {url} - {e}")
-        return None
-    except requests.exceptions.RequestException as e:
+        if response.ok:
+            return response
+        else:
+            logger.warning(f"HTTP error: {url} - {response.status_code}")
+            return None
+    except Exception as e:
         logger.warning(f"Request failed: {url} - {e}")
         return None
 

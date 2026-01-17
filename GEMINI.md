@@ -170,11 +170,14 @@ python -m unittest tests/test_datetime_util.py
 | **Skills** | 知識・判断基準 | **How to think/know** (専門知識・判断) | `issue_resolution`, `reviewer_mode` |
 
 > [!TIP]
-> **迷った時の基準**
+> **どのコンポーネントに何を設定するか迷った時の基準**
 > 「特定のコマンドを順番に叩く作業」なら **Workflow**、「特定の観点や専門知識で判断・調査する能力」なら **Skill** として定義する。
 
 ### タスク範囲の厳守
 ユーザーから依頼された特定のIssueやタスクのみに集中すること。明示的な指示がない限り、別のIssueの計画や実装を開始してはならない。
+
+### 設計書と実装の同期
+設計書も修正しながら実装を進める。
 
 ### プロンプト管理
 システムから実行されるLLMプロンプト（GCPのGeminiを呼ぶ際のプロンプト）は `settings/prompts/` 以下のMarkdownファイルとして外部化する。`settings/gemini_prompts.py` でメタデータを管理し、`build_prompt` 関数を通じて呼び出す。

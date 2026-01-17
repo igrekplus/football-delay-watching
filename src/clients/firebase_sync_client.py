@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-import requests
+from src.clients.http_client import HttpClient, get_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +18,15 @@ FIREBASE_BASE_URL = "https://football-delay-watching-a8830.web.app"
 class FirebaseSyncClient:
     """Firebase Hostingとの通信を担当するクライアント"""
 
-    def __init__(self, base_url: str = FIREBASE_BASE_URL, timeout: int = 10):
+    def __init__(
+        self,
+        base_url: str = FIREBASE_BASE_URL,
+        timeout: int = 10,
+        http_client: HttpClient | None = None,
+    ):
         self.base_url = base_url
         self.timeout = timeout
+        self.http_client = http_client or get_http_client()
 
     def fetch_manifest(self) -> dict | None:
         """
@@ -31,7 +37,7 @@ class FirebaseSyncClient:
         """
         url = f"{self.base_url}/reports/manifest.json?v={datetime.now().timestamp()}"
         try:
-            response = requests.get(url, timeout=self.timeout)
+            response = self.http_client.get(url, timeout=self.timeout)
             if response.status_code == 200:
                 return response.json()
             else:
@@ -56,7 +62,7 @@ class FirebaseSyncClient:
         """
         url = f"{self.base_url}/{remote_path}"
         try:
-            response = requests.get(url, timeout=30)
+            response = self.http_client.get(url, timeout=30)
             if response.status_code == 200:
                 local_path.parent.mkdir(parents=True, exist_ok=True)
 

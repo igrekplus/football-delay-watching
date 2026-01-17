@@ -372,7 +372,7 @@ class GenerateGuideWorkflow:
                 # Basic check
                 url = "https://v3.football.api-sports.io/status"
                 headers = {"x-apisports-key": config.API_FOOTBALL_KEY}
-                response = requests.get(url, headers=headers)
+                response = requests.get(url, headers=headers, timeout=10)
                 if response.status_code == 200:
                     data = response.json()
                     requests_info = data.get("response", {}).get("requests", {})

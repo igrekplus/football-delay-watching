@@ -12,6 +12,10 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# シングルトンとして保持するGCSクライアントとバケット
+_shared_gcs_client = None
+_shared_gcs_buckets = {}
+
 
 class CacheStore(ABC):
     """キャッシュストアの抽象基底クラス"""
@@ -129,17 +133,29 @@ class GcsCacheStore(CacheStore):
         self._bucket = None
 
     def _get_bucket(self):
-        """GCSバケットを遅延初期化して返す"""
-        if self._bucket is None:
-            try:
-                from google.cloud import storage
+        """GCSバケットを遅延初期化して返す（プロセス内で共有）"""
+        global _shared_gcs_client, _shared_gcs_buckets
 
-                self._client = storage.Client()
-                self._bucket = self._client.bucket(self.bucket_name)
-                logger.info(f"GCS client initialized for bucket: {self.bucket_name}")
-            except Exception as e:
-                logger.error(f"Failed to initialize GCS client: {e}")
-                raise
+        if self.bucket_name in _shared_gcs_buckets:
+            self._bucket = _shared_gcs_buckets[self.bucket_name]
+            return self._bucket
+
+        try:
+            from google.cloud import storage
+
+            if _shared_gcs_client is None:
+                _shared_gcs_client = storage.Client()
+                logger.info("GCS client initialized (Singleton)")
+
+            bucket = _shared_gcs_client.bucket(self.bucket_name)
+            _shared_gcs_buckets[self.bucket_name] = bucket
+            self._bucket = bucket
+            logger.info(f"GCS bucket initialized: {self.bucket_name}")
+
+        except Exception as e:
+            logger.error(f"Failed to initialize GCS client: {e}")
+            raise
+
         return self._bucket
 
     def read(self, path: str) -> dict | None:

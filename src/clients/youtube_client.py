@@ -8,14 +8,12 @@ ServiceはこのClientを通じてYouTube検索機能を使用する。
 import hashlib
 import logging
 import os
-from collections.abc import Callable
 from datetime import datetime, timedelta
-
-import requests
 
 from config import config
 from settings.cache_config import ENDPOINT_TTL_DAYS, USE_YOUTUBE_CACHE
 from src.clients.cache_store import CacheStore, create_cache_store
+from src.clients.http_client import HttpClient, get_http_client
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
@@ -29,19 +27,19 @@ class YouTubeSearchClient:
     def __init__(
         self,
         api_key: str = None,
-        http_get: Callable | None = None,
+        http_client: HttpClient | None = None,
         cache_enabled: bool | None = None,
         cache_store: CacheStore = None,
     ):
         """
         Args:
             api_key: YouTube API Key（省略時は環境変数 or config）
-            http_get: HTTPリクエスト関数（テスト用DI）
+            http_client: HTTPクライアント（DI用）
             cache_enabled: キャッシュ有効化フラグ
             cache_store: キャッシュストア（省略時は自動生成）
         """
         self.api_key = api_key or os.getenv("YOUTUBE_API_KEY") or config.GOOGLE_API_KEY
-        self._http_get = http_get or requests.get
+        self.http_client = http_client or get_http_client()
         self.use_youtube_cache = (
             USE_YOUTUBE_CACHE if cache_enabled is None else cache_enabled
         )
@@ -190,7 +188,7 @@ class YouTubeSearchClient:
             if channel_id:
                 params["channelId"] = channel_id
 
-            response = self._http_get(url, params=params)
+            response = self.http_client.get(url, params=params)
 
             if response.status_code == 200:
                 data = response.json()
