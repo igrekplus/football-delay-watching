@@ -41,8 +41,18 @@ source .venv/bin/activate
 # > **TARGET_DATE は必ず「今日より2日以上前」の日付を指定すること！**
 # > 当日や前日を指定するとスタメン情報がまだAPIに存在せず、レポートが不完全になります。
 # > 例: 今日が 1/10 なら、1/8 以前を指定する。
+# 通常実行
 TARGET_DATE="2026-01-08" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+
+# バックグラウンド実行（推奨：タイムアウト回避のため）
+TARGET_DATE="2026-01-08" DEBUG_MODE=True USE_MOCK_DATA=False nohup python main.py > debug_run.log 2>&1 &
 ```
+
+> [!TIP]
+> **バックグラウンド実行の推奨**
+> 実データ取得(`USE_MOCK_DATA=False`)はAPI通信やLLM処理により実行時間が長くなるため、**SSHセッションのタイムアウトやネットワーク切断によりプロセスが強制終了する（SIGHUP）**恐れがあります。
+> `nohup` を使用してバックグラウンドで実行し、ログファイル (`debug_run.log`) で進捗を確認することを強く推奨します。
+
 
 **[確認項目]**
 ログの開始直後に出る以下の行を**必ず**目視確認すること：

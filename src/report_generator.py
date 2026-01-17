@@ -244,11 +244,19 @@ class ReportGenerator:
         # フォーメーション図用の短縮名辞書を取得
         short_names_dict = translator.get_short_names(player_names)
 
+        # 【重要】選手名カタカナ変換マップを取得し、player_photosを拡張する
+        # これにより、LLMがカタカナで出力した選手名でも写真を表示できるようになる
+        translations = translator._get_translations(player_names)
+        player_photos_extended = dict(match.facts.player_photos)
+        for eng_name, jp_name in translations.items():
+            if eng_name in match.facts.player_photos and jp_name:
+                player_photos_extended[jp_name] = match.facts.player_photos[eng_name]
+
         print(
             f"DEBUG: Home Logo: {match.core.home_logo}, Away Logo: {match.core.away_logo}"
         )
 
-        # 選手カードの生成（Jinja2版 format_player_cards は既に内部で render_template している）
+        # 選手カードの生成
         home_cards_html = self.player_formatter.format_player_cards(
             match.facts.home_lineup,
             match.facts.home_formation,
@@ -356,7 +364,7 @@ class ReportGenerator:
                 }
                 same_country_html = self.matchup_formatter.format_matchup_section(
                     matchups=matchups,
-                    player_photos=match.facts.player_photos,
+                    player_photos=player_photos_extended,
                     team_logos=team_logos,
                     section_title="■ 同国対決",
                 )
@@ -367,7 +375,9 @@ class ReportGenerator:
 
         # ニュース・戦術プレビュー・古巣対決
         news_html = md_lib.markdown(match.preview.news_summary, extensions=["nl2br"])
-        tactical_html = self._format_tactical_preview_with_visuals(match, md_lib)
+        tactical_html = self._format_tactical_preview_with_visuals(
+            match, md_lib, player_photos_extended
+        )
 
         # 古巣対決（構造化してパース）
         former_club_html = ""
@@ -384,7 +394,7 @@ class ReportGenerator:
                 }
                 former_club_html = self.matchup_formatter.format_former_club_section(
                     entries=entries,
-                    player_photos=match.facts.player_photos,
+                    player_photos=player_photos_extended,
                     team_logos=team_logos,
                     section_title="■ 古巣対決",
                 )
@@ -476,11 +486,16 @@ class ReportGenerator:
 
         return context, image_paths
 
-    def _format_tactical_preview_with_visuals(self, match, md_lib) -> str:
+    def _format_tactical_preview_with_visuals(
+        self, match, md_lib, player_photos: dict = None
+    ) -> str:
         """戦術プレビュー内の各セクションを個別にビジュアル化して結合"""
         import re
 
         from src.parsers.tactical_style_parser import parse_tactical_style_text
+
+        if player_photos is None:
+            player_photos = match.facts.player_photos
 
         text = match.preview.tactical_preview
         if not text:
@@ -513,7 +528,7 @@ class ReportGenerator:
                 if key_players:
                     final_html += self.matchup_formatter.format_key_player_section(
                         key_players=key_players,
-                        player_photos=match.facts.player_photos,
+                        player_photos=player_photos,
                         team_logos=team_logos,
                         section_title=title,
                     )
@@ -542,7 +557,7 @@ class ReportGenerator:
                 if matchups:
                     final_html += self.matchup_formatter.format_matchup_section(
                         matchups=matchups,
-                        player_photos=match.facts.player_photos,
+                        player_photos=player_photos,
                         team_logos=team_logos,
                         section_title=title,
                     )
