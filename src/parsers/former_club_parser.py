@@ -13,7 +13,7 @@ class FormerClubEntry:
     team: str # 現所属チーム名
     description: str # 詳細・エピソード
 
-def parse_former_club_text(llm_output: str) -> List[FormerClubEntry]:
+def parse_former_club_text(llm_output: str, home_team: str = None, away_team: str = None) -> List[FormerClubEntry]:
     """
     LLM出力から古巣対決情報を抽出
     フォーマット:
@@ -32,6 +32,33 @@ def parse_former_club_text(llm_output: str) -> List[FormerClubEntry]:
     # パターンにマッチする箇所と、その間のテキストを抽出
     matches = list(re.finditer(player_team_pattern, llm_output))
     
+    # フィルタリング用のキーワード（チーム名の略称など）
+    team_keywords = []
+    if home_team:
+        team_keywords.append(home_team.lower())
+        team_keywords.extend([part.lower() for part in home_team.split() if len(part) > 3])
+        # よくあるカタカナ名の対応（アドホックだが効果的）
+        if "manchester" in home_team.lower(): team_keywords.append("マンチェスター")
+        if "city" in home_team.lower(): team_keywords.append("シティ")
+        if "united" in home_team.lower(): team_keywords.append("ユナイテッド")
+        if "exeter" in home_team.lower(): team_keywords.append("エクセター")
+
+    if away_team:
+        team_keywords.append(away_team.lower())
+        team_keywords.extend([part.lower() for part in away_team.split() if len(part) > 3])
+        if "manchester" in away_team.lower(): team_keywords.append("マンチェスター")
+        if "city" in away_team.lower(): team_keywords.append("シティ")
+        if "united" in away_team.lower(): team_keywords.append("ユナイテッド")
+        if "exeter" in away_team.lower(): team_keywords.append("エクセター")
+
+    def is_relevant(desc: str) -> bool:
+        if not team_keywords:
+            return True # キーワード指定がなければフィルタしない
+        
+        desc_lower = desc.lower()
+        # 英語名またはカタカナキーワードのいずれかが含まれていればOK
+        return any(kw.lower() in desc_lower for kw in team_keywords)
+
     for i, match in enumerate(matches):
         name = match.group(1).strip()
         team = match.group(2).strip()
@@ -45,16 +72,27 @@ def parse_former_club_text(llm_output: str) -> List[FormerClubEntry]:
             desc_end = len(llm_output)
             
         description = llm_output[desc_start:desc_end].strip()
+        
+        # 謎の [] 囲みを除去
+        if description.startswith('[') and description.endswith(']'):
+            description = description[1:-1].strip()
+            
         # 不要な記号や空行を除去
         description = re.sub(r'^[。．.\s\(\(（]+', '', description).strip()
         # Markdownの太字装飾を削除（description内）
         description = description.replace('**', '')
         
-        entries.append(FormerClubEntry(
+        entry = FormerClubEntry(
             name=escape(name),
             team=escape(team),
             description=escape(description)
-        ))
+        )
+        
+        # 関連性チェック (対戦チームへの言及があるか)
+        if is_relevant(description):
+            entries.append(entry)
+        else:
+            logger.warning(f"Skipping irrelevant former club entry: {name} (refers to {description[:30]}...)")
     
-    logger.info(f"Parsed {len(entries)} former club entries from LLM output")
+    logger.info(f"Parsed {len(entries)} relevant former club entries from LLM output")
     return entries

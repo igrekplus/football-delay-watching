@@ -298,7 +298,11 @@ class ReportGenerator:
         # 古巣対決（構造化してパース）
         former_club_html = ""
         if match.facts.former_club_trivia:
-            entries = parse_former_club_text(match.facts.former_club_trivia)
+            entries = parse_former_club_text(
+                match.facts.former_club_trivia,
+                home_team=match.core.home_team,
+                away_team=match.core.away_team
+            )
             if entries:
                 team_logos = {
                     match.core.home_team: match.core.home_logo,
@@ -512,7 +516,11 @@ class ReportGenerator:
         
         # 古巣対決セクションから抽出
         if match.facts.former_club_trivia:
-            entries = parse_former_club_text(match.facts.former_club_trivia)
+            entries = parse_former_club_text(
+                match.facts.former_club_trivia,
+                home_team=match.core.home_team,
+                away_team=match.core.away_team
+            )
             for e in entries:
                 names.append(e.name)
         
