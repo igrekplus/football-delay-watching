@@ -24,7 +24,7 @@ GitHub Issueを解決するための包括的なスキルです。
 ### 1. 準備フェーズ (PREPARATION)
 - **Issueの理解**: `gh issue view <NUMBER>` で背景と要件を深く理解する。
 - **ラベリング**: `gh issue edit <NUMBER> --add-label "in-progress"` で作業中であることを明示する。
-- **ブランチ作成**: `feature/issue-<NUMBER>-<SHORT_TITLE>` という命名規則に従う。
+- **ユーザへの質問**: 賢いClaude4opusは実装まで見据えてポイントとなる点を質問するはずである。最低３つ質問する。必要に応じて大量に質問して良い。
 
 ### 2. 計画・設計フェーズ (PLANNING & DESIGN)
 - **設計ドキュメントの更新**: `docs/02_architecture/` 等を確認し、変更が必要なドキュメントを「事前に」更新する。
@@ -33,6 +33,7 @@ GitHub Issueを解決するための包括的なスキルです。
 - **ユーザーレビュー**: 計画の妥当性について `notify_user` で承認を得る。
 
 ### 3. 実装・テストフェーズ (EXECUTION & TESTING)
+- **ブランチ作成**: `feature/issue-<NUMBER>-<SHORT_TITLE>` という命名規則に従う。
 - **コード実装**: 承認された計画に基づき実装を行う。フェーズごとに実装を行い、勝手に次のフェーズの実装まで進めないこと。フェーズ内のtaskは複数実行して良い。
 - **検証環境の構築**:
     - 実データ検証が必要かUIのみで良いかに応じて、`/debug-run` の設定（`USE_MOCK_DATA`）を選択する。
