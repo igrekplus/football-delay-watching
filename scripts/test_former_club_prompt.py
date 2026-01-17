@@ -20,47 +20,55 @@ HOME_TEAM = "Manchester City"
 AWAY_TEAM = "Exeter City"
 MATCH_DATE = "2026-01-10"
 
-# Man City vs Exeter City のスタメン・ベンチ（実際のデータ）
+# Man City vs Exeter City のスタメン・ベンチ（Webレポートに基づく実際のデータ）
 HOME_PLAYERS = [
-    "Stefan Ortega",
+    # Starting XI
     "James Trafford",
-    "Kyle Walker",
-    "Ruben Dias",
-    "Nathan Ake",
-    "Josko Gvardiol",
     "Rico Lewis",
-    "John Stones",
+    "Abdukodir Khusanov",
     "Max Alleyne",
-    "Manuel Akanji",
+    "Nathan Ake",
     "Rodri",
-    "Jack Grealish",
-    "Phil Foden",
-    "Kevin De Bruyne",
-    "James McAtee",
-    "Divin Mubama",
+    "Ryan McAidoo",
+    "Tijjani Reijnders",
+    "Rayan Cherki",
+    "Antoine Semenyo",
     "Erling Haaland",
-    "Oscar Bobb",
-    "Savinho",
+    # Substitutes
+    "Gianluigi Donnarumma",
+    "Matheus Nunes",
+    "Nico O'Reilly",
+    "Stephen Mfuni",
+    "Bernardo Silva",
+    "Phil Foden",
+    "Jeremy Doku",
+    "Nico Gonzalez",
+    "Divine Mukasa",
 ]
 
 AWAY_PLAYERS = [
+    # Starting XI
     "Joe Whitworth",
-    "Joe Young",
-    "Ilmari Niskanen",
-    "Pierce Sweeney",
     "Ed Turns",
-    "Johnly Yfeko",
-    "Jack Sherring",
-    "Josh Key",
-    "Reece Cole",
-    "Jack Aitchison",
-    "Caleb Sherring",
-    "Cameron Dawson",
-    "Tristan Crama",
+    "Jack Fitzwater",
+    "Luca Woodhouse",
+    "Ilmari Niskanen",
     "Jake Doyle-Hayes",
-    "Migue Sherring",
-    "Preslav Sherring",
-    "Dara Sherring",
+    "Ethan Brierley",
+    "Liam Oakes",
+    "Reece Cole",
+    "Jayden Wareham",
+    "Jack Aitchison",
+    # Substitutes
+    "Jack Bycroft",
+    "Edward Francis",
+    "George Birch",
+    "Tom Dean",
+    "Jack McMillan",
+    "Akeel Higgins",
+    "Carlos Mendes Gomes",
+    "Josh Magennis",
+    "Sonny Cox",
 ]
 
 
