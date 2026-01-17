@@ -140,10 +140,11 @@ python -m unittest tests/test_datetime_util.py
 ユーザーから依頼された特定のIssueやタスクのみに集中すること。明示的な指示がない限り、別のIssueの計画や実装を開始してはならない。
 
 ### プロンプト管理
-すべてのLLMプロンプトは `settings/prompts/` 以下のMarkdownファイルとして外部化する。`settings/gemini_prompts.py` でメタデータを管理し、`build_prompt` 関数を通じて呼び出す。
+システムから実行されるLLMプロンプト(GCPのGeminiを呼ぶ際のプロンプトは `settings/prompts/` 以下のMarkdownファイルとして外部化する。`settings/gemini_prompts.py` でメタデータを管理し、`build_prompt` 関数を通じて呼び出す。
 
 ### 検証の徹底
-レポート生成ロジックの変更時は、必ず `/report-check-html` ワークフローで検証を行う。期待するキーワードが最終成果物（HTML）に含まれているか機械的に保証すること。
+原則workflowからセッションはスタートするが、そうでない場合もある。
+その際に修正した際には必ず /debug-runを実行する必要がある。
 
 ---
 
