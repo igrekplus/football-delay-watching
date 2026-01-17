@@ -25,7 +25,9 @@
 4. [04_operations/report_status.md](./04_operations/report_status.md) - レポートステータス管理
 
 ### 「AIと一緒に開発したい」 → AI協業
-1. [GEMINI.md](../GEMINI.md) - AI向けガイド・開発コマンド・Issue対応フロー
+1. [GEMINI.md](../GEMINI.md) - AI向けガイド（開発規約・AI姿勢）
+2. [.agent/workflows/](../.agent/workflows/) - 作業別の定型手順書（スラッシュコマンド）
+3. [.agent/skills/](../.agent/skills/) - 特定ドメインの専門知識・判断ロジック
 
 ---
 
@@ -38,6 +40,7 @@
 | `03_components/` | WHAT EACH: 各コンポーネント設計 | `api_football.md`, `cache.md`, `youtube_search.md` |
 | `04_operations/` | RUN: どう動かすか | `deployment.md`, `api_quota.md`, `execution_mode.md` |
 | `GEMINI.md` | AI: 開発ガイド | (ルート配置) |
+| `.agent/` | AI: 設定・自動化 | `workflows/`, `skills/` |
 
 ---
 
