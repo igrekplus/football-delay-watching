@@ -1,6 +1,9 @@
 """MatchupParserのユニットテスト (unittest版)"""
+
 import unittest
+
 from src.parsers.matchup_parser import parse_matchup_text
+
 
 class TestMatchupParser(unittest.TestCase):
     def test_parse_simple_matchup(self):
@@ -115,5 +118,6 @@ class TestMatchupParser(unittest.TestCase):
         self.assertEqual(result[0].players[0][1], "FC Tokyo U-23")
         self.assertEqual(result[0].players[1][1], "1. FC Köln")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

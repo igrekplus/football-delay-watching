@@ -43,7 +43,6 @@ NATIONALITY_FLAGS = {
     "Kosovo": "🇽🇰",
     "Iceland": "🇮🇸",
     "Republic of Ireland": "🇮🇪",
-    
     # 南米
     "Brazil": "🇧🇷",
     "Argentina": "🇦🇷",
@@ -55,7 +54,6 @@ NATIONALITY_FLAGS = {
     "Peru": "🇵🇪",
     "Venezuela": "🇻🇪",
     "Bolivia": "🇧🇴",
-    
     # アフリカ
     "Nigeria": "🇳🇬",
     "Senegal": "🇸🇳",
@@ -75,7 +73,6 @@ NATIONALITY_FLAGS = {
     "Guinea": "🇬🇳",
     "Gabon": "🇬🇦",
     "Burkina Faso": "🇧🇫",
-    
     # アジア
     "Japan": "🇯🇵",
     "Korea Republic": "🇰🇷",
@@ -87,7 +84,6 @@ NATIONALITY_FLAGS = {
     "Qatar": "🇶🇦",
     "UAE": "🇦🇪",
     "United Arab Emirates": "🇦🇪",
-    
     # 北中米カリブ海
     "USA": "🇺🇸",
     "United States": "🇺🇸",
@@ -97,7 +93,6 @@ NATIONALITY_FLAGS = {
     "Costa Rica": "🇨🇷",
     "Panama": "🇵🇦",
     "Honduras": "🇭🇳",
-    
     # その他
     "New Zealand": "🇳🇿",
 }

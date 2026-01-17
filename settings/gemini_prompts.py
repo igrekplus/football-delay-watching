@@ -7,9 +7,8 @@ LLMClient用のプロンプトテンプレートを集約。
 Issue #120: LLMプロンプトの外部設定化（疎結合化）
 """
 
-import os
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Any
 
 # プロンプトファイルのディレクトリ
 PROMPTS_DIR = Path(__file__).parent / "prompts"
@@ -22,47 +21,40 @@ PROMPTS_DIR = Path(__file__).parent / "prompts"
 # テンプレート本文は prompts/ ディレクトリのMarkdownファイルから読み込む
 # =============================================================================
 
-PROMPT_METADATA: Dict[str, Dict[str, Any]] = {
+PROMPT_METADATA: dict[str, dict[str, Any]] = {
     "news_summary": {
         "label": "ニュースサマリー",
         "char_limit": (600, 1000),
         "use_grounding": True,
     },
-
     "tactical_preview": {
         "label": "戦術プレビュー",
         "use_grounding": True,
     },
-
     "check_spoiler": {
         "label": "ネタバレ判定",
         "text_limit": 1500,
         "use_grounding": False,
     },
-
     "interview": {
         "label": "インタビュー要約",
         "char_limit": (1500, 2000),
         "use_grounding": True,
     },
-
     "same_country_trivia": {
         "label": "同国対決トリビア",
         "char_limit_per_country": (50, 150),
         "use_grounding": False,
     },
-
     "former_club_trivia": {
         "label": "古巣対決トリビア",
         "char_limit": (100, 300),  # 最大3件×80字+余白
         "use_grounding": True,  # リアルタイム検索で確定
     },
-
     "name_translation": {
         "label": "選手名翻訳",
         "use_grounding": False,
     },
-
     "transfer_news": {
         "label": "移籍情報",
         "use_grounding": True,
@@ -74,29 +66,29 @@ PROMPT_METADATA: Dict[str, Dict[str, Any]] = {
 # テンプレートキャッシュ
 # =============================================================================
 
-_template_cache: Dict[str, str] = {}
+_template_cache: dict[str, str] = {}
 
 
 def _load_template(prompt_type: str) -> str:
     """
     Markdownファイルからテンプレートを読み込む（キャッシュ付き）
-    
+
     Args:
         prompt_type: プロンプト種別
-        
+
     Returns:
         テンプレート文字列
-        
+
     Raises:
         FileNotFoundError: テンプレートファイルが見つからない場合
     """
     if prompt_type in _template_cache:
         return _template_cache[prompt_type]
-    
+
     file_path = PROMPTS_DIR / f"{prompt_type}.md"
     if not file_path.exists():
         raise FileNotFoundError(f"Prompt template not found: {file_path}")
-    
+
     template = file_path.read_text(encoding="utf-8")
     _template_cache[prompt_type] = template
     return template
@@ -111,10 +103,8 @@ def clear_template_cache():
 # ヘルパー関数
 # =============================================================================
 
-def build_prompt(
-    prompt_type: str,
-    **kwargs
-) -> str:
+
+def build_prompt(prompt_type: str, **kwargs) -> str:
     """
     プロンプトスペックからプロンプト文字列を生成
 
@@ -124,7 +114,7 @@ def build_prompt(
 
     Returns:
         プロンプト文字列
-    
+
     Raises:
         ValueError: 不明なプロンプト種別
         FileNotFoundError: テンプレートファイルが見つからない場合
@@ -136,7 +126,7 @@ def build_prompt(
     return template.format(**kwargs)
 
 
-def get_prompt_config(prompt_type: str) -> Dict[str, Any]:
+def get_prompt_config(prompt_type: str) -> dict[str, Any]:
     """
     プロンプト種別の設定を取得
 
@@ -145,7 +135,7 @@ def get_prompt_config(prompt_type: str) -> Dict[str, Any]:
 
     Returns:
         設定辞書（char_limit, use_grounding等）
-    
+
     Raises:
         ValueError: 不明なプロンプト種別
     """
@@ -162,7 +152,7 @@ def get_prompt_config(prompt_type: str) -> Dict[str, Any]:
     }
 
 
-def get_char_limit(prompt_type: str) -> Optional[Tuple[int, int]]:
+def get_char_limit(prompt_type: str) -> tuple[int, int] | None:
     """
     プロンプト種別の文字数制限を取得
 
@@ -193,7 +183,7 @@ def uses_grounding(prompt_type: str) -> bool:
 def list_prompt_types() -> list:
     """
     利用可能なプロンプト種別の一覧を取得
-    
+
     Returns:
         プロンプト種別のリスト
     """

@@ -1,8 +1,8 @@
-
 import os
 import re
 import sys
 from pathlib import Path
+
 
 def check_links(start_path):
     # Markdownファイルの検索
@@ -16,49 +16,52 @@ def check_links(start_path):
                     md_files.append(Path(root) / file)
 
     broken_links = []
-    link_pattern = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
+    link_pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
     for md_file in md_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding="utf-8") as f:
                 content = f.read()
-            
+
             # リンクの抽出
             matches = link_pattern.findall(content)
             for text, link in matches:
                 # アンカーリンクのみの場合はスキップ
-                if link.startswith('#'):
+                if link.startswith("#"):
                     continue
-                
+
                 # 外部URLはスキップ
-                if link.startswith('http://') or link.startswith('https://'):
+                if link.startswith("http://") or link.startswith("https://"):
                     continue
-                
+
                 # mailtoはスキップ
-                if link.startswith('mailto:'):
+                if link.startswith("mailto:"):
                     continue
 
                 # アンカー部分を除去
-                link_path = link.split('#')[0]
+                link_path = link.split("#")[0]
                 if not link_path:
                     continue
 
                 # パス解決
                 # ファイルからの相対パスとして解決
                 target_path = (md_file.parent / link_path).resolve()
-                
+
                 if not target_path.exists():
-                    broken_links.append({
-                        'file': str(md_file),
-                        'text': text,
-                        'link': link,
-                        'resolved': str(target_path)
-                    })
+                    broken_links.append(
+                        {
+                            "file": str(md_file),
+                            "text": text,
+                            "link": link,
+                            "resolved": str(target_path),
+                        }
+                    )
 
         except Exception as e:
             print(f"Error reading {md_file}: {e}")
 
     return broken_links
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -67,7 +70,7 @@ if __name__ == "__main__":
 
     target_dir = sys.argv[1]
     print(f"Scanning {target_dir} for broken links...")
-    
+
     broken = check_links(target_dir)
 
     if broken:

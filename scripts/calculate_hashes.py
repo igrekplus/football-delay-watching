@@ -1,50 +1,55 @@
 import hashlib
 import json
 import re
-from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
 
 def normalize_url(url):
     parsed = urlparse(url)
     scheme = parsed.scheme.lower()
     netloc = parsed.netloc.lower()
-    if ':' in netloc:
-        host, port = netloc.split(':')
-        if (scheme == 'http' and port == '80') or (scheme == 'https' and port == '443'):
+    if ":" in netloc:
+        host, port = netloc.split(":")
+        if (scheme == "http" and port == "80") or (scheme == "https" and port == "443"):
             netloc = host
-    
+
     path = parsed.path
-    path = re.sub(r'//+', '/', path) # remove double slashes
+    path = re.sub(r"//+", "/", path)  # remove double slashes
     # simplify dot segments (simple approach)
-    parts = path.split('/')
+    parts = path.split("/")
     new_parts = []
     for part in parts:
-        if part == '.': continue
-        if part == '..': 
-            if new_parts: new_parts.pop()
+        if part == ".":
+            continue
+        if part == "..":
+            if new_parts:
+                new_parts.pop()
         else:
             new_parts.append(part)
-    path = '/'.join(new_parts)
-    if path != '/' and path.endswith('/'):
+    path = "/".join(new_parts)
+    if path != "/" and path.endswith("/"):
         path = path[:-1]
-    
+
     # Query normalization
     query = parsed.query
     if query:
         q_list = parse_qsl(query)
         filtered_q = []
         for k, v in q_list:
-            if k.startswith('utm_') or k in ['gclid', 'fbclid']:
+            if k.startswith("utm_") or k in ["gclid", "fbclid"]:
                 continue
             filtered_q.append((k, v))
         # Sort by key then value
         filtered_q.sort(key=lambda x: (x[0], x[1]))
         query = urlencode(filtered_q)
-    
-    return urlunparse((scheme, netloc, path, '', query, ''))
+
+    return urlunparse((scheme, netloc, path, "", query, ""))
+
 
 def get_url_id(url):
     norm = normalize_url(url)
-    return hashlib.sha1(norm.encode('utf-8')).hexdigest()
+    return hashlib.sha1(norm.encode("utf-8")).hexdigest()
+
 
 urls = [
     "https://ja.wikipedia.org/wiki/マンチェスター・シティFC",
@@ -57,7 +62,7 @@ urls = [
     "https://www.bbc.com/sport/football/45256691",
     "https://www.theguardian.com/football/2008/sep/01/manchestercity.premierleague",
     "https://www.mancity.com/features/maine-road-eras/",
-    "https://www.stadiumguide.com/maineroad/"
+    "https://www.stadiumguide.com/maineroad/",
 ]
 
 output = {}

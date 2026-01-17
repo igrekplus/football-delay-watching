@@ -1,37 +1,35 @@
-from typing import Dict, Optional, Any
 import logging
+from typing import Any
+
 from config import config
 from src.clients.caching_http_client import create_caching_client
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
+
 class ApiFootballClient:
     """API-Football Client with caching capabilities."""
-    
+
     def __init__(self):
         self.http_client = create_caching_client()
         self.base_url = "https://v3.football.api-sports.io"
-        self.headers = {
-            "x-apisports-key": config.API_FOOTBALL_KEY
-        }
+        self.headers = {"x-apisports-key": config.API_FOOTBALL_KEY}
         self.quota_info = {}
 
-    def get_fixtures(self, league_id: int, season: int, date_str: str) -> Dict[str, Any]:
+    def get_fixtures(
+        self, league_id: int, season: int, date_str: str
+    ) -> dict[str, Any]:
         """Fetch fixtures for a specific league, season, and date."""
         url = f"{self.base_url}/fixtures"
-        querystring = {
-            "date": date_str,
-            "league": league_id,
-            "season": str(season)
-        }
+        querystring = {"date": date_str, "league": league_id, "season": str(season)}
         return self._fetch(url, params=querystring, label="fixtures")
 
     def get_squad(self, team_id: int, team_name: str = "") -> list:
         """Fetch squad (player list) for a team."""
         url = f"{self.base_url}/players/squads"
         params = {"team": team_id}
-        
+
         response_json = self._fetch(url, params=params, label=f"squad for {team_name}")
         if response_json.get("response") and len(response_json["response"]) > 0:
             return response_json["response"][0].get("players", [])
@@ -39,7 +37,7 @@ class ApiFootballClient:
 
     # --- Methods for MatchProcessor / FactsService ---
 
-    def fetch_lineups(self, fixture_id: str) -> Dict[str, Any]:
+    def fetch_lineups(self, fixture_id: str) -> dict[str, Any]:
         """Fetch lineups for a fixture."""
         url = f"{self.base_url}/fixtures/lineups"
         params = {"fixture": fixture_id}
@@ -52,19 +50,21 @@ class ApiFootballClient:
         logger.info(f"Deleting lineup cache for fixture {fixture_id}")
         return self.http_client.delete_cache(url, params)
 
-    def fetch_injuries(self, fixture_id: str) -> Dict[str, Any]:
+    def fetch_injuries(self, fixture_id: str) -> dict[str, Any]:
         """Fetch injuries for a fixture."""
         url = f"{self.base_url}/injuries"
         params = {"fixture": fixture_id}
         return self._fetch(url, params=params, label=f"injuries {fixture_id}")
 
-    def fetch_fixtures(self, fixture_id: str) -> Dict[str, Any]:
+    def fetch_fixtures(self, fixture_id: str) -> dict[str, Any]:
         """Fetch single fixture details."""
         url = f"{self.base_url}/fixtures"
         params = {"id": fixture_id}
         return self._fetch(url, params=params, label=f"fixture {fixture_id}")
-    
-    def fetch_team_statistics(self, team_id: int, league_id: int, season: str = "2024") -> Dict[str, Any]:
+
+    def fetch_team_statistics(
+        self, team_id: int, league_id: int, season: str = "2024"
+    ) -> dict[str, Any]:
         """Fetch team statistics."""
         # Note: Season might need to be dynamic, currently FactsService doesn't pass it explicitly.
         # FactsService logic: `_get_team_form` calls `fetch_team_statistics(team_id, league_id)`
@@ -77,20 +77,20 @@ class ApiFootballClient:
         params = {"team": team_id, "league": league_id, "season": season}
         return self._fetch(url, params=params, label=f"stats team {team_id}")
 
-    def fetch_h2h(self, team1_id: int, team2_id: int) -> Dict[str, Any]:
+    def fetch_h2h(self, team1_id: int, team2_id: int) -> dict[str, Any]:
         """Fetch H2H."""
         url = f"{self.base_url}/fixtures/headtohead"
         h2h_param = f"{team1_id}-{team2_id}"
         params = {"h2h": h2h_param}
         return self._fetch(url, params=params, label=f"h2h {h2h_param}")
 
-    def fetch_team_recent_fixtures(self, team_id: int, last: int = 5) -> Dict[str, Any]:
+    def fetch_team_recent_fixtures(self, team_id: int, last: int = 5) -> dict[str, Any]:
         """Fetch a team's last N fixtures (Issue #132).
-        
+
         Args:
             team_id: Team ID
             last: Number of recent fixtures to fetch (default: 5)
-        
+
         Returns:
             API response containing recent fixtures
         """
@@ -98,15 +98,19 @@ class ApiFootballClient:
         params = {"team": team_id, "last": last}
         return self._fetch(url, params=params, label=f"recent fixtures team {team_id}")
 
-    def fetch_player_details(self, player_id: int, team_name: str, season: int = 2024) -> Dict[str, Any]:
+    def fetch_player_details(
+        self, player_id: int, team_name: str, season: int = 2024
+    ) -> dict[str, Any]:
         """Fetch player details."""
         url = f"{self.base_url}/players"
         params = {"id": player_id, "season": season}
         return self._fetch(url, params=params, label=f"player {player_id}")
 
-    def get_player(self, player_id: int, season: int, team_name: str = "") -> Dict[str, Any]:
+    def get_player(
+        self, player_id: int, season: int, team_name: str = ""
+    ) -> dict[str, Any]:
         """Fetch player data. Returns JSON dict (unified with other methods).
-        
+
         Note: Previously returned raw Response object, now returns parsed JSON
         to ensure quota statistics are properly tracked via _fetch/_update_quota.
         """
@@ -115,16 +119,18 @@ class ApiFootballClient:
         label = f"player {player_id}" + (f" ({team_name})" if team_name else "")
         return self._fetch(url, params=params, label=label)
 
-    def _fetch(self, url: str, params: Dict[str, Any], label: str) -> Dict[str, Any]:
+    def _fetch(self, url: str, params: dict[str, Any], label: str) -> dict[str, Any]:
         """Internal fetch helper."""
         try:
             response = self.http_client.get(url, headers=self.headers, params=params)
             self._update_quota(response)
-            
+
             if response.status_code == 200:
                 return response.json()
             else:
-                logger.error(f"API Error ({label}): {response.status_code} - {response.text}")
+                logger.error(
+                    f"API Error ({label}): {response.status_code} - {response.text}"
+                )
                 return {}
         except Exception as e:
             logger.error(f"Exception fetching {label}: {e}")
@@ -133,16 +139,19 @@ class ApiFootballClient:
     def _update_quota(self, response):
         """Update quota information from response headers."""
         # x-ratelimitヘッダーがある場合のみAPI呼び出しを記録（キャッシュヒット時は記録しない）
-        if hasattr(response, "headers") and "x-ratelimit-requests-remaining" in response.headers:
+        if (
+            hasattr(response, "headers")
+            and "x-ratelimit-requests-remaining" in response.headers
+        ):
             # API呼び出しを記録
             ApiStats.record_call("API-Football")
-            
+
             remaining = response.headers["x-ratelimit-requests-remaining"]
             limit = response.headers.get("x-ratelimit-requests-limit", "Unknown")
             info = f"Remaining: {remaining} / Limit: {limit} (requests/day)"
             config.QUOTA_INFO["API-Football"] = info
             self.quota_info = {"remaining": remaining, "limit": limit}
-            
+
             # ApiStatsにクォータ情報を記録
             try:
                 remaining_int = int(remaining)

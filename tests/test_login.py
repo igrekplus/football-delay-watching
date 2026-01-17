@@ -21,12 +21,15 @@
     pytest tests/test_login.py::TestLoginPage::test_login_success_stable -v
 """
 
-import pytest
-from playwright.sync_api import Page, expect
 import os
 
+import pytest
+from playwright.sync_api import Page, expect
+
 # テスト対象URL
-BASE_URL = os.environ.get("TEST_BASE_URL", "https://football-delay-watching-a8830.web.app")
+BASE_URL = os.environ.get(
+    "TEST_BASE_URL", "https://football-delay-watching-a8830.web.app"
+)
 
 # テスト用クレデンシャル（環境変数から取得、デフォルト値はダミー）
 TEST_EMAIL = os.environ.get("TEST_LOGIN_EMAIL", "sampleexample@gmail.com")
@@ -41,7 +44,7 @@ def clean_page(page: Page):
     """
     page.goto(BASE_URL)
     page.wait_for_load_state("networkidle")
-    
+
     # FirebaseのIndexedDBをクリア（セッションリセット）
     page.evaluate("""
         () => {
@@ -53,14 +56,14 @@ def clean_page(page: Page):
             });
         }
     """)
-    
+
     # ページをリロードしてセッションをリセット
     page.reload()
     page.wait_for_load_state("networkidle")
-    
+
     # ログインフォームが表示されるまで待機
     page.wait_for_selector("#login-section", state="visible", timeout=10000)
-    
+
     return page
 
 
@@ -71,7 +74,7 @@ class TestLoginPage:
         """ログインページの要素が表示されていることを確認"""
         page.goto(BASE_URL)
         page.wait_for_load_state("networkidle")
-        
+
         # ページ読み込み待機（Firebaseセッション復元のため）
         page.wait_for_timeout(2000)
 
@@ -99,7 +102,7 @@ class TestLoginPage:
         - レースコンディション対策: 15秒待機後もレポート一覧が表示されていること
         """
         page = clean_page
-        
+
         # ログイン実行
         page.fill("#email", TEST_EMAIL)
         page.fill("#password", TEST_PASSWORD)
@@ -118,14 +121,14 @@ class TestLoginPage:
         # ユーザー情報が表示
         expect(page.locator("#user-info")).to_be_visible()
         expect(page.locator("#user-email")).to_contain_text(TEST_EMAIL)
-        
+
         # レースコンディション確認: 15秒待機後もログイン状態が維持されること
         page.wait_for_timeout(15000)
-        
+
         # まだレポート一覧が表示されているか確認（ログイン画面に戻っていないか）
         expect(page.locator("#content")).to_have_class(r".*visible.*")
         expect(page.locator("#login-section")).not_to_be_visible()
-        
+
         # JavaScript経由で認証状態を確認
         auth_state = page.evaluate("""
             () => {
@@ -154,7 +157,9 @@ class TestLoginPage:
         # エラーメッセージが表示
         error_msg = page.locator("#error-message")
         expect(error_msg).to_be_visible()
-        expect(error_msg).to_contain_text("メールアドレスまたはパスワードが間違っています")
+        expect(error_msg).to_contain_text(
+            "メールアドレスまたはパスワードが間違っています"
+        )
 
         # ログインフォームが引き続き表示
         expect(page.locator("#login-section")).to_be_visible()
@@ -169,7 +174,9 @@ class TestLoginPage:
         # エラーメッセージが表示
         error_msg = page.locator("#error-message")
         expect(error_msg).to_be_visible()
-        expect(error_msg).to_contain_text("メールアドレスとパスワードを入力してください")
+        expect(error_msg).to_contain_text(
+            "メールアドレスとパスワードを入力してください"
+        )
 
     def test_logout_functionality(self, clean_page: Page):
         """ログアウト機能の確認"""
@@ -197,25 +204,25 @@ class TestLoginPage:
         page.goto(BASE_URL)
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(3000)
-        
+
         # まずログアウト状態にする（必要な場合）
         if page.locator("#user-info").is_visible():
             page.click(".logout-btn")
             page.wait_for_timeout(2000)
-        
+
         # ログイン
         page.fill("#email", TEST_EMAIL)
         page.fill("#password", TEST_PASSWORD)
         page.click(".login-btn")
         page.wait_for_selector("#content.visible", timeout=15000)
-        
+
         # ページをリロード
         page.reload()
         page.wait_for_load_state("networkidle")
-        
+
         # セッション復元を待機
         page.wait_for_timeout(5000)
-        
+
         # 自動的にログイン状態が復元され、レポート一覧が表示されること
         expect(page.locator("#content")).to_have_class(r".*visible.*")
         expect(page.locator("#user-email")).to_contain_text(TEST_EMAIL)
@@ -229,7 +236,7 @@ class TestGoogleLogin:
         page.goto(BASE_URL)
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
-        
+
         # ログイン済みの場合はログアウト
         if page.locator("#user-info").is_visible():
             page.click(".logout-btn")
@@ -254,7 +261,7 @@ class TestAllowedEmailsList:
         """allowed_emails.jsonがアクセス可能であること"""
         response = page.goto(f"{BASE_URL}/allowed_emails.json")
         assert response.status == 200
-        
+
         # JSONとしてパース可能であること
         content = page.content()
         # emails配列が存在することを確認

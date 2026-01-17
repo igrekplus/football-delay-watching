@@ -31,28 +31,20 @@ LOCAL_CACHE_DIR = Path("api_cache")
 ENDPOINT_TTL_DAYS = {
     # 選手データ: 国籍等は静的なので無期限
     "players": None,
-    
     # スタメン: 試合後は確定なので無期限
     "lineups": None,
-    
     # 試合情報: 10日間
     "fixtures": 10,
-    
     # 対戦履歴: 10日間
     "headtohead": 10,
-    
     # チーム統計: 10日間
     "statistics": 10,
-    
     # 怪我人情報: キャッシュしない（リアルタイム性が重要）
     "injuries": 0,
-    
     # スクワッド: 7日間（移籍期間中は変動あり）
     "squads": 7,
-    
     # 選手名翻訳: 静的データなので無期限
     "name_translation": None,
-    
     # YouTube検索結果: 7日間
     "youtube": 7,
 }
@@ -63,8 +55,8 @@ ENDPOINT_TTL_DAYS = {
 
 # Grounding キャッシュ（Google Search連携）の有効期限（日数）
 GROUNDING_TTL_DAYS = {
-    "tactical_preview": 7,   # 戦術プレビュー
-    "interview": 7,          # 監督インタビュー
+    "tactical_preview": 7,  # 戦術プレビュー
+    "interview": 7,  # 監督インタビュー
 }
 
 # =============================================================================

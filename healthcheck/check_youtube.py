@@ -11,15 +11,14 @@ YouTube Data API ヘルスチェック（最小クォータ版）
 import os
 import sys
 from datetime import datetime
-from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
 import requests
+from dotenv import load_dotenv
 
 
-def _extract_error_reason(resp: requests.Response) -> Optional[str]:
+def _extract_error_reason(resp: requests.Response) -> str | None:
     try:
         data = resp.json()
         errors = data.get("error", {}).get("errors", [])
@@ -33,7 +32,7 @@ def _extract_error_reason(resp: requests.Response) -> Optional[str]:
 def check_youtube_quota(api_key: str) -> bool:
     """
     YouTube Data API の疎通とクォータ状態を確認
-    
+
     消費: 100ユニット（search.list 1回）
     """
     try:
@@ -63,7 +62,9 @@ def check_youtube_quota(api_key: str) -> bool:
         print(f"📈 検索結果: {total} 件")
         print("✅ YouTube API: 正常")
         print("   消費: 100ユニット (search.list 1回)")
-        print("   ⚠️ 残クォータはCloud Consoleで確認: https://console.cloud.google.com/apis/dashboard")
+        print(
+            "   ⚠️ 残クォータはCloud Consoleで確認: https://console.cloud.google.com/apis/dashboard"
+        )
         return True
 
     if resp.status_code == 403:

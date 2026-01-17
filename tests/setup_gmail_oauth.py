@@ -14,23 +14,25 @@ Gmail API OAuth2 初回認証スクリプト
 6. 出力されたトークンをGitHub Secretsに登録
 """
 
-import os
 import json
+import os
+
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
+SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+
 
 def main():
     creds = None
-    credentials_file = '.gmail_credentials.json'
-    token_file = '.gmail_token.json'
-    
+    credentials_file = ".gmail_credentials.json"
+    token_file = ".gmail_token.json"
+
     # 既存のトークンがあれば読み込み
     if os.path.exists(token_file):
         creds = Credentials.from_authorized_user_file(token_file, SCOPES)
-    
+
     # トークンがないか、無効な場合は新規取得
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -44,37 +46,37 @@ def main():
                 print("2. Create OAuth 2.0 Client ID (Desktop app)")
                 print("3. Download JSON and save as 'credentials.json'")
                 return
-            
+
             print("Starting OAuth2 flow...")
             flow = InstalledAppFlow.from_client_secrets_file(credentials_file, SCOPES)
             creds = flow.run_local_server(port=0)
-        
+
         # トークンを保存
-        with open(token_file, 'w') as f:
+        with open(token_file, "w") as f:
             f.write(creds.to_json())
         print(f"\n✅ Token saved to {token_file}")
-    
-    print("\n" + "="*60)
+
+    print("\n" + "=" * 60)
     print("GitHub Secrets に以下を登録してください:")
-    print("="*60)
-    
+    print("=" * 60)
+
     # GMAIL_TOKEN
     token_data = json.loads(creds.to_json())
     print("\n📌 GMAIL_TOKEN:")
     print("-" * 40)
     token_str = json.dumps(token_data, indent=None)
     print(token_str)
-    
+
     # GMAIL_CREDENTIALS (optional, for reference)
     if os.path.exists(credentials_file):
         print("\n📌 GMAIL_CREDENTIALS:")
         print("-" * 40)
-        with open(credentials_file, 'r') as f:
+        with open(credentials_file) as f:
             creds_data = json.load(f)
         creds_str = json.dumps(creds_data, indent=None)
         print(creds_str)
-    
-    print("\n" + "="*60)
+
+    print("\n" + "=" * 60)
     print("登録方法 (GitHub Secrets):")
     print("  gh secret set GMAIL_TOKEN < <(echo $GMAIL_TOKEN_CONTENT)")
     print("  gh secret set GMAIL_CREDENTIALS < <(echo $GMAIL_CREDENTIALS_CONTENT)")
@@ -84,7 +86,8 @@ def main():
     print("  .env ファイルに以下の形式で追記してください:")
     print("  GMAIL_TOKEN='{...}'")
     print("  GMAIL_CREDENTIALS='{...}'")
-    print("="*60)
+    print("=" * 60)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

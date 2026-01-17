@@ -6,16 +6,15 @@ CSVファイルから選手ID/名前とInstagram URLのマッピングを読み�
 
 Usage:
     from settings.player_instagram import get_player_instagram_urls
-    
+
     # 選手名 -> Instagram URL のマッピングを取得
     instagram_urls = get_player_instagram_urls()
     url = instagram_urls.get("E. Haaland")  # https://www.instagram.com/erling/
 """
 
 import csv
-import os
 import logging
-from typing import Dict, Optional
+import os
 from functools import lru_cache
 
 logger = logging.getLogger(__name__)
@@ -32,21 +31,21 @@ TEAM_CSV_FILES = {
 }
 
 
-def _load_csv(csv_path: str) -> Dict[str, str]:
+def _load_csv(csv_path: str) -> dict[str, str]:
     """
     CSVファイルを読み込んで選手名 -> Instagram URLのマッピングを返す
-    
+
     Returns:
         Dict[str, str]: {選手名: Instagram URL}
     """
     result = {}
-    
+
     if not os.path.exists(csv_path):
         logger.warning(f"Instagram CSV not found: {csv_path}")
         return result
-    
+
     try:
-        with open(csv_path, "r", encoding="utf-8") as f:
+        with open(csv_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 name = row.get("name", "").strip()
@@ -55,39 +54,39 @@ def _load_csv(csv_path: str) -> Dict[str, str]:
                     result[name] = url
     except Exception as e:
         logger.error(f"Error loading Instagram CSV {csv_path}: {e}")
-    
+
     return result
 
 
 @lru_cache(maxsize=1)
-def get_player_instagram_urls() -> Dict[str, str]:
+def get_player_instagram_urls() -> dict[str, str]:
     """
     全てのCSVファイルから選手名 -> Instagram URLのマッピングを取得
-    
+
     Returns:
         Dict[str, str]: {選手名: Instagram URL}
     """
     all_urls = {}
-    
+
     for team_id, csv_filename in TEAM_CSV_FILES.items():
         csv_path = os.path.join(DATA_DIR, csv_filename)
         team_urls = _load_csv(csv_path)
         all_urls.update(team_urls)
-        
+
         if team_urls:
             logger.debug(f"Loaded {len(team_urls)} Instagram URLs from {csv_filename}")
-    
+
     logger.info(f"Total Instagram URLs loaded: {len(all_urls)}")
     return all_urls
 
 
-def get_instagram_url(player_name: str) -> Optional[str]:
+def get_instagram_url(player_name: str) -> str | None:
     """
     選手名からInstagram URLを取得
-    
+
     Args:
         player_name: 選手名（API-Footballの表記に準拠）
-    
+
     Returns:
         Instagram URL or None
     """

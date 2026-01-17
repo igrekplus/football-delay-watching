@@ -9,9 +9,11 @@ Issue #88: APIリクエスト/エラー処理の統一
 Note:
     キャッシュ機能が必要な場合は CachingHttpClient を使用してください。
 """
-import requests
+
 import logging
-from typing import Optional, Dict, Any
+from typing import Any
+
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -20,29 +22,26 @@ DEFAULT_TIMEOUT = 10
 
 
 def safe_get(
-    url: str, 
-    headers: Dict[str, str] = None, 
-    params: Dict[str, Any] = None,
-    timeout: int = DEFAULT_TIMEOUT
-) -> Optional[requests.Response]:
+    url: str,
+    headers: dict[str, str] = None,
+    params: dict[str, Any] = None,
+    timeout: int = DEFAULT_TIMEOUT,
+) -> requests.Response | None:
     """
     安全なGETリクエスト（タイムアウト・エラー処理付き）
-    
+
     Args:
         url: リクエストURL
         headers: リクエストヘッダー
         params: クエリパラメータ
         timeout: タイムアウト秒数
-        
+
     Returns:
         requests.Response または None（エラー時）
     """
     try:
         response = requests.get(
-            url, 
-            headers=headers or {}, 
-            params=params or {},
-            timeout=timeout
+            url, headers=headers or {}, params=params or {}, timeout=timeout
         )
         response.raise_for_status()
         return response
@@ -61,20 +60,20 @@ def safe_get(
 
 
 def safe_get_json(
-    url: str, 
-    headers: Dict[str, str] = None, 
-    params: Dict[str, Any] = None,
-    timeout: int = DEFAULT_TIMEOUT
-) -> Optional[dict]:
+    url: str,
+    headers: dict[str, str] = None,
+    params: dict[str, Any] = None,
+    timeout: int = DEFAULT_TIMEOUT,
+) -> dict | None:
     """
     安全なGETリクエスト（JSON返却）
-    
+
     Args:
         url: リクエストURL
         headers: リクエストヘッダー
         params: クエリパラメータ
         timeout: タイムアウト秒数
-        
+
     Returns:
         JSONデータ（dict）または None（エラー時）
     """
@@ -88,20 +87,18 @@ def safe_get_json(
 
 
 def safe_get_bytes(
-    url: str, 
-    headers: Dict[str, str] = None,
-    timeout: int = DEFAULT_TIMEOUT
-) -> Optional[bytes]:
+    url: str, headers: dict[str, str] = None, timeout: int = DEFAULT_TIMEOUT
+) -> bytes | None:
     """
     安全なGETリクエスト（バイナリ返却）
-    
+
     画像などのバイナリコンテンツ取得用。
-    
+
     Args:
         url: リクエストURL
         headers: リクエストヘッダー
         timeout: タイムアウト秒数
-        
+
     Returns:
         バイナリデータまたは None（エラー時）
     """

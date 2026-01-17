@@ -6,9 +6,8 @@ YouTubeServiceから分離されたフィルタリングロジック。
 """
 
 import logging
-from typing import List, Dict
 
-from settings.channels import is_trusted_channel, get_channel_info
+from settings.channels import get_channel_info, is_trusted_channel
 
 logger = logging.getLogger(__name__)
 
@@ -18,14 +17,16 @@ class YouTubePostFilter:
 
     # ========== 個別フィルタメソッド ==========
 
-    def filter_match_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def filter_match_highlights(self, videos: list[dict]) -> dict[str, list[dict]]:
         """
         試合ハイライトを除外（highlights + vs/v パターン）
         """
         kept, removed = [], []
         for v in videos:
             text = f"{v.get('title', '')} {v.get('description', '')}".lower()
-            if "highlights" in text and (" vs " in text or " v " in text or " vs." in text):
+            if "highlights" in text and (
+                " vs " in text or " v " in text or " vs." in text
+            ):
                 vv = dict(v)
                 vv["filter_reason"] = "match_highlights"
                 removed.append(vv)
@@ -33,7 +34,7 @@ class YouTubePostFilter:
                 kept.append(v)
         return {"kept": kept, "removed": removed}
 
-    def filter_highlights(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def filter_highlights(self, videos: list[dict]) -> dict[str, list[dict]]:
         """
         単独ハイライトを除外（highlights, match highlights, extended highlights）
         """
@@ -49,7 +50,7 @@ class YouTubePostFilter:
                 kept.append(v)
         return {"kept": kept, "removed": removed}
 
-    def filter_full_match(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def filter_full_match(self, videos: list[dict]) -> dict[str, list[dict]]:
         """
         フルマッチを除外（full match, full game, full replay）
         """
@@ -65,7 +66,7 @@ class YouTubePostFilter:
                 kept.append(v)
         return {"kept": kept, "removed": removed}
 
-    def filter_live_stream(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def filter_live_stream(self, videos: list[dict]) -> dict[str, list[dict]]:
         """
         ライブ配信を除外（live, livestream, watch live, streaming）
         """
@@ -81,7 +82,7 @@ class YouTubePostFilter:
                 kept.append(v)
         return {"kept": kept, "removed": removed}
 
-    def filter_press_conference(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def filter_press_conference(self, videos: list[dict]) -> dict[str, list[dict]]:
         """
         記者会見を除外（press conference）
         """
@@ -97,7 +98,7 @@ class YouTubePostFilter:
                 kept.append(v)
         return {"kept": kept, "removed": removed}
 
-    def filter_reaction(self, videos: List[Dict]) -> Dict[str, List[Dict]]:
+    def filter_reaction(self, videos: list[dict]) -> dict[str, list[dict]]:
         """
         リアクション動画を除外（reaction）
         """
@@ -115,7 +116,9 @@ class YouTubePostFilter:
 
     # ========== 組み合わせAPI ==========
 
-    def apply_filters(self, videos: List[Dict], filters: List[str]) -> Dict[str, List[Dict]]:
+    def apply_filters(
+        self, videos: list[dict], filters: list[str]
+    ) -> dict[str, list[dict]]:
         """
         複数フィルタをまとめて適用
 
@@ -152,21 +155,30 @@ class YouTubePostFilter:
 
     # ========== 後方互換性: 旧メソッド ==========
 
-    def exclude_highlights(self, videos: List[Dict], skip_rules: List[str] = None) -> Dict[str, List[Dict]]:
+    def exclude_highlights(
+        self, videos: list[dict], skip_rules: list[str] = None
+    ) -> dict[str, list[dict]]:
         """
         [後方互換] ハイライト/フルマッチ/ライブ配信を除外
-        
+
         新しいコードでは apply_filters() を使用してください。
         """
         # 全フィルタのリスト（skip_rulesで除外するもの以外）
-        all_filters = ["match_highlights", "highlights", "full_match", "live_stream", "press_conference", "reaction"]
+        all_filters = [
+            "match_highlights",
+            "highlights",
+            "full_match",
+            "live_stream",
+            "press_conference",
+            "reaction",
+        ]
         if skip_rules:
             all_filters = [f for f in all_filters if f not in skip_rules]
         return self.apply_filters(videos, all_filters)
 
     # ========== その他のフィルタ ==========
 
-    def sort_trusted(self, videos: List[Dict]) -> List[Dict]:
+    def sort_trusted(self, videos: list[dict]) -> list[dict]:
         """
         信頼チャンネル優先でソート + バッジ付与
         """
@@ -187,7 +199,7 @@ class YouTubePostFilter:
 
         return videos
 
-    def deduplicate(self, videos: List[Dict]) -> List[Dict]:
+    def deduplicate(self, videos: list[dict]) -> list[dict]:
         """
         重複排除（video_id ベース）
         """
@@ -207,44 +219,43 @@ class YouTubePostFilter:
     # ========== LLM-based Context Filter (Issue #109) ==========
 
     def filter_by_context(
-        self,
-        videos: List[Dict],
-        home_team: str,
-        away_team: str,
-        gemini_client
-    ) -> Dict[str, List[Dict]]:
+        self, videos: list[dict], home_team: str, away_team: str, gemini_client
+    ) -> dict[str, list[dict]]:
         """
         Gemini APIを使用してコンテキストベースのフィルタリングを行う。
-        
+
         指定された2チーム間の直接対決に関連する動画のみを残す。
-        
+
         Args:
             videos: 動画リスト
             home_team: ホームチーム名
             away_team: アウェイチーム名
             gemini_client: GeminiRestClientインスタンス
-            
+
         Returns:
             {"kept": [...], "removed": [...]}
         """
         if not videos:
             return {"kept": [], "removed": []}
-        
+
         # 入力データを構築（最大20件に制限してトークン節約）
         MAX_VIDEOS_FOR_LLM = 20
         candidates = videos[:MAX_VIDEOS_FOR_LLM]
-        
+
         video_data = []
         for i, v in enumerate(candidates):
-            video_data.append({
-                "id": i,
-                "title": v.get("title", ""),
-                "channel": v.get("channel_name", ""),
-            })
-        
+            video_data.append(
+                {
+                    "id": i,
+                    "title": v.get("title", ""),
+                    "channel": v.get("channel_name", ""),
+                }
+            )
+
         import json
+
         video_json = json.dumps(video_data, ensure_ascii=False)
-        
+
         prompt = f"""あなたはサッカー動画のフィルタリング担当者です。
 
 以下のYouTube動画リストから、「{home_team}」と「{away_team}」の**直接対決**に関連する動画のみを厳選してください。
@@ -267,7 +278,7 @@ kept_indicesには残すべき動画のid（数字）のリストを入れてく
 
         try:
             response_text = gemini_client.generate_content(prompt).strip()
-            
+
             # マークダウンコードブロックを除去
             if response_text.startswith("```"):
                 lines = response_text.split("\n")
@@ -277,16 +288,18 @@ kept_indicesには残すべき動画のid（数字）のリストを入れてく
                 if lines and lines[-1].strip() == "```":
                     lines = lines[:-1]
                 response_text = "\n".join(lines)
-            
+
             result = json.loads(response_text)
             kept_indices = set(result.get("kept_indices", []))
             reasoning = result.get("reasoning", "")
-            
-            logger.info(f"[LLM FILTER] {home_team} vs {away_team}: kept {len(kept_indices)}/{len(candidates)} videos. Reason: {reasoning}")
-            
+
+            logger.info(
+                f"[LLM FILTER] {home_team} vs {away_team}: kept {len(kept_indices)}/{len(candidates)} videos. Reason: {reasoning}"
+            )
+
             kept = []
             removed = []
-            
+
             for i, v in enumerate(candidates):
                 if i in kept_indices:
                     kept.append(v)
@@ -294,13 +307,13 @@ kept_indicesには残すべき動画のid（数字）のリストを入れてく
                     vv = dict(v)
                     vv["filter_reason"] = "llm_context_filter"
                     removed.append(vv)
-            
+
             # MAX_VIDEOS_FOR_LLM を超えた動画はそのまま残す（保守的に）
             if len(videos) > MAX_VIDEOS_FOR_LLM:
                 kept.extend(videos[MAX_VIDEOS_FOR_LLM:])
-            
+
             return {"kept": kept, "removed": removed}
-            
+
         except json.JSONDecodeError as e:
             logger.warning(f"[LLM FILTER] JSON parse error: {e}. Skipping LLM filter.")
             return {"kept": videos, "removed": []}

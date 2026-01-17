@@ -1,6 +1,6 @@
-
 import os
 import sys
+
 # Set env vars to simulate debug mode
 os.environ["DEBUG_MODE"] = "True"
 os.environ["USE_MOCK_DATA"] = "False"
@@ -10,11 +10,13 @@ if "TARGET_DATE" in os.environ:
     del os.environ["TARGET_DATE"]
 
 sys.path.append(os.getcwd())
-from config import config
 from datetime import datetime, timedelta
+
 import pytz
 
-jst = pytz.timezone('Asia/Tokyo')
+from config import config
+
+jst = pytz.timezone("Asia/Tokyo")
 now_jst = datetime.now(jst)
 expected_date = now_jst - timedelta(days=1)
 actual_date = config.TARGET_DATE

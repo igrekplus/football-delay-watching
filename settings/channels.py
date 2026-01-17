@@ -8,82 +8,297 @@ YouTube Data API v3でchannelId検索に使用する。
 初回アクセス時にチャンネルIDに解決してキャッシュする必要がある。
 """
 
-from typing import Optional, Dict
 
 # =============================================================================
 # 信頼チャンネル（post-fetchフィルタ用）
 # チャンネルID: {"name": 表示名, "handle": ハンドル, "category": カテゴリ}
 # =============================================================================
 
-TRUSTED_CHANNELS: Dict[str, Dict] = {
+TRUSTED_CHANNELS: dict[str, dict] = {
     # ====== チーム公式（EPL）======
     # 実際のチャンネルIDはログから取得
-    "UCkzCjdRMrW2vXLx8mvPVLdQ": {"name": "Man City", "handle": "@mancity", "category": "team"},
-    "UCBTy8j2cPy6zw68godcE7MQ": {"name": "Arsenal", "handle": "@Arsenal", "category": "team"},
-    "UCpryVRk_VDudG8SHXgWcG0w": {"name": "Arsenal", "handle": "@arsenal", "category": "team"},
-    "UCU2PacFf99vhb5boBUeckbQ": {"name": "Chelsea", "handle": "@chelseafc", "category": "team"},
-    "UC9LQwHZoucFT94I2h6JOcjw": {"name": "Liverpool", "handle": "@LiverpoolFC", "category": "team"},
-    "UC6yW44UGJJBvYTlfC7CRg2Q": {"name": "Manchester United", "handle": "@manutd", "category": "team"},
-    "UCEg25rdRZXg32iwai6N6l0w": {"name": "Tottenham", "handle": "@SpursOfficial", "category": "team"},
-    "UCWL2s9v6E6r0YMPSl9xZJnw": {"name": "Newcastle United", "handle": "@NUFC", "category": "team"},
-    "UCSAJqSWicyatLAhOqMfjxRw": {"name": "Brighton", "handle": "@OfficialBHAFC", "category": "team"},
-    "UC6QlrbRd_WmGPFZM3FebpkQ": {"name": "Fulham", "handle": "@FulhamFC", "category": "team"},
-    "UChIWZA2-w04XdMRHPsYcvAw": {"name": "Nottingham Forest", "handle": "@NFFC", "category": "team"},
-    "UChBePPmH51FJpJTNm8cDG2Q": {"name": "Bournemouth", "handle": "@afcbournemouth", "category": "team"},
-    "UCCNOsmurvpEit9paBOzWtUg": {"name": "West Ham United", "handle": "@westhamunited", "category": "team"},
-    
+    "UCkzCjdRMrW2vXLx8mvPVLdQ": {
+        "name": "Man City",
+        "handle": "@mancity",
+        "category": "team",
+    },
+    "UCBTy8j2cPy6zw68godcE7MQ": {
+        "name": "Arsenal",
+        "handle": "@Arsenal",
+        "category": "team",
+    },
+    "UCpryVRk_VDudG8SHXgWcG0w": {
+        "name": "Arsenal",
+        "handle": "@arsenal",
+        "category": "team",
+    },
+    "UCU2PacFf99vhb5boBUeckbQ": {
+        "name": "Chelsea",
+        "handle": "@chelseafc",
+        "category": "team",
+    },
+    "UC9LQwHZoucFT94I2h6JOcjw": {
+        "name": "Liverpool",
+        "handle": "@LiverpoolFC",
+        "category": "team",
+    },
+    "UC6yW44UGJJBvYTlfC7CRg2Q": {
+        "name": "Manchester United",
+        "handle": "@manutd",
+        "category": "team",
+    },
+    "UCEg25rdRZXg32iwai6N6l0w": {
+        "name": "Tottenham",
+        "handle": "@SpursOfficial",
+        "category": "team",
+    },
+    "UCWL2s9v6E6r0YMPSl9xZJnw": {
+        "name": "Newcastle United",
+        "handle": "@NUFC",
+        "category": "team",
+    },
+    "UCSAJqSWicyatLAhOqMfjxRw": {
+        "name": "Brighton",
+        "handle": "@OfficialBHAFC",
+        "category": "team",
+    },
+    "UC6QlrbRd_WmGPFZM3FebpkQ": {
+        "name": "Fulham",
+        "handle": "@FulhamFC",
+        "category": "team",
+    },
+    "UChIWZA2-w04XdMRHPsYcvAw": {
+        "name": "Nottingham Forest",
+        "handle": "@NFFC",
+        "category": "team",
+    },
+    "UChBePPmH51FJpJTNm8cDG2Q": {
+        "name": "Bournemouth",
+        "handle": "@afcbournemouth",
+        "category": "team",
+    },
+    "UCCNOsmurvpEit9paBOzWtUg": {
+        "name": "West Ham United",
+        "handle": "@westhamunited",
+        "category": "team",
+    },
     # ====== チーム公式（CL/国際）======
-    "UCHVWgs35DG0xHQkDFYl4xYg": {"name": "Barcelona", "handle": "@fcbarcelona", "category": "team"},
-    "UCWV3obpZVGgJ3j9FVhEjF2Q": {"name": "Real Madrid", "handle": "@realmadrid", "category": "team"},
-    "UCZVQIDzVnfbNPhSjsNqxowQ": {"name": "Bayern Munich", "handle": "@fcbayern", "category": "team"},
-    "UCuJBU0o4b7VGJWJjc1LQe5A": {"name": "Inter", "handle": "@Inter", "category": "team"},
-    "UCM0oAgW6Qa4AwlVg8hyl-eQ": {"name": "AC Milan", "handle": "@acmilan", "category": "team"},
-    "UCeMBL8ByEKnFlF1dg18eCHg": {"name": "Juventus", "handle": "@juventus", "category": "team"},
-    "UCS4HYos2BkL04TFykHZ5b2Q": {"name": "Atletico Madrid", "handle": "@atleticodemadrid", "category": "team"},
-    "UCvDdWG1dMvjEDuHpr6aXzqQ": {"name": "Borussia Dortmund", "handle": "@BVB", "category": "team"},
-    
+    "UCHVWgs35DG0xHQkDFYl4xYg": {
+        "name": "Barcelona",
+        "handle": "@fcbarcelona",
+        "category": "team",
+    },
+    "UCWV3obpZVGgJ3j9FVhEjF2Q": {
+        "name": "Real Madrid",
+        "handle": "@realmadrid",
+        "category": "team",
+    },
+    "UCZVQIDzVnfbNPhSjsNqxowQ": {
+        "name": "Bayern Munich",
+        "handle": "@fcbayern",
+        "category": "team",
+    },
+    "UCuJBU0o4b7VGJWJjc1LQe5A": {
+        "name": "Inter",
+        "handle": "@Inter",
+        "category": "team",
+    },
+    "UCM0oAgW6Qa4AwlVg8hyl-eQ": {
+        "name": "AC Milan",
+        "handle": "@acmilan",
+        "category": "team",
+    },
+    "UCeMBL8ByEKnFlF1dg18eCHg": {
+        "name": "Juventus",
+        "handle": "@juventus",
+        "category": "team",
+    },
+    "UCS4HYos2BkL04TFykHZ5b2Q": {
+        "name": "Atletico Madrid",
+        "handle": "@atleticodemadrid",
+        "category": "team",
+    },
+    "UCvDdWG1dMvjEDuHpr6aXzqQ": {
+        "name": "Borussia Dortmund",
+        "handle": "@BVB",
+        "category": "team",
+    },
     # ====== リーグ公式 ======
-    "UCG5qGWdu8nIRZqJ_GgDwQ-w": {"name": "Premier League", "handle": "@premierleague", "category": "league"},
-    "UCyGa1YEx9ST66rYrJTGIKOw": {"name": "UEFA", "handle": "@UEFA", "category": "league"},
-    "UCM5gMM_HKvHNh7C__MBL9Xg": {"name": "La Liga", "handle": "@LaLiga", "category": "league"},
-    "UCBJsMZfYefxFd2UNd6eLfKg": {"name": "Serie A", "handle": "@SerieA", "category": "league"},
-    "UCeSPVgMlaC2DhmCT60G6_qQ": {"name": "Bundesliga", "handle": "@bundesliga", "category": "league"},
-    
+    "UCG5qGWdu8nIRZqJ_GgDwQ-w": {
+        "name": "Premier League",
+        "handle": "@premierleague",
+        "category": "league",
+    },
+    "UCyGa1YEx9ST66rYrJTGIKOw": {
+        "name": "UEFA",
+        "handle": "@UEFA",
+        "category": "league",
+    },
+    "UCM5gMM_HKvHNh7C__MBL9Xg": {
+        "name": "La Liga",
+        "handle": "@LaLiga",
+        "category": "league",
+    },
+    "UCBJsMZfYefxFd2UNd6eLfKg": {
+        "name": "Serie A",
+        "handle": "@SerieA",
+        "category": "league",
+    },
+    "UCeSPVgMlaC2DhmCT60G6_qQ": {
+        "name": "Bundesliga",
+        "handle": "@bundesliga",
+        "category": "league",
+    },
     # ====== 放送局・メディア ======
-    "UCcw05gGzjLIs5dnxGkQHMvw": {"name": "Sky Sports News", "handle": "@SkySportsNews", "category": "broadcaster"},
-    "UCEvWGu9_OFfIaC5Lz_i2dkg": {"name": "Sky Sports Football", "handle": "@SkySportsFootball", "category": "broadcaster"},
-    "UCuIXf9o7jB34bPl8tXHYEGw": {"name": "TNT Sports", "handle": "@tntsports", "category": "broadcaster"},
-    "UCSZ21xyG8w_33KriMM69IxQ": {"name": "DAZN Football", "handle": "@DAZNFootball", "category": "broadcaster"},
-    "UCf3sCM5LyzU1hI_lU4Av3eQ": {"name": "DAZN Japan", "handle": "@DAZNJapan", "category": "broadcaster"},
-    "UCoFLB_Gw_AoxUuuzKjXrc_Q": {"name": "DAZN Japan", "handle": "@daznjapan", "category": "broadcaster"},
-    "UCFCxCBBybXz6mR8A6G3e3Lg": {"name": "BBC Sport", "handle": "@BBCSport", "category": "broadcaster"},
-    "UCWw6scNyopJ0yjMu1SyOEyw": {"name": "talkSPORT", "handle": "@talkSPORT", "category": "broadcaster"},
-    "UCMjvvElkdLRTgcTKklAUkSw": {"name": "U-NEXT フットボール", "handle": "@unext_football", "category": "broadcaster"},
-    
+    "UCcw05gGzjLIs5dnxGkQHMvw": {
+        "name": "Sky Sports News",
+        "handle": "@SkySportsNews",
+        "category": "broadcaster",
+    },
+    "UCEvWGu9_OFfIaC5Lz_i2dkg": {
+        "name": "Sky Sports Football",
+        "handle": "@SkySportsFootball",
+        "category": "broadcaster",
+    },
+    "UCuIXf9o7jB34bPl8tXHYEGw": {
+        "name": "TNT Sports",
+        "handle": "@tntsports",
+        "category": "broadcaster",
+    },
+    "UCSZ21xyG8w_33KriMM69IxQ": {
+        "name": "DAZN Football",
+        "handle": "@DAZNFootball",
+        "category": "broadcaster",
+    },
+    "UCf3sCM5LyzU1hI_lU4Av3eQ": {
+        "name": "DAZN Japan",
+        "handle": "@DAZNJapan",
+        "category": "broadcaster",
+    },
+    "UCoFLB_Gw_AoxUuuzKjXrc_Q": {
+        "name": "DAZN Japan",
+        "handle": "@daznjapan",
+        "category": "broadcaster",
+    },
+    "UCFCxCBBybXz6mR8A6G3e3Lg": {
+        "name": "BBC Sport",
+        "handle": "@BBCSport",
+        "category": "broadcaster",
+    },
+    "UCWw6scNyopJ0yjMu1SyOEyw": {
+        "name": "talkSPORT",
+        "handle": "@talkSPORT",
+        "category": "broadcaster",
+    },
+    "UCMjvvElkdLRTgcTKklAUkSw": {
+        "name": "U-NEXT フットボール",
+        "handle": "@unext_football",
+        "category": "broadcaster",
+    },
     # ====== 戦術分析 ======
-    "UCGYlBmk04IsNLTWbRgS-xkQ": {"name": "Tifo Football", "handle": "@TifoFootball_", "category": "tactics"},
-    "UCp8IqNfaxeE8gy6SQsqbvHw": {"name": "The Athletic FC", "handle": "@TheAthleticFC", "category": "tactics"},
-    "UC0N2Fv3QGMSR2R3aB-3rZTw": {"name": "レオザフットボール", "handle": "@Leothefoot", "category": "tactics"},
-    "UCpZ8KoBzFcIJUzg4NL-H3Dw": {"name": "CRACK FOOTBALL", "handle": "@CRACKfootball", "category": "tactics"},
-    "UCGWYb9tLAsmKXKIDKMBTbWw": {"name": "Football Made Simple", "handle": "@FootballMadeSimple", "category": "tactics"},
-    "UCifwRb0DHe-NjHT1GahgWmA": {"name": "GOAT理論【切り抜き】", "handle": "@goat_theory", "category": "tactics"},
-    "UCkWccBKBP0pvnUhuplw3lIA": {"name": "スポルティーバ", "handle": "@sportiva", "category": "media"},
-    "UC8yHePe_RgUBE-waRWy6olw": {"name": "PIVOT 公式チャンネル", "handle": "@pivot00", "category": "media"},
-    "UC5a1Zmq6dNNKKaW_sL6tjIA": {"name": "レオザマニア【Leothefootball】公認切り抜き", "handle": "@レオザマニア", "category": "tactics"},
+    "UCGYlBmk04IsNLTWbRgS-xkQ": {
+        "name": "Tifo Football",
+        "handle": "@TifoFootball_",
+        "category": "tactics",
+    },
+    "UCp8IqNfaxeE8gy6SQsqbvHw": {
+        "name": "The Athletic FC",
+        "handle": "@TheAthleticFC",
+        "category": "tactics",
+    },
+    "UC0N2Fv3QGMSR2R3aB-3rZTw": {
+        "name": "レオザフットボール",
+        "handle": "@Leothefoot",
+        "category": "tactics",
+    },
+    "UCpZ8KoBzFcIJUzg4NL-H3Dw": {
+        "name": "CRACK FOOTBALL",
+        "handle": "@CRACKfootball",
+        "category": "tactics",
+    },
+    "UCGWYb9tLAsmKXKIDKMBTbWw": {
+        "name": "Football Made Simple",
+        "handle": "@FootballMadeSimple",
+        "category": "tactics",
+    },
+    "UCifwRb0DHe-NjHT1GahgWmA": {
+        "name": "GOAT理論【切り抜き】",
+        "handle": "@goat_theory",
+        "category": "tactics",
+    },
+    "UCkWccBKBP0pvnUhuplw3lIA": {
+        "name": "スポルティーバ",
+        "handle": "@sportiva",
+        "category": "media",
+    },
+    "UC8yHePe_RgUBE-waRWy6olw": {
+        "name": "PIVOT 公式チャンネル",
+        "handle": "@pivot00",
+        "category": "media",
+    },
+    "UC5a1Zmq6dNNKKaW_sL6tjIA": {
+        "name": "レオザマニア【Leothefootball】公認切り抜き",
+        "handle": "@レオザマニア",
+        "category": "tactics",
+    },
     # ====== 新規追加 (Aランク優先候補) ======
-    "UCqZQlzSHbVJrwrn5XvzrzcA": {"name": "NBC Sports", "handle": "@nbcsports", "category": "broadcaster"},
-    "UC_r3a2tv0Z4NMGIyV3HoqKg": {"name": "Sunderland AFC", "handle": "@SunderlandAFC", "category": "team"},
-    "UC2scTsYOgxGHx0uEsHFrqfQ": {"name": "HaytersTV", "handle": "@HaytersTV", "category": "media"},
-    "UCiVg6vRhuyjsWgHkDNOig6A": {"name": "BeanymanSports", "handle": "@BeanymanSports", "category": "media"},
+    "UCqZQlzSHbVJrwrn5XvzrzcA": {
+        "name": "NBC Sports",
+        "handle": "@nbcsports",
+        "category": "broadcaster",
+    },
+    "UC_r3a2tv0Z4NMGIyV3HoqKg": {
+        "name": "Sunderland AFC",
+        "handle": "@SunderlandAFC",
+        "category": "team",
+    },
+    "UC2scTsYOgxGHx0uEsHFrqfQ": {
+        "name": "HaytersTV",
+        "handle": "@HaytersTV",
+        "category": "media",
+    },
+    "UCiVg6vRhuyjsWgHkDNOig6A": {
+        "name": "BeanymanSports",
+        "handle": "@BeanymanSports",
+        "category": "media",
+    },
     # ====== 公式クラブ・リーグ・放送 (追加) ======
-    "UCTv-XvfzLX3i4IGWAm4sbmA": {"name": "LALIGA EA SPORTS", "handle": "@LaLiga", "category": "league"},
-    "UCNAf1k0yIjyGu3k9BwAg3lg": {"name": "Sky Sports Premier League", "handle": "@skysportspremierleague", "category": "broadcaster"},
-    "UC6c1z7bA__85CIWZ_jpCK-Q": {"name": "ESPN FC", "handle": "@ESPNFC", "category": "broadcaster"},
-    "UCET00YnetHT7tOpu12v8jxg": {"name": "CBS Sports Golazo", "handle": "@cbssportsgolazo", "category": "broadcaster"},
-    "UC4i_9WvfPRTuRWEaWyfKuFw": {"name": "TNT Sports Football", "handle": "@TNTSportsFootball", "category": "broadcaster"},
-    "UCWB9N0012fG6bGyj486Qxmg": {"name": "Crystal Palace FC", "handle": "@OfficialCPFC", "category": "team"},
+    "UCTv-XvfzLX3i4IGWAm4sbmA": {
+        "name": "LALIGA EA SPORTS",
+        "handle": "@LaLiga",
+        "category": "league",
+    },
+    "UCNAf1k0yIjyGu3k9BwAg3lg": {
+        "name": "Sky Sports Premier League",
+        "handle": "@skysportspremierleague",
+        "category": "broadcaster",
+    },
+    "UC6c1z7bA__85CIWZ_jpCK-Q": {
+        "name": "ESPN FC",
+        "handle": "@ESPNFC",
+        "category": "broadcaster",
+    },
+    "UCET00YnetHT7tOpu12v8jxg": {
+        "name": "CBS Sports Golazo",
+        "handle": "@cbssportsgolazo",
+        "category": "broadcaster",
+    },
+    "UC4i_9WvfPRTuRWEaWyfKuFw": {
+        "name": "TNT Sports Football",
+        "handle": "@TNTSportsFootball",
+        "category": "broadcaster",
+    },
+    "UCWB9N0012fG6bGyj486Qxmg": {
+        "name": "Crystal Palace FC",
+        "handle": "@OfficialCPFC",
+        "category": "team",
+    },
     # ====== 非公式だが大規模（要監視） ======
-    "UCgfxjUYBKLUUjq0oE7DU-Iw": {"name": "FutVibes", "handle": "@FutVibess", "category": "fan"},
+    "UCgfxjUYBKLUUjq0oE7DU-Iw": {
+        "name": "FutVibes",
+        "handle": "@FutVibess",
+        "category": "fan",
+    },
 }
 
 # =============================================================================
@@ -97,9 +312,11 @@ def is_trusted_channel(channel_id: str) -> bool:
     return channel_id in TRUSTED_CHANNELS
 
 
-def get_channel_info(channel_id: str) -> Dict:
+def get_channel_info(channel_id: str) -> dict:
     """チャンネルIDからメタデータを取得"""
-    return TRUSTED_CHANNELS.get(channel_id, {"name": "Unknown", "handle": "", "category": "unknown"})
+    return TRUSTED_CHANNELS.get(
+        channel_id, {"name": "Unknown", "handle": "", "category": "unknown"}
+    )
 
 
 def get_channel_display_name(channel_id: str, fallback_name: str = "Unknown") -> str:
@@ -171,7 +388,7 @@ TACTICS_CHANNELS = {
 }
 
 
-def get_team_channel(team_name: str) -> Optional[str]:
+def get_team_channel(team_name: str) -> str | None:
     """チーム名からチャンネルハンドルを取得"""
     # EPLから探す
     if team_name in EPL_TEAM_CHANNELS:
