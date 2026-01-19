@@ -88,6 +88,14 @@ jobs:
           echo "=== End of Summary ==="
         fi
         
+    - name: Sync existing reports from Firebase
+      if: env.SKIP_DEPLOY != 'true'
+      run: |
+        echo "=== Syncing existing reports from Firebase ==="
+        python scripts/sync_firebase_reports.py
+        echo "=== Sync Complete ==="
+        echo "Local report count: $(ls -1 public/reports/*.html 2>/dev/null | wc -l)"
+
     - name: Deploy to Firebase Hosting
       if: env.SKIP_DEPLOY != 'true'
       env:
