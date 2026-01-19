@@ -355,7 +355,27 @@ class ReportGenerator:
 
         # 同国対決
         same_country_html = ""
-        if match.facts.same_country_text:
+        if match.facts.same_country_matchups:
+            # 構造化データからマッチアップを構築（LLM出力パースに頼らない）
+            matchups = self._build_same_country_matchups(
+                matchups_data=match.facts.same_country_matchups,
+                llm_text=match.facts.same_country_text,
+                home_team=match.core.home_team,
+                away_team=match.core.away_team,
+            )
+            if matchups:
+                team_logos = {
+                    match.core.home_team: match.core.home_logo,
+                    match.core.away_team: match.core.away_logo,
+                }
+                same_country_html = self.matchup_formatter.format_matchup_section(
+                    matchups=matchups,
+                    player_photos=player_photos_extended,
+                    team_logos=team_logos,
+                    section_title="■ 同国対決",
+                )
+        elif match.facts.same_country_text:
+            # フォールバック: テキストがあるが構造化データがない場合（古いキャッシュ等）
             matchups = parse_matchup_text(match.facts.same_country_text)
             if matchups:
                 team_logos = {
@@ -653,3 +673,110 @@ class ReportGenerator:
                 names.append(e.name)
 
         return names
+
+    def _build_same_country_matchups(
+        self,
+        matchups_data: list[dict],
+        llm_text: str,
+        home_team: str,
+        away_team: str,
+    ) -> list:
+        """
+        構造化データ(same_country_matchups)からPlayerMatchupリストを構築。
+        説明文はllm_textから国ごとに抽出する。
+        """
+        from html import escape
+
+        from src.parsers.matchup_parser import PlayerMatchup
+        from src.utils.nationality_flags import get_flag_emoji
+
+        if not matchups_data:
+            return []
+
+        # LLMテキストを国ごとのセクションに分割
+        sections = {}
+        if llm_text:
+            # 絵文字や国旗を含むヘッダーパターンで分割
+            parts = re.split(
+                r"\n?([🇦-🇿🏴\U0001f1e6-\U0001f1ff\U000e0020-\U000e007f]+\s*\*\*?[^*]+\*\*?)\n?",
+                "\n" + llm_text,
+            )
+            for i in range(1, len(parts), 2):
+                header = parts[i].strip()
+                content = parts[i + 1].strip() if i + 1 < len(parts) else ""
+                # 国名だけ抽出（太字や絵文字を除去）してキーにする
+                country_key = re.sub(
+                    r"[🇦-🇿🏴\U0001f1e6-\U0001f1ff\U000e0020-\U000e007f*]+", "", header
+                ).strip()
+                if country_key:
+                    sections[country_key] = content
+
+        result = []
+        for m in matchups_data:
+            country = m.get("country", "")
+            flag = get_flag_emoji(country)
+            header = f"{flag} {country}" if flag else country
+
+            # 選手リスト構築 (最大4名)
+            players = []
+            home_players = m.get("home_players", [])
+            away_players = m.get("away_players", [])
+
+            # バランスよく4名選出（各チーム2名ずつなど）
+            # 1. 各チームの先頭1名ずつ
+            if home_players:
+                players.append((home_players[0], home_team))
+            if away_players:
+                players.append((away_players[0], away_team))
+
+            # 2. 残り枠を埋める
+            remaining_home = home_players[1:]
+            remaining_away = away_players[1:]
+
+            while len(players) < 4 and (remaining_home or remaining_away):
+                if remaining_home and len(players) < 4:
+                    players.append((remaining_home.pop(0), home_team))
+                if remaining_away and len(players) < 4:
+                    players.append((remaining_away.pop(0), away_team))
+
+            # 説明文を取得
+            description = sections.get(country, "")
+            if not description:
+                # あいまい一致で再試行
+                for key, val in sections.items():
+                    if country.lower() in key.lower() or key.lower() in country.lower():
+                        description = val
+                        break
+
+            # 本文内の **Diogo Dalot** (Manchester United) 的な記述を掃除（パルサーと合わせる）
+            # ただしここでは構造化データ優先なので、説明文内の残存マッチング情報を消す必要はないかもしれないが、
+            # パルサーの _process_section と同様のクリーンアップを行う。
+            for p_name in home_players + away_players:
+                description = re.sub(
+                    rf"\*\*{re.escape(p_name)}\*\*\s*[（\(][^）\)]+[）\)]",
+                    "",
+                    description,
+                )
+
+            # クリーンアップ（接続詞など）
+            description = re.sub(
+                r"^\s*(?:は[、,]?\s*|と\s*|の\s*|vs\s*[:：]?\s*|,\s*)+", "", description
+            )
+            # 連続する「と」や「、」を掃除
+            description = re.sub(r"\s*[と、,]\s*[と、,]\s*", " ", description)
+            description = re.sub(
+                r"^\s*(?:の対決[。．,、\s]*|のマッチアップ[。．,、\s]*)",
+                "",
+                description,
+            )
+            description = re.sub(r"^[。．.,、\s\(\(（]+", "", description).strip()
+
+            result.append(
+                PlayerMatchup(
+                    header=escape(header),
+                    players=[(escape(p[0]), escape(p[1])) for p in players],
+                    description=escape(description.replace("**", "")),
+                )
+            )
+
+        return result
