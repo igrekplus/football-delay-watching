@@ -39,6 +39,13 @@ class HttpResponse:
     def json(self) -> dict:
         return self._json_data
 
+    @property
+    def text(self) -> str:
+        """テキストとしてレスポンスを返す"""
+        if self.content is None:
+            return ""
+        return self.content.decode("utf-8", errors="replace")
+
     def raise_for_status(self):
         if not self.ok:
             raise requests.HTTPError(f"HTTP {self.status_code}")
