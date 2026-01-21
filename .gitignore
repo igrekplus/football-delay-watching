@@ -34,6 +34,7 @@ logs/
 reports_mock/
 .firebase/
 temp/
+tmp/
 knowledge/
 
 # Firebase Hosting reports (may contain copyrighted content)
@@ -44,6 +45,14 @@ public/reports/manifest.json
 public/allowed_emails.json
 public/firebase_config.json
 
-# Playwright MCP cache
-temp/npm-cache/
-temp/playwright-mcp.pid
+# Python tooling caches & artifacts
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+*.egg-info/
+dist/
+build/
