@@ -20,43 +20,64 @@ logger = logging.getLogger(__name__)
 
 
 class HttpResponse:
-    """HTTPレスポンスの抽象化"""
+    """HTTPレスポンスの抽象化（requests.Response互換）"""
 
     def __init__(
         self,
         status_code: int,
-        json_data: dict,
-        ok: bool = True,
-        headers: dict = None,
         content: bytes = None,
+        headers: dict = None,
+        url: str = "",
+        reason: str = "",
+        encoding: str = "utf-8",
     ):
         self.status_code = status_code
-        self._json_data = json_data
-        self.ok = ok
+        self.content = content or b""
         self.headers = headers or {}
-        self.content = content
+        self.url = url
+        self.reason = reason
+        self.encoding = encoding
 
-    def json(self) -> dict:
-        return self._json_data
+    @property
+    def ok(self) -> bool:
+        """ステータスコードが成功範囲かどうか"""
+        return 200 <= self.status_code < 400
 
     @property
     def text(self) -> str:
-        """テキストとしてレスポンスを返す"""
-        if self.content is None:
-            return ""
-        return self.content.decode("utf-8", errors="replace")
+        """レスポンスをテキストとして返す"""
+        return self.content.decode(self.encoding, errors="replace")
+
+    def json(self) -> dict:
+        """レスポンスをJSONとしてパース"""
+        import json as json_module
+
+        if not self.content:
+            return {}
+        try:
+            return json_module.loads(self.text)
+        except json_module.JSONDecodeError:
+            return {}
 
     def raise_for_status(self):
+        """エラーステータスの場合に例外を発生"""
         if not self.ok:
-            raise requests.HTTPError(f"HTTP {self.status_code}")
+            raise requests.HTTPError(f"HTTP {self.status_code}: {self.reason}")
 
 
 class CachedResponse(HttpResponse):
     """キャッシュから読み込んだデータを表すレスポンス"""
 
     def __init__(self, json_data: dict):
-        super().__init__(status_code=200, json_data=json_data, ok=True)
+        import json as json_module
+
+        content = json_module.dumps(json_data).encode("utf-8")
+        super().__init__(status_code=200, content=content)
         self.from_cache = True
+        self._cached_json = json_data
+
+    def json(self) -> dict:
+        return self._cached_json
 
 
 class HttpClient(ABC):
@@ -131,17 +152,13 @@ class RequestsHttpClient(HttpClient):
         response = requests.get(
             url, headers=headers or {}, params=params or {}, timeout=timeout
         )
-        try:
-            json_data = response.json() if response.ok else {}
-        except ValueError:
-            json_data = {}
-
         return HttpResponse(
             status_code=response.status_code,
-            json_data=json_data,
-            ok=response.ok,
-            headers=dict(response.headers),
             content=response.content,
+            headers=dict(response.headers),
+            url=str(response.url),
+            reason=response.reason or "",
+            encoding=response.encoding or "utf-8",
         )
 
     @retry(
@@ -164,17 +181,13 @@ class RequestsHttpClient(HttpClient):
         timeout: int = 30,
     ) -> HttpResponse:
         response = requests.post(url, headers=headers or {}, json=json, timeout=timeout)
-        try:
-            json_data = response.json() if response.ok else {}
-        except ValueError:
-            json_data = {}
-
         return HttpResponse(
             status_code=response.status_code,
-            json_data=json_data,
-            ok=response.ok,
-            headers=dict(response.headers),
             content=response.content,
+            headers=dict(response.headers),
+            url=str(response.url),
+            reason=response.reason or "",
+            encoding=response.encoding or "utf-8",
         )
 
 
