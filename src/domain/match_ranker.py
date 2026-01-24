@@ -7,7 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 class MatchRanker:
-    """Domain service for ranking matches."""
+    """Domain service for ranking matches.
+
+    Note: ランクが "None" の試合もレポート対象になり得ます。
+    MatchSelector が優先度順にソートし、MATCH_LIMIT まで ("None" 含む) 選定します。
+    詳細: docs/03_components/match_selection.md
+    """
 
     def assign_rank(self, match: MatchAggregate) -> None:
         """Assigns a rank (S, A, None) to a match based on configuration rules."""
