@@ -26,7 +26,7 @@ def get_current_mode() -> RuntimeMode:
     2. DEBUG_MODE=True → DEBUG
     3. それ以外 → PRODUCTION
     """
-    use_mock = os.getenv("USE_MOCK_DATA", "True").lower() == "true"
+    use_mock = os.getenv("USE_MOCK_DATA", "False").lower() == "true"
     debug_mode = os.getenv("DEBUG_MODE", "False").lower() == "true"
 
     if use_mock:

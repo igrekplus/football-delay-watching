@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class MockProvider:
     """モックデータを提供するクラス"""
 
-    FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
+    FIXTURES_DIR = Path(__file__).parent.parent / "mock_data"
 
     _cache: dict[str, Any] = {}
 
@@ -58,14 +58,14 @@ class MockProvider:
         """
         from src.domain.models import MatchAggregate, MatchCore
 
-        data = cls._load_json("matches.json")
-        if not data or "default" not in data:
+        data = cls._load_json("match.json")
+        if not data:
             return []
 
         utc = pytz.UTC
         matches = []
 
-        for item in data["default"]:
+        for item in data:
             # kickoff_at_utc を datetime オブジェクトに変換
             kickoff_utc = None
             if item.get("kickoff_at_utc"):
@@ -96,15 +96,6 @@ class MockProvider:
 
         return matches
 
-    @staticmethod
-    def _normalize_team_name(team_name: str) -> str:
-        """チーム名をファイル名用に正規化"""
-        import re
-
-        normalized = team_name.replace(" ", "")
-        normalized = re.sub(r"[^a-zA-Z0-9\-]", "", normalized)
-        return normalized
-
     @classmethod
     def apply_facts(cls, match: Union["MatchData", "MatchAggregate"]) -> None:
         """
@@ -113,24 +104,10 @@ class MockProvider:
         Args:
             match: MatchData オブジェクト（in-place で更新）
         """
-        # Try to load match-specific facts
-        match_id_facts = f"facts/{match.id}.json"
-        data = cls._load_json(match_id_facts)
+        facts = cls._load_json("facts.json")
 
-        if not data and hasattr(match, "home_team") and hasattr(match, "away_team"):
-            # Fallback to team-based naming if ID not found (optional, but good for flexibility)
-            home = cls._normalize_team_name(match.home_team)
-            away = cls._normalize_team_name(match.away_team)
-            team_facts = f"facts/{home}_{away}.json"
-            data = cls._load_json(team_facts)
-
-        if not data:
-            data = cls._load_json("facts/default.json")
-
-        if not data or "default" not in data:
+        if not facts:
             return
-
-        facts = data["default"]
 
         # 基本情報
         match.venue = facts.get("venue", match.venue)
@@ -190,19 +167,12 @@ class MockProvider:
         Returns:
             動画データのリスト
         """
-        # Try match-specific
-        home = cls._normalize_team_name(home_team)
-        away = cls._normalize_team_name(away_team)
-        specific_file = f"youtube/{home}_{away}.json"
-        data = cls._load_json(specific_file)
+        videos = cls._load_json("youtube.json")
 
-        if not data:
-            data = cls._load_json("youtube/default.json")
-
-        if not data or "default" not in data:
+        if not videos:
             return []
 
-        return data["default"]
+        return videos
 
     @classmethod
     def get_youtube_videos_for_matches(
@@ -217,11 +187,11 @@ class MockProvider:
         results = {}
 
         for match in matches:
-            if not match.is_target:
+            if not match.core.is_target:
                 continue
 
-            match_key = f"{match.home_team} vs {match.away_team}"
-            videos = cls.get_youtube_videos(match.home_team, match.away_team)
+            match_key = f"{match.core.home_team} vs {match.core.away_team}"
+            videos = cls.get_youtube_videos(match.core.home_team, match.core.away_team)
             results[match_key] = videos
             logger.info(
                 f"[MOCK] YouTube: Returning {len(videos)} mock videos for {match_key}"
@@ -237,19 +207,12 @@ class MockProvider:
         Returns:
             記事データのリスト（プレースホルダーを置換済み）
         """
-        home = cls._normalize_team_name(home_team)
-        away = cls._normalize_team_name(away_team)
-        specific_file = f"news/{home}_{away}.json"
-
-        data = cls._load_json(specific_file)
+        data = cls._load_json("news.json")
         if not data:
-            data = cls._load_json("news/default.json")
-
-        if not data or "default" not in data:
             return []
 
         articles = []
-        for item in data["default"]:
+        for item in data:
             articles.append(
                 {
                     "content": item["content"].format(
@@ -274,13 +237,7 @@ class MockProvider:
         Returns:
             要約テキスト（プレースホルダーを置換済み）
         """
-        home = cls._normalize_team_name(home_team)
-        away = cls._normalize_team_name(away_team)
-        specific_file = f"llm/{home}_{away}.json"
-
-        data = cls._load_json(specific_file)
-        if not data:
-            data = cls._load_json("llm/default.json")
+        data = cls._load_json("llm.json")
 
         if not data or "news_summary" not in data:
             return f"[MOCK] ニュース要約: {home_team} vs {away_team}"
@@ -295,13 +252,7 @@ class MockProvider:
         Returns:
             プレビューテキスト（プレースホルダーを置換済み）
         """
-        home = cls._normalize_team_name(home_team)
-        away = cls._normalize_team_name(away_team)
-        specific_file = f"llm/{home}_{away}.json"
-
-        data = cls._load_json(specific_file)
-        if not data:
-            data = cls._load_json("llm/default.json")
+        data = cls._load_json("llm.json")
 
         if not data or "tactical_preview" not in data:
             return f"[MOCK] 戦術プレビュー: {home_team} vs {away_team}"
@@ -313,11 +264,7 @@ class MockProvider:
         cls, team_name: str, opponent_team: str, is_home: bool
     ) -> str:
         """インタビュー要約を取得"""
-        home = cls._normalize_team_name(team_name if is_home else opponent_team)
-        away = cls._normalize_team_name(opponent_team if is_home else team_name)
-        specific_file = f"llm/{home}_{away}.json"
-
-        data = cls._load_json(specific_file)
+        data = cls._load_json("llm.json")
         if not data:
             return "監督: 『重要な試合になる。選手たちは準備できている。』"
 
@@ -327,35 +274,11 @@ class MockProvider:
     @classmethod
     def get_transfer_news(cls, team_name: str, match_date: str, is_home: bool) -> str:
         """移籍情報を取得"""
-        # Note: In a real scenario we might need robust mapping, but for mock we assume current match
-        # We can try to derive the match from the context or just check formatted files
-
-        # This part is tricky because we don't have the opponent name passed easily without changing signature
-        # But commonly we are processing a specific match context.
-        # For simplicity in this mock-specific task, we'll try to find the match that contains this team.
-        matches = cls.get_matches()
-        target_match = None
-        for m in matches:
-            if m.core.home_team == team_name or m.core.away_team == team_name:
-                target_match = m
-                break
-
-        if not target_match:
-            return f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 情報なし"
-
-        home = cls._normalize_team_name(target_match.core.home_team)
-        away = cls._normalize_team_name(target_match.core.away_team)
-        specific_file = f"llm/{home}_{away}.json"
-
-        data = cls._load_json(specific_file)
+        data = cls._load_json("llm.json")
         if not data:
             return f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 情報なし"
 
-        key = (
-            "home_transfer_news"
-            if target_match.core.home_team == team_name
-            else "away_transfer_news"
-        )
+        key = "home_transfer_news" if is_home else "away_transfer_news"
         return data.get(key, f"### {team_name} の移籍情報 (MOCK)\n\n- [MOCK] 情報なし")
 
     @classmethod

@@ -1,0 +1,17 @@
+[
+    {
+        "id": "mock_man_city_exeter",
+        "home_team": "Manchester City",
+        "away_team": "Exeter City",
+        "competition": "FA Cup",
+        "competition_logo": "https://media.api-sports.io/football/leagues/45.png",
+        "kickoff_jst": "2026/01/11 00:00 JST",
+        "kickoff_local": "2026-01-10 15:00 Local",
+        "rank": "S",
+        "venue": "Etihad Stadium, Manchester",
+        "referee": "Unknown",
+        "home_logo": "https://media.api-sports.io/football/teams/50.png",
+        "away_logo": "https://media.api-sports.io/football/teams/1364.png",
+        "kickoff_at_utc": "2026-01-10T15:00:00Z"
+    }
+]

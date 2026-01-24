@@ -98,7 +98,7 @@ class TestDateTimeUtil(unittest.TestCase):
         utc_dt = UTC.localize(datetime(2025, 12, 27, 12, 30))
         result = DateTimeUtil.format_jst_display(utc_dt, include_weekday=True)
 
-        self.assertEqual(result, "2025/12/27(土) 21:30 JST")
+        self.assertEqual(result, "2025/12/27（土） 21:30 JST")
 
     def test_format_without_weekday(self):
         """曜日なし表示"""

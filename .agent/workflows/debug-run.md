@@ -5,7 +5,7 @@ description: デバッグ実行用
 # Debug Run & Deploy (絶対遵守)
 
 デバッグモードでレポートを生成し、Firebase Hostingにデプロイする。
-**「実データをAPIから取得してテストしたい」のか「UIだけ確認したい」のかを、環境変数で厳密に使い分けること。**
+**「実データをAPIから取得してテストしたい」のか「UIだけ確認したい」のかを、環境変数を使い分けること。**
 
 ## 🚨 重要：実行モードの選択
 
@@ -13,6 +13,11 @@ description: デバッグ実行用
 | :--- | :--- |
 | **実データの取得・検証** | `DEBUG_MODE=True USE_MOCK_DATA=False` |
 | UI/レイアウトのみの確認（APIを叩かない） | `DEBUG_MODE=True USE_MOCK_DATA=True` |
+
+> [!CAUTION]
+> **`USE_MOCK_DATA` を省略すると `False`（実API使用）になります。**
+> モックモードを使う場合は`USE_MOCK_DATA=True`を指定してください。
+> ただし、モックモードで済む修正の場合に限るので、そのケースは少ない。
 
 ---
 
