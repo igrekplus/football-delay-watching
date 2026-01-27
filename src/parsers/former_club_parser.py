@@ -38,34 +38,24 @@ def parse_former_club_text(
 
     # フィルタリング用のキーワード（チーム名の略称など）
     team_keywords = []
+
+    from src.utils.team_name_translator import TeamNameTranslator
+
+    translator = TeamNameTranslator()
+
     if home_team:
+        team_keywords.extend(translator.get_katakana_keywords(home_team))
         team_keywords.append(home_team.lower())
         team_keywords.extend(
             [part.lower() for part in home_team.split() if len(part) > 3]
         )
-        # よくあるカタカナ名の対応（アドホックだが効果的）
-        if "manchester" in home_team.lower():
-            team_keywords.append("マンチェスター")
-        if "city" in home_team.lower():
-            team_keywords.append("シティ")
-        if "united" in home_team.lower():
-            team_keywords.append("ユナイテッド")
-        if "exeter" in home_team.lower():
-            team_keywords.append("エクセター")
 
     if away_team:
+        team_keywords.extend(translator.get_katakana_keywords(away_team))
         team_keywords.append(away_team.lower())
         team_keywords.extend(
             [part.lower() for part in away_team.split() if len(part) > 3]
         )
-        if "manchester" in away_team.lower():
-            team_keywords.append("マンチェスター")
-        if "city" in away_team.lower():
-            team_keywords.append("シティ")
-        if "united" in away_team.lower():
-            team_keywords.append("ユナイテッド")
-        if "exeter" in away_team.lower():
-            team_keywords.append("エクセター")
 
     def is_relevant(desc: str) -> bool:
         if not team_keywords:

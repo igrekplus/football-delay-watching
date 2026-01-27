@@ -59,6 +59,10 @@ PROMPT_METADATA: dict[str, dict[str, Any]] = {
         "label": "移籍情報",
         "use_grounding": True,
     },
+    "team_name_translation": {
+        "label": "チーム名翻訳",
+        "use_grounding": False,
+    },
 }
 
 
