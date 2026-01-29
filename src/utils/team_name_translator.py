@@ -38,14 +38,23 @@ class TeamNameTranslator:
         if not team_name:
             return []
 
-        katakana = self._get_translation(team_name)
-        if not katakana:
+        katakana_data = self._get_translation_data(team_name)
+        if not katakana_data:
             return []
 
-        keywords = [katakana]
-        # 中黒で分割して各パーツもキーワードとして追加（例: マンチェスター・シティ -> [マンチェスター, シティ]）
-        parts = [p.strip() for p in katakana.split("・") if len(p.strip()) >= 2]
-        keywords.extend(parts)
+        # LLMが生成した明示的なキーワードがあればそれを使用
+        keywords = katakana_data.get("keywords", [])
+        katakana = katakana_data.get("katakana", "")
+
+        if katakana:
+            if katakana not in keywords:
+                keywords.append(katakana)
+
+            # 補助的に中黒分割も追加（LLMが漏らした場合のバックアップ）
+            parts = [p.strip() for p in katakana.split("・") if len(p.strip()) >= 2]
+            for p in parts:
+                if p not in keywords:
+                    keywords.append(p)
 
         # 重複除去して、長い順にソート（マッチングの精度向上のため）
         unique_keywords = list(set(keywords))
@@ -53,25 +62,32 @@ class TeamNameTranslator:
 
         return unique_keywords
 
-    def _get_translation(self, team_name: str) -> str | None:
-        """キャッシュ優先で翻訳を取得"""
+    def _get_translation_data(self, team_name: str) -> dict | None:
+        """キャッシュ優先で翻訳データ(katakana, keywords)を取得"""
         cached = self._read_cache(team_name)
         if cached:
-            # logger.debug(f"[TEAM_TRANSLATION] Cache HIT: {team_name} -> {cached}")
             return cached
 
         logger.info(f"[TEAM_TRANSLATION] Cache MISS: Translating team '{team_name}'")
-        translated = self._translate_team(team_name)
+        translated_data = self._translate_team(team_name)
 
-        if translated:
-            self._write_cache(team_name, translated)
+        if translated_data:
+            self._write_cache(team_name, translated_data)
 
-        return translated
+        return translated_data
 
-    def _translate_team(self, team_name: str) -> str | None:
+    def _get_translation(self, team_name: str) -> str | None:
+        """互換性用: カタカナ表記のみを取得"""
+        data = self._get_translation_data(team_name)
+        return data.get("katakana") if data else None
+
+    def _translate_team(self, team_name: str) -> dict | None:
         """Gemini APIを使用してチーム名を翻訳"""
         if self.use_mock:
-            return f"[MOCK]{team_name}"
+            return {
+                "katakana": f"[MOCK]{team_name}",
+                "keywords": [f"[MOCK]{team_name}"],
+            }
 
         from settings.gemini_prompts import build_prompt
 
@@ -87,14 +103,15 @@ class TeamNameTranslator:
                 json_str = "\n".join(lines[1:-1])
 
             translations = json.loads(json_str)
-            # 形式: {"Team Name": "カタカナ"}
-            katakana = list(translations.values())[0] if translations else None
+            # 形式: {"Team Name": {"katakana": "...", "keywords": [...]}}
+            # または旧形式: {"Team Name": "カタカナ"} の場合も考慮
+            data = list(translations.values())[0] if translations else None
 
-            if katakana:
-                logger.info(
-                    f"[TEAM_TRANSLATION] Translated '{team_name}' to '{katakana}'"
-                )
-            return katakana
+            if isinstance(data, str):
+                return {"katakana": data, "keywords": [data]}
+            elif isinstance(data, dict):
+                return data
+            return None
 
         except Exception as e:
             logger.error(f"[TEAM_TRANSLATION] Translation error for '{team_name}': {e}")
@@ -105,24 +122,31 @@ class TeamNameTranslator:
         name_hash = hashlib.md5(team_name.encode()).hexdigest()[:16]
         return f"{self.CACHE_PREFIX}/{name_hash}.json"
 
-    def _read_cache(self, team_name: str) -> str | None:
+    def _read_cache(self, team_name: str) -> dict | None:
         """キャッシュ読み込み"""
         try:
             cache_path = self._get_cache_path(team_name)
             data = self.cache_store.read(cache_path)
             if data and data.get("original") == team_name:
-                return data.get("katakana")
+                # katakanaキーがない旧キャッシュの場合は変換
+                if "katakana" not in data and "translation" in data:
+                    return {
+                        "katakana": data["translation"],
+                        "keywords": [data["translation"]],
+                    }
+                return data
         except Exception:
             pass
         return None
 
-    def _write_cache(self, team_name: str, katakana: str) -> None:
+    def _write_cache(self, team_name: str, translation_data: dict) -> None:
         """キャッシュ書き込み"""
         try:
             cache_path = self._get_cache_path(team_name)
             data = {
                 "original": team_name,
-                "katakana": katakana,
+                "katakana": translation_data.get("katakana", ""),
+                "keywords": translation_data.get("keywords", []),
             }
             self.cache_store.write(cache_path, data)
         except Exception as e:

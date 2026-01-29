@@ -19,7 +19,7 @@ class GeminiRestClient:
     """
 
     BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
-    MODEL_NAME = "gemini-2.0-flash-exp"
+    MODEL_NAME = "gemini-2.0-flash"
     MAX_RETRIES = 2
     TIMEOUT_SECONDS = 60
 

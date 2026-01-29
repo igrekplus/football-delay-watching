@@ -8,14 +8,27 @@
 
 JSON形式で出力してください（余計な説明は不要です）:
 出力JSON形式:
-{{"チーム名（英語）": "カタカナ表記", ...}}
+{{
+  "チーム名（英語）": {{
+    "katakana": "カタカナ表記",
+    "keywords": ["略称1", "略称2", ...]
+  }}
+}}
 
 例:
 {{
-  "Manchester City": "マンチェスター・シティ",
-  "FC Barcelona": "バルセロナ",
-  "Real Madrid": "レアル・マドリード",
-  "Arsenal": "アーセナル"
+  "Manchester City": {{
+    "katakana": "マンチェスター・シティ",
+    "keywords": ["マンチェスター・C", "マンC", "シティ"]
+  }},
+  "FC Barcelona": {{
+    "katakana": "バルセロナ",
+    "keywords": ["バルサ"]
+  }},
+  "Borussia Mönchengladbach": {{
+    "katakana": "ボルシア・メンヒェングラートバッハ",
+    "keywords": ["ボルシアMG", "グラートバッハ"]
+  }}
 }}
 
 チーム名:
