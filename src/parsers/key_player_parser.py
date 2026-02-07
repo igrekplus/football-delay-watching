@@ -98,6 +98,9 @@ def _finalize_player(player_dict, full_desc, players_list):
         # 先頭のコロンや改行を除去
         detail = re.sub(r"^[:\s]+", "", detail)
 
+    # サマリーの先頭にある「サマリー:」や「Summary:」を除去
+    summary = re.sub(r"^(サマリー|Summary)[:：\s]*", "", summary).strip()
+
     players_list.append(
         KeyPlayer(
             name=player_dict["name"],

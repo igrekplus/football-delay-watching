@@ -47,6 +47,12 @@ class TributeGenerator:
             match_date=match.core.match_date_local,
         )
 
+        # 追加: LLM出力をログ出力（調査用）
+        if raw_trivia:
+            logger.info("=== Former Club LLM Output (Raw) ===")
+            logger.info(raw_trivia)
+            logger.info("=== End Former Club LLM Output ===")
+
         # Gemini Groundingの出典番号を削除
         match.facts.former_club_trivia = (
             re.sub(r"\s*\[\d+(?:,\s*\d+)*\]", "", raw_trivia) if raw_trivia else ""

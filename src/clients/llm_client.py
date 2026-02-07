@@ -88,6 +88,7 @@ class LLMClient:
             result = rest_client.generate_content_with_grounding(prompt)
             # API呼び出しを記録
             ApiStats.record_call("Gemini Grounding")
+            self._log_llm_response("news_summary", result)
             return result
         except Exception as e:
             logger.error(f"Error generating news summary: {e}")
@@ -153,6 +154,7 @@ class LLMClient:
 
             # キャッシュ保存
             self._write_grounding_cache(cache_key, result)
+            self._log_llm_response("tactical_preview", result)
             return result
         except Exception as e:
             logger.error(f"Error generating tactical preview: {e}")
@@ -281,6 +283,7 @@ class LLMClient:
 
             # キャッシュ保存
             self._write_grounding_cache(cache_key, result)
+            self._log_llm_response("interview", result)
             return result
 
         except Exception as e:
@@ -334,6 +337,7 @@ class LLMClient:
 
             # キャッシュ保存
             self._write_grounding_cache(cache_key, result)
+            self._log_llm_response("transfer_news", result)
             return result
 
         except Exception as e:
@@ -401,6 +405,17 @@ class LLMClient:
             logger.debug(f"[GROUNDING CACHE] SAVED: {cache_key}")
         except Exception as e:
             logger.warning(f"Failed to write grounding cache {cache_key}: {e}")
+
+    def _log_llm_response(self, prompt_type: str, response: str, max_chars: int = 3000):
+        """LLM応答をログ出力（長すぎる場合はtruncate）"""
+        if not response:
+            return
+        display = (
+            response[:max_chars] + "..." if len(response) > max_chars else response
+        )
+        logger.info(f"=== LLM Response [{prompt_type}] ({len(response)} chars) ===")
+        logger.info(display)
+        logger.info(f"=== End LLM Response [{prompt_type}] ===")
 
     # ========== モック用メソッド ==========
 
@@ -473,7 +488,9 @@ class LLMClient:
         prompt = build_prompt("same_country_trivia", matchup_context=matchup_context)
 
         try:
-            return self.generate_content(prompt)
+            result = self.generate_content(prompt)
+            self._log_llm_response("same_country_trivia", result)
+            return result
         except Exception as e:
             logger.error(f"Error generating same country trivia: {e}")
             return ""
@@ -519,6 +536,7 @@ class LLMClient:
             result = rest_client.generate_content_with_grounding(prompt)
             # API呼び出しを記録
             ApiStats.record_call("Gemini Grounding")
+            self._log_llm_response("former_club_trivia", result)
             return result
         except Exception as e:
             logger.error(f"Error generating former club trivia: {e}")

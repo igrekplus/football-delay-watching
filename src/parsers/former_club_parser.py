@@ -27,6 +27,31 @@ def parse_former_club_text(
     if not llm_output:
         return []
 
+    # === 前処理: メタコメント・ステップ見出しを含む行を大まかに除去 ===
+    lines = llm_output.split("\n")
+    filtered_lines = []
+    # 拒否判定パターン
+    skip_patterns = [
+        r"^(了解|承知|かしこまり|はい)",  # 会話文
+        r"^ステップ\s*\d+",  # ステップ見出し
+        r"^Step\s*\d+",
+        r"^#{1,3}\s+ステップ",
+        r"^[*\-]\s+\*\*.*\*\*:",  # 箇条書き形式のステップ
+        r"^\s*最終出力",  # フォーマット指示の残骸
+    ]
+    skip_regex = re.compile("|".join(skip_patterns), re.IGNORECASE)
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            filtered_lines.append(line)
+            continue
+        if not skip_regex.match(stripped):
+            filtered_lines.append(line)
+
+    llm_output = "\n".join(filtered_lines)
+    # === 前処理ここまで ===
+
     entries = []
 
     # 選手名(チーム名) のパターン
@@ -85,6 +110,8 @@ def parse_former_club_text(
 
         # 不要な記号や空行を除去
         description = re.sub(r"^[。．.\s\(\(（]+", "", description).strip()
+        # サマリーの先頭にある「サマリー:」や「Summary:」を除去
+        description = re.sub(r"^(サマリー|Summary)[:：\s]*", "", description).strip()
         # Markdownの太字装飾を削除（description内）
         description = description.replace("**", "")
 
@@ -99,6 +126,21 @@ def parse_former_club_text(
             logger.warning(
                 f"Skipping irrelevant former club entry: {name} (refers to {description[:30]}...)"
             )
+
+    # === 重複排除: 選手名（小文字）で名寄せ ===
+    seen_names = {}
+    for entry in entries:
+        # 特殊記号等を除去して比較
+        key = re.sub(r"[^\w]", "", entry.name.lower())
+        if key not in seen_names:
+            seen_names[key] = entry
+        else:
+            # 説明文が長い方（もしくは後のほう）を優先
+            if len(entry.description) >= len(seen_names[key].description):
+                seen_names[key] = entry
+
+    entries = list(seen_names.values())
+    # === 重複排除ここまで ===
 
     logger.info(f"Parsed {len(entries)} relevant former club entries from LLM output")
     return entries
