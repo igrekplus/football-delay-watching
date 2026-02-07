@@ -473,6 +473,7 @@ class ReportGenerator:
 
         # YouTube
         match_key = f"{match.core.home_team} vs {match.core.away_team}"
+
         video_data = youtube_videos.get(match_key, {})
         youtube_html = self.youtube_formatter.format_youtube_section(
             video_data, match_key
