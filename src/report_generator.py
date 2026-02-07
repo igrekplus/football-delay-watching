@@ -362,6 +362,7 @@ class ReportGenerator:
                 llm_text=match.facts.same_country_text,
                 home_team=match.core.home_team,
                 away_team=match.core.away_team,
+                translator=translator,  # 追加
             )
             if matchups:
                 team_logos = {
@@ -396,7 +397,7 @@ class ReportGenerator:
         # ニュース・戦術プレビュー・古巣対決
         news_html = md_lib.markdown(match.preview.news_summary, extensions=["nl2br"])
         tactical_html = self._format_tactical_preview_with_visuals(
-            match, md_lib, player_photos_extended
+            match, md_lib, player_photos_extended, translator
         )
 
         # 古巣対決（構造化してパース）
@@ -507,15 +508,19 @@ class ReportGenerator:
         return context, image_paths
 
     def _format_tactical_preview_with_visuals(
-        self, match, md_lib, player_photos: dict = None
+        self, match, md_lib, player_photos: dict = None, translator=None
     ) -> str:
         """戦術プレビュー内の各セクションを個別にビジュアル化して結合"""
         import re
 
         from src.parsers.tactical_style_parser import parse_tactical_style_text
+        from src.utils.name_translator import NameTranslator
 
         if player_photos is None:
             player_photos = match.facts.player_photos
+
+        if translator is None:
+            translator = NameTranslator()
 
         text = match.preview.tactical_preview
         if not text:
@@ -546,6 +551,17 @@ class ReportGenerator:
             if "⚽ キープレイヤー" in title:
                 key_players = parse_key_player_text(content)
                 if key_players:
+                    # 解説文を日本語化
+                    player_names = [p.name for p in key_players]
+                    for p in key_players:
+                        p.description = translator.translate_names_in_html(
+                            p.description, player_names
+                        )
+                        if p.detailed_description:
+                            p.detailed_description = translator.translate_names_in_html(
+                                p.detailed_description, player_names
+                            )
+
                     final_html += self.matchup_formatter.format_key_player_section(
                         key_players=key_players,
                         player_photos=player_photos,
@@ -575,6 +591,15 @@ class ReportGenerator:
             elif "🔥 キーマッチアップ" in title:
                 matchups = parse_matchup_text(content)
                 if matchups:
+                    # 解説文を日本語化
+                    all_p_names = []
+                    for m in matchups:
+                        all_p_names.extend([p[0] for p in m.players])
+                    for m in matchups:
+                        m.description = translator.translate_names_in_html(
+                            m.description, all_p_names
+                        )
+
                     final_html += self.matchup_formatter.format_matchup_section(
                         matchups=matchups,
                         player_photos=player_photos,
@@ -680,6 +705,7 @@ class ReportGenerator:
         llm_text: str,
         home_team: str,
         away_team: str,
+        translator=None,
     ) -> list:
         """
         構造化データ(same_country_matchups)からPlayerMatchupリストを構築。
@@ -688,7 +714,11 @@ class ReportGenerator:
         from html import escape
 
         from src.parsers.matchup_parser import PlayerMatchup
+        from src.utils.name_translator import NameTranslator
         from src.utils.nationality_flags import get_flag_emoji
+
+        if translator is None:
+            translator = NameTranslator()
 
         if not matchups_data:
             return []
@@ -770,6 +800,12 @@ class ReportGenerator:
                 description,
             )
             description = re.sub(r"^[。．.,、\s\(\(（]+", "", description).strip()
+
+            # 説明文中の選手名を日本語化
+            all_country_players = home_players + away_players
+            description = translator.translate_names_in_html(
+                description, all_country_players
+            )
 
             result.append(
                 PlayerMatchup(
