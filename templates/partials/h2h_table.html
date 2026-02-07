@@ -5,17 +5,52 @@
             <th>大会</th>
             <th>対戦</th>
             <th>スコア</th>
+            <th>結果</th>
         </tr>
     </thead>
     <tbody>
         {% for detail in h2h_details %}
         {% set home_display = "<strong>" ~ detail.home ~ "</strong>" if detail.winner == detail.home else detail.home %}
         {% set away_display = "<strong>" ~ detail.away ~ "</strong>" if detail.winner == detail.away else detail.away %}
+        {% set comp_display = {
+        "Premier League": "PL",
+        "UEFA Champions League": "CL",
+        "La Liga": "LaLiga",
+        "FA Cup": "FA",
+        "Copa del Rey": "Copa",
+        "EFL Cup": "EFL",
+        "Friendlies Clubs": "Friendly"
+        }.get(detail.competition, detail.competition) %}
         <tr>
             <td>{{ detail.date }}</td>
-            <td>{{ detail.competition }}</td>
-            <td>{{ home_display | safe }} vs {{ away_display | safe }}</td>
+            <td class="h2h-competition-cell">
+                {% if detail.league_logo %}
+                <img src="{{ detail.league_logo }}" class="h2h-logo" alt="" onerror="this.style.display='none';">
+                {% endif %}
+                <span>{{ comp_display }}</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                {% if detail.home_logo %}
+                <img src="{{ detail.home_logo }}" class="h2h-logo" alt="" onerror="this.style.display='none';">
+                {% endif %}
+                <span>{{ home_display | safe }}</span>
+                {% if detail.away_logo %}
+                <img src="{{ detail.away_logo }}" class="h2h-logo" alt="" onerror="this.style.display='none';">
+                {% endif %}
+                <span>{{ away_display | safe }}</span>
+            </td>
             <td>{{ detail.score }}</td>
+            {% set result_class = {
+            "W": "result-win",
+            "D": "result-draw",
+            "L": "result-loss"
+            }.get(detail.result_key, "") %}
+            {% set result_display = {
+            "W": "Win 🟢",
+            "D": "Draw ⚪",
+            "L": "Loss 🔴"
+            }.get(detail.result_key, detail.result_key) %}
+            <td class="{{ result_class }}">{{ result_display }}</td>
         </tr>
         {% endfor %}
     </tbody>

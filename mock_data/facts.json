@@ -83,7 +83,33 @@
             "result": "W"
         }
     ],
-    "h2h_summary": "過去5年間の対戦なし",
+    "h2h_summary": "過去5年間 2試合: Manchester City 1勝, 引分 1, Exeter City 0勝",
+    "h2h_details": [
+        {
+            "date": "2024-03-15",
+            "competition": "FA Cup",
+            "league_logo": "https://media.api-sports.io/football/leagues/45.png",
+            "home": "Manchester City",
+            "home_logo": "https://media.api-sports.io/football/teams/50.png",
+            "away": "Exeter City",
+            "away_logo": "https://media.api-sports.io/football/teams/1361.png",
+            "score": "3-0",
+            "winner": "Manchester City",
+            "result_key": "W"
+        },
+        {
+            "date": "2023-11-20",
+            "competition": "Friendly",
+            "league_logo": "",
+            "home": "Exeter City",
+            "home_logo": "https://media.api-sports.io/football/teams/1361.png",
+            "away": "Manchester City",
+            "away_logo": "https://media.api-sports.io/football/teams/50.png",
+            "score": "1-1",
+            "winner": "draw",
+            "result_key": "D"
+        }
+    ],
     "injuries_list": [
         {
             "name": "O. Bobb",

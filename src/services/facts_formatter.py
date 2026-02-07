@@ -207,8 +207,11 @@ class FactsFormatter:
 
             fixture_date_str = h2h_fixture.get("fixture", {}).get("date", "")[:10]
             competition = h2h_fixture.get("league", {}).get("name", "Unknown")
+            league_logo = h2h_fixture.get("league", {}).get("logo") or ""
             home_team_name = teams.get("home", {}).get("name", "")
+            home_team_logo = teams.get("home", {}).get("logo") or ""
             away_team_name = teams.get("away", {}).get("name", "")
+            away_team_logo = teams.get("away", {}).get("logo") or ""
             home_goals = goals.get("home", 0) or 0
             away_goals = goals.get("away", 0) or 0
             score = f"{home_goals}-{away_goals}"
@@ -218,29 +221,38 @@ class FactsFormatter:
             if home_goals == away_goals:
                 winner = "draw"
                 draws += 1
+                result_key = "D"
             elif home_goals > away_goals:
                 if fixture_home_id == home_id:
                     winner = match.core.home_team
                     home_wins += 1
+                    result_key = "W"
                 else:
                     winner = match.core.away_team
                     away_wins += 1
+                    result_key = "L"
             else:
                 if fixture_home_id == home_id:
                     winner = match.core.away_team
                     away_wins += 1
+                    result_key = "L"
                 else:
                     winner = match.core.home_team
                     home_wins += 1
+                    result_key = "W"
 
             h2h_details.append(
                 {
                     "date": fixture_date_str,
                     "competition": competition,
+                    "league_logo": league_logo,
                     "home": home_team_name,
+                    "home_logo": home_team_logo,
                     "away": away_team_name,
+                    "away_logo": away_team_logo,
                     "score": score,
                     "winner": winner,
+                    "result_key": result_key,
                 }
             )
 

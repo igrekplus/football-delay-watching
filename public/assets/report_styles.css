@@ -1019,6 +1019,43 @@ pre {
     background: var(--card-bg-light);
 }
 
+.h2h-competition-cell img,
+.h2h-competition-cell span {
+    vertical-align: middle;
+}
+
+.h2h-competition-cell img {
+    margin-right: 6px;
+}
+
+.h2h-matchup-cell {
+    white-space: nowrap;
+}
+
+.h2h-matchup-cell img,
+.h2h-matchup-cell span {
+    vertical-align: middle;
+}
+
+.h2h-matchup-cell img {
+    margin-right: 4px;
+}
+
+.h2h-vs {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin: 0 8px;
+}
+
+.h2h-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
 .h2h-table strong {
     color: var(--color-primary);
 }
