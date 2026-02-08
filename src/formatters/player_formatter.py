@@ -159,7 +159,9 @@ class PlayerFormatter:
         """
         選手リストをカード形式のHTMLに変換
         """
-        logger.info(f"[FORMATTER] Formatting {len(lineup)} players for {team_name}")
+        logger.info(
+            f"[PLAYER_FORMATTER] Formatting {len(lineup)} players for {team_name}"
+        )
         from src.template_engine import render_template
 
         if nationalities is None:

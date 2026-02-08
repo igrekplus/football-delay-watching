@@ -67,35 +67,64 @@ class TributeGenerator:
             match.facts.former_club_trivia = ""
             return
 
-        # 3. 各エントリをファクトチェック（別のLLM呼び出し）
+        # 3. ファクトチェック用のエントリリストを構築
+        fact_check_entries = []
+        for entry in entries:
+            # パース結果から現所属チームを取得し、古巣を判定
+            if (
+                entry.team.lower() in match.core.home_team.lower()
+                or match.core.home_team.lower() in entry.team.lower()
+            ):
+                current_team = match.core.home_team
+                opponent_team = match.core.away_team
+            elif (
+                entry.team.lower() in match.core.away_team.lower()
+                or match.core.away_team.lower() in entry.team.lower()
+            ):
+                current_team = match.core.away_team
+                opponent_team = match.core.home_team
+            else:
+                # マッチしない場合は従来ロジック（選手リストベース）にフォールバック
+                is_home_player = any(p in entry.name for p in home_players)
+                opponent_team = (
+                    match.core.away_team if is_home_player else match.core.home_team
+                )
+                current_team = (
+                    match.core.home_team if is_home_player else match.core.away_team
+                )
+
+            fact_check_entries.append(
+                {
+                    "player_name": entry.name,
+                    "current_team": current_team,
+                    "opponent_team": opponent_team,
+                    "description": entry.description,
+                }
+            )
+
+        # 4. バッチでファクトチェック（1回のLLM呼び出し）
+        fact_check_results = self.llm.fact_check_former_club_batch(
+            entries=fact_check_entries,
+            home_team=match.core.home_team,
+            away_team=match.core.away_team,
+        )
+
+        # 5. 結果を選手名でマッピング
+        result_map = {r["player_name"]: r for r in fact_check_results}
+
         valid_entries = []
         for entry in entries:
-            # 古巣と主張されているチームを特定
-            # 現所属がホームなら、古巣はアウェイ。逆も然り。
-            is_home_player = any(p in entry.name for p in home_players)
-            opponent_team = (
-                match.core.away_team if is_home_player else match.core.home_team
+            result = result_map.get(
+                entry.name, {"is_valid": True, "reason": "結果マッピング失敗"}
             )
-            current_team = (
-                match.core.home_team if is_home_player else match.core.away_team
-            )
-
-            is_valid, reason = self.llm.fact_check_former_club(
-                player_name=entry.name,
-                current_team=current_team,
-                opponent_team=opponent_team,
-                home_team=match.core.home_team,
-                away_team=match.core.away_team,
-            )
-
-            if is_valid:
+            if result.get("is_valid", False):
                 valid_entries.append(entry)
             else:
                 logger.warning(
-                    f"[TRIBUTE] Former club entry rejected: {entry.name} - {reason}"
+                    f"[TRIBUTE] Former club entry rejected: {entry.name} - {result.get('reason', '理由不明')}"
                 )
 
-        # 4. 有効なエントリのみでテキストを再構成
+        # 6. 有効なエントリのみでテキストを再構成
         if valid_entries:
             reconstructed_parts = []
             for entry in valid_entries:

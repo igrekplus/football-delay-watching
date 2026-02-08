@@ -145,7 +145,8 @@ def parse_former_club_text(
     entries = list(seen_names.values())
     # === 重複排除ここまで ===
 
+    raw_pattern_count = len(matches)
     logger.info(
-        f"[FORMER_CLUB] Parsed {len(entries)} relevant entries (deduplicated from {len(seen_names)} patterns)"
+        f"[FORMER_CLUB] Parsed {len(entries)} relevant entries (deduplicated from {raw_pattern_count} patterns)"
     )
     return entries

@@ -546,70 +546,91 @@ class LLMClient:
         """モック用: 古巣対決トリビア"""
         return f"- **選手A**（{away_team}）は{home_team}のアカデミー出身。[モック: 古巣対決トリビア]"
 
-    def fact_check_former_club(
+    def fact_check_former_club_batch(
         self,
-        player_name: str,
-        current_team: str,
-        opponent_team: str,
+        entries: list[dict],
         home_team: str,
         away_team: str,
-    ) -> tuple[bool, str]:
+    ) -> list[dict]:
         """
-        古巣対決のファクトチェック（ハルシネーション防止）
+        古巣対決のファクトチェック（バッチ処理）
 
         Args:
-            player_name: 選手名
-            current_team: 現所属チーム
-            opponent_team: 古巣と主張されている相手チーム
+            entries: [{"player_name": str, "current_team": str, "opponent_team": str, "description": str}, ...]
             home_team: ホームチーム名
             away_team: アウェイチーム名
 
         Returns:
-            (is_valid, reason): 有効ならTrue、判定理由
+            [{"player_name": str, "is_valid": bool, "reason": str}, ...]
         """
         if self.use_mock:
-            return True, "モックモードにつき検証スキップ"
+            return [
+                {
+                    "player_name": e["player_name"],
+                    "is_valid": True,
+                    "reason": "モックモードにつき検証スキップ",
+                }
+                for e in entries
+            ]
+
+        if not entries:
+            return []
+
+        # エントリをJSON形式に整形
+        entries_json = json.dumps(entries, ensure_ascii=False, indent=2)
 
         prompt = build_prompt(
             "former_club_fact_check",
             home_team=home_team,
             away_team=away_team,
-            player_name=player_name,
-            current_team=current_team,
-            opponent_team=opponent_team,
+            entries_json=entries_json,
         )
 
         try:
             response_text = self.generate_content(prompt).strip()
             # マークダウンコードブロックを除去
-            if response_text.startswith("```"):
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0]
+            elif response_text.startswith("```"):
                 response_text = response_text.split("```")[1]
                 if response_text.startswith("json"):
                     response_text = response_text[4:]
+                response_text = response_text.split("```")[0]
 
-            # 閉じカッコの後の余計な文字を除去
-            last_bracket = response_text.rfind("}")
-            if last_bracket != -1:
-                response_text = response_text[: last_bracket + 1]
+            results = json.loads(response_text)
 
-            result = json.loads(response_text)
-            is_valid = result.get("is_valid", False)
-            reason = result.get("reason", "理由不明")
+            # ログ出力
+            for result in results:
+                player_name = result.get("player_name", "Unknown")
+                is_valid = result.get("is_valid", False)
+                reason = result.get("reason", "理由不明")
+                if is_valid:
+                    logger.info(f"[FACT_CHECK] Approved {player_name}")
+                else:
+                    logger.warning(f"[FACT_CHECK] Rejected {player_name}: {reason}")
 
-            if not is_valid:
-                logger.warning(
-                    f"[FACT_CHECK] Rejected {player_name} for {opponent_team}: {reason}"
-                )
-            else:
-                logger.info(f"[FACT_CHECK] Approved {player_name} for {opponent_team}")
-
-            return is_valid, reason
+            return results
 
         except json.JSONDecodeError as e:
             logger.warning(
-                f"Fact check JSON parse error: {e}. Output: {response_text[:100]}..."
+                f"Fact check JSON parse error: {e}. Output: {response_text[:200]}..."
             )
-            return True, "判定エラーにつきパス（解析失敗）"
+            # パース失敗時は全員パス
+            return [
+                {
+                    "player_name": e["player_name"],
+                    "is_valid": True,
+                    "reason": "判定エラーにつきパス",
+                }
+                for e in entries
+            ]
         except Exception as e:
             logger.warning(f"Fact check failed: {e}")
-            return True, "判定エラーにつきパス（API失敗）"
+            return [
+                {
+                    "player_name": ent["player_name"],
+                    "is_valid": True,
+                    "reason": "判定エラーにつきパス",
+                }
+                for ent in entries
+            ]
