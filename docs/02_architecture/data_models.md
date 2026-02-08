@@ -17,6 +17,7 @@ flowchart LR
         LLM[("Gemini API + Grounding")]
         YT[("YouTube API")]
         CSV[("Instagram CSV")]
+        CALCSV[("Calendar CSV")]
     end
     
     subgraph Domain["ドメインモデル"]
@@ -26,9 +27,14 @@ flowchart LR
         MM[MatchMedia]
         MA[MatchAggregate]
     end
+
+    subgraph Aux["補助コンポーネント"]
+        CG[CalendarGenerator]
+    end
     
     subgraph Output["生成物"]
         HTML[("HTML")]
+        CAL[("calendar.html")]
         MAN[("manifest.json")]
         IMG[("Formation PNG")]
     end
@@ -38,13 +44,16 @@ flowchart LR
     LLM --> MP
     YT --> MM
     CSV --> MF
+    CALCSV --> CG
     
     MC --> MA
     MF --> MA
     MP --> MA
     MM --> MA
-    
+
     MA --> HTML
+    API --> CG
+    CG --> CAL
     HTML --> MAN
     MA --> IMG
 ```
@@ -128,6 +137,7 @@ flowchart TD
 | 生成物 | 形式 | 保存先 | 生成元 |
 |-------|------|--------|--------|
 | HTMLレポート | HTML | `public/reports/*.html` | HtmlGenerator |
+| カレンダー | HTML | `public/calendar.html` | CalendarGenerator |
 | フォーメーション画像 | PNG | `public/reports/images/` | ReportGenerator |
 | レポート一覧 | JSON | `public/reports/manifest.json` | HtmlGenerator |
 

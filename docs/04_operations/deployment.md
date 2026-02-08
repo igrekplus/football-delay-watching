@@ -10,7 +10,7 @@ Firebase Hosting へのデプロイ方法と注意事項をまとめたドキュ
 
 | 方式 | 説明 | 実行者 |
 |------|------|--------|
-| **GitHub Actions** | 毎日07:00 JST に自動実行 | 自動 |
+| **GitHub Actions** | 3時間ごとに自動実行 | 自動 |
 | **ローカル** | 手動でデプロイ | 開発者 |
 | **debug-run ワークフロー** | デバッグ実行後にデプロイ | 開発者（AIアシスタント） |
 
@@ -113,9 +113,12 @@ AIアシスタント向けに `.agent/workflows/debug-run.md` を用意。
 ### 処理内容
 
 1. レポート生成 (`python main.py`)
-2. `public/` に HTML コピー
-3. 設定ファイル生成 (firebase_config.json, allowed_emails.json)
-4. `firebase deploy --only hosting`
+2. GCSバックアップ (`gsutil rsync`)
+3. 既存レポート同期 (`python scripts/sync_firebase_reports.py`)
+4. カレンダー更新 (`python -m src.calendar_generator`)
+5. カレンダーCSV更新のコミット/プッシュ
+6. 設定ファイル生成 (firebase_config.json, allowed_emails.json)
+7. `firebase deploy --only hosting`
 
 ### 注意
 
@@ -129,6 +132,7 @@ Firebase 上の既存レポートは Actions 実行時に保持される。
 ```
 public/
 ├── index.html              ← ログイン + レポート一覧
+├── calendar.html           ← 試合日程カレンダー
 ├── firebase_config.json    ← Firebase設定（環境変数から生成）
 ├── allowed_emails.json     ← 許可メールリスト（環境変数から生成）
 └── reports/
@@ -167,23 +171,24 @@ firebase login
 
 | 項目 | 内容 |
 |------|------|
-| **実行時刻** | 毎日 07:00 JST（22:00 UTC） |
-| **対象試合** | 前日 07:00 JST ～ 当日 07:00 JST にキックオフ |
-| **対象リーグ** | EPL / Champions League |
-| **試合上限** | 最大3試合（`Config.MATCH_LIMIT`） |
+| **実行時刻** | 3時間ごと（`0 */3 * * *` UTC） |
+| **対象試合** | 現在時刻基準の対象ウィンドウ内（キックオフ1時間前〜24時間後） |
+| **対象リーグ** | EPL / CL / LALIGA / FA / COPA / EFL |
+| **試合上限** | 最大5試合（`Config.MATCH_LIMIT`） |
 
 ### 処理フロー
 
 ```mermaid
 flowchart LR
     subgraph GitHub Actions
-        A[07:00 JST] --> B[main.py]
+        A[3時間ごと] --> B[main.py]
         B --> C[試合データ取得]
         C --> D[レポート生成]
-        D --> E[HTMLファイル・manifest作成]
-        E --> F[Firebase Deploy]
+        D --> E[GCSバックアップ + 既存同期]
+        E --> F[calendar.html更新]
+        F --> G[Firebase Deploy]
     end
-    F --> G[Web公開]
+    G --> H[Web公開]
 ```
 
 ---
@@ -257,4 +262,4 @@ python healthcheck/check_gmail.py
 
 ---
 
-最終更新: 2025-12-31
+最終更新: 2026-02-08

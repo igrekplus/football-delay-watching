@@ -8,8 +8,8 @@
 
 サッカーの未視聴試合を、スコアや結果を知ることなく観戦するための「ネタバレ回避観戦ガイド」を自動生成するシステム。
 
-- 実行タイミング：毎日 07:00 (JST)
-- 出力形式：HTML（Firebase Hosting）、メール
+- 実行タイミング：3時間ごと (JST基準運用)
+- 出力形式：HTMLレポート、カレンダーHTML（Firebase Hosting）、メール
 
 ---
 
@@ -17,7 +17,8 @@
 
 ```mermaid
 graph TD
-    A[GitHub Actions 07:00 JST] --> B[main.py]
+    A[GitHub Actions 3時間ごと] --> B[main.py]
+    A --> B2[python -m src.calendar_generator]
     B --> C[MatchProcessor]
     C --> D[FactsService]
     D --> E[NewsService]
@@ -25,6 +26,7 @@ graph TD
     F --> G[ReportGenerator]
     G --> H[HtmlGenerator]
     H --> I[EmailService]
+    B2 --> Q[calendar.html]
     
     C -.-> J[(API-Football)]
     D -.-> J
@@ -63,8 +65,9 @@ graph TD
 | 4 | YouTube動画取得 | `YouTubeService` |
 | 5 | レポート生成 | `ReportGenerator` |
 | 6 | HTML変換 | `HtmlGenerator` |
-| 7 | メール送信 | `EmailService` |
-| 8 | キャッシュウォーミング | `CacheWarmer` |
+| 7 | カレンダー生成 | `CalendarGenerator` |
+| 8 | メール送信 | `EmailService` |
+| 9 | キャッシュウォーミング | `CacheWarmer` |
 
 ---
 

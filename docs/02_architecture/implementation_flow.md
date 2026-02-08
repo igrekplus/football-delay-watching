@@ -21,8 +21,13 @@ graph TD
         H --> I[EmailService.send]
     end
     
-    H[main.py] --> Workflow
-    Workflow --> J[CacheWarmer.run]
+    subgraph CI["GitHub Actions post-step"]
+        J[python -m src.calendar_generator] --> K[public/calendar.html 更新]
+    end
+
+    M[main.py] --> Workflow
+    M --> CI
+    Workflow --> L[CacheWarmer.run]
 ```
 
 > 補足: `MatchScheduler` / `FixtureStatusManager` は **本番のみ**で有効。デバッグ/モックではスキップされ、`MatchSelector.select()` が直接適用される。
@@ -97,6 +102,7 @@ graph TD
 - `news_summary`: ニュース要約（スポイラーフィルタ済み）
 - `tactical_preview`: 戦術プレビュー
 - `home_interview`, `away_interview`: インタビュー要約
+- `home_transfer_news`, `away_transfer_news`: 移籍情報
 
 **スポイラーフィルタリング:**
 1. `SpoilerFilter.is_safe_article()`: 記事収集時のルールベースフィルタ
@@ -157,6 +163,19 @@ graph TD
 | **入力** | 処理結果サマリ |
 | **出力** | なし |
 | **副作用** | メール送信 (Gmail API) |
+
+---
+
+### 2.8 CalendarGenerator
+
+| 項目 | 内容 |
+|------|------|
+| **責務** | カレンダーHTML生成（週別・リーグ別一覧、レポートリンク導線） |
+| **入力** | API-Football fixtures, `settings/calendar/*.csv` |
+| **出力** | `public/calendar.html` |
+| **副作用** | `public/` への書き込み |
+
+> 補足: `CalendarGenerator` は `GenerateGuideWorkflow.run()` の内部ではなく、GitHub Actions の後段ステップで実行される。
 
 ---
 

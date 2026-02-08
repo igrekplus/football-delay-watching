@@ -11,7 +11,7 @@
 | 項目 | 値 |
 |------|-----|
 | ワークフロー名 | `daily_report.yml` |
-| 実行タイミング | 毎日 07:00 JST (`0 22 * * *` UTC) |
+| 実行タイミング | 3時間ごと (`0 */3 * * *` UTC) |
 | 手動実行 | `workflow_dispatch` |
 
 ### 1.2 処理フロー
@@ -21,16 +21,22 @@ graph TD
     A[Checkout] --> B[Setup Python]
     B --> C[Install Dependencies]
     C --> D[Run main.py]
-    D --> E[Commit & Push]
-    D --> F[Firebase Deploy]
-    D --> G[Send Email]
+    D --> E[Backup reports to GCS]
+    E --> F[Sync existing reports from Firebase]
+    F --> G[Update calendar.html]
+    G --> H[Commit calendar CSV]
+    H --> I[Firebase Deploy]
 ```
 
 1. **Checkout**: リポジトリの最新コードを取得
 2. **Setup Python**: Python 3.11 環境を構築
 3. **Install Dependencies**: `requirements.txt` からライブラリをインストール
 4. **Run Application**: 環境変数を注入して `main.py` を実行
-5. **Commit & Push**: 生成レポートをリポジトリにコミット
+5. **Backup to GCS**: 生成済みレポートをバックアップ
+6. **Sync Existing Reports**: Firebase上の既存レポートをローカルへ同期
+7. **Update Calendar**: `calendar.html` を再生成
+8. **Commit & Push**: `settings/calendar/*.csv` の更新をコミット
+9. **Firebase Deploy**: Hostingへデプロイ
 
 ### 1.3 環境変数
 
@@ -55,8 +61,8 @@ GCS_CACHE_BUCKET: "football-delay-watching-cache"
 ### 2.2 設計方針
 
 1. **レポートファイル名**: 実行時のJST日付を使用
-2. **試合データフィルタ**: JSTベースで「前日07:00〜当日06:59」
-3. **Cronスケジュール**: UTC表記 (`0 22 * * *` = 07:00 JST)
+2. **試合データフィルタ**: 現在時刻基準で「キックオフ1時間前〜24時間後」を対象
+3. **Cronスケジュール**: UTC表記 (`0 */3 * * *` = 3時間ごと)
 
 ### 2.3 実装パターン
 

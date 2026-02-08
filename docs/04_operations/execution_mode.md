@@ -37,7 +37,7 @@ return self.DEBUG_MODE and not self.USE_MOCK_DATA
 | `USE_MOCK_DATA` | `False` | `False` | `True` |
 | `USE_API_CACHE` | `True` | `True` | `False` |
 | API呼び出し | 実API | 実API | なし |
-| 試合選定 | 全試合（最大3） | 1試合のみ | 固定3試合 |
+| 試合選定 | 全試合（最大5） | 1試合のみ | 1試合のみ（推奨実行コマンド時） |
 | データソース | API/GCS | API/GCS | fixtures/mock_*.json |
 | 出力先 | `reports/` | `reports_debug/` | `reports_mock/` |
 
@@ -63,9 +63,10 @@ return self.DEBUG_MODE and not self.USE_MOCK_DATA
 
 | モード | 対象期間 |
 |--------|---------|
-| **本番** | `昨日 07:00 JST` ～ `翌日 07:00 JST` (48h) |
-| **デバッグ (デフォルト)** | `現在時刻 - 24時間` ～ `現在時刻` |
-| **デバッグ (TARGET_DATE指定)** | `指定日-1日 07:00 JST` ～ `指定日 07:00 JST` |
+| **本番** | MatchProcessor: `現在時刻-24h` ～ `現在時刻+48h`（候補取得） |
+| **本番（実処理）** | MatchScheduler: `キックオフ-1h` ～ `キックオフ+24h` |
+| **デバッグ (デフォルト)** | 本番と同様（Schedulerによる時間窓判定） |
+| **TARGET_DATE指定** | `TARGET_DATE` と `TARGET_DATE+1` の日付で候補取得 |
 
 ### 3.2 GitHub Actions スケジュール
 
@@ -73,6 +74,9 @@ return self.DEBUG_MODE and not self.USE_MOCK_DATA
 |------|-----|-----|
 | cron | `0 22 * * *` (7時固定) | `0 */3 * * *` (3時間毎) |
 | 試合なし時 | エラー終了 | 正常終了（スキップ） |
+
+> [!NOTE]
+> 本番の最大試合数は `config.MATCH_LIMIT` により 5 に設定される。
 
 ### 3.3 未済管理
 
@@ -167,4 +171,4 @@ sequenceDiagram
 
 ---
 
-最終更新: 2026-01-02
+最終更新: 2026-02-08

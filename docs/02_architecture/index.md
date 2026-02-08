@@ -24,6 +24,7 @@
 ```mermaid
 graph TD
     A[GitHub Actions] --> B[main.py]
+    A --> B2[python -m src.calendar_generator]
     B --> C[MatchProcessor]
     C --> C1[MatchScheduler + FixtureStatusManager<br/>(prod only)]
     C1 --> C2[MatchSelector]
@@ -33,6 +34,7 @@ graph TD
     F --> G[ReportGenerator]
     G --> H[HtmlGenerator]
     H --> I[EmailService]
+    B2 --> Q[public/calendar.html]
     
     C -.-> J[(API-Football)]
     D -.-> J
