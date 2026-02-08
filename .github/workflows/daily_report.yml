@@ -9,12 +9,12 @@ on:
       use_mock_data:
         description: 'Use Mock Data'
         required: false
-        default: 'False'
+        default: false
         type: boolean
       debug_mode:
         description: 'Enable Debug Mode'
         required: false
-        default: 'False'
+        default: false
         type: boolean
 
 permissions:
