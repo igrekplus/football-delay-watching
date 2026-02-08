@@ -376,7 +376,7 @@ class LLMClient:
                     timestamp = datetime.fromisoformat(timestamp_str)
                     age_days = (datetime.now() - timestamp).days
                     if age_days < ttl_days:
-                        logger.info(f"[GROUNDING CACHE] HIT: {cache_key}")
+                        logger.debug(f"[GROUNDING CACHE] HIT: {cache_key}")
                         # キャッシュヒットを記録
                         ApiStats.record_cache_hit("Gemini Grounding")
                         return data.get("content")
@@ -384,7 +384,7 @@ class LLMClient:
                         logger.info(f"[GROUNDING CACHE] EXPIRED: {cache_key}")
                 else:
                     # タイムスタンプがない場合は古い形式か無期限扱い
-                    logger.info(f"[GROUNDING CACHE] HIT (no timestamp): {cache_key}")
+                    logger.debug(f"[GROUNDING CACHE] HIT (no timestamp): {cache_key}")
                     ApiStats.record_cache_hit("Gemini Grounding")
                     return data.get("content")
         except Exception as e:

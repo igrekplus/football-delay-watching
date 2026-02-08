@@ -88,7 +88,7 @@ class YouTubeSearchClient:
             if cached_at_str:
                 cached_at = datetime.fromisoformat(cached_at_str)
                 if datetime.now() - cached_at < timedelta(days=ttl_days):
-                    logger.info(f"YouTube cache HIT: {cache_path}")
+                    logger.debug(f"YouTube cache HIT: {cache_path}")
                     self.cache_hit_count += 1
                     ApiStats.record_cache_hit("YouTube Data API")
                     return data.get("results", [])
@@ -96,7 +96,7 @@ class YouTubeSearchClient:
                     logger.debug(f"YouTube cache expired: {cache_path}")
             else:
                 # タイムスタンプがない場合は古い形式か無期限扱い
-                logger.info(f"YouTube cache HIT (no timestamp): {cache_path}")
+                logger.debug(f"YouTube cache HIT (no timestamp): {cache_path}")
                 self.cache_hit_count += 1
                 ApiStats.record_cache_hit("YouTube Data API")
                 return data.get("results", [])

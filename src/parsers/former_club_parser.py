@@ -27,6 +27,8 @@ def parse_former_club_text(
     if not llm_output:
         return []
 
+    logger.info(f"[FORMER_CLUB] Input text length: {len(llm_output)} chars")
+
     # === 前処理: メタコメント・ステップ見出しを含む行を大まかに除去 ===
     lines = llm_output.split("\n")
     filtered_lines = []
@@ -60,6 +62,7 @@ def parse_former_club_text(
 
     # パターンにマッチする箇所と、その間のテキストを抽出
     matches = list(re.finditer(player_team_pattern, llm_output))
+    logger.info(f"[FORMER_CLUB] Found {len(matches)} player-team patterns")
 
     # フィルタリング用のキーワード（チーム名の略称など）
     team_keywords = []
@@ -142,5 +145,7 @@ def parse_former_club_text(
     entries = list(seen_names.values())
     # === 重複排除ここまで ===
 
-    logger.info(f"Parsed {len(entries)} relevant former club entries from LLM output")
+    logger.info(
+        f"[FORMER_CLUB] Parsed {len(entries)} relevant entries (deduplicated from {len(seen_names)} patterns)"
+    )
     return entries

@@ -39,6 +39,9 @@ class NewsService:
 
                 # 1. Generate Summary (Grounding機能で直接検索)
                 raw_summary = self._generate_summary(match)
+                logger.info(
+                    f"[NEWS] Summary generated: {len(raw_summary) if raw_summary else 0} chars"
+                )
                 match.preview.news_summary = self.filter.check_text(raw_summary)
 
                 # 2. Spoiler check with LLM (Issue #33)
@@ -54,6 +57,9 @@ class NewsService:
 
                 # 3. Generate Tactical Preview (Grounding機能で直接検索)
                 raw_preview = self._generate_tactical_preview(match)
+                logger.info(
+                    f"[NEWS] Tactical preview generated: {len(raw_preview) if raw_preview else 0} chars"
+                )
                 match.preview.tactical_preview = self.filter.check_text(raw_preview)
                 match.preview.preview_url = "https://example.com/tactical-preview"
 
@@ -62,6 +68,10 @@ class NewsService:
 
                 # 5. Process Transfer News (Issue #140)
                 self._process_transfer_news(match)
+
+                logger.info(
+                    f"[NEWS] Completed processing for {match.core.home_team} vs {match.core.away_team}"
+                )
 
     def _generate_summary(self, match: MatchAggregate) -> str:
         """ニュース要約を生成"""

@@ -73,33 +73,73 @@ def parse_tactical_style_text(
     # 2. 段落ベースのパース（構造化で見つからなかったチームを補完）
     if len(results) < 2:
         logger.debug(
-            f"Attempting paragraph-based parsing for remaining teams. Current results: {[r.team for r in results]}"
+            f"Attempting robust line-based parsing for remaining teams. Current results: {[r.team for r in results]}"
         )
         found_teams = [r.team for r in results]
 
-        # 段落（空行区切り）で分割
-        paragraphs = re.split(r"\n\s*\n", content)
-        for i, para in enumerate(paragraphs):
-            para = para.strip()
-            if not para or para.startswith("####"):
+        # 行単位で処理して、チーム名の出現を柔軟に検知
+        lines = content.split("\n")
+        current_team = None
+        current_desc = []
+
+        for line in lines:
+            line_orig = line
+            line = line.strip()
+            if not line:
                 continue
 
-            # 段落の先頭にチーム名があるかチェック
+            # 新しいチームの開始をチェック
             matched_team = None
-            if para.lower().startswith(home_team.lower()):
-                matched_team = home_team
-            elif para.lower().startswith(away_team.lower()):
-                matched_team = away_team
+            for team in [home_team, away_team]:
+                if team in found_teams:
+                    continue
 
-            if matched_team and matched_team not in found_teams:
-                # チーム名を除いた残りを説明文とする
-                desc = para[len(matched_team) :].strip()
-                # 先頭の助詞や記号を除去
-                desc = re.sub(r"^[はの、:\s-]+", "", desc)
-                if desc:
-                    results.append(TacticalStyle(team=matched_team, description=desc))
-                    found_teams.append(matched_team)
-                    logger.debug(f"Parsed via paragraph {i}: {matched_team}")
+                # チーム名が最初の方に含まれているかチェック
+                # 記号 (**, #, :) などを考慮して、最初の50文字以内を探索
+                line_head = line[:50].lower()
+                team_lower = team.lower()
+
+                if team_lower in line_head:
+                    start_pos = line_head.find(team_lower)
+                    # チーム名の前が記号のみかチェック（誤検知防止）
+                    prefix = line_head[:start_pos]
+                    if re.match(r"^[ :\*\-#>]*$", prefix):
+                        matched_team = team
+                        break
+
+            if matched_team:
+                # 前のチームがあれば保存
+                if current_team and current_desc:
+                    results.append(
+                        TacticalStyle(
+                            team=current_team,
+                            description="\n".join(current_desc).strip(),
+                        )
+                    )
+                    found_teams.append(current_team)
+
+                current_team = matched_team
+                # チーム名と、その周りの記号類を除去して説明文の開始部分を取得
+                # チーム名までの記号 + チーム名 + 直後の記号（コロン、太字閉じ、助詞等）を除去
+                pattern = f"^[ :\\*\\-#>]*{re.escape(current_team)}[ :\\*はの、\\s-]*"
+                desc_start = re.sub(pattern, "", line, flags=re.IGNORECASE)
+                current_desc = [desc_start] if desc_start else []
+            elif current_team:
+                current_desc.append(line_orig)
+
+        # 最後のチームを保存
+        if current_team and current_desc:
+            if not any(r.team == current_team for r in results):
+                results.append(
+                    TacticalStyle(
+                        team=current_team, description="\n".join(current_desc).strip()
+                    )
+                )
+
+    # 後処理: description のクリーンアップ
+    for r in results:
+        # 先頭の不要な記号を再度除去
+        r.description = re.sub(r"^[ :\*\-#>はの、\s-]+", "", r.description).strip()
 
     logger.info(f"Parsed {len(results)} tactical styles: {[r.team for r in results]}")
     return results

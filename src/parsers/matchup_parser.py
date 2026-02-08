@@ -33,6 +33,8 @@ def parse_matchup_text(llm_output: str) -> list[PlayerMatchup]:
     if not llm_output:
         return []
 
+    logger.info(f"[MATCHUP] Input text length: {len(llm_output)} chars")
+
     matchups = []
 
     # 1. まず行単位で処理（1行に1マッチアップの場合）
@@ -75,6 +77,9 @@ def parse_matchup_text(llm_output: str) -> list[PlayerMatchup]:
 
     # 2. もしマッチアップが見つからなかった場合、vsパターンで直接検索
     if not matchups:
+        logger.info(
+            "[MATCHUP] Header pattern found 0 matchups, trying vs-pattern fallback"
+        )
         vs_pattern = r"\*\*([^*]+)\*\*\s*[（\(]([^）\)]+)[）\)]\s*(?:vs|と)\s*\*\*([^*]+)\*\*\s*[（\(]([^）\)]+)[）\)]"
         for match in re.finditer(vs_pattern, llm_output):
             # 説明文は選手情報の後ろのテキスト。次のマッチアップの開始または改行2つまで取得
@@ -110,7 +115,7 @@ def parse_matchup_text(llm_output: str) -> list[PlayerMatchup]:
                 )
             )
 
-    logger.info(f"Parsed {len(matchups)} matchups from LLM output")
+    logger.info(f"[MATCHUP] Parsed {len(matchups)} matchups from LLM output")
     return matchups
 
 

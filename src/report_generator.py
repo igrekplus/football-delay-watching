@@ -86,6 +86,9 @@ class ReportGenerator:
         """
         1試合分のHTMLレポートを生成（選手名カタカナ変換込み）
         """
+        logger.info(
+            f"[REPORT] Generating single match: {match.core.home_team} vs {match.core.away_team}"
+        )
         from config import config
         from src.template_engine import render_template
         from src.utils.name_translator import NameTranslator
@@ -137,6 +140,9 @@ class ReportGenerator:
                 html_content, player_names
             )
 
+        logger.info(
+            f"[REPORT] Single match report completed: {match_report_context.get('filename', 'unknown')}"
+        )
         return html_content, image_paths
 
     def _generate_excluded_section(
@@ -351,6 +357,9 @@ class ReportGenerator:
             "partials/formation_section.html",
             home=home_formation_data,
             away=away_formation_data,
+        )
+        logger.info(
+            f"[REPORT] Formation images generated for {match.core.home_team} vs {match.core.away_team}"
         )
 
         # 同国対決

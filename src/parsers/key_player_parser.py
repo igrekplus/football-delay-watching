@@ -31,6 +31,8 @@ def parse_key_player_text(text: str) -> list[KeyPlayer]:
     if not text:
         return []
 
+    logger.info(f"[KEY_PLAYER] Input text length: {len(text)} chars")
+
     key_players = []
 
     lines = [line.strip() for line in text.strip().split("\n") if line.strip()]
@@ -79,7 +81,9 @@ def parse_key_player_text(text: str) -> list[KeyPlayer]:
         full_desc = "\n".join(buffer)
         _finalize_player(current_player, full_desc, key_players)
 
-    logger.info(f"Parsed {len(key_players)} key players")
+    logger.info(
+        f"[KEY_PLAYER] Parsed {len(key_players)} players: {[p.name for p in key_players]}"
+    )
     return key_players
 
 

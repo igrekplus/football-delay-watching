@@ -84,7 +84,7 @@ class FirebaseSyncClient:
                 logger.info(f"Downloaded: {remote_path}")
                 return True
             else:
-                logger.warning(
+                logger.debug(
                     f"Failed to download {remote_path}: HTTP {response.status_code}"
                 )
                 return False
@@ -124,7 +124,7 @@ class FirebaseSyncClient:
             if self.download_file(f"reports/{filename}", local_path):
                 downloaded += 1
 
-        # 新形式のレポート
+        failed = 0
         for date_key, date_data in manifest.get("reports_by_date", {}).items():
             for match in date_data.get("matches", []):
                 filename = match.get("file")
@@ -137,6 +137,12 @@ class FirebaseSyncClient:
 
                 if self.download_file(f"reports/{filename}", local_path):
                     downloaded += 1
+                else:
+                    failed += 1
 
+        if failed > 0:
+            logger.warning(
+                f"Failed to sync {failed} files from Firebase (likely 404). Normal for recent files."
+            )
         logger.info(f"Synced {downloaded} files from Firebase")
         return downloaded

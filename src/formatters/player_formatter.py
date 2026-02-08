@@ -1,10 +1,9 @@
-"""
-Player formatting utilities for report generation.
-"""
-
+import logging
 from datetime import datetime
 
 from src.utils.nationality_flags import format_player_with_flag
+
+logger = logging.getLogger(__name__)
 
 
 class PlayerFormatter:
@@ -160,6 +159,7 @@ class PlayerFormatter:
         """
         選手リストをカード形式のHTMLに変換
         """
+        logger.info(f"[FORMATTER] Formatting {len(lineup)} players for {team_name}")
         from src.template_engine import render_template
 
         if nationalities is None:
