@@ -35,7 +35,7 @@ class TributeGenerator:
             match.facts.same_country_text = ""
 
     def generate_former_club_trivia(self, match: MatchAggregate):
-        """古巣対決トリビアを生成"""
+        """古巣対決トリビアを生成（ハルシネーション対策のファクトチェック付き）"""
         home_players = match.facts.home_lineup + match.facts.home_bench
         away_players = match.facts.away_lineup + match.facts.away_bench
 
@@ -47,21 +47,69 @@ class TributeGenerator:
             match_date=match.core.match_date_local,
         )
 
-        # 追加: LLM出力をログ出力（調査用）
-        if raw_trivia:
-            logger.info("=== Former Club LLM Output (Raw) ===")
-            logger.info(raw_trivia)
-            logger.info("=== End Former Club LLM Output ===")
+        if not raw_trivia:
+            match.facts.former_club_trivia = ""
+            return
 
-        # Gemini Groundingの出典番号を削除
-        match.facts.former_club_trivia = (
-            re.sub(r"\s*\[\d+(?:,\s*\d+)*\]", "", raw_trivia) if raw_trivia else ""
+        # 1. Gemini Groundingの出典番号を削除
+        cleaned_trivia = re.sub(r"\s*\[\d+(?:,\s*\d+)*\]", "", raw_trivia)
+
+        # 2. パースして個別のエントリに分割
+        from src.parsers.former_club_parser import parse_former_club_text
+
+        entries = parse_former_club_text(
+            cleaned_trivia,
+            home_team=match.core.home_team,
+            away_team=match.core.away_team,
         )
 
-        if match.facts.former_club_trivia:
-            logger.info(
-                f"Generated former club trivia for {match.core.home_team} vs {match.core.away_team}"
+        if not entries:
+            match.facts.former_club_trivia = ""
+            return
+
+        # 3. 各エントリをファクトチェック（別のLLM呼び出し）
+        valid_entries = []
+        for entry in entries:
+            # 古巣と主張されているチームを特定
+            # 現所属がホームなら、古巣はアウェイ。逆も然り。
+            is_home_player = any(p in entry.name for p in home_players)
+            opponent_team = (
+                match.core.away_team if is_home_player else match.core.home_team
             )
+            current_team = (
+                match.core.home_team if is_home_player else match.core.away_team
+            )
+
+            is_valid, reason = self.llm.fact_check_former_club(
+                player_name=entry.name,
+                current_team=current_team,
+                opponent_team=opponent_team,
+                home_team=match.core.home_team,
+                away_team=match.core.away_team,
+            )
+
+            if is_valid:
+                valid_entries.append(entry)
+            else:
+                logger.warning(
+                    f"[TRIBUTE] Former club entry rejected: {entry.name} - {reason}"
+                )
+
+        # 4. 有効なエントリのみでテキストを再構成
+        if valid_entries:
+            reconstructed_parts = []
+            for entry in valid_entries:
+                reconstructed_parts.append(
+                    f"**{entry.name}** ({entry.team})\n{entry.description}"
+                )
+
+            match.facts.former_club_trivia = "\n\n".join(reconstructed_parts)
+            logger.info(
+                f"Generated and fact-checked former club trivia: {len(valid_entries)}/{len(entries)} valid"
+            )
+        else:
+            match.facts.former_club_trivia = ""
+            logger.info("No valid former club entries found after fact-check")
 
     def _detect_same_country_matchups(
         self, match: MatchAggregate

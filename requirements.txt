@@ -14,3 +14,4 @@ markdown
 jinja2
 markupsafe
 tenacity
+PyYAML

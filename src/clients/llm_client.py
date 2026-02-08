@@ -545,3 +545,71 @@ class LLMClient:
     def _get_mock_former_club_trivia(self, home_team: str, away_team: str) -> str:
         """モック用: 古巣対決トリビア"""
         return f"- **選手A**（{away_team}）は{home_team}のアカデミー出身。[モック: 古巣対決トリビア]"
+
+    def fact_check_former_club(
+        self,
+        player_name: str,
+        current_team: str,
+        opponent_team: str,
+        home_team: str,
+        away_team: str,
+    ) -> tuple[bool, str]:
+        """
+        古巣対決のファクトチェック（ハルシネーション防止）
+
+        Args:
+            player_name: 選手名
+            current_team: 現所属チーム
+            opponent_team: 古巣と主張されている相手チーム
+            home_team: ホームチーム名
+            away_team: アウェイチーム名
+
+        Returns:
+            (is_valid, reason): 有効ならTrue、判定理由
+        """
+        if self.use_mock:
+            return True, "モックモードにつき検証スキップ"
+
+        prompt = build_prompt(
+            "former_club_fact_check",
+            home_team=home_team,
+            away_team=away_team,
+            player_name=player_name,
+            current_team=current_team,
+            opponent_team=opponent_team,
+        )
+
+        try:
+            response_text = self.generate_content(prompt).strip()
+            # マークダウンコードブロックを除去
+            if response_text.startswith("```"):
+                response_text = response_text.split("```")[1]
+                if response_text.startswith("json"):
+                    response_text = response_text[4:]
+
+            # 閉じカッコの後の余計な文字を除去
+            last_bracket = response_text.rfind("}")
+            if last_bracket != -1:
+                response_text = response_text[: last_bracket + 1]
+
+            result = json.loads(response_text)
+            is_valid = result.get("is_valid", False)
+            reason = result.get("reason", "理由不明")
+
+            if not is_valid:
+                logger.warning(
+                    f"[FACT_CHECK] Rejected {player_name} for {opponent_team}: {reason}"
+                )
+            else:
+                logger.info(f"[FACT_CHECK] Approved {player_name} for {opponent_team}")
+
+            return is_valid, reason
+
+        except json.JSONDecodeError as e:
+            logger.warning(
+                f"Fact check JSON parse error: {e}. Output: {response_text[:100]}..."
+            )
+            return True, "判定エラーにつきパス（解析失敗）"
+        except Exception as e:
+            logger.warning(f"Fact check failed: {e}")
+            return True, "判定エラーにつきパス（API失敗）"

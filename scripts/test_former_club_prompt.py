@@ -117,21 +117,52 @@ def main():
         entries = parse_former_club_text(cleaned_result, HOME_TEAM, AWAY_TEAM)
 
         print(f"\n✅ 抽出されたエントリ数: {len(entries)}")
+
+        # 4.5 ファクトチェック (追加)
+        from src.clients.llm_client import LLMClient
+
+        llm_client = LLMClient()
+
+        valid_entries = []
+        fact_check_results = []
+
+        print("\n🔍 ファクトチェック実行中...")
         for i, entry in enumerate(entries):
-            print(f"  [{i + 1}] {entry.name} ({entry.team})")
-            print(f"      {entry.description[:100]}...")
+            # 簡易判定: 名前が HOME_PLAYERS にあれば現所属は HOME_TEAM
+            is_home_player = any(p.lower() in entry.name.lower() for p in HOME_PLAYERS)
+            current_team = HOME_TEAM if is_home_player else AWAY_TEAM
+            opponent_team = AWAY_TEAM if is_home_player else HOME_TEAM
+
+            is_valid, reason = llm_client.fact_check_former_club(
+                player_name=entry.name,
+                current_team=current_team,
+                opponent_team=opponent_team,
+                home_team=HOME_TEAM,
+                away_team=AWAY_TEAM,
+            )
+
+            status = "✅ VALID" if is_valid else "❌ INVALID"
+            print(f"  [{i + 1}] {entry.name}: {status} - {reason}")
+            fact_check_results.append(f"{entry.name}: {status} ({reason})")
+
+            if is_valid:
+                valid_entries.append(entry)
 
         # 5. HTML生成
-        print("\n🎨 HTML生成中...")
+        print("\n🎨 HTML生成中 (有効なエントリのみ)...")
         formatter = MatchupFormatter()
         # テスト用なので選手写真やロゴは空の辞書を渡す
-        html = formatter.format_former_club_section(entries, {}, {})
+        html = formatter.format_former_club_section(valid_entries, {}, {})
 
         # 6. ファイル出力
         os.makedirs("tmp", exist_ok=True)
         output_path = "tmp/former_club_test_output.html"
 
         # 簡易的なHTMLテンプレートを被せる
+        fact_check_html = (
+            "<ul>" + "".join([f"<li>{r}</li>" for r in fact_check_results]) + "</ul>"
+        )
+
         full_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -146,11 +177,16 @@ def main():
         .matchup-player-name {{ font-weight: bold; font-size: 1.1em; }}
         .matchup-team-name {{ color: #666; font-size: 0.9em; }}
         .matchup-description {{ margin-top: 10px; color: #333; line-height: 1.5; }}
-    </style>
-</head>
-<body>
-    <h1>Former Club Test Output</h1>
+        .fact-check-box {{ background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 10px 0; border-radius: 4px; }}
+
+    <h1>Former Club Test Output (Fact-Checked)</h1>
     <p>試合: {HOME_TEAM} vs {AWAY_TEAM} ({MATCH_DATE})</p>
+
+    <div class="fact-check-box">
+        <h3>🔍 Fact Check Results</h3>
+        {fact_check_html}
+    </div>
+
     <hr>
     {html}
     <hr>

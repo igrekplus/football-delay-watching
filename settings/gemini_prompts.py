@@ -63,6 +63,10 @@ PROMPT_METADATA: dict[str, dict[str, Any]] = {
         "label": "チーム名翻訳",
         "use_grounding": False,
     },
+    "former_club_fact_check": {
+        "label": "古巣対決ファクトチェック",
+        "use_grounding": False,
+    },
 }
 
 
