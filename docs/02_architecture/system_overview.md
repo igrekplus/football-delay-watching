@@ -49,9 +49,9 @@ graph TD
 |---------|---------------|----------|
 | データソース | API-Football | [external_apis.md](./external_apis.md) |
 | AI | Gemini API (Grounding) | [external_apis.md](./external_apis.md) |
-| キャッシュ | GCS | [cache.md](./cache.md) |
-| 実行基盤 | GitHub Actions | [infrastructure.md](./infrastructure.md) |
-| 配信 | Firebase, Gmail | [login.md](./login.md) |
+| キャッシュ | GCS | [../03_components/cache.md](../03_components/cache.md) |
+| 実行基盤 | GitHub Actions | [infrastructure.md](../04_operations/infrastructure.md) |
+| 配信 | Firebase, Gmail | [../03_components/login.md](../03_components/login.md) |
 
 ---
 
@@ -74,7 +74,7 @@ graph TD
 ## 5. 関連ドキュメント
 
 - [外部API連携設計](./external_apis.md)
-- [実行基盤設計](./infrastructure.md)
-- [キャッシュ設計](./cache.md)
-- [ログイン設計](./login.md)
-- [API-Football設計](./api_football.md)
+- [実行基盤設計](../04_operations/infrastructure.md)
+- [キャッシュ設計](../03_components/cache.md)
+- [ログイン設計](../03_components/login.md)
+- [API-Football設計](../03_components/api_football.md)

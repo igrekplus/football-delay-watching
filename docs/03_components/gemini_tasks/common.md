@@ -1,4 +1,4 @@
-# Gemini共通共通仕様 (Common Specs)
+# Gemini共通仕様 (Common Specs)
 
 本ドキュメントは、Gemini APIを使用したタスク全般に適用される共通の制約と仕様を定義する。
 
@@ -12,6 +12,11 @@
 ### 1.2 実装箇所
 - **LLMクライアント**: `src/clients/llm_client.py`
 - **スポイラーフィルター**: `src/utils/spoiler_filter.py`
+
+### 1.3 適用範囲
+
+本ドキュメントの対象は `NewsService` から呼ばれる生成タスク（ニュース要約・戦術・インタビュー・移籍情報）とする。
+同国対決・古巣対決は `FactsService` → `TributeGenerator` 側の責務として扱い、表示層で統合する。
 
 ## 2. 共通制約（Constraints）
 

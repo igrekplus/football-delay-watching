@@ -64,16 +64,17 @@
 
 各試合には優先度ランク（S, A, None）が付与され、**Rank S > Rank A > Rank None** の順で優先的に選定されます。
 
+> [!IMPORTANT]
+> ランク定義の単一ソースは `config.py`（`S_RANK_TEAMS`, `A_RANK_TEAMS`, `JAPANESE_PLAYERS`）と
+> `src/domain/match_ranker.py` です。以下は概要説明です。
+
 #### Rank S (最優先)
-- **Manchester City**
-- **CL Big Teams** (Real Madrid, Barcelona, Bayern, etc. 同士の対戦)
+- `config.S_RANK_TEAMS` に含まれるチームを含む試合
+- 現行設定では `Manchester City` が該当
 
 #### Rank A (高優先)
-- **主要人気クラブ**:
-  - EPL: Arsenal, Chelsea, Brighton, Manchester United, Liverpool, Tottenham, Leeds United
-  - La Liga: Barcelona, Real Madrid, Atletico Madrid, Real Sociedad
-- **日本人選手所属チーム**:
-  - 出場予定の日本人選手が含まれる場合
+- `config.A_RANK_TEAMS` に含まれるチームを含む試合
+- または `config.JAPANESE_PLAYERS` に該当する選手を含む試合
 
 #### Rank None (その他)
 - 上記以外

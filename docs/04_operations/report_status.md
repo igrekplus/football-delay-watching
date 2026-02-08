@@ -52,8 +52,8 @@
 
 ## 4. 関連ファイル
 
-- [fixture_status_manager.py](file:///Users/nagataryou/football-delay-watching/src/utils/fixture_status_manager.py) - ステータス管理実装
-- [generate_guide_workflow.py](file:///Users/nagataryou/football-delay-watching/src/workflows/generate_guide_workflow.py) - 品質チェック実装 (`_check_report_quality`)
+- [fixture_status_manager.py](../../src/utils/fixture_status_manager.py) - ステータス管理実装
+- [generate_guide_workflow.py](../../src/workflows/generate_guide_workflow.py) - 品質チェック実装 (`_check_report_quality`)
 - [execution_mode.md](./execution_mode.md) - 実行モード設計
 
 ---

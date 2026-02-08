@@ -25,7 +25,7 @@ Groundingのメカニズム詳細については [../gemini_grounding.md](../gem
 
 ### 1.3 実装ポイント
 - **クライアント**: REST (`GeminiRestClient`)
-- **モデル**: `gemini-2.0-flash-exp`
+- **モデル**: `gemini-2.0-flash`
 - **対戦相手**: 引数で指定可能（Grounding精度向上のため）
 - **エラー処理**: 検索失敗時やAPIエラー時は、中途半端な生成を行わずエラーを返す。
 

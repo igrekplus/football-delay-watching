@@ -8,7 +8,7 @@
 
 機能要件「試合抽出・選定 (Match)」「固定情報取得 (Facts)」を実現する。
 
-> 詳細は [api_football.md](./api_football.md) を参照。
+> 詳細は [api_football.md](../03_components/api_football.md) を参照。
 
 ---
 
@@ -24,9 +24,9 @@
 
 | 責務 (Task Category) | 機能 (Task) | クライアント | モデル | 参照ドキュメント |
 |---|---|---|---|---|
-| **Generation (Grounding)** | ニュース要約, 戦術プレビュー, インタビュー要約 | REST (`GeminiRestClient`) | `gemini-2.0-flash-exp` | [generation.md](../03_components/gemini_tasks/generation.md), [grounding.md](../03_components/gemini_tasks/grounding.md) |
+| **Generation (Grounding)** | ニュース要約, 戦術プレビュー, インタビュー要約, 移籍情報 | REST (`GeminiRestClient`) | `gemini-2.0-flash` | [generation.md](../03_components/gemini_tasks/generation.md), [grounding.md](../03_components/gemini_tasks/grounding.md) |
 | **Validation (Safety)** | ネタバレ検閲 | SDK (`google-generativeai`) | `gemini-pro-latest` | [safety.md](../03_components/gemini_tasks/safety.md) |
-| **Filtering** | YouTube動画選別 | REST (`GeminiRestClient`) | `gemini-2.0-flash-exp` | [filtering.md](../03_components/gemini_tasks/filtering.md) |
+| **Filtering** | YouTube動画選別 | REST (`GeminiRestClient`) | `gemini-2.0-flash` | [filtering.md](../03_components/gemini_tasks/filtering.md) |
 
 > **共通仕様**: [common.md](../03_components/gemini_tasks/common.md)を参照。
 
@@ -34,8 +34,8 @@
 
 | モデル名 | 用途 | 採用理由 |
 |----------|------|----------|
-| `gemini-2.0-flash-exp` | Grounding, Filtering, Preview | 高速、JSON出力安定、Grounding機能が強力 |
-| `gemini-pro` (latest) | 汎用生成, 検閲 | 安定動作、十分なクォータ (RPM) |
+| `gemini-2.0-flash` | Grounding, Filtering, Preview | 高速、JSON出力安定、Grounding機能が強力 |
+| `gemini-pro-latest` | 汎用生成, 検閲 | 安定動作、十分なクォータ (RPM) |
 
 ---
 
@@ -43,7 +43,7 @@
 
 機能要件「YouTube動画取得 (YouTube)」を実現する。
 
-### 4.1 概要
+### 3.1 概要
 
 | 項目 | 値 |
 |------|-----|
@@ -51,17 +51,17 @@
 | 実装クラス | `YouTubeSearchClient` (検索・キャッシュ) / `YouTubeService` (ロジック) |
 | 認証 | API Key |
 
-### 4.2 詳細
+### 3.2 詳細
 
 [youtube_integration.md](../01_requirements/youtube_integration.md) を参照。
 
 ---
 
-## 5. Gmail API
+## 4. Gmail API
 
 機能要件「配信 (Delivery)」のメール送信を実現する。
 
-### 5.1 概要
+### 4.1 概要
 
 | 項目 | 値 |
 |------|-----|
@@ -69,7 +69,7 @@
 | 実装クラス | `EmailService` |
 | 認証 | OAuth2 (リフレッシュトークン) |
 
-### 5.2 機能
+### 4.2 機能
 
 - HTMLメール生成（CSSスタイル付き）
 - フォーメーション画像のインライン添付

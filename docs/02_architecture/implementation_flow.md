@@ -73,10 +73,10 @@ graph TD
 
 | 項目 | 内容 |
 |------|------|
-| **責務** | 試合詳細情報（スタメン、怪我人、フォーム、対戦履歴）の付加 |
+| **責務** | 試合詳細情報（スタメン、怪我人、フォーム、対戦履歴）と観戦トリビア（同国/古巣）の付加 |
 | **入力** | `List[MatchAggregate]` |
 | **出力** | `List[MatchAggregate]` (enriched) |
-| **依存クライアント** | `ApiFootballClient` |
+| **依存クライアント** | `ApiFootballClient`, `LLMClient` (via `TributeGenerator`) |
 | **副作用** | `MatchAggregate`のフィールド更新（in-place mutation） |
 
 **更新されるフィールド:**
@@ -85,6 +85,8 @@ graph TD
 - `injuries`: 怪我人情報
 - `home_form`, `away_form`: 直近フォーム
 - `h2h`: 対戦履歴
+- `same_country_matchups`, `same_country_text`: 同国対決トリビア
+- `former_club_trivia`: 古巣対決トリビア（ファクトチェック後）
 
 ---
 
@@ -257,6 +259,6 @@ flowchart TD
 
 - [システム全体設計](./system_overview.md) - アーキテクチャ概要
 - [外部API連携設計](./external_apis.md) - API呼び出し仕様
-- [キャッシュ設計](./cache.md) - キャッシュ戦略
+- [キャッシュ設計](../03_components/cache.md) - キャッシュ戦略
 - [LLM制約仕様](../03_components/gemini_tasks/common.md) - LLM入出力制約
 - [非機能要件](../01_requirements/non_functional.md) - エラーハンドリング方針
