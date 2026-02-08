@@ -1,0 +1,227 @@
+/* 
+ * サッカー観戦ガイド - カレンダースタイルシート (週別×リーグ横並び)
+ */
+
+.calendar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-2xl) var(--spacing-xl);
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+/* フィルタUI */
+.filter-container {
+    margin-bottom: var(--spacing-2xl);
+    background: var(--card-bg-light);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--card-radius);
+    border: 1px solid var(--card-border-light);
+}
+
+.filter-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    font-size: 0.9rem;
+}
+
+/* 週セクション (縦並び) */
+.weeks-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.week-section {
+    border-top: 2px solid var(--card-border);
+    padding-top: var(--spacing-md);
+}
+
+.week-header {
+    margin-bottom: var(--spacing-md);
+    font-size: 1.4rem;
+    color: var(--color-primary);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.week-header:hover {
+    color: var(--color-accent);
+}
+
+.fold-icon {
+    font-size: 0.9rem;
+    transition: transform 0.3s;
+}
+
+.week-section.collapsed .fold-icon {
+    transform: rotate(-90deg);
+}
+
+.week-content {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, opacity 0.3s;
+    opacity: 1;
+}
+
+.week-section.collapsed .week-content {
+    max-height: 0;
+    opacity: 0;
+}
+
+/* リーグ列 (横並び) */
+.league-columns {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.league-columns::-webkit-scrollbar {
+    height: 8px;
+}
+
+.league-columns::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+.league-column {
+    flex: 0 0 380px;
+    background: var(--card-bg-light);
+    border-radius: var(--card-radius);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--card-border-light);
+}
+
+.league-column-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--card-border-light);
+    font-size: 1rem;
+    color: var(--color-secondary);
+    text-align: center;
+    margin: 0;
+}
+
+/* 試合リスト (縦並び) */
+.match-list {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+}
+
+/* コンパクトな試合行 */
+.match-row-container {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--card-border-light);
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.match-row-container:last-child {
+    border-bottom: none;
+}
+
+.match-row-container:hover {
+    background: rgba(254, 202, 87, 0.1);
+}
+
+.match-row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.match-date-compact {
+    font-size: 0.7rem;
+    color: var(--color-text-subtle);
+    font-weight: bold;
+}
+
+.match-time-compact {
+    font-size: 0.7rem;
+    color: var(--color-secondary);
+    font-family: monospace;
+}
+
+.match-teams-compact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.compact-logo-wrapper {
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.team-logo-compact {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.team-name-compact {
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* アコーディオン (詳細) */
+.match-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s;
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+    padding: 0;
+}
+
+.match-row-container.active {
+    background: rgba(254, 202, 87, 0.05);
+}
+
+.match-row-container.active .match-accordion-content {
+    max-height: 100px;
+    padding-top: 6px;
+    margin-top: 4px;
+    border-top: 1px dashed var(--card-border-light);
+}
+
+.detail-item {
+    margin-bottom: 2px;
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+    .league-column {
+        flex: 0 0 320px;
+    }
+
+    .calendar-container {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+}
