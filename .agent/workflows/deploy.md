@@ -11,24 +11,15 @@ description: firebase上へのデプロイを行い、URLを返す
 
 // turbo-all
 
-### 1. 同期処理 (Firebase -> Local)
-サーバー上の既存レポートをローカルの `public/reports` に同期します。これを忘れると、デプロイ時に古いデータが消えてしまいます。
+### 1. 安全なデプロイスクリプトの実行
+このスクリプトは内部で `sync_firebase_reports.py` を実行し、デプロイ前にサーバー上の最新状態をローカルに同期します。これにより、GitHub Actionsなどで生成された最新レポートを誤って上書きして消去してしまう事故を防止します。
 
 ```bash
-source .venv/bin/activate
-python scripts/sync_firebase_reports.py
+./scripts/safe_deploy.sh
 ```
 
-### 2. デプロイ実行
-Firebase Hostingへファイルをアップロードします。
-
-```bash
-firebase deploy --only hosting
-```
-
-### 3. URL確認と報告
-デプロイ完了後、以下のURLを確認し、ユーザーに報告してください。
-
-- **URL**: [https://football-delay-watching-a8830.web.app/](https://football-delay-watching-a8830.web.app/)
+### 2. URLの確認と報告
+デプロイ完了後、公開URL（https://football-delay-watching-a8830.web.app）を開き、レポートやカレンダーが正しく表示されているか確認してください。
+/](https://football-delay-watching-a8830.web.app/)
 
 必要に応じて `curl -I https://football-delay-watching-a8830.web.app/` で導通を確認してください。

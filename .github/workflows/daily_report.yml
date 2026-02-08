@@ -88,6 +88,13 @@ jobs:
           echo "=== End of Summary ==="
         fi
         
+    - name: Backup reports to GCS
+      if: env.SKIP_DEPLOY != 'true'
+      run: |
+        echo "=== Backing up reports to GCS ==="
+        # 日付ごとのフォルダにバックアップ（重複排除のため rsync ではなく cp を使用するか、バックアップ用ディレクトリへ同期）
+        gsutil -m rsync -r public/reports/ gs://football-delay-watching-backup/reports/$(date +'%Y%m%d_%H%M%S')/
+        echo "✅ Backup complete"
     - name: Sync existing reports from Firebase
       if: env.SKIP_DEPLOY != 'true'
       run: |

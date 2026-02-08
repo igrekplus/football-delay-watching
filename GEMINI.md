@@ -67,7 +67,7 @@ python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirem
 | コマンド | 用途 |
 |---------|------|
 | `/debug-run` | デバッグ実行→同期→デプロイ |
-| `/deploy` | Firebase Hostingへデプロイ |
+| `/deploy` | Firebase Hostingへデプロイ（安全な同期処理を含む） |
 | `/resolve-issue` | Issue対応フロー（ブランチ作成→実装→検証→マージ） |
 | `/tune-gemini` | Geminiプロンプトチューニング |
 | `/report-check-html` | HTMLレポート内キーワード検証 |
@@ -150,7 +150,7 @@ python -m unittest tests/test_datetime_util.py
 
 | 問題 | 対策 |
 |------|------|
-| デプロイ後にレポートが消える | `/deploy` ワークフローの手順に従うこと |
+| デプロイ後にレポートが消える | `/deploy` ワークフローの手順（`scripts/safe_deploy.sh`）に従うこと。必ず同期が行われます。 |
 | TARGET_DATE指定ミス | `/debug-run` ワークフローの「TARGET_DATEの計算ガイド」を参照 |
 | キャッシュが古い | `rm -rf .gemini/cache` でローカルキャッシュをクリア |
 | モックモードで実API検証 | ログ開始直後の `Mock: False` を必ず目視確認 |
