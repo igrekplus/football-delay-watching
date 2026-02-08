@@ -44,6 +44,9 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
     - name: Run Report Generator
       env:
         API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
