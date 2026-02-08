@@ -6,7 +6,7 @@ from typing import Any
 import pytz
 
 from config import config
-from settings.commentator_loader import get_commentator_info
+from settings.calendar_data_loader import get_calendar_info
 from src.clients.api_football_client import ApiFootballClient
 from src.utils.datetime_util import DateTimeUtil
 
@@ -100,7 +100,7 @@ class CalendarGenerator:
                         "competition_logo": item["league"]["logo"],
                         "venue": fixture.get("venue", {}).get("name", ""),
                         "round": item["league"].get("round", ""),
-                        "commentary": get_commentator_info(fixture["id"]),
+                        "commentary": get_calendar_info(fixture["id"]),
                     }
                     all_fixtures.append(match_info)
                     count += 1
@@ -255,10 +255,14 @@ class CalendarGenerator:
                                     <div class="match-teams-compact">
                                         <div class="compact-logo-wrapper"><img src="{m["home_logo"]}" class="team-logo-compact"></div>
                                         <span class="team-name-compact">{m["home_team"]}</span>
+                                        <span class="vs-text">vs</span>
                                         <span class="team-name-compact">{m["away_team"]}</span>
                                         <div class="compact-logo-wrapper"><img src="{m["away_logo"]}" class="team-logo-compact"></div>
+                                        {f'<a href="{m["commentary"]["report_link"]}" class="report-link-inline" onclick="event.stopPropagation()">📄 Report</a>' if m.get("commentary") and m["commentary"].get("report_link") else ""}
                                     </div>
-                                    {f'<div class="detail-item commentary-info">🎙️ {m["commentary"]["commentator"]} / {m["commentary"]["announcer"]}</div>' if m.get("commentary") else ""}
+                                    <div class="match-meta-info">
+                                        {f'<div class="detail-item commentary-info">🎙️ 解説: {m["commentary"]["commentator"]} / {m["commentary"]["announcer"]}</div>' if m.get("commentary") and (m["commentary"].get("commentator") or m["commentary"].get("announcer")) else ""}
+                                    </div>
                                 </div>
                                 <div class="match-accordion-content">
                                     <div class="detail-item">🏆 {m["round"]}</div>

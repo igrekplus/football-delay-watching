@@ -1,0 +1,56 @@
+fixture_id,date_jst,home_team,away_team,commentator,announcer,report_link
+1391042,2026-02-08,Barcelona,Mallorca,小澤一郎,倉敷保雄,/reports/2026-02-07_Barcelona_vs_Mallorca_20260208_094435.html
+1391056,2026-02-15,Real Madrid,Real Sociedad,小澤一郎,原大悟,
+1391055,2026-02-16,Rayo Vallecano,Atletico Madrid,中村俊輔,桑原学,
+1391052,2026-02-17,Girona,Barcelona,林陵平,倉敷保雄,
+1390995,2026-01-02,Rayo Vallecano,Getafe,,,/reports/2026-01-02_RayoVallecano_vs_Getafe_20260103_175701.html
+1390990,2026-01-03,Celta Vigo,Valencia,,,/reports/2026-01-03_CeltaVigo_vs_Valencia_20260104_082600.html
+1390994,2026-01-03,Osasuna,Athletic Club,,,/reports/2026-01-03_Osasuna_vs_AthleticClub_20260104_082600.html
+1390992,2026-01-03,Espanyol,Barcelona,,,/reports/2026-01-03_Espanyol_vs_Barcelona_20260104_192851.html
+1390991,2026-01-03,Elche,Villarreal,,,/reports/2026-01-03_Elche_vs_Villarreal_20260104_102832.html
+1390998,2026-01-04,Sevilla,Levante,,,/reports/2026-01-04_Sevilla_vs_Levante_20260104_215437.html
+1390996,2026-01-04,Real Madrid,Real Betis,,,/reports/2026-01-04_RealMadrid_vs_RealBetis_20260105_002353.html
+1390989,2026-01-04,Alaves,Oviedo,,,/reports/2026-01-04_Alaves_vs_Oviedo_20260105_032713.html
+1390993,2026-01-04,Mallorca,Girona,,,/reports/2026-01-04_Mallorca_vs_Girona_20260105_032713.html
+1390997,2026-01-04,Real Sociedad,Atletico Madrid,,,/reports/2026-01-04_RealSociedad_vs_AtleticoMadrid_20260105_061623.html
+1391001,2026-01-09,Getafe,Real Sociedad,,,/reports/2026-01-09_Getafe_vs_RealSociedad_20260111_192602.html
+1391007,2026-01-10,Valencia,Elche,,,/reports/2026-01-10_Valencia_vs_Elche_20260111_095628.html
+1391005,2026-01-10,Oviedo,Real Betis,,,/reports/2026-01-10_Oviedo_vs_RealBetis_20260111_101555.html
+1391008,2026-01-10,Villarreal,Alaves,,,/reports/2026-01-10_Villarreal_vs_Alaves_20260111_101555.html
+1391002,2026-01-10,Girona,Osasuna,,,/reports/2026-01-10_Girona_vs_Osasuna_20260111_101555.html
+1391004,2026-01-11,Rayo Vallecano,Mallorca,,,/reports/2026-01-11_RayoVallecano_vs_Mallorca_20260111_213524.html
+1391003,2026-01-11,Levante,Espanyol,,,/reports/2026-01-11_Levante_vs_Espanyol_20260112_002331.html
+1391006,2026-01-12,Sevilla,Celta Vigo,,,/reports/2026-01-12_Sevilla_vs_CeltaVigo_20260113_061958.html
+1391017,2026-01-17,Real Madrid,Levante,,,/reports/2026-01-17_RealMadrid_vs_Levante_20260117_213412.html
+1391015,2026-01-17,Mallorca,Athletic Club,,,/reports/2026-01-17_Mallorca_vs_AthleticClub_20260118_002616.html
+1391016,2026-01-17,Osasuna,Oviedo,,,/reports/2026-01-17_Osasuna_vs_Oviedo_20260118_032716.html
+1391010,2026-01-17,Real Betis,Villarreal,,,/reports/2026-01-17_RealBetis_vs_Villarreal_20260118_061549.html
+1391014,2026-01-18,Getafe,Valencia,,,/reports/2026-01-18_Getafe_vs_Valencia_20260118_213200.html
+1391009,2026-01-18,Atletico Madrid,Alaves,,,/reports/2026-01-18_AtleticoMadrid_vs_Alaves_20260119_231321.html
+1391011,2026-01-18,Celta Vigo,Rayo Vallecano,,,/reports/2026-01-18_CeltaVigo_vs_RayoVallecano_20260119_032521.html
+1391018,2026-01-18,Real Sociedad,Barcelona,,,/reports/2026-01-18_RealSociedad_vs_Barcelona_20260119_061617.html
+1391012,2026-01-19,Elche,Sevilla,,,/reports/2026-01-19_Elche_vs_Sevilla_20260120_061924.html
+1391023,2026-01-23,Levante,Elche,,,/reports/2026-01-23_Levante_vs_Elche_20260124_213227.html
+1391028,2026-01-24,Villarreal,Real Madrid,,,/reports/2026-01-24_Villarreal_vs_RealMadrid_20260125_084413.html
+1391024,2026-01-24,Rayo Vallecano,Osasuna,,,/reports/2026-01-24_RayoVallecano_vs_Osasuna_20260125_103007.html
+1391027,2026-01-24,Valencia,Espanyol,,,/reports/2026-01-24_Valencia_vs_Espanyol_20260125_103007.html
+1391026,2026-01-24,Sevilla,Athletic Club,,,/reports/2026-01-24_Sevilla_vs_AthleticClub_20260125_103007.html
+1391020,2026-01-25,Atletico Madrid,Mallorca,,,/reports/2026-01-25_AtleticoMadrid_vs_Mallorca_20260127_222757.html
+1391021,2026-01-25,Barcelona,Oviedo,,,/reports/2026-01-25_Barcelona_vs_Oviedo_20260126_002359.html
+1391025,2026-01-25,Real Sociedad,Celta Vigo,,,/reports/2026-01-25_RealSociedad_vs_CeltaVigo_20260126_032650.html
+1391019,2026-01-25,Alaves,Real Betis,,,/reports/2026-01-25_Alaves_vs_RealBetis_20260126_061749.html
+1391022,2026-01-26,Girona,Getafe,,,/reports/2026-01-26_Girona_vs_Getafe_20260127_062320.html
+1391032,2026-01-30,Espanyol,Alaves,,,/reports/2026-01-30_Espanyol_vs_Alaves_20260131_062513.html
+1391038,2026-01-31,Oviedo,Girona,,,/reports/2026-01-31_Oviedo_vs_Girona_20260131_213720.html
+1391036,2026-01-31,Osasuna,Villarreal,,,/reports/2026-01-31_Osasuna_vs_Villarreal_20260201_002600.html
+1391034,2026-01-31,Levante,Atletico Madrid,,,/reports/2026-01-31_Levante_vs_AtleticoMadrid_20260201_032841.html
+1391031,2026-01-31,Elche,Barcelona,,,/reports/2026-01-31_Elche_vs_Barcelona_20260201_062118.html
+1391037,2026-02-01,Real Madrid,Rayo Vallecano,,,/reports/2026-02-01_RealMadrid_vs_RayoVallecano_20260201_213911.html
+1391030,2026-02-01,Real Betis,Valencia,,,/reports/2026-02-01_RealBetis_vs_Valencia_20260202_002750.html
+1391033,2026-02-01,Getafe,Celta Vigo,,,/reports/2026-02-01_Getafe_vs_CeltaVigo_20260202_033042.html
+1391029,2026-02-01,Athletic Club,Real Sociedad,,,/reports/2026-02-01_AthleticClub_vs_RealSociedad_20260202_062016.html
+1391035,2026-02-02,Mallorca,Sevilla,,,/reports/2026-02-02_Mallorca_vs_Sevilla_20260203_104928.html
+1391043,2026-02-06,Celta Vigo,Osasuna,,,/reports/2026-02-06_CeltaVigo_vs_Osasuna_20260207_174447.html
+1391044,2026-02-07,Rayo Vallecano,Oviedo,,,/reports/2026-02-07_RayoVallecano_vs_Oviedo_20260208_211246.html
+1391046,2026-02-07,Sevilla,Girona,,,/reports/2026-02-07_Sevilla_vs_Girona_20260208_211246.html
+1391039,2026-02-08,Alaves,Getafe,,,/reports/2026-02-08_Alaves_vs_Getafe_20260208_211246.html
