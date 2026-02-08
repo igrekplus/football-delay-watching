@@ -146,16 +146,25 @@
     gap: 2px;
 }
 
-.match-date-compact {
-    font-size: 0.7rem;
-    color: var(--color-text-subtle);
+.match-time-combined {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: baseline;
+    font-family: monospace;
+    font-size: 0.75rem;
+}
+
+.match-time-jst {
+    color: #4A90E2;
+    /* Blue */
     font-weight: bold;
 }
 
-.match-time-compact {
+.match-time-utc {
+    color: var(--color-text-subtle);
+    /* Gray */
     font-size: 0.7rem;
-    color: var(--color-secondary);
-    font-family: monospace;
 }
 
 .match-teams-compact {

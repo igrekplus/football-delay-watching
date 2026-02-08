@@ -107,45 +107,46 @@ class CalendarGenerator:
         return all_fixtures
 
     def _build_timeline(self, fixtures: list[dict[str, Any]]) -> dict:
-        """データを週別・リーグ別のタイムライン構造に変換し、ソートする"""
-        # 3週間の開始日を再計算 (金曜開始)
-        now = DateTimeUtil.now_jst()
-        # 金曜日 = weekday() 4
-        days_since_friday = (now.weekday() - 4) % 7
-        start_of_this_week = now - timedelta(days=days_since_friday)
+        """データを週別・リーグ別のタイムライン構造に変換し、ソートする (UTC基準)"""
+        # 3週間の開始日を再計算 (UTC基準で月曜開始)
+        # MECEにするため、UTCの週単位（月〜日）で区切る
+        now_utc = datetime.now(pytz.UTC)
+        # 月曜日 = weekday() 0
+        days_since_monday = now_utc.weekday()
+        start_of_this_week = now_utc - timedelta(days=days_since_monday)
         start_of_this_week = start_of_this_week.replace(
             hour=0, minute=0, second=0, microsecond=0
         )
 
         weeks = []
-        for i in range(-1, 2):  # 前週, 今週, 来週
+        for i in range(-1, 2):  # 先週, 今週, 来週
             s = start_of_this_week + timedelta(weeks=i)
-            e = s + timedelta(days=6)
+            e = s + timedelta(weeks=1) - timedelta(seconds=1)
+
+            # ラベル用の表示 (JST換算)
+            s_jst = DateTimeUtil.to_jst(s)
+            e_jst = DateTimeUtil.to_jst(e)
+
             label = "今週" if i == 0 else ("先週" if i == -1 else "来週")
             weeks.append(
                 {
                     "start": s,
                     "end": e,
-                    "label": f"{label} ({s.month}/{s.day} - {e.month}/{e.day})",
+                    "label": f"{label} ({s_jst.month}/{s_jst.day} - {e_jst.month}/{e_jst.day})",
                     "leagues": {},
                 }
             )
 
-        # league_order は _render_html で定義されているため、ここでは不要
-        # league_order = ["CL", "EPL", "LALIGA", "FA", "COPA", "EFL"]
-
         for f in fixtures:
-            kickoff = f["kickoff_jst"]
+            # kickoff_utc は無いので kickoff_jst を UTC に変換
+            kickoff_jst = f["kickoff_jst"]
+            kickoff_utc = DateTimeUtil.to_utc(kickoff_jst)
             league_name = f["competition_name"]
 
             # どの週に属するか判定
             target_week = None
             for w in weeks:
-                if (
-                    w["start"]
-                    <= kickoff
-                    <= w["end"].replace(hour=23, minute=59, second=59)
-                ):
+                if w["start"] <= kickoff_utc <= w["end"]:
                     target_week = w
                     break
 
@@ -226,28 +227,25 @@ class CalendarGenerator:
 """
                 for m in matches:
                     dt_jst = m["kickoff_jst"]
-                    dt_local = m["kickoff_local"]
-                    tz_str = m.get("timezone", "UTC")
-                    # タイムゾーン略称を生成（例: Europe/London -> UK）
-                    tz_abbr = (
-                        tz_str.split("/")[-1][:3].upper()
-                        if "/" in tz_str
-                        else tz_str[:3].upper()
-                    )
+                    dt_utc = DateTimeUtil.to_utc(dt_jst)
 
-                    weekday = ["月", "火", "水", "木", "金", "土", "日"][
+                    weekday_jst = ["月", "火", "水", "木", "金", "土", "日"][
                         dt_jst.weekday()
                     ]
-                    local_time_str = dt_local.strftime("%H:%M")
-                    jst_time_str = dt_jst.strftime("%H:%M")
-                    date_str = f"{dt_jst.month}/{dt_jst.day}({weekday})"
-                    time_display = f"{local_time_str}({tz_abbr}) / {jst_time_str}(JST)"
+                    weekday_utc = ["月", "火", "水", "木", "金", "土", "日"][
+                        dt_utc.weekday()
+                    ]
+
+                    jst_display = f"JST {dt_jst.month}/{dt_jst.day}({weekday_jst}) {dt_jst.strftime('%H:%M')}"
+                    utc_display = f"(UTC: {dt_utc.month}/{dt_utc.day}({weekday_utc}) {dt_utc.strftime('%H:%M')})"
 
                     html += f"""
                             <div class="match-row-container" data-fixture-id="{m["fixture_id"]}" onclick="toggleAccordion(this)">
                                 <div class="match-row-main">
-                                    <span class="match-date-compact">{date_str}</span>
-                                    <span class="match-time-compact">{time_display}</span>
+                                    <div class="match-time-combined">
+                                        <span class="match-time-jst">{jst_display}</span>
+                                        <span class="match-time-utc">{utc_display}</span>
+                                    </div>
                                     <div class="match-teams-compact">
                                         <div class="compact-logo-wrapper"><img src="{m["home_logo"]}" class="team-logo-compact"></div>
                                         <span class="team-name-compact">{m["home_team"]}</span>
@@ -260,7 +258,6 @@ class CalendarGenerator:
                                     <div class="detail-item">📍 {m["venue"]}</div>
                                 </div>
                             </div>"""
-
                 html += """
                         </div>
                     </div>"""
