@@ -224,6 +224,12 @@
     margin-bottom: 2px;
 }
 
+.commentary-info {
+    color: var(--color-accent);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
 /* スマホ対応 */
 @media (max-width: 600px) {
     .league-column {

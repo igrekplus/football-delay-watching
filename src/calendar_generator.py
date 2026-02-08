@@ -6,6 +6,7 @@ from typing import Any
 import pytz
 
 from config import config
+from settings.commentator_loader import get_commentator_info
 from src.clients.api_football_client import ApiFootballClient
 from src.utils.datetime_util import DateTimeUtil
 
@@ -98,6 +99,7 @@ class CalendarGenerator:
                         "competition_logo": item["league"]["logo"],
                         "venue": fixture.get("venue", {}).get("name", ""),
                         "round": item["league"].get("round", ""),
+                        "commentary": get_commentator_info(fixture["id"]),
                     }
                     all_fixtures.append(match_info)
                     count += 1
@@ -256,6 +258,7 @@ class CalendarGenerator:
                                 <div class="match-accordion-content">
                                     <div class="detail-item">🏆 {m["round"]}</div>
                                     <div class="detail-item">📍 {m["venue"]}</div>
+                                    {f'<div class="detail-item commentary-info">🎙️ {m["commentary"]["commentator"]} / {m["commentary"]["announcer"]}</div>' if m.get("commentary") else ""}
                                 </div>
                             </div>"""
                 html += """
