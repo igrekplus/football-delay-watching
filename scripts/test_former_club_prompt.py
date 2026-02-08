@@ -118,7 +118,7 @@ def main():
 
         print(f"\n✅ 抽出されたエントリ数: {len(entries)}")
         for i, entry in enumerate(entries):
-            print(f"  [{i+1}] {entry.name} ({entry.team})")
+            print(f"  [{i + 1}] {entry.name} ({entry.team})")
             print(f"      {entry.description[:100]}...")
 
         # 5. HTML生成

@@ -18,12 +18,18 @@ class ApiFootballClient:
         self.quota_info = {}
 
     def get_fixtures(
-        self, league_id: int, season: int, date_str: str
+        self, league_id: int, season: int, date_str: str = None
     ) -> dict[str, Any]:
-        """Fetch fixtures for a specific league, season, and date."""
+        """Fetch fixtures for a specific league, season, and optionally a date."""
         url = f"{self.base_url}/fixtures"
-        querystring = {"date": date_str, "league": league_id, "season": str(season)}
-        return self._fetch(url, params=querystring, label="fixtures")
+        querystring = {"league": league_id, "season": str(season)}
+        if date_str:
+            querystring["date"] = date_str
+        return self._fetch(
+            url,
+            params=querystring,
+            label=f"fixtures league {league_id} season {season}",
+        )
 
     def get_squad(self, team_id: int, team_name: str = "") -> list:
         """Fetch squad (player list) for a team."""

@@ -1,0 +1,166 @@
+[
+  {
+    "name": "Antigua-And-Barbuda",
+    "code": "AG"
+  },
+  {
+    "name": "Aruba",
+    "code": "AW"
+  },
+  {
+    "name": "Bangladesh",
+    "code": "BD"
+  },
+  {
+    "name": "Bhutan",
+    "code": "BT"
+  },
+  {
+    "name": "Bosnia",
+    "code": "BA"
+  },
+  {
+    "name": "Botswana",
+    "code": "BW"
+  },
+  {
+    "name": "Burkina-Faso",
+    "code": "BF"
+  },
+  {
+    "name": "Cambodia",
+    "code": "KH"
+  },
+  {
+    "name": "Chinese-Taipei",
+    "code": "TW"
+  },
+  {
+    "name": "Congo-DR",
+    "code": "CG"
+  },
+  {
+    "name": "Costa-Rica",
+    "code": "CR"
+  },
+  {
+    "name": "Crimea",
+    "code": "UA"
+  },
+  {
+    "name": "Czech-Republic",
+    "code": "CZ"
+  },
+  {
+    "name": "Dominican-Republic",
+    "code": "DO"
+  },
+  {
+    "name": "El-Salvador",
+    "code": "SV"
+  },
+  {
+    "name": "Eswatini",
+    "code": "SZ"
+  },
+  {
+    "name": "Faroe-Islands",
+    "code": "FO"
+  },
+  {
+    "name": "Hong-Kong",
+    "code": "HK"
+  },
+  {
+    "name": "Ivory-Coast",
+    "code": "CI"
+  },
+  {
+    "name": "Laos",
+    "code": "LA"
+  },
+  {
+    "name": "Lesotho",
+    "code": "LS"
+  },
+  {
+    "name": "Macao",
+    "code": "MO"
+  },
+  {
+    "name": "Macedonia",
+    "code": "MK"
+  },
+  {
+    "name": "Maldives",
+    "code": "MV"
+  },
+  {
+    "name": "Mauritius",
+    "code": "MU"
+  },
+  {
+    "name": "Mongolia",
+    "code": "MN"
+  },
+  {
+    "name": "Myanmar",
+    "code": "MM"
+  },
+  {
+    "name": "Nepal",
+    "code": "NP"
+  },
+  {
+    "name": "New-Zealand",
+    "code": "NZ"
+  },
+  {
+    "name": "Northern-Ireland",
+    "code": "GB-NIR"
+  },
+  {
+    "name": "Pakistan",
+    "code": "PK"
+  },
+  {
+    "name": "San-Marino",
+    "code": "SM"
+  },
+  {
+    "name": "Saudi-Arabia",
+    "code": "SA"
+  },
+  {
+    "name": "Singapore",
+    "code": "SG"
+  },
+  {
+    "name": "Somalia",
+    "code": "SO"
+  },
+  {
+    "name": "South-Africa",
+    "code": "ZA"
+  },
+  {
+    "name": "South-Korea",
+    "code": "KR"
+  },
+  {
+    "name": "Trinidad-And-Tobago",
+    "code": "TT"
+  },
+  {
+    "name": "United-Arab-Emirates",
+    "code": "AE"
+  },
+  {
+    "name": "World",
+    "code": null
+  },
+  {
+    "name": "Yemen",
+    "code": "YE"
+  }
+]

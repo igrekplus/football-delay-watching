@@ -22,6 +22,45 @@ class Config:
     # API Cache (explicit override via env var)
     _USE_API_CACHE_OVERRIDE = os.getenv("USE_API_CACHE")
 
+    def __post_init__(self):
+        """Load league configurations from YAML after initialization."""
+        self._load_leagues()
+
+    def _load_leagues(self):
+        """Load target leagues and IDs from settings/leagues.yaml."""
+        import yaml
+
+        yaml_path = os.path.join(os.path.dirname(__file__), "settings", "leagues.yaml")
+
+        try:
+            with open(yaml_path, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                leagues_data = data.get("leagues", [])
+
+                # Update TARGET_LEAGUES and LEAGUE_IDS dynamically
+                self.TARGET_LEAGUES = [league["name"] for league in leagues_data]
+                self.LEAGUE_IDS = {
+                    league["name"]: league["id"] for league in leagues_data
+                }
+                self.LEAGUE_INFO = (
+                    leagues_data  # Full data including display_name and logo
+                )
+        except Exception as e:
+            # Fallback to hardcoded defaults if YAML loading fails
+            self.TARGET_LEAGUES = ["EPL", "CL", "LALIGA", "FA", "COPA", "EFL"]
+            self.LEAGUE_IDS = {
+                "EPL": 39,
+                "CL": 2,
+                "LALIGA": 140,
+                "FA": 45,
+                "COPA": 143,
+                "EFL": 48,
+            }
+            self.LEAGUE_INFO = []
+            print(
+                f"Warning: Failed to load leagues from {yaml_path}. Using defaults. Error: {e}"
+            )
+
     @property
     def USE_API_CACHE(self) -> bool:
         """
@@ -34,19 +73,6 @@ class Config:
             return self._USE_API_CACHE_OVERRIDE.lower() == "true"
         # Default: enable cache in debug mode with real API
         return self.DEBUG_MODE and not self.USE_MOCK_DATA
-
-    # Target Leagues
-    TARGET_LEAGUES: list[str] = ("EPL", "CL", "LALIGA", "FA", "COPA", "EFL")
-
-    # League ID Mapping for API-Football
-    LEAGUE_IDS = {
-        "EPL": 39,  # Premier League
-        "CL": 2,  # Champions League
-        "LALIGA": 140,  # La Liga
-        "FA": 45,  # FA Cup
-        "COPA": 143,  # Copa del Rey
-        "EFL": 48,  # EFL Cup (Carabao Cup)
-    }
 
     # S Rank Teams - Manchester City (highest priority)
     S_RANK_TEAMS: list[str] = ("Manchester City",)

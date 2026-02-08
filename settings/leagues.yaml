@@ -1,0 +1,31 @@
+# 対象リーグ/コンペティション設定
+leagues:
+  - name: EPL
+    id: 39
+    display_name: Premier League
+    logo_url: https://media.api-sports.io/football/leagues/39.png
+
+  - name: CL
+    id: 2
+    display_name: Champions League
+    logo_url: https://media.api-sports.io/football/leagues/2.png
+
+  - name: LALIGA
+    id: 140
+    display_name: La Liga
+    logo_url: https://media.api-sports.io/football/leagues/140.png
+
+  - name: FA
+    id: 45
+    display_name: FA Cup
+    logo_url: https://media.api-sports.io/football/leagues/45.png
+
+  - name: COPA
+    id: 143
+    display_name: Copa del Rey
+    logo_url: https://media.api-sports.io/football/leagues/143.png
+
+  - name: EFL
+    id: 48
+    display_name: EFL Cup
+    logo_url: https://media.api-sports.io/football/leagues/48.png
