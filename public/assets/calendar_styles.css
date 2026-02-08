@@ -140,11 +140,6 @@
     background: rgba(254, 202, 87, 0.1);
 }
 
-.match-row-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
 
 .match-time-combined {
     display: flex;
@@ -224,10 +219,20 @@
     margin-bottom: 2px;
 }
 
+.match-row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 2px 0;
+}
+
 .commentary-info {
     color: var(--color-accent);
     font-weight: 500;
-    margin-top: 4px;
+    font-size: 0.85rem;
+    padding-left: 2px;
+    border-top: 1px solid rgba(254, 202, 87, 0.1);
+    padding-top: 4px;
 }
 
 /* スマホ対応 */

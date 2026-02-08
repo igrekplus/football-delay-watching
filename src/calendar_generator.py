@@ -51,8 +51,9 @@ class CalendarGenerator:
 
         # 前週の日曜日
         start_date = start_of_week - timedelta(weeks=1)
-        # 再来週の土曜日の終わり
-        end_date = start_of_week + timedelta(weeks=2) - timedelta(seconds=1)
+        # 再来週の土曜日の終わり (+3 weeks total range from start_of_this_week)
+        # 実際には 4週間分: 先週(1), 今週(1), 来週(1), 再来週(1)
+        end_date = start_of_week + timedelta(weeks=3) - timedelta(seconds=1)
 
         logger.info(f"Calendar range: {start_date} to {end_date}")
 
@@ -121,7 +122,7 @@ class CalendarGenerator:
         )
 
         weeks = []
-        for i in range(-1, 2):  # 先週, 今週, 来週
+        for i in range(-1, 3):  # 先週, 今週, 来週, 再来週 (計4週間)
             s = start_of_this_week + timedelta(weeks=i)
             e = s + timedelta(weeks=1) - timedelta(seconds=1)
 
@@ -129,12 +130,15 @@ class CalendarGenerator:
             s_jst = DateTimeUtil.to_jst(s)
             e_jst = DateTimeUtil.to_jst(e)
 
-            label = "今週" if i == 0 else ("先週" if i == -1 else "来週")
+            # 「今週」などの相対表記を廃止し、日付範囲（曜日付き）にする
+            weekday_s = ["月", "火", "水", "木", "金", "土", "日"][s_jst.weekday()]
+            weekday_e = ["月", "火", "水", "木", "金", "土", "日"][e_jst.weekday()]
+            label = f"{s_jst.month}/{s_jst.day}({weekday_s}) - {e_jst.month}/{e_jst.day}({weekday_e})"
             weeks.append(
                 {
                     "start": s,
                     "end": e,
-                    "label": f"{label} ({s_jst.month}/{s_jst.day} - {e_jst.month}/{e_jst.day})",
+                    "label": label,
                     "leagues": {},
                 }
             )
@@ -254,11 +258,11 @@ class CalendarGenerator:
                                         <span class="team-name-compact">{m["away_team"]}</span>
                                         <div class="compact-logo-wrapper"><img src="{m["away_logo"]}" class="team-logo-compact"></div>
                                     </div>
+                                    {f'<div class="detail-item commentary-info">🎙️ {m["commentary"]["commentator"]} / {m["commentary"]["announcer"]}</div>' if m.get("commentary") else ""}
                                 </div>
                                 <div class="match-accordion-content">
                                     <div class="detail-item">🏆 {m["round"]}</div>
                                     <div class="detail-item">📍 {m["venue"]}</div>
-                                    {f'<div class="detail-item commentary-info">🎙️ {m["commentary"]["commentator"]} / {m["commentary"]["announcer"]}</div>' if m.get("commentary") else ""}
                                 </div>
                             </div>"""
                 html += """
