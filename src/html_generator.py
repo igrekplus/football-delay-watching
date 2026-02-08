@@ -184,7 +184,7 @@ def generate_html_reports(report_list: list) -> list:
 
         # カレンダーCSVにレポートリンクを記録
         if not config.USE_MOCK_DATA:
-            update_report_link(
+            success = update_report_link(
                 match.core.id,
                 f"/reports/{html_filename}",
                 league_name=match.core.competition,
@@ -194,6 +194,10 @@ def generate_html_reports(report_list: list) -> list:
                     "away_team": match.core.away_team,
                 },
             )
+            if not success:
+                logger.warning(
+                    f"Failed to update calendar report link for fixture {match.core.id}"
+                )
 
     # manifest更新（日付グループ構造）
     manifest_manager = ManifestManager()

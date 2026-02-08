@@ -68,18 +68,19 @@ def update_report_link(
     指定されたfixture_idのレポートリンクをCSVに書き込む。
     存在しない場合は新規行として追加する（league_nameが指定されている場合）。
     """
-    # 表示名 → 内部名のマッピング
-    LEAGUE_NAME_MAP = {
-        "Premier League": "EPL",
-        "Champions League": "CL",
-        "La Liga": "LALIGA",
-        "FA Cup": "FA",
-        "Copa del Rey": "COPA",
-        "EFL Cup": "EFL",
-    }
+    # 表示名 → 内部名のマッピングを config.LEAGUE_INFO から動的に生成
+    from config import config
 
-    if league_name in LEAGUE_NAME_MAP:
-        league_name = LEAGUE_NAME_MAP[league_name]
+    league_name_map = {}
+    if hasattr(config, "LEAGUE_INFO"):
+        for league in config.LEAGUE_INFO:
+            display_name = league.get("display_name")
+            internal_name = league.get("name")
+            if display_name and internal_name and display_name != internal_name:
+                league_name_map[display_name] = internal_name
+
+    if league_name in league_name_map:
+        league_name = league_name_map[league_name]
 
     fixture_id = str(fixture_id)
     data = load_all_calendar_data()
