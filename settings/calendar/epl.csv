@@ -4,8 +4,8 @@ fixture_id,date_jst,home_team,away_team,commentator,announcer,report_link
 1379209,2026-02-08,Arsenal,Sunderland,林陵平,藤田崇寛,
 1379211,2026-02-08,Brighton,Crystal Palace,ベン・メイブリー,下田恒幸,/reports/2026-02-08_Brighton_vs_CrystalPalace_20260208_221835.html
 1379215,2026-02-09,Liverpool,Manchester City,戸田和幸,野村明弘,/reports/2026-02-08_Liverpool_vs_ManchesterCity_20260209_062629.html
-1379221,2026-02-11,Chelsea,Leeds,戸田和幸,下田恒幸,
-1379227,2026-02-11,Tottenham,Newcastle,坪井慶介,野村明弘,
+1379221,2026-02-11,Chelsea,Leeds,戸田和幸,下田恒幸,/reports/2026-02-10_Chelsea_vs_Leeds_20260211_040730.html
+1379227,2026-02-11,Tottenham,Newcastle,坪井慶介,野村明弘,/reports/2026-02-10_Tottenham_vs_Newcastle_20260211_040730.html
 1379228,2026-02-11,West Ham,Manchester United,ベン・メイブリー,倉敷保雄,
 1379219,2026-02-12,Aston Villa,Brighton,粕谷秀樹,小林悠希,
 1379224,2026-02-12,Manchester City,Fulham,増嶋竜也,安井成行,
@@ -74,3 +74,4 @@ fixture_id,date_jst,home_team,away_team,commentator,announcer,report_link
 m2,2025-12-20,Newcastle,Chelsea,,,/reports/2025-12-20_Newcastle_vs_Chelsea_20260109_221010.html
 m3,2025-12-20,Everton,Arsenal,,,/reports/2025-12-20_Everton_vs_Arsenal_20260109_221010.html
 m4,2025-12-20,Brighton,Sunderland,,,/reports/2025-12-20_Brighton_vs_Sunderland_20260109_221010.html
+1379223,,Everton,Bournemouth,,,/reports/2026-02-10_Everton_vs_Bournemouth_20260211_040730.html
