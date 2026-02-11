@@ -110,6 +110,7 @@ ruff format .
 | 関数・変数 | スネークケース | `get_fixture_data()` |
 | 定数 | 大文字スネーク | `MAX_RETRIES` |
 | Workflow | ケバブケース | `debug-run.md` |
+| ブランチ名 | `feature-<issue-number>/<task-slug>` | `feature-253/fix-parser` |
 
 > [!WARNING]
 > **Workflowファイル名の禁止事項**
