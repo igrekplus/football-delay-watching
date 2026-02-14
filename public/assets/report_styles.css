@@ -1194,6 +1194,10 @@ pre {
         grid-template-columns: 1fr 1fr;
         gap: 20px;
     }
+
+    .matchup-container> :only-child {
+        grid-column: 1 / -1;
+    }
 }
 
 .matchup-country {
