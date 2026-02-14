@@ -100,6 +100,12 @@ class MatchFacts:
     home_team_color: str = "#3a6ea5"
     away_team_color: str = "#e74c3c"
 
+    # 予測データ (Issue #199)
+    prediction_percent: dict = field(default_factory=dict)
+    # {"home": "45%", "draw": "25%", "away": "30%"}
+    scorer_odds: list = field(default_factory=list)
+    # [{"market": "Anytime Goal Scorer", "values": [...]}, ...]
+
 
 @dataclass
 class MatchPreview:

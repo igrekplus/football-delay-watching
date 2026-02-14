@@ -405,6 +405,25 @@ class ReportGenerator:
 
         # ニュース・戦術プレビュー・古巣対決
         news_html = md_lib.markdown(match.preview.news_summary, extensions=["nl2br"])
+
+        # 予測セクション (Issue #199)
+        prediction_html = ""
+        if match.facts.prediction_percent or match.facts.scorer_odds:
+            logger.info(f"Rendering prediction section for {match.core.id}")
+            from src.template_engine import render_template as render_partial
+
+            prediction_html = render_partial(
+                "partials/prediction_section.html",
+                prediction_percent=match.facts.prediction_percent,
+                scorer_odds=match.facts.scorer_odds,
+                home_team=match.core.home_team,
+                away_team=match.core.away_team,
+                home_logo=match.core.home_logo,
+                away_logo=match.core.away_logo,
+                home_team_color=match.facts.home_team_color,
+                away_team_color=match.facts.away_team_color,
+            )
+
         tactical_html = self._format_tactical_preview_with_visuals(
             match, md_lib, player_photos_extended, translator
         )
@@ -510,6 +529,7 @@ class ReportGenerator:
             ),
             "same_country_html": same_country_html,
             "news_html": news_html,
+            "prediction_html": prediction_html,
             "tactical_html": tactical_html,
             "manager_section_html": manager_section_html,
             "transfer_section_html": transfer_section_html,

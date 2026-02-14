@@ -146,6 +146,35 @@ class MockProvider:
         match.player_birthdates = facts.get("player_birthdates", {})
         match.player_photos = facts.get("player_photos", {})
 
+        # 予測データ (Issue #199)
+        match.facts.prediction_percent = {
+            "home": "45%",
+            "draw": "25%",
+            "away": "30%",
+        }
+        match.facts.scorer_odds = [
+            {
+                "market": "Anytime Goal Scorer",
+                "values": [
+                    {"player": "Erling Haaland", "odd": "1.80"},
+                    {"player": "Phil Foden", "odd": "2.50"},
+                    {"player": "Kevin De Bruyne", "odd": "3.20"},
+                    {"player": "Jack Grealish", "odd": "4.00"},
+                    {"player": "Jeremy Doku", "odd": "5.50"},
+                ],
+            },
+            {
+                "market": "First Goal Scorer",
+                "values": [
+                    {"player": "Erling Haaland", "odd": "3.50"},
+                    {"player": "Phil Foden", "odd": "5.00"},
+                    {"player": "Kevin De Bruyne", "odd": "7.00"},
+                    {"player": "Jack Grealish", "odd": "8.50"},
+                    {"player": "Jeremy Doku", "odd": "10.00"},
+                ],
+            },
+        ]
+
         # Issue #40: Instagram URL設定（CSVから読み込み）
         from settings.player_instagram import get_player_instagram_urls
 

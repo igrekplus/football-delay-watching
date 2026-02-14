@@ -34,9 +34,6 @@ description: デバッグモードでレポートを生成し、Firebase Hosting
 以下のコマンドを実行する。**`USE_MOCK_DATA=False` を忘れると、APIを叩かずに偽データで動くので注意。**
 
 ```bash
-# venvを有効化
-source .venv/bin/activate
-
 # 日付(YYYY-MM-DD)は必要に応じて変更するが、原則2日以上前のfixturesが存在する日で実施すること。
 # 指定した日付の「07:00 JST」として実行される（＝その前の晩の試合を拾う）
 #
@@ -44,23 +41,23 @@ source .venv/bin/activate
 # > **TARGET_DATE は必ず「今日より2日以上前」の日付を指定すること！**
 # > 当日や前日を指定するとスタメン情報がまだAPIに存在せず、レポートが不完全になります。
 # > 例: 今日が 1/10 なら、1/8 以前を指定する。
-# 通常実行
 TARGET_DATE="2026-01-08" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
-
-# バックグラウンド実行（推奨：タイムアウト回避のため）
-TARGET_DATE="2026-01-08" DEBUG_MODE=True USE_MOCK_DATA=False nohup python main.py > debug_run.log 2>&1 &
 ```
 
 > [!TIP]
-> **バックグラウンド実行の推奨**
-> 実データ取得(`USE_MOCK_DATA=False`)はAPI通信やLLM処理により実行時間が長くなるため、**SSHセッションのタイムアウトやネットワーク切断によりプロセスが強制終了する（SIGHUP）**恐れがあります。
-> `nohup` を使用してバックグラウンドで実行し、ログファイル (`debug_run.log`) で進捗を確認することを強く推奨します。
-
+> **run_command のバックグラウンド機能を活用すること**
+> `nohup` や `tail -f` は使わない。代わりに `run_command` ツールの `WaitMsBeforeAsync` を **500ms** に設定して実行する。
+> これにより自動的にバックグラウンドコマンドとなり、`command_status` ツールで `OutputCharacterCount` と `WaitDurationSeconds` を指定してログをポーリングできる。
+>
+> **ポーリング手順:**
+> 1. `run_command` で実行 → バックグラウンドコマンドID を取得
+> 2. `command_status` で `WaitDurationSeconds=30`、`OutputCharacterCount=2000` を指定して定期確認
+> 3. Status が `DONE` になったら完了
 
 **[確認項目]**
-ログの開始直後に出る以下の行を**必ず**目視確認すること：
+`command_status` の最初の出力で以下の行を**必ず**目視確認すること：
 `Starting workflow... (Dry Run: False, Mock: False)`
-→ `Mock: False` になっていればOK。`Mock: True` なら即座に停止してやり直すこと。
+→ `Mock: False` になっていればOK。`Mock: True` なら即座に停止（`send_command_input` で Terminate）してやり直すこと。
 
 ### 2. 生成物のローカル確認
 HTMLファイルとフォーメーション画像が生成されているか確認。

@@ -128,6 +128,15 @@ class GenerateGuideWorkflow:
         facts_service = FactsService()
         facts_service.enrich_matches(matches)
 
+        # 3.5 Prediction Data (Issue #199)
+        try:
+            from src.prediction_service import PredictionService
+
+            prediction_service = PredictionService()
+            prediction_service.enrich_matches(matches)
+        except Exception as e:
+            logger.warning(f"Prediction enrichment failed (continuing): {e}")
+
         # 4. News Collection & Summarization
         news_service = NewsService()
         news_service.process_news(matches)

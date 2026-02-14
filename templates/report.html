@@ -39,6 +39,10 @@
 </div>
 {% endif %}
 
+{% if prediction_html %}
+{{ prediction_html | safe }}
+{% endif %}
+
 {{ match_info_html | safe }}
 
 <div class="two-column-section">

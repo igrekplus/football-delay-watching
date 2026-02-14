@@ -1,0 +1,65 @@
+<!-- Prediction & Odds Section (Issue #199) -->
+<div class="prediction-container">
+    <div class="prediction-header">
+        <span class="prediction-icon">🔮</span>
+        <h2>勝敗予測・オッズ</h2>
+    </div>
+
+    <div class="prediction-grid">
+        <!-- Win Probability Card -->
+        {% if prediction_percent %}
+        <div class="prediction-card win-probability">
+            <h3>Win Probability</h3>
+            <div class="prob-bar-container">
+                <div class="prob-bar home"
+                    style="width: {{ prediction_percent.home }}; background-color: {{ home_team_color or '#3a6ea5' }}">
+                    <span class="prob-label">{{ home_team }} {{ prediction_percent.home }}</span>
+                </div>
+                <div class="prob-bar draw" style="width: {{ prediction_percent.draw }}; background-color: #95a5a6">
+                    <span class="prob-label">Draw {{ prediction_percent.draw }}</span>
+                </div>
+                <div class="prob-bar away"
+                    style="width: {{ prediction_percent.away }}; background-color: {{ away_team_color or '#e74c3c' }}">
+                    <span class="prob-label">{{ away_team }} {{ prediction_percent.away }}</span>
+                </div>
+            </div>
+            <div class="prob-teams">
+                <div class="prob-team-item">
+                    <img src="{{ home_logo }}" alt="{{ home_team }}" class="mini-logo">
+                    <span>{{ prediction_percent.home }}</span>
+                </div>
+                <div class="prob-team-item">
+                    <span>Draw</span>
+                    <span>{{ prediction_percent.draw }}</span>
+                </div>
+                <div class="prob-team-item">
+                    <img src="{{ away_logo }}" alt="{{ away_team }}" class="mini-logo">
+                    <span>{{ prediction_percent.away }}</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Scorer Markets Card -->
+        {% if scorer_odds %}
+        <div class="prediction-card scorer-markets">
+            <h3>Scorer Markets</h3>
+            <div class="market-tabs">
+                {% for market in scorer_odds %}
+                <div class="market-section">
+                    <div class="market-name">{{ market.market }}</div>
+                    <div class="odds-list">
+                        {% for item in market['values'] %}
+                        <div class="odd-item">
+                            <span class="player-name">{{ item.player }}</span>
+                            <span class="odd-value">{{ item.odd }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -125,6 +125,18 @@ class ApiFootballClient:
         label = f"player {player_id}" + (f" ({team_name})" if team_name else "")
         return self._fetch(url, params=params, label=label)
 
+    def fetch_predictions(self, fixture_id: str) -> dict[str, Any]:
+        """勝敗予測を取得（predictions.percent）"""
+        url = f"{self.base_url}/predictions"
+        params = {"fixture": fixture_id}
+        return self._fetch(url, params=params, label=f"predictions {fixture_id}")
+
+    def fetch_odds(self, fixture_id: str, bookmaker_id: int = 8) -> dict[str, Any]:
+        """オッズ（得点者市場）を取得"""
+        url = f"{self.base_url}/odds"
+        params = {"fixture": fixture_id, "bookmaker": bookmaker_id}
+        return self._fetch(url, params=params, label=f"odds {fixture_id}")
+
     def _fetch(self, url: str, params: dict[str, Any], label: str) -> dict[str, Any]:
         """Internal fetch helper."""
         try:
