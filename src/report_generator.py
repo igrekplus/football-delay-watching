@@ -459,26 +459,29 @@ class ReportGenerator:
             away_interview=away_interview_html,
         )
 
-        # 移籍情報
-        home_transfer_html = (
-            md_lib.markdown(match.preview.home_transfer_news, extensions=["nl2br"])
-            if match.preview.home_transfer_news
-            else ""
-        )
-        away_transfer_html = (
-            md_lib.markdown(match.preview.away_transfer_news, extensions=["nl2br"])
-            if match.preview.away_transfer_news
-            else ""
-        )
-        transfer_section_html = render_template(
-            "partials/transfer_section.html",
-            home_team_logo=match.core.home_logo,
-            home_team=match.core.home_team,
-            home_transfer_html=home_transfer_html,
-            away_team_logo=match.core.away_logo,
-            away_team=match.core.away_team,
-            away_transfer_html=away_transfer_html,
-        )
+        # 移籍情報 (Issue #201: Market closed check)
+        if config.ENABLE_TRANSFER_NEWS:
+            home_transfer_html = (
+                md_lib.markdown(match.preview.home_transfer_news, extensions=["nl2br"])
+                if match.preview.home_transfer_news
+                else ""
+            )
+            away_transfer_html = (
+                md_lib.markdown(match.preview.away_transfer_news, extensions=["nl2br"])
+                if match.preview.away_transfer_news
+                else ""
+            )
+            transfer_section_html = render_template(
+                "partials/transfer_section.html",
+                home_team_logo=match.core.home_logo,
+                home_team=match.core.home_team,
+                home_transfer_html=home_transfer_html,
+                away_team_logo=match.core.away_logo,
+                away_team=match.core.away_team,
+                away_transfer_html=away_transfer_html,
+            )
+        else:
+            transfer_section_html = ""
 
         # YouTube
         match_key = f"{match.core.home_team} vs {match.core.away_team}"

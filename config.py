@@ -19,6 +19,13 @@ class Config:
     NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL")
     GMAIL_ENABLED = os.getenv("GMAIL_ENABLED", "False").lower() == "true"
 
+    # Feature Flags
+    # Issue #201: Transfer Market is closed, so disable by default.
+    # Can be re-enabled globally via env var or by changing this default back to True.
+    ENABLE_TRANSFER_NEWS: bool = (
+        os.getenv("ENABLE_TRANSFER_NEWS", "False").lower() == "true"
+    )
+
     # API Cache (explicit override via env var)
     _USE_API_CACHE_OVERRIDE = os.getenv("USE_API_CACHE")
 

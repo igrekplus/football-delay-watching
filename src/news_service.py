@@ -66,8 +66,13 @@ class NewsService:
                 # 4. Process Interviews (Grounding機能で直接検索)
                 self._process_interviews(match)
 
-                # 5. Process Transfer News (Issue #140)
-                self._process_transfer_news(match)
+                # 5. Process Transfer News (Issue #201: Market closed check)
+                if config.ENABLE_TRANSFER_NEWS:
+                    self._process_transfer_news(match)
+                else:
+                    logger.info(
+                        "[NEWS] Transfer news disabled (ENABLE_TRANSFER_NEWS=False)"
+                    )
 
                 logger.info(
                     f"[NEWS] Completed processing for {match.core.home_team} vs {match.core.away_team}"

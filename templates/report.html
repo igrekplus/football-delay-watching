@@ -149,12 +149,14 @@
     </div>
 </details>
 
+{% if transfer_section_html %}
 <details class="collapsible-section" open>
     <summary>🔄 移籍情報</summary>
     <div class="section-content">
         {{ transfer_section_html | safe }}
     </div>
 </details>
+{% endif %}
 
 {{ youtube_html | safe }}
 
