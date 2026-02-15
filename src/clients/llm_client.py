@@ -85,6 +85,9 @@ class LLMClient:
             from src.clients.gemini_rest_client import GeminiRestClient
 
             rest_client = GeminiRestClient(api_key=self.api_key)
+            self._log_llm_request(
+                "news_summary", prompt, home_team=home_team, away_team=away_team
+            )
             result = rest_client.generate_content_with_grounding(prompt)
             # API呼び出しを記録
             ApiStats.record_call("Gemini Grounding")
@@ -147,6 +150,13 @@ class LLMClient:
             from src.clients.gemini_rest_client import GeminiRestClient
 
             rest_client = GeminiRestClient(api_key=self.api_key)
+            self._log_llm_request(
+                "tactical_preview",
+                prompt,
+                home_team=home_team,
+                away_team=away_team,
+                competition=competition,
+            )
             result = rest_client.generate_content_with_grounding(prompt)
 
             # API呼び出しを記録
@@ -184,7 +194,11 @@ class LLMClient:
         )
 
         try:
+            self._log_llm_request(
+                "check_spoiler", prompt, home_team=home_team, away_team=away_team
+            )
             response_text = self.generate_content(prompt).strip()
+            self._log_llm_response("check_spoiler", response_text)
             # マークダウンコードブロックを除去
             if response_text.startswith("```"):
                 response_text = response_text.split("```")[1]
@@ -276,6 +290,12 @@ class LLMClient:
             from src.clients.gemini_rest_client import GeminiRestClient
 
             rest_client = GeminiRestClient(api_key=self.api_key)
+            self._log_llm_request(
+                "interview",
+                prompt,
+                team_name=team_name,
+                opponent_team=opponent_team,
+            )
             result = rest_client.generate_content_with_grounding(prompt)
 
             # API呼び出しを記録
@@ -330,6 +350,12 @@ class LLMClient:
             from src.clients.gemini_rest_client import GeminiRestClient
 
             rest_client = GeminiRestClient(api_key=self.api_key)
+            self._log_llm_request(
+                "transfer_news",
+                prompt,
+                team_name=team_name,
+                match_date=match_date,
+            )
             result = rest_client.generate_content_with_grounding(prompt)
 
             # API呼び出しを記録
@@ -379,14 +405,18 @@ class LLMClient:
                         logger.debug(f"[GROUNDING CACHE] HIT: {cache_key}")
                         # キャッシュヒットを記録
                         ApiStats.record_cache_hit("Gemini Grounding")
-                        return data.get("content")
+                        content = data.get("content")
+                        self._log_llm_response(type_name, content, source="cache")
+                        return content
                     else:
                         logger.info(f"[GROUNDING CACHE] EXPIRED: {cache_key}")
                 else:
                     # タイムスタンプがない場合は古い形式か無期限扱い
                     logger.debug(f"[GROUNDING CACHE] HIT (no timestamp): {cache_key}")
                     ApiStats.record_cache_hit("Gemini Grounding")
-                    return data.get("content")
+                    content = data.get("content")
+                    self._log_llm_response(type_name, content, source="cache")
+                    return content
         except Exception as e:
             logger.warning(f"Failed to read grounding cache {cache_key}: {e}")
 
@@ -406,14 +436,34 @@ class LLMClient:
         except Exception as e:
             logger.warning(f"Failed to write grounding cache {cache_key}: {e}")
 
-    def _log_llm_response(self, prompt_type: str, response: str, max_chars: int = 3000):
+    def _log_llm_request(
+        self, prompt_type: str, prompt: str, max_chars: int = 500, **params
+    ):
+        """LLMリクエストをログ出力"""
+        params_str = (
+            ", ".join(f"{k}={v}" for k, v in params.items()) if params else "no params"
+        )
+        logger.info(f"=== LLM Request [{prompt_type}] ({params_str}) ===")
+        display = prompt[:max_chars] + "..." if len(prompt) > max_chars else prompt
+        logger.info(f"Prompt ({len(prompt)} chars): {display}")
+        logger.info(f"=== End LLM Request [{prompt_type}] ===")
+
+    def _log_llm_response(
+        self,
+        prompt_type: str,
+        response: str,
+        max_chars: int = 3000,
+        source: str = "api",
+    ):
         """LLM応答をログ出力（長すぎる場合はtruncate）"""
         if not response:
             return
         display = (
             response[:max_chars] + "..." if len(response) > max_chars else response
         )
-        logger.info(f"=== LLM Response [{prompt_type}] ({len(response)} chars) ===")
+        logger.info(
+            f"=== LLM Response [{prompt_type}] (source={source}, {len(response)} chars) ==="
+        )
         logger.info(display)
         logger.info(f"=== End LLM Response [{prompt_type}] ===")
 
@@ -488,6 +538,12 @@ class LLMClient:
         prompt = build_prompt("same_country_trivia", matchup_context=matchup_context)
 
         try:
+            self._log_llm_request(
+                "same_country_trivia",
+                prompt,
+                home_team=home_team,
+                away_team=away_team,
+            )
             result = self.generate_content(prompt)
             self._log_llm_response("same_country_trivia", result)
             return result
@@ -533,6 +589,12 @@ class LLMClient:
             from src.clients.gemini_rest_client import GeminiRestClient
 
             rest_client = GeminiRestClient(api_key=self.api_key)
+            self._log_llm_request(
+                "former_club_trivia",
+                prompt,
+                home_team=home_team,
+                away_team=away_team,
+            )
             result = rest_client.generate_content_with_grounding(prompt)
             # API呼び出しを記録
             ApiStats.record_call("Gemini Grounding")
@@ -587,7 +649,16 @@ class LLMClient:
         )
 
         try:
+            self._log_llm_request(
+                "former_club_fact_check",
+                prompt,
+                home_team=home_team,
+                away_team=away_team,
+                entry_count=len(entries),
+            )
             response_text = self.generate_content(prompt).strip()
+            self._log_llm_response("former_club_fact_check", response_text)
+
             # マークダウンコードブロックを除去
             if "```json" in response_text:
                 response_text = response_text.split("```json")[1].split("```")[0]
