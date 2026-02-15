@@ -20,6 +20,7 @@ class NameTranslator:
     """選手名を英語→カタカナに変換するユーティリティ"""
 
     CACHE_PREFIX = "name_translation"
+    MOCK_PREFIX = "[MOCK]"
 
     def __init__(self, cache_store: CacheStore = None, use_mock: bool = None):
         """
@@ -187,6 +188,12 @@ class NameTranslator:
                     return None
                 # 新形式
                 if "full" in data and "short" in data:
+                    if not self.use_mock and self._is_mock_contaminated(data):
+                        logger.warning(
+                            f"[NAME_TRANSLATION] Invalid mock cache detected and ignored: {name}"
+                        )
+                        self.cache_store.delete(cache_path)
+                        return None
                     return {"full": data["full"], "short": data["short"]}
         except Exception as e:
             logger.debug(f"[NAME_TRANSLATION] Cache read error: {e}")
@@ -201,9 +208,23 @@ class NameTranslator:
             existing = self.cache_store.read(cache_path)
             full_name = translation.get("full")
             if existing and existing.get("original") == name:
-                if "katakana" in existing and not full_name:
+                if (
+                    "katakana" in existing
+                    and not full_name
+                    and (
+                        self.use_mock
+                        or not self._is_mock_value(str(existing.get("katakana", "")))
+                    )
+                ):
                     full_name = existing["katakana"]
-                elif "full" in existing and not full_name:
+                elif (
+                    "full" in existing
+                    and not full_name
+                    and (
+                        self.use_mock
+                        or not self._is_mock_value(str(existing.get("full", "")))
+                    )
+                ):
                     full_name = existing["full"]
 
             data = {
@@ -261,3 +282,16 @@ class NameTranslator:
             for name, trans_data in new_translations.items():
                 # trans_data is {"full": ..., "short": ...}
                 self._write_cache(name, trans_data)
+
+    def _is_mock_value(self, value: str) -> bool:
+        return value.startswith(self.MOCK_PREFIX)
+
+    def _is_mock_contaminated(self, data: dict) -> bool:
+        full = str(data.get("full", ""))
+        katakana = str(data.get("katakana", ""))
+        short = str(data.get("short", ""))
+        return (
+            self._is_mock_value(full)
+            or self._is_mock_value(katakana)
+            or self._is_mock_value(short)
+        )

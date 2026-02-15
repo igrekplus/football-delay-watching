@@ -14,6 +14,7 @@ class TeamNameTranslator:
     """チーム名を英語→カタカナに翻訳するユーティリティ"""
 
     CACHE_PREFIX = "team_translation"
+    MOCK_PREFIX = "[MOCK]"
 
     def __init__(self, cache_store: CacheStore = None, use_mock: bool = None):
         """
@@ -128,6 +129,12 @@ class TeamNameTranslator:
             cache_path = self._get_cache_path(team_name)
             data = self.cache_store.read(cache_path)
             if data and data.get("original") == team_name:
+                if not self.use_mock and self._is_mock_contaminated(data):
+                    logger.warning(
+                        f"[TEAM_TRANSLATION] Invalid mock cache detected and ignored: {team_name}"
+                    )
+                    self.cache_store.delete(cache_path)
+                    return None
                 # katakanaキーがない旧キャッシュの場合は変換
                 if "katakana" not in data and "translation" in data:
                     return {
@@ -151,3 +158,14 @@ class TeamNameTranslator:
             self.cache_store.write(cache_path, data)
         except Exception as e:
             logger.warning(f"[TEAM_TRANSLATION] Cache write error: {e}")
+
+    def _is_mock_value(self, value: str) -> bool:
+        return value.startswith(self.MOCK_PREFIX)
+
+    def _is_mock_contaminated(self, data: dict) -> bool:
+        if self._is_mock_value(str(data.get("katakana", ""))):
+            return True
+        keywords = data.get("keywords", [])
+        if isinstance(keywords, list):
+            return any(self._is_mock_value(str(k)) for k in keywords)
+        return False
