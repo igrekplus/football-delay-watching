@@ -1,0 +1,33 @@
+<!-- Win Prediction Section (Issue #199 Repositioned) -->
+{% if prediction_percent %}
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ 勝敗予想</h3>
+        <div class="prediction-card win-probability">
+            <div class="prob-row">
+                {% if home_logo %}
+                <img src="{{ home_logo }}" alt="{{ home_team }}" class="prob-team-logo">
+                {% endif %}
+
+                <div class="prob-bar-container">
+                    <div class="prob-bar home"
+                        style="width: {{ prediction_percent.home }}; background-color: {{ home_team_color or '#3a6ea5' }}">
+                        <span class="prob-label">{{ prediction_percent.home }}</span>
+                    </div>
+                    <div class="prob-bar draw" style="width: {{ prediction_percent.draw }}; background-color: #95a5a6">
+                        <span class="prob-label">{{ prediction_percent.draw }}</span>
+                    </div>
+                    <div class="prob-bar away"
+                        style="width: {{ prediction_percent.away }}; background-color: {{ away_team_color or '#e74c3c' }}">
+                        <span class="prob-label">{{ prediction_percent.away }}</span>
+                    </div>
+                </div>
+
+                {% if away_logo %}
+                <img src="{{ away_logo }}" alt="{{ away_team }}" class="prob-team-logo">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

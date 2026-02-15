@@ -1,0 +1,25 @@
+<!-- Scorer Prediction Section (Issue #199 Repositioned) -->
+{% if scorer_odds %}
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ スコア予想</h3>
+        <div class="prediction-card scorer-markets">
+            <div class="market-list">
+                {% for market in scorer_odds %}
+                <div class="market-item">
+                    <div class="market-name">{{ market.market }}</div>
+                    <div class="odds-chips-scroll">
+                        {% for item in market['values'] %}
+                        <div class="odd-chip">
+                            <span class="player-name">{{ item.player }}</span>
+                            <span class="odd-value">{{ item.odd }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

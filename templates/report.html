@@ -39,8 +39,8 @@
 </div>
 {% endif %}
 
-{% if prediction_html %}
-{{ prediction_html | safe }}
+{% if win_prediction_html %}
+{{ win_prediction_html | safe }}
 {% endif %}
 
 {{ match_info_html | safe }}
@@ -125,6 +125,10 @@
 
 <h3>■ フォーメーション図</h3>
 {{ formation_html | safe }}
+
+{% if scorer_prediction_html %}
+{{ scorer_prediction_html | safe }}
+{% endif %}
 
 {% if match.facts.same_country_text %}
 {{ same_country_html | safe }}

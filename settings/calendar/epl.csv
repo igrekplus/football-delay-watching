@@ -10,10 +10,10 @@ fixture_id,date_jst,home_team,away_team,commentator,announcer,report_link
 1379219,2026-02-12,Aston Villa,Brighton,粕谷秀樹,小林悠希,/reports/2026-02-11_AstonVilla_vs_Brighton_20260212_040632.html
 1379224,2026-02-12,Manchester City,Fulham,増嶋竜也,安井成行,/reports/2026-02-11_ManchesterCity_vs_Fulham_20260212_040632.html
 1379226,2026-02-12,Sunderland,Liverpool,林陵平,桑原学,/reports/2026-02-11_Sunderland_vs_Liverpool_20260212_063504.html
-1379220,2026-02-13,Brentford,Arsenal,田中裕介,西岡明彦,/reports/2026-02-12_Brentford_vs_Arsenal_20260213_063425.html
+1379220,2026-02-13,Brentford,Arsenal,田中裕介,西岡明彦,/reports/2026-02-12_Brentford_vs_Arsenal_20260215_173155.html
 1379135,2025-12-20,Manchester City,West Ham,,,/reports/2025-12-20_ManchesterCity_vs_WestHam_20260112_175731.html
 1379146,2025-12-27,Nottingham Forest,Manchester City,,,/reports/2025-12-27_NottinghamForest_vs_ManchesterCity_20260102_073656.html
-1379147,2025-12-28,Sunderland,Leeds,,,/reports/2025-12-28_Sunderland_vs_Leeds_20251229_084653.html
+1379147,2025-12-28,Sunderland,Leeds,,,/reports/2025-12-28_Sunderland_Leeds_20251229_084653.html
 1379143,2025-12-28,Crystal Palace,Tottenham,,,/reports/2025-12-28_CrystalPalace_vs_Tottenham_20251229_084653.html
 1379152,2025-12-30,Chelsea,Bournemouth,,,/reports/2025-12-30_Chelsea_vs_Bournemouth_20251231_080158.html
 1379149,2025-12-30,Arsenal,Aston Villa,,,/reports/2025-12-30_Arsenal_vs_AstonVilla_20251231_080158.html
@@ -40,7 +40,7 @@ fixture_id,date_jst,home_team,away_team,commentator,announcer,report_link
 1379173,2026-01-07,Crystal Palace,Aston Villa,,,/reports/2026-01-07_CrystalPalace_vs_AstonVilla_20260108_102216.html
 1379171,2026-01-07,Brentford,Sunderland,,,/reports/2026-01-07_Brentford_vs_Sunderland_20260108_102216.html
 1379177,2026-01-07,Newcastle,Leeds,,,/reports/2026-01-07_Newcastle_vs_Leeds_20260108_102216.html
-1379169,2026-01-08,Arsenal,Liverpool,,,/reports/2026-01-08_Arsenal_vs_Liverpool_20260207_185152.html
+1379169,2026-01-08,Arsenal,Liverpool,,,/reports/2026-01-08_Arsenal_vs_Liverpool_20260215_172907.html
 1379184,2026-01-17,Manchester United,Manchester City,,,/reports/2026-01-17_ManchesterUnited_vs_ManchesterCity_20260127_220804.html
 1379183,2026-01-17,Liverpool,Burnley,,,/reports/2026-01-17_Liverpool_vs_Burnley_20260118_002616.html
 1379187,2026-01-17,Tottenham,West Ham,,,/reports/2026-01-17_Tottenham_vs_WestHam_20260118_002616.html

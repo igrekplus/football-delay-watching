@@ -1730,3 +1730,152 @@ pre {
         width: 620px;
     }
 }
+
+/* --- Prediction Section (Issue #199 Final Refined) --- */
+.prediction-container {
+    margin: var(--spacing-xl) 0;
+}
+
+.prediction-grid {
+    display: flex;
+    flex-direction: column;
+    /* Force vertical stacking */
+    gap: var(--spacing-xl);
+}
+
+.prediction-group h3 {
+    font-size: 1.1rem;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-md);
+    padding-left: 0;
+}
+
+.prediction-card {
+    background: var(--card-bg);
+    padding: var(--spacing-lg);
+    border-radius: var(--card-radius-sm);
+    border: 1px solid var(--card-border);
+}
+
+/* Win Probability Row with Logos */
+.prob-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.prob-team-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.prob-bar-container {
+    flex: 1;
+    height: 32px;
+    display: flex;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.prob-bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.5s ease;
+}
+
+.prob-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Scorer Markets Horizontal Chips */
+.market-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.market-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: var(--spacing-md);
+}
+
+.market-item:last-child {
+    border-bottom: none;
+}
+
+.market-item .market-name {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--color-accent);
+    /* Highlight market name */
+    margin-bottom: var(--spacing-sm);
+}
+
+.odds-chips-scroll {
+    display: flex;
+    gap: var(--spacing-md);
+    overflow-x: auto;
+    padding: var(--spacing-xs) 0 var(--spacing-md) 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.odds-chips-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+
+.odds-chips-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+.odd-chip {
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    transition: all 0.2s ease;
+}
+
+.odd-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    border-color: var(--color-accent);
+}
+
+.odd-chip .player-name {
+    font-size: 0.85rem;
+    color: var(--color-text);
+    margin-bottom: 2px;
+    text-align: center;
+}
+
+.odd-chip .odd-value {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--color-accent);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .prob-team-logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    .prob-row {
+        gap: var(--spacing-sm);
+    }
+}

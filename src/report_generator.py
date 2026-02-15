@@ -406,22 +406,29 @@ class ReportGenerator:
         # ニュース・戦術プレビュー・古巣対決
         news_html = md_lib.markdown(match.preview.news_summary, extensions=["nl2br"])
 
-        # 予測セクション (Issue #199)
-        prediction_html = ""
-        if match.facts.prediction_percent or match.facts.scorer_odds:
-            logger.info(f"Rendering prediction section for {match.core.id}")
-            from src.template_engine import render_template as render_partial
+        # 予測セクション (Issue #199 分割配置)
+        win_prediction_html = ""
+        scorer_prediction_html = ""
+        from src.template_engine import render_template as render_partial
 
-            prediction_html = render_partial(
-                "partials/prediction_section.html",
+        if match.facts.prediction_percent:
+            logger.info(f"Rendering win prediction section for {match.core.id}")
+            win_prediction_html = render_partial(
+                "partials/win_prediction_section.html",
                 prediction_percent=match.facts.prediction_percent,
-                scorer_odds=match.facts.scorer_odds,
                 home_team=match.core.home_team,
                 away_team=match.core.away_team,
                 home_logo=match.core.home_logo,
                 away_logo=match.core.away_logo,
                 home_team_color=match.facts.home_team_color,
                 away_team_color=match.facts.away_team_color,
+            )
+
+        if match.facts.scorer_odds:
+            logger.info(f"Rendering scorer prediction section for {match.core.id}")
+            scorer_prediction_html = render_partial(
+                "partials/scorer_prediction_section.html",
+                scorer_odds=match.facts.scorer_odds,
             )
 
         tactical_html = self._format_tactical_preview_with_visuals(
@@ -529,7 +536,8 @@ class ReportGenerator:
             ),
             "same_country_html": same_country_html,
             "news_html": news_html,
-            "prediction_html": prediction_html,
+            "win_prediction_html": win_prediction_html,
+            "scorer_prediction_html": scorer_prediction_html,
             "tactical_html": tactical_html,
             "manager_section_html": manager_section_html,
             "transfer_section_html": transfer_section_html,
@@ -729,6 +737,14 @@ class ReportGenerator:
             )
             for e in entries:
                 names.append(e.name)
+
+        # 予測セクションの得点者オッズから抽出 (Issue #199)
+        if match.facts.scorer_odds:
+            for market in match.facts.scorer_odds:
+                if "values" in market:
+                    for item in market["values"]:
+                        if "player" in item:
+                            names.append(item["player"])
 
         return names
 
