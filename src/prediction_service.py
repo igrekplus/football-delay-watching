@@ -80,7 +80,8 @@ class PredictionService:
             "Last Goal Scorer": "Last Goal Scorer",
         }
 
-        match.facts.scorer_odds = []
+        # マーケット名ごとに最新のソート済みデータを保持するための辞書
+        parsed_markets = {}
 
         for bet in bets:
             market_name = bet.get("name")
@@ -103,6 +104,9 @@ class PredictionService:
                     except (ValueError, TypeError):
                         continue
 
+                if not valid_values:
+                    continue
+
                 # オッズ昇順にソート（低いほど上位）
                 valid_values.sort(key=lambda x: x["_sort_key"])
 
@@ -111,9 +115,17 @@ class PredictionService:
                     top_values.append({"player": v["player"], "odd": v["odd"]})
 
                 if top_values:
-                    match.facts.scorer_odds.append(
-                        {"market": target_markets[market_name], "values": top_values}
-                    )
+                    # 同じマーケット名が複数回登場した場合は、最新のもので上書き（重複排除）
+                    parsed_markets[market_name] = {
+                        "market": target_markets[market_name],
+                        "values": top_values,
+                    }
+
+        # 元の定義順（Anytime -> First -> Last）を尊重しつつリスト化
+        match.facts.scorer_odds = []
+        for market_key in target_markets:
+            if market_key in parsed_markets:
+                match.facts.scorer_odds.append(parsed_markets[market_key])
 
         if match.facts.scorer_odds:
             logger.debug(
