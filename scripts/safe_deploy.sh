@@ -24,6 +24,11 @@ echo -e "${GREEN}Step 1: Syncing reports from Firebase to local...${NC}"
 source .venv/bin/activate
 python scripts/sync_firebase_reports.py
 
+# 2.5. カレンダーHTMLの再生成（CSVのレポートリンクを反映）
+echo -e "${GREEN}Step 1.5: Regenerating calendar.html from CSV data...${NC}"
+python -m src.calendar_generator
+echo -e "${GREEN}Calendar HTML updated.${NC}"
+
 # 3. ユーザー確認 (CI環境以外の場合)
 if [ -t 0 ]; then
     echo -e "${GREEN}Sync complete.${NC}"
