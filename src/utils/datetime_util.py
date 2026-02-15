@@ -7,6 +7,8 @@ Issue #70: 日時/タイムゾーン処理の一元化
 - 表示用文字列生成
 """
 
+from __future__ import annotations
+
 import logging
 import re
 from datetime import datetime

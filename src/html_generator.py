@@ -5,6 +5,8 @@ HTMLレポートをpublic/reports/に配置する。
 責務: HTML生成に特化（CSS外部参照、manifest管理はManifestManagerへ委譲）
 """
 
+from __future__ import annotations
+
 import logging
 import os
 from pathlib import Path

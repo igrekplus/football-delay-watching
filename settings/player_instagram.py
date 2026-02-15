@@ -12,6 +12,8 @@ Usage:
     url = instagram_urls.get("E. Haaland")  # https://www.instagram.com/erling/
 """
 
+from __future__ import annotations
+
 import csv
 import logging
 import os

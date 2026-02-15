@@ -1,8 +1,4 @@
-"""
-ドメインモデル
-
-試合データを保持するデータクラスを定義。
-"""
+from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

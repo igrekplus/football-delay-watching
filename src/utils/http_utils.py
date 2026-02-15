@@ -10,6 +10,8 @@ Note:
     キャッシュ機能が必要な場合は CachingHttpClient を使用してください。
 """
 
+from __future__ import annotations
+
 import logging
 from typing import Any
 

@@ -4,6 +4,8 @@ Manifest管理モジュール
 manifest.jsonの読み書き・マージロジックを集約。
 """
 
+from __future__ import annotations
+
 import json
 import logging
 from pathlib import Path

@@ -4,6 +4,8 @@ Firebase Hosting同期クライアント
 Firebase Hostingとの通信を専門に処理する。
 """
 
+from __future__ import annotations
+
 import logging
 from datetime import datetime
 from pathlib import Path

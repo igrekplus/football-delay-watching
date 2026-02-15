@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 from unittest.mock import MagicMock
 
@@ -84,16 +86,82 @@ class TestPredictionService(unittest.TestCase):
         self.assertEqual(market["values"][0]["player"], "Player 1")
         self.assertEqual(market["values"][4]["player"], "Player 5")
 
-    def test_enrich_matches_fallback(self):
-        # API returns error or empty
-        self.mock_api.fetch_predictions.side_effect = Exception("API Error")
-        self.mock_api.fetch_odds.return_value = {}
+    def test_enrich_matches_odds_sorting(self):
+        # Mock API response for odds with unsorted values and invalid entries
+        self.mock_api.fetch_predictions.return_value = {"response": []}
+        self.mock_api.fetch_odds.return_value = {
+            "response": [
+                {
+                    "bookmakers": [
+                        {
+                            "bets": [
+                                {
+                                    "name": "Anytime Goal Scorer",
+                                    "values": [
+                                        {"value": "Player High", "odd": "10.00"},
+                                        {"value": "Player Mid", "odd": "5.00"},
+                                        {"value": "Player Low", "odd": "1.10"},
+                                        {"value": "Invalid", "odd": "invalid"},
+                                        {"value": "Empty", "odd": ""},
+                                        {"value": "None", "odd": None},
+                                        {"value": "Player Top", "odd": "1.05"},
+                                        {"value": "Player 5th", "odd": "15.00"},
+                                        {"value": "Player 6th", "odd": "20.00"},
+                                    ],
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
 
-        # Should not raise exception
         self.service.enrich_matches([self.match])
 
-        self.assertEqual(self.match.facts.prediction_percent, {})
-        self.assertEqual(self.match.facts.scorer_odds, [])
+        self.assertEqual(len(self.match.facts.scorer_odds), 1)
+        market = self.match.facts.scorer_odds[0]
+        values = market["values"]
+
+        # 期待される順序: Player Top (1.05), Player Low (1.10), Player Mid (5.00), Player High (10.00), Player 5th (15.00)
+        # Player 6th は6番目、Invalidなどは除外されるため入らないはず
+        self.assertEqual(len(values), 5)
+        self.assertEqual(values[0]["player"], "Player Top")
+        self.assertEqual(values[0]["odd"], "1.05")
+        self.assertEqual(values[1]["player"], "Player Low")
+        self.assertEqual(values[2]["player"], "Player Mid")
+        self.assertEqual(values[3]["player"], "Player High")
+        self.assertEqual(values[4]["player"], "Player 5th")
+
+    def test_enrich_matches_odds_fewer_than_five(self):
+        # 5件未満の場合のテスト
+        self.mock_api.fetch_predictions.return_value = {"response": []}
+        self.mock_api.fetch_odds.return_value = {
+            "response": [
+                {
+                    "bookmakers": [
+                        {
+                            "bets": [
+                                {
+                                    "name": "First Goal Scorer",
+                                    "values": [
+                                        {"value": "P2", "odd": "2.50"},
+                                        {"value": "P1", "odd": "1.50"},
+                                    ],
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+
+        self.service.enrich_matches([self.match])
+        market = self.match.facts.scorer_odds[0]
+        values = market["values"]
+
+        self.assertEqual(len(values), 2)
+        self.assertEqual(values[0]["player"], "P1")
+        self.assertEqual(values[1]["player"], "P2")
 
 
 if __name__ == "__main__":

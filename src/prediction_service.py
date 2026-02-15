@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from config import config
@@ -84,10 +86,29 @@ class PredictionService:
             market_name = bet.get("name")
             if market_name in target_markets:
                 values = bet.get("values", [])
-                # 上位5名に制限 (Issue #199 フィードバック)
+                # オッズを数値に変換できる項目のみを抽出し、昇順ソートして上位5名を採用 (Issue #204)
+                valid_values = []
+                for v in values:
+                    odd_str = v.get("odd")
+                    try:
+                        odd_float = float(odd_str) if odd_str is not None else None
+                        if odd_float is not None:
+                            valid_values.append(
+                                {
+                                    "player": v.get("value"),
+                                    "odd": odd_str,
+                                    "_sort_key": odd_float,
+                                }
+                            )
+                    except (ValueError, TypeError):
+                        continue
+
+                # オッズ昇順にソート（低いほど上位）
+                valid_values.sort(key=lambda x: x["_sort_key"])
+
                 top_values = []
-                for v in values[:5]:
-                    top_values.append({"player": v.get("value"), "odd": v.get("odd")})
+                for v in valid_values[:5]:
+                    top_values.append({"player": v["player"], "odd": v["odd"]})
 
                 if top_values:
                     match.facts.scorer_odds.append(
