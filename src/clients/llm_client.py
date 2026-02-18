@@ -578,6 +578,14 @@ class LLMClient:
         if self.use_mock:
             return self._get_mock_former_club_trivia(home_team, away_team)
 
+        logger.info(
+            "[FORMER_CLUB] Input players diagnostic: home_count=%d away_count=%d home_sample=%s away_sample=%s",
+            len(home_players),
+            len(away_players),
+            home_players[:8],
+            away_players[:8],
+        )
+
         prompt = build_prompt(
             "former_club_trivia",
             home_team=home_team,
@@ -596,6 +604,8 @@ class LLMClient:
                 prompt,
                 home_team=home_team,
                 away_team=away_team,
+                home_player_count=len(home_players),
+                away_player_count=len(away_players),
             )
             result = rest_client.generate_content_with_grounding(prompt)
             # API呼び出しを記録
@@ -670,13 +680,53 @@ class LLMClient:
                     response_text = response_text[4:]
                 response_text = response_text.split("```")[0]
 
-            results = json.loads(response_text)
+            raw_results = json.loads(response_text)
+            if not isinstance(raw_results, list):
+                raise ValueError("Fact check response is not a JSON array")
+
+            if len(raw_results) != len(entries):
+                logger.warning(
+                    f"Fact check result count mismatch: expected={len(entries)}, got={len(raw_results)}"
+                )
+
+            # 出力契約を強制: player_name/is_valid/reason を必ず揃える
+            results = []
+            for idx, entry in enumerate(entries):
+                raw = raw_results[idx] if idx < len(raw_results) else {}
+                if not isinstance(raw, dict):
+                    raw = {}
+
+                expected_name = str(entry.get("player_name", "Unknown"))
+                player_name = str(raw.get("player_name") or expected_name)
+
+                is_valid_raw = raw.get("is_valid")
+                is_valid = is_valid_raw if isinstance(is_valid_raw, bool) else False
+
+                reason_raw = raw.get("reason")
+                reason = str(reason_raw).strip() if reason_raw is not None else ""
+                if not reason:
+                    reason = "reason未返却のため不採用"
+                    is_valid = False
+
+                if player_name != expected_name:
+                    reason = (
+                        f"{reason} / player_name補正: {player_name} -> {expected_name}"
+                    )
+                    player_name = expected_name
+
+                results.append(
+                    {
+                        "player_name": player_name,
+                        "is_valid": is_valid,
+                        "reason": reason,
+                    }
+                )
 
             # ログ出力
             for result in results:
-                player_name = result.get("player_name", "Unknown")
-                is_valid = result.get("is_valid", False)
-                reason = result.get("reason", "理由不明")
+                player_name = result["player_name"]
+                is_valid = result["is_valid"]
+                reason = result["reason"]
                 if is_valid:
                     logger.info(f"[FACT_CHECK] Approved {player_name}")
                 else:

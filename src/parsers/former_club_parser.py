@@ -34,6 +34,7 @@ def parse_former_club_text(
     # === 前処理: メタコメント・ステップ見出しを含む行を大まかに除去 ===
     lines = llm_output.split("\n")
     filtered_lines = []
+    skipped_lines = []
     # 拒否判定パターン
     skip_patterns = [
         r"^(了解|承知|かしこまり|はい)",  # 会話文
@@ -52,8 +53,16 @@ def parse_former_club_text(
             continue
         if not skip_regex.match(stripped):
             filtered_lines.append(line)
+        else:
+            skipped_lines.append(stripped)
 
     llm_output = "\n".join(filtered_lines)
+    if skipped_lines:
+        logger.info(
+            "[FORMER_CLUB] Pre-filter removed %d lines. sample=%s",
+            len(skipped_lines),
+            skipped_lines[:5],
+        )
     # === 前処理ここまで ===
 
     entries = []
@@ -65,6 +74,11 @@ def parse_former_club_text(
     # パターンにマッチする箇所と、その間のテキストを抽出
     matches = list(re.finditer(player_team_pattern, llm_output))
     logger.info(f"[FORMER_CLUB] Found {len(matches)} player-team patterns")
+    if not matches:
+        logger.warning(
+            "[FORMER_CLUB] No player-team patterns detected. output_preview=%s",
+            llm_output[:300] + ("..." if len(llm_output) > 300 else ""),
+        )
 
     # フィルタリング用のキーワード（チーム名の略称など）
     team_keywords = []
@@ -86,6 +100,11 @@ def parse_former_club_text(
         team_keywords.extend(
             [part.lower() for part in away_team.split() if len(part) > 3]
         )
+    logger.info(
+        "[FORMER_CLUB] Team keywords prepared (%d): %s",
+        len(team_keywords),
+        team_keywords[:20],
+    )
 
     def is_relevant(desc: str) -> bool:
         if not team_keywords:
@@ -125,7 +144,15 @@ def parse_former_club_text(
         )
 
         # 関連性チェック (対戦チームへの言及があるか)
-        if is_relevant(description):
+        relevant = is_relevant(description)
+        logger.info(
+            "[FORMER_CLUB] Candidate parsed: name=%s | team=%s | relevant=%s | desc_preview=%s",
+            name,
+            team,
+            relevant,
+            description[:180] + ("..." if len(description) > 180 else ""),
+        )
+        if relevant:
             entries.append(entry)
         else:
             logger.warning(
@@ -144,7 +171,10 @@ def parse_former_club_text(
             if len(entry.description) >= len(seen_names[key].description):
                 seen_names[key] = entry
 
+    deduped_count = len(entries) - len(seen_names)
     entries = list(seen_names.values())
+    if deduped_count > 0:
+        logger.info("[FORMER_CLUB] Deduplicated %d duplicated entries", deduped_count)
     # === 重複排除ここまで ===
 
     raw_pattern_count = len(matches)

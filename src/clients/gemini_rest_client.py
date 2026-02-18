@@ -104,7 +104,17 @@ class GeminiRestClient:
             if "candidates" not in result or not result["candidates"]:
                 raise ValueError("No candidates in response")
 
+            logger.info(
+                "%s Response metadata: candidates=%d",
+                log_prefix,
+                len(result.get("candidates", [])),
+            )
             candidate = result["candidates"][0]
+            logger.info(
+                "%s Candidate[0] finishReason=%s",
+                log_prefix,
+                candidate.get("finishReason", "N/A"),
+            )
 
             # Check for content
             if "content" in candidate and "parts" in candidate["content"]:
@@ -118,9 +128,33 @@ class GeminiRestClient:
                     entry_point = meta.get("searchEntryPoint", {}).get(
                         "renderedContent", "N/A"
                     )
+                    chunk_details = []
+                    for idx, chunk in enumerate(chunks[:15], 1):
+                        web_info = chunk.get("web", {})
+                        title = web_info.get("title", "N/A")
+                        uri = web_info.get("uri", "N/A")
+                        chunk_details.append(f"{idx}:{title} ({uri})")
                     logger.info(
                         f"{log_prefix} Success. Used {len(chunks)} chunks. Source: {entry_point}"
                     )
+                    logger.info(
+                        "%s Grounding chunk details (up to 15): %s",
+                        log_prefix,
+                        chunk_details if chunk_details else "[]",
+                    )
+                    if not chunks:
+                        logger.warning(
+                            "%s Grounding returned 0 chunks. entry_point_has_chip=%s",
+                            log_prefix,
+                            "chip" in entry_point.lower(),
+                        )
+
+                logger.info(
+                    "%s Parsed text length=%d preview=%s",
+                    log_prefix,
+                    len(text),
+                    text[:300] + ("..." if len(text) > 300 else ""),
+                )
 
                 return text
             else:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import re
 from typing import Any
@@ -40,6 +41,22 @@ class TributeGenerator:
         """古巣対決トリビアを生成（ハルシネーション対策のファクトチェック付き）"""
         home_players = match.facts.home_lineup + match.facts.home_bench
         away_players = match.facts.away_lineup + match.facts.away_bench
+        fixture_label = f"{match.core.home_team} vs {match.core.away_team}"
+
+        def _preview(text: str, limit: int = 400) -> str:
+            if not text:
+                return ""
+            return text[:limit] + ("..." if len(text) > limit else "")
+
+        logger.info(
+            "[TRIBUTE][FORMER_CLUB] Start: %s | fixture_id=%s | home_players=%d away_players=%d | home_sample=%s | away_sample=%s",
+            fixture_label,
+            match.core.id,
+            len(home_players),
+            len(away_players),
+            home_players[:8],
+            away_players[:8],
+        )
 
         raw_trivia = self.llm.generate_former_club_trivia(
             home_team=match.core.home_team,
@@ -50,11 +67,32 @@ class TributeGenerator:
         )
 
         if not raw_trivia:
+            logger.warning(
+                "[TRIBUTE][FORMER_CLUB] Raw trivia is empty. Skip former-club section for %s",
+                fixture_label,
+            )
             match.facts.former_club_trivia = ""
             return
 
+        logger.info(
+            "[TRIBUTE][FORMER_CLUB] Raw trivia received (%d chars): %s",
+            len(raw_trivia),
+            _preview(raw_trivia),
+        )
+        if "該当者なし" in raw_trivia:
+            logger.warning(
+                "[TRIBUTE][FORMER_CLUB] Raw trivia explicitly contains '該当者なし' for %s",
+                fixture_label,
+            )
+
         # 1. Gemini Groundingの出典番号を削除
         cleaned_trivia = re.sub(r"\s*\[\d+(?:,\s*\d+)*\]", "", raw_trivia)
+        logger.info(
+            "[TRIBUTE][FORMER_CLUB] Cleaned trivia (%d chars, removed=%d): %s",
+            len(cleaned_trivia),
+            len(raw_trivia) - len(cleaned_trivia),
+            _preview(cleaned_trivia),
+        )
 
         # 2. パースして個別のエントリに分割
         from src.parsers.former_club_parser import parse_former_club_text
@@ -66,25 +104,42 @@ class TributeGenerator:
         )
 
         if not entries:
+            logger.warning(
+                "[TRIBUTE][FORMER_CLUB] Parsed entries=0. cleaned_preview=%s",
+                _preview(cleaned_trivia),
+            )
             match.facts.former_club_trivia = ""
             return
+
+        for idx, entry in enumerate(entries, 1):
+            logger.info(
+                "[TRIBUTE][FORMER_CLUB] Parsed entry[%d/%d]: name=%s | team=%s | desc=%s",
+                idx,
+                len(entries),
+                entry.name,
+                entry.team,
+                _preview(entry.description, 200),
+            )
 
         # 3. ファクトチェック用のエントリリストを構築
         fact_check_entries = []
         for entry in entries:
             # パース結果から現所属チームを取得し、古巣を判定
+            mapping_mode = "unknown"
             if (
                 entry.team.lower() in match.core.home_team.lower()
                 or match.core.home_team.lower() in entry.team.lower()
             ):
                 current_team = match.core.home_team
                 opponent_team = match.core.away_team
+                mapping_mode = "team_match_home"
             elif (
                 entry.team.lower() in match.core.away_team.lower()
                 or match.core.away_team.lower() in entry.team.lower()
             ):
                 current_team = match.core.away_team
                 opponent_team = match.core.home_team
+                mapping_mode = "team_match_away"
             else:
                 # マッチしない場合は従来ロジック（選手リストベース）にフォールバック
                 is_home_player = any(p in entry.name for p in home_players)
@@ -93,6 +148,9 @@ class TributeGenerator:
                 )
                 current_team = (
                     match.core.home_team if is_home_player else match.core.away_team
+                )
+                mapping_mode = (
+                    f"fallback_player_name_match(is_home_player={is_home_player})"
                 )
 
             fact_check_entries.append(
@@ -103,12 +161,31 @@ class TributeGenerator:
                     "description": entry.description,
                 }
             )
+            logger.info(
+                "[TRIBUTE][FORMER_CLUB] Fact-check mapping: player=%s | parsed_team=%s | current_team=%s | opponent_team=%s | mode=%s",
+                entry.name,
+                entry.team,
+                current_team,
+                opponent_team,
+                mapping_mode,
+            )
+
+        logger.info(
+            "[TRIBUTE][FORMER_CLUB] Fact-check request entries (%d): %s",
+            len(fact_check_entries),
+            json.dumps(fact_check_entries, ensure_ascii=False),
+        )
 
         # 4. バッチでファクトチェック（1回のLLM呼び出し）
         fact_check_results = self.llm.fact_check_former_club_batch(
             entries=fact_check_entries,
             home_team=match.core.home_team,
             away_team=match.core.away_team,
+        )
+        logger.info(
+            "[TRIBUTE][FORMER_CLUB] Fact-check raw results (%d): %s",
+            len(fact_check_results),
+            json.dumps(fact_check_results, ensure_ascii=False),
         )
 
         # 5. 結果を選手名でマッピング
@@ -118,6 +195,12 @@ class TributeGenerator:
         for entry in entries:
             result = result_map.get(
                 entry.name, {"is_valid": True, "reason": "結果マッピング失敗"}
+            )
+            logger.info(
+                "[TRIBUTE][FORMER_CLUB] Decision: player=%s | is_valid=%s | reason=%s",
+                entry.name,
+                result.get("is_valid", False),
+                result.get("reason", "理由不明"),
             )
             if result.get("is_valid", False):
                 valid_entries.append(entry)
@@ -136,11 +219,23 @@ class TributeGenerator:
 
             match.facts.former_club_trivia = "\n\n".join(reconstructed_parts)
             logger.info(
-                f"Generated and fact-checked former club trivia: {len(valid_entries)}/{len(entries)} valid"
+                "Generated and fact-checked former club trivia: %d/%d valid | valid_players=%s",
+                len(valid_entries),
+                len(entries),
+                [e.name for e in valid_entries],
             )
         else:
             match.facts.former_club_trivia = ""
-            logger.info("No valid former club entries found after fact-check")
+            logger.info(
+                "No valid former club entries found after fact-check | rejected_players=%s",
+                [
+                    {
+                        "name": e.name,
+                        "reason": result_map.get(e.name, {}).get("reason", ""),
+                    }
+                    for e in entries
+                ],
+            )
 
     def _detect_same_country_matchups(
         self, match: MatchAggregate
