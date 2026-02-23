@@ -17,6 +17,8 @@ Firebase Hosting からレポートを同期するスクリプト
 
 import json
 import logging
+import os
+import shutil
 from pathlib import Path
 
 import requests
@@ -31,6 +33,12 @@ logger = logging.getLogger(__name__)
 FIREBASE_URL = "https://football-delay-watching-a8830.web.app"
 LOCAL_REPORTS_DIR = Path("public/reports")
 LOCAL_IMAGES_DIR = LOCAL_REPORTS_DIR / "images"
+DEFAULT_SHARED_CACHE_DIR = (
+    Path.home() / ".cache" / "football-delay-watching" / "reports"
+)
+SHARED_REPORTS_DIR = Path(
+    os.getenv("FDW_SHARED_REPORTS_DIR", str(DEFAULT_SHARED_CACHE_DIR))
+).expanduser()
 
 
 def fetch_remote_manifest() -> dict:
@@ -96,6 +104,18 @@ def download_file(remote_path: str, local_path: Path) -> bool:
         return False
 
 
+def copy_from_shared_cache(file_name: str, local_path: Path) -> bool:
+    """共有キャッシュからローカルへコピー"""
+    shared_path = SHARED_REPORTS_DIR / file_name
+    if not shared_path.exists():
+        return False
+
+    local_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(shared_path, local_path)
+    logger.info(f"Copied from shared cache: {file_name}")
+    return True
+
+
 def merge_manifests(local: dict, remote: dict) -> dict:
     """
     マニフェストをマージ（新構造対応）
@@ -145,10 +165,12 @@ def merge_manifests(local: dict, remote: dict) -> dict:
 def sync_reports() -> None:
     """メイン同期処理"""
     logger.info("=== Firebase Reports Sync ===")
+    logger.info(f"Shared cache dir: {SHARED_REPORTS_DIR}")
 
     # ディレクトリ作成
     LOCAL_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     LOCAL_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    SHARED_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
     # マニフェスト取得
     remote_manifest = fetch_remote_manifest()
@@ -165,6 +187,7 @@ def sync_reports() -> None:
 
     # 不足しているレポートをダウンロード
     downloaded_count = 0
+    cache_hit_count = 0
 
     # reports_by_dateから
     for date_key, date_data in remote_by_date.items():
@@ -172,10 +195,18 @@ def sync_reports() -> None:
             file_name = match.get("file")
             if file_name and file_name not in local_files:
                 local_path = LOCAL_REPORTS_DIR / file_name
-                if download_file(file_name, local_path):
+                if copy_from_shared_cache(file_name, local_path):
+                    cache_hit_count += 1
+                    continue
+
+                shared_path = SHARED_REPORTS_DIR / file_name
+                if download_file(file_name, shared_path):
+                    local_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(shared_path, local_path)
                     downloaded_count += 1
 
-    logger.info(f"Downloaded {downloaded_count} new reports")
+    logger.info(f"Fetched from network: {downloaded_count} reports")
+    logger.info(f"Fetched from shared cache: {cache_hit_count} reports")
 
     # マニフェストをマージして保存
     merged = merge_manifests(local_manifest, remote_manifest)
