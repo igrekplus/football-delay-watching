@@ -29,6 +29,7 @@
 
 - API-Football fixtures（対象リーグは`config.LEAGUE_INFO`）
 - 表示範囲: 先週〜再来週の計4週間
+- 週区切り: UTC基準の月曜開始〜日曜終了（MECE）
 - 表示時刻: JST/UTC併記
 
 ### 3.2 付加情報（CSV）

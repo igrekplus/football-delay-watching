@@ -40,24 +40,28 @@ class CalendarGenerator:
         return output_path
 
     def _fetch_all_fixtures(self) -> list[dict[str, Any]]:
-        """対象リーグの試合データを取得し、3週間分にフィルタリングする"""
+        """対象リーグの試合データを取得し、4週間分にフィルタリングする"""
         all_fixtures = []
 
-        # 3週間の範囲を計算 (JST)
-        now = DateTimeUtil.now_jst()
-        # 今週の日曜日
-        start_of_week = now - timedelta(days=(now.weekday() + 1) % 7)
-        start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+        # 4週間の範囲を計算 (UTC月曜始まり)
+        now_utc = datetime.now(pytz.UTC)
+        start_of_this_week_utc = now_utc - timedelta(days=now_utc.weekday())
+        start_of_this_week_utc = start_of_this_week_utc.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
 
-        # 前週の日曜日
-        start_date = start_of_week - timedelta(weeks=1)
-        # 再来週の土曜日の終わり (+3 weeks total range from start_of_this_week)
-        # 実際には 4週間分: 先週(1), 今週(1), 来週(1), 再来週(1)
-        end_date = start_of_week + timedelta(weeks=3) - timedelta(seconds=1)
+        # 先週月曜 00:00 UTC 〜 再来週の翌週月曜 00:00 UTC（終了は排他）
+        start_date_utc = start_of_this_week_utc - timedelta(weeks=1)
+        end_date_utc_exclusive = start_of_this_week_utc + timedelta(weeks=3)
 
-        logger.info(f"Calendar range: {start_date} to {end_date}")
+        logger.info(
+            "Calendar range (UTC): %s <= kickoff < %s",
+            start_date_utc,
+            end_date_utc_exclusive,
+        )
 
         # シーズン計算
+        now = DateTimeUtil.now_jst()
         season = now.year if now.month >= 7 else now.year - 1
 
         for league in self.leagues:
@@ -75,7 +79,7 @@ class CalendarGenerator:
                 )
                 kickoff_jst = DateTimeUtil.to_jst(kickoff_utc)
 
-                if start_date <= kickoff_jst <= end_date:
+                if start_date_utc <= kickoff_utc < end_date_utc_exclusive:
                     # 現地時間の計算
                     fixture_tz_str = fixture.get("timezone", "UTC")
                     try:
@@ -111,7 +115,7 @@ class CalendarGenerator:
 
     def _build_timeline(self, fixtures: list[dict[str, Any]]) -> dict:
         """データを週別・リーグ別のタイムライン構造に変換し、ソートする (UTC基準)"""
-        # 3週間の開始日を再計算 (UTC基準で月曜開始)
+        # 4週間の開始日を再計算 (UTC基準で月曜開始)
         # MECEにするため、UTCの週単位（月〜日）で区切る
         now_utc = datetime.now(pytz.UTC)
         # 月曜日 = weekday() 0
@@ -124,20 +128,17 @@ class CalendarGenerator:
         weeks = []
         for i in range(-1, 3):  # 先週, 今週, 来週, 再来週 (計4週間)
             s = start_of_this_week + timedelta(weeks=i)
-            e = s + timedelta(weeks=1) - timedelta(seconds=1)
-
-            # ラベル用の表示 (JST換算)
-            s_jst = DateTimeUtil.to_jst(s)
-            e_jst = DateTimeUtil.to_jst(e)
+            end_exclusive = s + timedelta(weeks=1)
+            end_label = end_exclusive - timedelta(days=1)
 
             # 「今週」などの相対表記を廃止し、日付範囲（曜日付き）にする
-            weekday_s = ["月", "火", "水", "木", "金", "土", "日"][s_jst.weekday()]
-            weekday_e = ["月", "火", "水", "木", "金", "土", "日"][e_jst.weekday()]
-            label = f"{s_jst.month}/{s_jst.day}({weekday_s}) - {e_jst.month}/{e_jst.day}({weekday_e})"
+            weekday_s = ["月", "火", "水", "木", "金", "土", "日"][s.weekday()]
+            weekday_e = ["月", "火", "水", "木", "金", "土", "日"][end_label.weekday()]
+            label = f"UTC {s.month}/{s.day}({weekday_s}) - {end_label.month}/{end_label.day}({weekday_e})"
             weeks.append(
                 {
                     "start": s,
-                    "end": e,
+                    "end_exclusive": end_exclusive,
                     "label": label,
                     "leagues": {},
                 }
@@ -152,7 +153,7 @@ class CalendarGenerator:
             # どの週に属するか判定
             target_week = None
             for w in weeks:
-                if w["start"] <= kickoff_utc <= w["end"]:
+                if w["start"] <= kickoff_utc < w["end_exclusive"]:
                     target_week = w
                     break
 
