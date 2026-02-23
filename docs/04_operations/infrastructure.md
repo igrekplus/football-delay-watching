@@ -20,22 +20,22 @@
 graph TD
     A[Checkout] --> B[Setup Python]
     B --> C[Install Dependencies]
-    C --> D[Run main.py]
-    D --> E[Backup reports to GCS]
-    E --> F[Sync existing reports from Firebase]
-    F --> G[Update calendar.html]
-    G --> H[Commit calendar CSV]
+    C --> D[Ensure GCS versioning]
+    D --> E[Run main.py]
+    E --> F[Backup reports to GCS]
+    F --> G[Sync existing reports from Firebase]
+    G --> H[Update calendar.html]
     H --> I[Firebase Deploy]
 ```
 
 1. **Checkout**: リポジトリの最新コードを取得
 2. **Setup Python**: Python 3.11 環境を構築
 3. **Install Dependencies**: `requirements.txt` からライブラリをインストール
-4. **Run Application**: 環境変数を注入して `main.py` を実行
-5. **Backup to GCS**: 生成済みレポートをバックアップ
-6. **Sync Existing Reports**: Firebase上の既存レポートをローカルへ同期
-7. **Update Calendar**: `calendar.html` を再生成
-8. **Commit & Push**: `settings/calendar/*.csv` の更新をコミット
+4. **Ensure GCS versioning**: `football-delay-watching-cache` のオブジェクトバージョニングを有効化
+5. **Run Application**: 環境変数を注入して `main.py` を実行
+6. **Backup to GCS**: 生成済みレポートをバックアップ
+7. **Sync Existing Reports**: Firebase上の既存レポートをローカルへ同期
+8. **Update Calendar**: `calendar.html` を再生成（確認状況はGCSを参照）
 9. **Firebase Deploy**: Hostingへデプロイ
 
 ### 1.3 環境変数

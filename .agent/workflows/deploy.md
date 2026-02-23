@@ -18,6 +18,9 @@ description: firebase上へのデプロイを行い、URLを返す
 ./scripts/safe_deploy.sh
 ```
 
+> 補足: `sync_firebase_reports.py` は既定で共有キャッシュ `~/.cache/football-delay-watching/reports` を利用します。  
+> 必要に応じて `FDW_SHARED_REPORTS_DIR` で保存先を変更できます。
+
 ### 2. URLの確認と報告
 デプロイ完了後、公開URL（https://football-delay-watching-a8830.web.app）を開き、レポートやカレンダーが正しく表示されているか確認してください。
 /](https://football-delay-watching-a8830.web.app/)

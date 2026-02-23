@@ -219,6 +219,7 @@ class LLMClient:
         self,
         team_name: str,
         opponent_team: str,
+        is_home: bool,
         manager_name: str = None,
         opponent_manager_name: str = None,
     ) -> str:
@@ -228,43 +229,14 @@ class LLMClient:
         Args:
             team_name: 対象チーム名
             opponent_team: 対戦相手チーム名
+            is_home: 対象チームがホーム側かどうか
             manager_name: 監督名（省略時は「監督」を使用）
             opponent_manager_name: 対戦相手の監督名（省略時は「相手監督」を使用）
         """
         if self.use_mock:
             from src.mock_provider import MockProvider
-            # Determine if home or away based on team_name (simplified logic for now, assumes caller context)
-            # Actually summarize_interview arguments don't strictly say who is home/away easily without context
-            # But usually team_name is the target.
-            # Let's assume team_name is what we look for.
-            # To be safe, we might need a way to know if it's home or away.
-            # In news_service.py:
-            # team_name = match.core.home_team if is_home else match.core.away_team
-            # opponent_team = match.core.away_team if is_home else match.core.home_team
-            # So we can imply is_home by checking if team_name is home in the match context found in MockProvider?
-            # MockProvider.get_interview_summary takes (team, opponent, is_home).
-            # We can pass is_home=True temporarily and let MockProvider handle it or just pass names.
-            # Re-reading my MockProvider update:
-            # get_interview_summary(cls, team_name: str, opponent_team: str, is_home: bool)
-            # home = cls._normalize_team_name(team_name if is_home else opponent_team)
-            # If is_home=True, home=team_name. If is_home=False, home=opponent_team.
-            # This works. matching the logic in news_service.
 
-            # Use a heuristic or check MockProvider data?
-            # Simplest: Check matches in MockProvider?
-            # Or just pass is_home=True if we treat the first arg as "primary/home in this context"
-            # BUT wait, the file naming is home_away.json.
-            # We need to correctly identify which team is home in the fixture.
-            matches = MockProvider.get_matches()
-            is_fixture_home = False
-            for m in matches:
-                if m.core.home_team == team_name:
-                    is_fixture_home = True
-                    break
-
-            return MockProvider.get_interview_summary(
-                team_name, opponent_team, is_fixture_home
-            )
+            return MockProvider.get_interview_summary(team_name, opponent_team, is_home)
 
         # 監督名が指定されていない場合はデフォルト値
         manager_display = manager_name or "監督"
@@ -316,7 +288,11 @@ class LLMClient:
             return "エラーにつき取得不可（情報の取得に失敗しました）"
 
     def generate_transfer_news(
-        self, team_name: str, match_date: str, transfer_window_context: str = "latest"
+        self,
+        team_name: str,
+        match_date: str,
+        transfer_window_context: str = "latest",
+        is_home: bool = True,
     ) -> str:
         """
         移籍情報を生成（Grounding機能使用）
@@ -325,13 +301,12 @@ class LLMClient:
             team_name: チーム名
             match_date: 試合開催日 (YYYY-MM-DD)
             transfer_window_context: 検索用コンテキスト（デフォルト "latest"）
+            is_home: 対象チームがホーム側かどうか（モック時に使用）
         """
         if self.use_mock:
             from src.mock_provider import MockProvider
 
-            return MockProvider.get_transfer_news(
-                team_name, match_date, is_home=True
-            )  # is_home logic is inside get_transfer_news now
+            return MockProvider.get_transfer_news(team_name, match_date, is_home)
 
         prompt = build_prompt(
             "transfer_news",
