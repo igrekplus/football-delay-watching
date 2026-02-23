@@ -17,8 +17,8 @@
 | コンポーネント | 責務 |
 |---|---|
 | `src/calendar_generator.py` | カレンダーHTML生成（4週間、週別/リーグ別表示） |
-| `settings/calendar_data_loader.py` | カレンダーCSV読込、`fixture_id`単位の情報取得、レポートリンク更新 |
-| `src/html_generator.py` | レポート生成時にCSVへ`report_link`を書き戻し |
+| `settings/calendar_data_loader.py` | カレンダーCSV読込、`fixture_id`単位の情報取得、レポートリンク更新（GCS保存） |
+| `src/html_generator.py` | レポート生成時に`update_report_link()`を呼び、GCS上の確認状況を更新 |
 | `public/calendar.html` | 生成物（Firebase公開対象） |
 
 ---
@@ -34,7 +34,8 @@
 
 ### 3.2 付加情報（CSV）
 
-- 保存先: `settings/calendar/*.csv`
+- 基本データ（実況者など）: `settings/calendar/*.csv`
+- 確認状況（`report_link`）: `gs://football-delay-watching-cache/schedule/calendar/*.csv`
 - 主キー: `fixture_id`
 - 主なカラム:
   - `fixture_id`
@@ -76,16 +77,17 @@
 
 ### 5.2 更新方式
 
-- 既存行がある場合: 該当行を更新
-- 既存行がない場合: 対応リーグCSVへ新規追記
+- 既存行がある場合: 該当行を更新（GCS）
+- 既存行がない場合: 対応リーグCSVへ新規追記（GCS）
 - 書き込み後は `load_all_calendar_data()` のキャッシュをクリア
+- GCSバケットは書き込み時にバージョニング有効を確認する（未有効なら有効化）
 
 ---
 
 ## 6. 運用フロー（GitHub Actions）
 
 1. `python main.py` でレポート生成
-2. `settings/calendar/*.csv` を更新（`report_link`反映）
+2. GCS上の `schedule/calendar/*.csv` を更新（`report_link`反映）
 3. `python -m src.calendar_generator` で `public/calendar.html` を再生成
 4. Firebase Hostingへデプロイ
 

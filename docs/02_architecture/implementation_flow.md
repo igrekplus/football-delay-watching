@@ -173,7 +173,7 @@ graph TD
 | 項目 | 内容 |
 |------|------|
 | **責務** | カレンダーHTML生成（週別・リーグ別一覧、レポートリンク導線） |
-| **入力** | API-Football fixtures, `settings/calendar/*.csv` |
+| **入力** | API-Football fixtures, `settings/calendar/*.csv`（基本情報）, `gs://{bucket}/schedule/calendar/*.csv`（確認状況） |
 | **出力** | `public/calendar.html` |
 | **副作用** | `public/` への書き込み |
 

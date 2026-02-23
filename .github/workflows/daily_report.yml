@@ -18,7 +18,7 @@ on:
         type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   generate-report:
@@ -46,6 +46,18 @@ jobs:
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
+
+    - name: Ensure GCS Object Versioning
+      run: |
+        echo "=== Checking GCS bucket versioning ==="
+        VERSIONING_STATUS=$(gsutil versioning get gs://football-delay-watching-cache)
+        echo "$VERSIONING_STATUS"
+        if echo "$VERSIONING_STATUS" | grep -q "Enabled"; then
+          echo "✅ Versioning already enabled"
+        else
+          gsutil versioning set on gs://football-delay-watching-cache
+          echo "✅ Versioning enabled"
+        fi
 
     - name: Run Report Generator
       env:
@@ -117,21 +129,6 @@ jobs:
         python -m src.calendar_generator
         echo "✅ Updated calendar.html with new links"
 
-    - name: Commit and push CSV changes
-      if: env.SKIP_DEPLOY != 'true'
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add settings/calendar/*.csv
-        if git diff --cached --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "docs: update report links in calendar CSVs [skip ci]"
-          git push origin main
-        fi
-
-
-
     - name: Deploy to Firebase Hosting
       if: env.SKIP_DEPLOY != 'true'
       env:
@@ -153,4 +150,3 @@ jobs:
       run: |
         echo "ℹ️ 対象試合なし。デプロイをスキップしました。"
         echo "次回の実行をお待ちください。"
-
