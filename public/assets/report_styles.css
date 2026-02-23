@@ -913,7 +913,8 @@ pre {
 /* On PC (>768px), always show content but keep headers visible */
 @media (min-width: 769px) {
     .collapsible-section {
-        pointer-events: none;
+        /* Remove pointer-events: none to allow toggling on PC */
+        pointer-events: auto;
     }
 
     /* Debug Video Table (Issue #130) */
@@ -965,12 +966,12 @@ pre {
         font-weight: bold;
     }
 
+    /* Keep arrows visible and allow content to be toggled naturally */
     .collapsible-section summary::before {
-        display: none;
+        display: inline-block;
     }
 
     .collapsible-section .section-content {
-        display: block !important;
         pointer-events: auto;
     }
 }
@@ -1881,5 +1882,128 @@ pre {
 
     .prob-row {
         gap: var(--spacing-sm);
+    }
+}
+/* Standings Table Styles (Issue #192) */
+.standings-container {
+    overflow-x: auto;
+    margin: var(--spacing-md) 0;
+}
+
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: var(--card-bg-light);
+    border-radius: var(--card-radius-sm);
+    overflow: hidden;
+}
+
+.standings-table th,
+.standings-table td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--card-border-light);
+}
+
+.standings-table th {
+    background: var(--card-bg-code);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.standings-table .team {
+    text-align: left;
+    min-width: 150px;
+}
+
+.standings-table .team-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.standings-team-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin: 0;
+}
+
+.standings-table .highlight-home {
+    background: rgba(58, 110, 165, 0.2);
+    font-weight: bold;
+}
+
+.standings-table .highlight-away {
+    background: rgba(231, 76, 60, 0.2);
+    font-weight: bold;
+}
+
+.rank-badge {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 4px;
+    background: var(--card-bg-code);
+    color: var(--color-text);
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.rank-badge.cl { background: #3498db; color: #fff; }
+.rank-badge.el { background: #f1c40f; color: #000; }
+.rank-badge.rel { background: #e74c3c; color: #fff; }
+
+.form-indicators {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.form-dot {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.form-dot.w { background: #2ecc71; }
+.form-dot.d { background: #95a5a6; }
+.form-dot.l { background: #e74c3c; }
+
+.standings-legend {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.standings-legend .rank-badge {
+    width: 12px;
+    height: 12px;
+}
+
+@media (max-width: 768px) {
+    .standings-table th, .standings-table td {
+        padding: 6px 4px;
+    }
+    .desktop-only {
+        display: none;
     }
 }

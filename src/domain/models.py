@@ -25,15 +25,16 @@ class MatchCore:
     kickoff_local: str  # 現地時間（例: "2025-12-27 20:00 Local"）
     rank: str = ""  # Absolute, S, A, or empty
     selection_reason: str = ""
+    match_round: str = ""  # 節情報（例: "Regular Season - 27"）
+    league_id: int = 0  # API-Football league ID
     is_target: bool = False
     match_date_local: str = ""  # 試合開催日（現地時間）YYYY-MM-DD
     kickoff_at_utc: datetime | None = None  # UTC datetime（計算用）
-    competition_logo: str = ""  # 大会ロゴURL
+    competition_logo: str = ""  # 大会ロゴURL (Issue #116)
     venue: str = ""
     referee: str = ""
     home_logo: str = ""
     away_logo: str = ""
-    competition_logo: str = ""  # 大会ロゴURL (Issue #116)
 
 
 @dataclass
@@ -95,6 +96,10 @@ class MatchFacts:
     # チームカラー (Issue #165)
     home_team_color: str = "#3a6ea5"
     away_team_color: str = "#e74c3c"
+
+    # 順位表 (Issue #192)
+    standings_table: list[dict] = field(default_factory=list)
+    # [{"rank": 1, "team": "Liverpool", "logo": "...", "points": 58, "played": 26, ...}, ...]
 
     # 予測データ (Issue #199)
     prediction_percent: dict = field(default_factory=dict)
@@ -212,6 +217,22 @@ class MatchAggregate:
     @rank.setter
     def rank(self, value: str):
         self.core.rank = value
+
+    @property
+    def match_round(self) -> str:
+        return self.core.match_round
+
+    @match_round.setter
+    def match_round(self, value: str):
+        self.core.match_round = value
+
+    @property
+    def league_id(self) -> int:
+        return self.core.league_id
+
+    @league_id.setter
+    def league_id(self, value: int):
+        self.core.league_id = value
 
     @property
     def selection_reason(self) -> str:
@@ -501,6 +522,14 @@ class MatchAggregate:
     @away_team_color.setter
     def away_team_color(self, value: str):
         self.facts.away_team_color = value
+
+    @property
+    def standings_table(self) -> list[dict]:
+        return self.facts.standings_table
+
+    @standings_table.setter
+    def standings_table(self, value: list[dict]):
+        self.facts.standings_table = value
 
     # --- Preview プロパティ ---
     @property

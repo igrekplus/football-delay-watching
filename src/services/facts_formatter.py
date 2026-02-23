@@ -260,6 +260,40 @@ class FactsFormatter:
         total = home_wins + draws + away_wins
         match.facts.h2h_summary = f"過去5年間 {total}試合: {match.core.home_team} {home_wins}勝, 引分 {draws}, {match.core.away_team} {away_wins}勝"
 
+    def format_standings(self, match: MatchAggregate, raw_standings: list[dict] | None):
+        """
+        APIまたはキャッシュから取得した順位表データを整形して MatchFacts にセット
+        """
+        if not raw_standings:
+            match.facts.standings_table = []
+            return
+
+        formatted_table = []
+        for entry in raw_standings:
+            # 必要なフィールドを抽出
+            item = {
+                "rank": entry.get("rank"),
+                "team_id": entry.get("team", {}).get("id"),
+                "team_name": entry.get("team", {}).get("name"),
+                "team_logo": entry.get("team", {}).get("logo"),
+                "points": entry.get("points"),
+                "played": entry.get("all", {}).get("played"),
+                "won": entry.get("all", {}).get("win"),
+                "draw": entry.get("all", {}).get("draw"),
+                "lost": entry.get("all", {}).get("lose"),
+                "goals_for": entry.get("all", {}).get("goals", {}).get("for"),
+                "goals_against": entry.get("all", {}).get("goals", {}).get("against"),
+                "goals_diff": entry.get("goalsDiff"),
+                "form": entry.get("form"),
+                "description": entry.get("description", ""),
+            }
+            formatted_table.append(item)
+
+        match.facts.standings_table = formatted_table
+        logger.info(
+            f"Formatted {len(formatted_table)} standings entries for {match.core.competition}"
+        )
+
     def _parse_form(
         self, data: dict[str, Any], team_name: str, match_date: datetime = None
     ) -> list[dict[str, Any]]:

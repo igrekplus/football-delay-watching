@@ -133,6 +133,14 @@ class ApiFootballClient:
         params = {"fixture": fixture_id}
         return self._fetch(url, params=params, label=f"predictions {fixture_id}")
 
+    def fetch_standings(self, league_id: int, season: int) -> dict[str, Any]:
+        """Fetch standings for a specific league and season."""
+        url = f"{self.base_url}/standings"
+        params = {"league": league_id, "season": str(season)}
+        return self._fetch(
+            url, params=params, label=f"standings league {league_id} season {season}"
+        )
+
     def fetch_odds(self, fixture_id: str, bookmaker_id: int = 8) -> dict[str, Any]:
         """オッズ（得点者市場）を取得"""
         url = f"{self.base_url}/odds"

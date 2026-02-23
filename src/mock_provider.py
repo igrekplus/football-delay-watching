@@ -140,11 +140,57 @@ class MockProvider:
         else:
             match.injuries_info = "なし"
 
-        # 選手詳細情報
-        match.player_numbers = facts.get("player_numbers", {})
-        match.player_nationalities = facts.get("player_nationalities", {})
-        match.player_birthdates = facts.get("player_birthdates", {})
-        match.player_photos = facts.get("player_photos", {})
+        # 順位表 (Issue #192)
+        match.facts.standings_table = [
+            {
+                "rank": 1,
+                "team_id": 40,
+                "team_name": "Liverpool",
+                "team_logo": "https://media.api-sports.io/football/teams/40.png",
+                "points": 58,
+                "played": 26,
+                "won": 18,
+                "draw": 4,
+                "lost": 4,
+                "goals_for": 55,
+                "goals_against": 22,
+                "goals_diff": 33,
+                "form": "WWWDL",
+                "description": "Champions League",
+            },
+            {
+                "rank": 2,
+                "team_id": 50,
+                "team_name": "Manchester City",
+                "team_logo": "https://media.api-sports.io/football/teams/50.png",
+                "points": 56,
+                "played": 26,
+                "won": 17,
+                "draw": 5,
+                "lost": 4,
+                "goals_for": 58,
+                "goals_against": 26,
+                "goals_diff": 32,
+                "form": "WWDWW",
+                "description": "Champions League",
+            },
+            {
+                "rank": 3,
+                "team_id": 42,
+                "team_name": "Arsenal",
+                "team_logo": "https://media.api-sports.io/football/teams/42.png",
+                "points": 55,
+                "played": 26,
+                "won": 17,
+                "draw": 4,
+                "lost": 5,
+                "goals_for": 52,
+                "goals_against": 23,
+                "goals_diff": 29,
+                "form": "WWWWW",
+                "description": "Champions League",
+            },
+        ]
 
         # 予測データ (Issue #199)
         match.facts.prediction_percent = {

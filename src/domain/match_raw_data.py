@@ -15,4 +15,5 @@ class MatchRawData:
     h2h: dict[str, Any]
     home_team_id: int
     away_team_id: int
+    standings: list[dict] | None = None
     fixture_details: dict[str, Any] | None = None

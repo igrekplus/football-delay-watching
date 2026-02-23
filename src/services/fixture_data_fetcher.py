@@ -57,12 +57,50 @@ class FixtureDataFetcher:
         # 対戦履歴
         h2h = self.api.fetch_h2h(team1_id=home_id, team2_id=away_id)
 
+        # 3. 順位表の取得 (Issue #192) - リーグ戦のみ、週単位キャッシュ利用
+        standings = None
+        # リーグ戦（EPL, LALIGA）のみ順位表を表示
+        if home_id != 0 and match.core.competition in ["EPL", "LALIGA"]:
+            from src.utils.datetime_util import DateTimeUtil
+            from src.utils.standings_cache import (
+                get_week_key,
+                has_standings,
+                load_standings,
+                save_standings,
+            )
+
+            # キックオフの月曜日キーを取得
+            match_date_jst = DateTimeUtil.to_jst(match.core.kickoff_at_utc)
+            week_key = get_week_key(match_date_jst)
+            league_name = match.core.competition
+
+            if has_standings(week_key, league_name):
+                logger.info(f"Loading standings from cache: {league_name} {week_key}")
+                standings = load_standings(week_key, league_name)
+            else:
+                logger.info(f"Fetching standings from API: {league_name} {week_key}")
+                season = (
+                    match_date_jst.year
+                    if match_date_jst.month >= 6
+                    else match_date_jst.year - 1
+                )
+                data = self.api.fetch_standings(match.core.league_id, season)
+                if data.get("response"):
+                    # 通常、[0]["league"]["standings"][0] に順位表リストが入っている
+                    try:
+                        raw_standings = data["response"][0]["league"]["standings"][0]
+                        save_standings(week_key, league_name, raw_standings)
+                        standings = raw_standings
+                    except (IndexError, KeyError) as e:
+                        logger.error(f"Error parsing standings API response: {e}")
+
         return MatchRawData(
             lineups=lineups,
             injuries=injuries,
             home_form=home_form,
             away_form=away_form,
             h2h=h2h,
+            standings=standings,
             home_team_id=home_id,
             away_team_id=away_id,
             fixture_details=fixture,

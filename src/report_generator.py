@@ -520,9 +520,19 @@ class ReportGenerator:
             youtube_videos, match_key, match_rank=match.core.rank
         )
 
+        # 順位表 (Issue #192)
+        standings_html = ""
+        if match.facts.standings_table:
+            standings_html = render_template(
+                "partials/standings_table.html",
+                standings=match.facts.standings_table,
+                match=match,
+            )
+
         context = {
             "match": match,
             "match_info_html": self.match_info_formatter.format_match_info_html(match),
+            "standings_html": standings_html,
             "home_cards_html": home_cards_html,
             "away_cards_html": away_cards_html,
             "home_bench_html": home_bench_html,
