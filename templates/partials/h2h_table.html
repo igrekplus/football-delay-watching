@@ -25,17 +25,17 @@
             <td>{{ detail.date }}</td>
             <td class="h2h-competition-cell">
                 {% if detail.league_logo %}
-                <img src="{{ detail.league_logo }}" class="h2h-logo" alt="" onerror="this.style.display='none';">
+                <img src="{{ detail.league_logo }}" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
                 {% endif %}
                 <span>{{ comp_display }}</span>
             </td>
             <td class="h2h-matchup-cell">
                 {% if detail.home_logo %}
-                <img src="{{ detail.home_logo }}" class="h2h-logo" alt="" onerror="this.style.display='none';">
+                <img src="{{ detail.home_logo }}" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
                 {% endif %}
                 <span>{{ home_display | safe }}</span>
                 {% if detail.away_logo %}
-                <img src="{{ detail.away_logo }}" class="h2h-logo" alt="" onerror="this.style.display='none';">
+                <img src="{{ detail.away_logo }}" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
                 {% endif %}
                 <span>{{ away_display | safe }}</span>
             </td>

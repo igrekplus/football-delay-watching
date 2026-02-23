@@ -54,6 +54,8 @@
 
     /* YouTube Label */
     --color-youtube-reason: #f44336;
+    --team-logo-bg: rgba(255, 255, 255, 0.95);
+    --team-logo-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
 }
 
 * {
@@ -166,6 +168,43 @@ body {
     object-fit: contain;
     vertical-align: middle;
     margin: 0 15px;
+}
+
+/* Team crest legibility on dark backgrounds (Issue #213) */
+.header-team-logo-left,
+.header-team-logo-right,
+.team-logo,
+.prob-team-logo,
+.form-team-logo,
+.form-team-logo-small,
+.h2h-league-logo,
+.h2h-team-logo,
+.formation-header-logo,
+.manager-team-logo,
+.transfer-team-logo,
+.standings-team-logo {
+    background-color: var(--team-logo-bg);
+    border-radius: 50%;
+    box-shadow: var(--team-logo-shadow);
+    box-sizing: border-box;
+}
+
+.header-team-logo-left,
+.header-team-logo-right,
+.prob-team-logo,
+.formation-header-logo,
+.manager-team-logo,
+.transfer-team-logo {
+    padding: 4px;
+}
+
+.team-logo,
+.form-team-logo,
+.form-team-logo-small,
+.h2h-league-logo,
+.h2h-team-logo,
+.standings-team-logo {
+    padding: 2px;
 }
 
 .formation-badge {
