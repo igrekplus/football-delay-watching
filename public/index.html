@@ -356,9 +356,14 @@
             onAuthStateChanged,
             signInWithEmailAndPassword,
             GoogleAuthProvider,
-            signInWithPopup,
-            signOut
+            signInWithPopup
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import {
+            fetchFirebaseConfig,
+            fetchAllowedEmails,
+            isAllowedEmail,
+            logoutUser
+        } from '/assets/auth_common.js';
 
         // フィルタ状態（'all' または 'production'）
         let currentFilter = 'all';
@@ -392,10 +397,6 @@
         let ALLOWED_EMAILS = [];
         let authInitErrorMessage = '';
 
-        function buildConfigFetchUrl(path) {
-            return `${path}?v=${Date.now()}`;
-        }
-
         function setAuthButtonsEnabled(enabled) {
             const loginBtn = document.querySelector('.login-btn');
             const googleBtn = document.querySelector('.google-btn');
@@ -411,31 +412,8 @@
         async function initializeAppMain() {
             try {
                 // Firebase設定を読み込み
-                const configResponse = await fetch(
-                    buildConfigFetchUrl('/firebase_config.json'),
-                    { cache: 'no-store' }
-                );
-                if (configResponse.ok) {
-                    firebaseConfig = await configResponse.json();
-                } else {
-                    authInitErrorMessage = '認証設定の読み込みに失敗しました。ページを再読み込みしてください。';
-                    console.error(
-                        'Firebase config not found',
-                        configResponse.status
-                    );
-                    showError(authInitErrorMessage);
-                    return;
-                }
-
-                // 許可メールアドレスを読み込み
-                const emailsResponse = await fetch(
-                    buildConfigFetchUrl('/allowed_emails.json'),
-                    { cache: 'no-store' }
-                );
-                if (emailsResponse.ok) {
-                    const data = await emailsResponse.json();
-                    ALLOWED_EMAILS = data.emails || [];
-                }
+                firebaseConfig = await fetchFirebaseConfig();
+                ALLOWED_EMAILS = await fetchAllowedEmails();
 
                 // Firebase初期化
                 const app = initializeApp(firebaseConfig);
@@ -460,22 +438,10 @@
                     if (user) {
                         // 許可リストが空の場合は再取得を試みる（レースコンディション対策）
                         if (ALLOWED_EMAILS.length === 0) {
-                            try {
-                                const emailsResponse = await fetch(
-                                    buildConfigFetchUrl('/allowed_emails.json'),
-                                    { cache: 'no-store' }
-                                );
-                                if (emailsResponse.ok) {
-                                    const data = await emailsResponse.json();
-                                    ALLOWED_EMAILS = data.emails || [];
-                                }
-                            } catch (e) {
-                                console.error('Failed to fetch allowed emails:', e);
-                            }
+                            ALLOWED_EMAILS = await fetchAllowedEmails();
                         }
 
-                        const userEmailLower = user.email.toLowerCase();
-                        const isAllowed = ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(userEmailLower);
+                        const isAllowed = isAllowedEmail(user.email, ALLOWED_EMAILS);
 
                         if (isAllowed) {
                             showSuccess('ログイン成功！');
@@ -488,7 +454,7 @@
                             }
                         } else {
                             showError('このアカウントは許可リストに登録されていません: ' + user.email);
-                            signOut(auth);
+                            await logoutUser(auth);
                         }
                     } else {
                         showLogin();
@@ -548,7 +514,7 @@
                 };
 
                 window.logout = function () {
-                    signOut(auth);
+                    logoutUser(auth);
                 };
 
                 setAuthButtonsEnabled(true);

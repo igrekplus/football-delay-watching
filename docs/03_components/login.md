@@ -48,6 +48,7 @@
 public/
 ├── index.html           # ログイン画面 + レポート一覧（サブ導線）
 ├── calendar.html        # ログイン後の主導線（カレンダー）
+├── assets/auth_common.js # 認証共通処理（設定読込・許可判定・ログアウト）
 ├── allowed_emails.json  # 許可メールアドレスリスト
 └── firebase_config.json # Firebase設定
 ```

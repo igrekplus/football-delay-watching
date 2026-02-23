@@ -18,6 +18,7 @@
 | コンポーネント | 責務 |
 |---|---|
 | `src/calendar_generator.py` | カレンダーHTML生成（4週間、週別/リーグ別表示） |
+| `public/assets/auth_common.js` | 認証共通処理（設定読込・許可判定・ログアウト） |
 | `settings/calendar_data_loader.py` | カレンダーCSV読込、`fixture_id`単位の情報取得、レポートリンク更新 |
 | `src/html_generator.py` | レポート生成時にCSVへ`report_link`を書き戻し |
 | `public/calendar.html` | 生成物（Firebase公開対象） |
@@ -79,6 +80,7 @@
 
 - カレンダーヘッダーに `📋 レポート一覧へ行く` 導線を表示する
 - 導線先は `/?view=reports` とし、一覧表示を明示的に開く
+- カレンダーヘッダー右上にログイン中ユーザー表示と `ログアウト` ボタンを配置する
 
 ---
 

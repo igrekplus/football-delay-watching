@@ -194,6 +194,10 @@ class CalendarGenerator:
         <header class="calendar-header">
             <nav class="nav-back"><a href="/?view=reports" class="back-link">📋 レポート一覧へ行く</a></nav>
             <h1>📅 試合日程カレンダー</h1>
+            <div id="calendar-user-info" class="calendar-user-info" style="display:none;">
+                <span id="calendar-user-email" class="calendar-user-email"></span>
+                <button class="calendar-logout-btn" onclick="logout()">ログアウト</button>
+            </div>
         </header>
 
         <div class="filter-container">
@@ -290,6 +294,73 @@ class CalendarGenerator:
     </div>
 
     <script src="/assets/calendar_filter.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import {
+            getAuth,
+            setPersistence,
+            browserLocalPersistence,
+            onAuthStateChanged
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import {
+            fetchFirebaseConfig,
+            fetchAllowedEmails,
+            isAllowedEmail,
+            logoutUser,
+            showUserInfo
+        } from '/assets/auth_common.js';
+
+        let allowedEmails = [];
+
+        function redirectToLogin() {
+            window.location.href = '/';
+        }
+
+        async function initializeCalendarAuth() {
+            try {
+                const firebaseConfig = await fetchFirebaseConfig();
+                allowedEmails = await fetchAllowedEmails();
+
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                await setPersistence(auth, browserLocalPersistence);
+
+                window.logout = async function () {
+                    await logoutUser(auth, redirectToLogin);
+                };
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) {
+                        redirectToLogin();
+                        return;
+                    }
+
+                    if (allowedEmails.length === 0) {
+                        allowedEmails = await fetchAllowedEmails();
+                    }
+
+                    const isAllowed = isAllowedEmail(user.email || '', allowedEmails);
+                    if (!isAllowed) {
+                        await logoutUser(auth, redirectToLogin);
+                        return;
+                    }
+
+                    showUserInfo(
+                        'calendar-user-info',
+                        'calendar-user-email',
+                        user.email || ''
+                    );
+                });
+            } catch (error) {
+                console.error('[CALENDAR][AUTH] Failed to initialize auth:', error);
+                redirectToLogin();
+            }
+        }
+
+        // 初期化前のガード
+        window.logout = redirectToLogin;
+        initializeCalendarAuth();
+    </script>
 </body>
 </html>
 """
