@@ -23,7 +23,10 @@
 
 ### 1.4 ログイン後の遷移
 
-- ログイン成功 → 「ログイン成功！」表示 → レポート一覧画面へ遷移
+- Issue #215 対応後は、ログイン成功時の主導線をカレンダーへ統一する
+  - ログイン成功 → 「ログイン成功！」表示 → カレンダー画面（`/calendar.html`）へ遷移
+  - カレンダー画面から各試合の `📄 Report` を直接開ける
+  - カレンダー画面からレポート一覧（`/?view=reports`）へ移動し、一覧経由でもレポートを開ける
 
 ---
 
@@ -43,7 +46,8 @@
 
 ```
 public/
-├── index.html           # ログイン画面 + レポート一覧
+├── index.html           # ログイン画面 + レポート一覧（サブ導線）
+├── calendar.html        # ログイン後の主導線（カレンダー）
 ├── allowed_emails.json  # 許可メールアドレスリスト
 └── firebase_config.json # Firebase設定
 ```
@@ -60,8 +64,11 @@ flowchart TD
     E -->|失敗| F[エラー表示: ID/PW間違い]
     E -->|成功| G{許可リストに存在?}
     G -->|No| H[エラー表示: 許可リスト外]
-    G -->|Yes| I[レポート一覧へ遷移]
-    H --> J[サインアウト]
+    G -->|Yes| I[カレンダーへ遷移]
+    I --> J[レポートへ直接遷移]
+    I --> K[レポート一覧へ遷移]
+    K --> L[レポートへ遷移]
+    H --> M[サインアウト]
 ```
 
 ### 2.4 allowed_emails.json 形式
@@ -166,4 +173,3 @@ flowchart TD
 | Email/Password認証が機能しない | 未対応 | [#183](https://github.com/igrekplus/football-delay-watching/issues/183) |
 | Firebase SDK v8 → v9 移行 | 対応済み | [#184](https://github.com/igrekplus/football-delay-watching/issues/184) |
 | `allowed_emails.json` の公開露出 | 許容（ドキュメント化済み） | - |
-

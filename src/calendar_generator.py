@@ -192,7 +192,7 @@ class CalendarGenerator:
 <body>
     <div class="calendar-container">
         <header class="calendar-header">
-            <nav class="nav-back"><a href="/" class="back-link">← トップページに戻る</a></nav>
+            <nav class="nav-back"><a href="/?view=reports" class="back-link">📋 レポート一覧へ行く</a></nav>
             <h1>📅 試合日程カレンダー</h1>
         </header>
 
