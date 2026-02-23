@@ -43,6 +43,15 @@
 {{ win_prediction_html | safe }}
 {% endif %}
 
+{% if standings_html %}
+<details class="collapsible-section">
+    <summary>📊 順位表 {% if match.core.match_round %}({{ match.core.match_round }}){% endif %}</summary>
+    <div class="section-content">
+        {{ standings_html | safe }}
+    </div>
+</details>
+{% endif %}
+
 {{ match_info_html | safe }}
 
 <div class="two-column-section">
@@ -140,7 +149,7 @@
 
 {# News summary moved to top #}
 
-<details class="collapsible-section" open>
+<details class="collapsible-section">
     <summary>📊 戦術プレビュー</summary>
     <div class="section-content">
         {{ tactical_html | safe }}
@@ -150,7 +159,7 @@
     </div>
 </details>
 
-<details class="collapsible-section" open>
+<details class="collapsible-section">
     <summary>🎙️ 監督プレビュー</summary>
     <div class="section-content">
         {{ manager_section_html | safe }}
@@ -158,7 +167,7 @@
 </details>
 
 {% if transfer_section_html %}
-<details class="collapsible-section" open>
+<details class="collapsible-section">
     <summary>🔄 移籍情報</summary>
     <div class="section-content">
         {{ transfer_section_html | safe }}

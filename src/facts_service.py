@@ -76,6 +76,9 @@ class FactsService:
         # H2H
         self.formatter.format_h2h(match, raw.h2h, raw.home_team_id)
 
+        # Standings (Issue #192)
+        self.formatter.format_standings(match, raw.standings)
+
         # 3. LLMによるトリビア生成
         self.tribute.detect_and_generate_same_country(match)
         self.tribute.generate_former_club_trivia(match)

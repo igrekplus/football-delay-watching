@@ -124,6 +124,8 @@ class MatchProcessor:
             home_team=teams["home"]["name"],
             away_team=teams["away"]["name"],
             competition=league_name,
+            league_id=item["league"]["id"],
+            match_round=item["league"].get("round", ""),
             kickoff_jst=DateTimeUtil.format_jst_display(
                 match_date_jst, include_weekday=True
             ),

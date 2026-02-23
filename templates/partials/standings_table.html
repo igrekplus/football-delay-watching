@@ -1,0 +1,60 @@
+<div class="standings-container">
+    <table class="standings-table">
+        <thead>
+            <tr>
+                <th class="rank">順位</th>
+                <th class="team">チーム</th>
+                <th class="played">試合</th>
+                <th class="won">勝</th>
+                <th class="draw">分</th>
+                <th class="lost">負</th>
+                <th class="goals">得失</th>
+                <th class="points">勝点</th>
+                <th class="form desktop-only">直近</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in standings %}
+            <tr
+                class="{% if item.team_name == match.core.home_team %}highlight-home{% elif item.team_name == match.core.away_team %}highlight-away{% endif %}">
+                <td class="rank">
+                    <span
+                        class="rank-badge {% if item.description and 'Champions League' in item.description %}cl{% elif item.description and 'Europa League' in item.description %}el{% elif item.description and 'Relegation' in item.description %}rel{% elif item.description and 'relegation' in item.description %}rel{% endif %}">
+                        {{ item.rank }}
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        {% if item.team_logo %}
+                        <img src="{{ item.team_logo }}" class="standings-team-logo" alt="">
+                        {% endif %}
+                        <span class="team-name">{{ item.team_name }}</span>
+                    </div>
+                </td>
+                <td class="played">{{ item.played }}</td>
+                <td class="won">{{ item.won }}</td>
+                <td class="draw">{{ item.draw }}</td>
+                <td class="lost">{{ item.lost }}</td>
+                <td class="goals">{{ item.goals_diff }}</td>
+                <td class="points"><strong>{{ item.points }}</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        {% if item.form %}
+                        {% for char in item.form %}
+                        <span class="form-dot {{ char | lower }}">{{ char }}</span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if standings and standings[0] and standings[0].description %}
+    <div class="standings-legend">
+        <span class="legend-item"><span class="rank-badge cl"></span> CL圏</span>
+        <span class="legend-item"><span class="rank-badge el"></span> EL圏</span>
+        <span class="legend-item"><span class="rank-badge rel"></span> 降格圏</span>
+    </div>
+    {% endif %}
+</div>
