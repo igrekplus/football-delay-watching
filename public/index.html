@@ -363,6 +363,17 @@
         // フィルタ状態（'all' または 'production'）
         let currentFilter = 'all';
 
+        function isReportsViewRequested() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('view') === 'reports';
+        }
+
+        function shouldRedirectToCalendarAfterLogin() {
+            const path = window.location.pathname;
+            const isTopPath = path === '/' || path.endsWith('/index.html');
+            return isTopPath && !isReportsViewRequested();
+        }
+
         // タブ切り替え
         window.setFilter = function (filter) {
             currentFilter = filter;
@@ -379,21 +390,48 @@
 
         // 許可するメールアドレス（allowed_emails.jsonから読み込み）
         let ALLOWED_EMAILS = [];
+        let authInitErrorMessage = '';
+
+        function buildConfigFetchUrl(path) {
+            return `${path}?v=${Date.now()}`;
+        }
+
+        function setAuthButtonsEnabled(enabled) {
+            const loginBtn = document.querySelector('.login-btn');
+            const googleBtn = document.querySelector('.google-btn');
+            [loginBtn, googleBtn].forEach((btn) => {
+                if (!btn) return;
+                btn.disabled = !enabled;
+                btn.style.opacity = enabled ? '1' : '0.6';
+                btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+            });
+        }
 
         // 初期化
         async function initializeAppMain() {
             try {
                 // Firebase設定を読み込み
-                const configResponse = await fetch('/firebase_config.json');
+                const configResponse = await fetch(
+                    buildConfigFetchUrl('/firebase_config.json'),
+                    { cache: 'no-store' }
+                );
                 if (configResponse.ok) {
                     firebaseConfig = await configResponse.json();
                 } else {
-                    console.error('Firebase config not found');
+                    authInitErrorMessage = '認証設定の読み込みに失敗しました。ページを再読み込みしてください。';
+                    console.error(
+                        'Firebase config not found',
+                        configResponse.status
+                    );
+                    showError(authInitErrorMessage);
                     return;
                 }
 
                 // 許可メールアドレスを読み込み
-                const emailsResponse = await fetch('/allowed_emails.json');
+                const emailsResponse = await fetch(
+                    buildConfigFetchUrl('/allowed_emails.json'),
+                    { cache: 'no-store' }
+                );
                 if (emailsResponse.ok) {
                     const data = await emailsResponse.json();
                     ALLOWED_EMAILS = data.emails || [];
@@ -423,7 +461,10 @@
                         // 許可リストが空の場合は再取得を試みる（レースコンディション対策）
                         if (ALLOWED_EMAILS.length === 0) {
                             try {
-                                const emailsResponse = await fetch('/allowed_emails.json');
+                                const emailsResponse = await fetch(
+                                    buildConfigFetchUrl('/allowed_emails.json'),
+                                    { cache: 'no-store' }
+                                );
                                 if (emailsResponse.ok) {
                                     const data = await emailsResponse.json();
                                     ALLOWED_EMAILS = data.emails || [];
@@ -438,7 +479,13 @@
 
                         if (isAllowed) {
                             showSuccess('ログイン成功！');
-                            setTimeout(() => showContent(user), 300);
+                            if (shouldRedirectToCalendarAfterLogin()) {
+                                setTimeout(() => {
+                                    window.location.href = '/calendar.html';
+                                }, 300);
+                            } else {
+                                setTimeout(() => showContent(user), 300);
+                            }
                         } else {
                             showError('このアカウントは許可リストに登録されていません: ' + user.email);
                             signOut(auth);
@@ -450,6 +497,11 @@
 
                 // ログイン関数をグローバルに設定
                 window.login = function () {
+                    if (authInitErrorMessage) {
+                        showError(authInitErrorMessage);
+                        return;
+                    }
+
                     const email = document.getElementById('email').value;
                     const password = document.getElementById('password').value;
 
@@ -476,6 +528,11 @@
 
                 // Googleログイン関数をグローバルに設定
                 window.googleLogin = function () {
+                    if (authInitErrorMessage) {
+                        showError(authInitErrorMessage);
+                        return;
+                    }
+
                     const provider = new GoogleAuthProvider();
                     signInWithPopup(auth, provider)
                         .catch((error) => {
@@ -494,13 +551,26 @@
                     signOut(auth);
                 };
 
+                setAuthButtonsEnabled(true);
+
             } catch (e) {
                 console.error('Failed to initialize app:', e);
-                showError('アプリケーションの初期化に失敗しました');
+                authInitErrorMessage = 'アプリケーションの初期化に失敗しました';
+                showError(authInitErrorMessage);
             }
         }
 
+        setAuthButtonsEnabled(false);
         initializeAppMain();
+
+        // 初期化完了前にボタン押下されても例外を出さないためのガード
+        window.login = function () {
+            showError(authInitErrorMessage || '初期化中です。少し待ってから再試行してください。');
+        };
+
+        window.googleLogin = function () {
+            showError(authInitErrorMessage || '初期化中です。少し待ってから再試行してください。');
+        };
 
         window.showLogin = function () {
             document.getElementById('login-section').style.display = 'block';
