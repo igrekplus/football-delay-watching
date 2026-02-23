@@ -1,114 +1,145 @@
 ---
 name: firebase_rollback
-description: Firebase Hostingでのレポート消失トラブル発生時に、過去の正常なバージョンにロールバックし、データを復旧する手順と判断基準を提供するスキル。ローカルデプロイ等による上書きでデータが失われた場合に使用する。
+description: Firebase Hosting上のレポート消失時に、GCSバックアップバケット（football-delay-watching-backup）からレポートを復旧する実行手順を提供するスキル。誤デプロイや上書き事故で public/reports が失われた場合に使用する。
 ---
 
-# Firebase Rollback Skill
+# Firebase Restore From GCS Backup Skill
 
-## 🏈 概要 (Overview)
+## 概要
 
-このスキルは、ローカル環境からの誤ったデプロイ（`firebase deploy`）等によって、Firebase Hosting上のレポートHTMLや画像ファイルが上書き・消失してしまった際に使用します。
+このスキルは、`firebase deploy --only hosting` の上書きで Firebase Hosting 上の `reports/` が欠損したときに、GitHub Actions が保存している GCS バックアップから復旧するための手順です。
 
-Firebase CLIの標準コマンドでは詳細なバージョン情報（ファイル数など）の確認やロールバックが難しい場合があるため、Google Cloud REST APIを活用して確実な復旧を行います。
+バックアップ元は以下です。
 
-## 🔍 トリガー条件 (When to Use)
+- バケット: `gs://football-delay-watching-backup`
+- プレフィックス: `reports/<YYYYMMDD_HHMMSS>/`
+- 生成元: `.github/workflows/daily_report.yml` の `Backup reports to GCS`
 
-- ユーザーから「最近のレポートが消えた」「過去のバージョンに戻してほしい」という依頼があったとき。
-- GitHub Actionsのログでは成功（レポート生成）しているのに、Firebase Hosting上の `public/reports/` に実ファイルが存在しないことが判明したとき。
-- ローカルからデプロイしたことで、リモートの最新状態が上書きされてしまった疑いがあるとき。
+## トリガー条件
 
-## 💡 思考プロセス (Thinking Process)
+- ユーザーから「レポートが消えた」「復旧したい」と依頼されたとき
+- Firebase 上の `reports/` 件数が急減しているとき
+- ローカル誤デプロイで過去レポートを消した可能性が高いとき
 
-1. **状況把握と原因特定**:
-   - `firebase hosting:channel:list` や過去のデプロイ履歴を確認する。
-   - GitHub Actionsのログを確認し、いつまで正常に生成・デプロイされていたか特定する。
-   - `public/reports/manifest.json` の内容と実際のファイル存在状況を照らし合わせる。
-2. **ロールバック対象の特定**:
-   - Firebase Hosting REST APIを使用して、各デプロイバージョンに含まれるファイル数を比較する。
-   - 最も直近の「正常にすべてのレポートが含まれていたバージョン」を特定する。
-3. **ロールバック実行**:
-   - ユーザーに状況とロールバック対象の時間を報告し、承認を得た上でREST API経由でロールバックを実行する。
-4. **ローカルへのデータ救出と再同期**:
-   - Firebaseを元に戻すだけでは、次にローカルからデプロイした際に再び消えてしまう。
-   - `scripts/sync_firebase_reports.py` を実行して、ロールバック後のFirebaseからローカルの `public/reports/` にファイルを同期する。
+## 判断方針
 
-## 🛠 実行手順 (Execution Steps)
+1. Firebase の履歴ロールバックではなく、GCS スナップショットを正として復旧します。
+2. 復旧前に、現在のローカル `public/reports` を退避します。
+3. 復旧時は `scripts/safe_deploy.sh` を使いません。
+`safe_deploy.sh` は先に Firebase から同期するため、復旧対象のローカル内容が上書きされます。
+4. 復旧対象スナップショットは「消失事故の直前時刻」を優先します。
 
-### 1. 過去バージョンとファイル数の特定
+## 実行手順
 
-Firebase Hosting REST API を使用して、過去のデプロイ履歴（ファイル数付き）を取得します。
-ファイル数が極端に減っている地点の **直前** が、正常なバックアップバージョンである可能性が高いです。
+### 1. バックアップ候補を列挙
 
 ```bash
-# ※ projectId は実際のプロジェクト(football-delay-watching-a8830)に置き換えて実行する
-TOKEN=$(gcloud auth print-access-token --billing-project=football-delay-watching-a8830 2>/dev/null) && \
-curl -s -H "Authorization: Bearer $TOKEN" \
-     -H "x-goog-user-project: football-delay-watching-a8830" \
-     "https://firebasehosting.googleapis.com/v1beta1/sites/football-delay-watching-a8830/releases?pageSize=25" | \
-python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-releases = data.get('releases', [])
-print(f'Total releases: {len(releases)}')
-for r in releases[:20]:
-    rtype = r.get('type','')
-    release_time = r.get('releaseTime','')[:19]
-    version = r.get('version', {})
-    vid = version.get('name','').split('/')[-1]
-    file_count = version.get('fileCount', '?')
-    status = version.get('status','')
-    print(f'{release_time} | {rtype} | files:{file_count} | status:{status} | {vid}')
-"
+gsutil ls gs://football-delay-watching-backup/reports/
 ```
 
-### 2. 対象バージョンのファイル確認 (オプション)
-
-ロールバック対象のバージョンID（例: `7d99dd2d56d58af9`）の中に、探しているレポートファイルが存在するか確認します。
+最新候補の確認例です（タイムスタンプは GitHub Actions 側時刻で作られます）。
 
 ```bash
-TARGET_VERSION="7d99dd2d56d58af9"
-TOKEN=$(gcloud auth print-access-token --billing-project=football-delay-watching-a8830 2>/dev/null) && \
-curl -s -H "Authorization: Bearer $TOKEN" \
-     -H "x-goog-user-project: football-delay-watching-a8830" \
-     "https://firebasehosting.googleapis.com/v1beta1/sites/football-delay-watching-a8830/versions/${TARGET_VERSION}/files?pageSize=1000" | \
-python3 -c "
-import json, sys, re
-data = json.load(sys.stdin)
-files = data.get('files', [])
-target = [f for f in files if re.search(r'2026-02-1[9]|2026-02-2[012]', f.get('path',''))]
-print(f'Total files: {len(files)}')
-for f in sorted(target, key=lambda x: x.get('path',''))[:20]:
-    print(f.get('path',''))
-"
+gsutil ls gs://football-delay-watching-backup/reports/ \
+  | sed 's#/$##' \
+  | awk -F/ '{print $NF}' \
+  | sort \
+  | tail -20
 ```
 
-### 3. ロールバックの実行
-
-ユーザーの承認後、特定したバージョンへロールバックするPOSTリクエストを送信します。
+### 2. 復旧対象スナップショットを決める
 
 ```bash
-TARGET_VERSION="7d99dd2d56d58af9"
-MESSAGE="Rollback to healthy version via Antigravity"
-TOKEN=$(gcloud auth print-access-token --billing-project=football-delay-watching-a8830 2>/dev/null) && \
-curl -s -X POST -H "Authorization: Bearer $TOKEN" \
-     -H "x-goog-user-project: football-delay-watching-a8830" \
-     -H "Content-Type: application/json" \
-     -d "{\"message\": \"${MESSAGE}\"}" \
-     "https://firebasehosting.googleapis.com/v1beta1/sites/football-delay-watching-a8830/releases?versionName=projects/football-delay-watching-a8830/sites/football-delay-watching-a8830/versions/${TARGET_VERSION}"
+TARGET_SNAPSHOT="20260223_030001"
+gsutil ls "gs://football-delay-watching-backup/reports/${TARGET_SNAPSHOT}/**" | head -50
 ```
 
-### 4. ローカル環境へのデータ同期（最重要）
+最低限、次が含まれることを確認します。
 
-ロールバックが完了したら、**必ず** ローカル環境にデータを同期し、Firebase上の最新状態をローカルの `public/reports/` にも反映させます。これを行わないと、次のデプロイで再びデータが消失します。
+- `manifest.json`
+- `report_*.html`
+- `images/`（必要な場合）
+
+### 3. 復旧前のローカル退避
+
+```bash
+NOW=$(date +%Y%m%d_%H%M%S)
+mkdir -p "temp/restore_backups/${NOW}"
+if [ -d "public/reports" ]; then
+  mv public/reports "temp/restore_backups/${NOW}/reports_before_restore"
+fi
+mkdir -p public/reports
+```
+
+### 4. GCS からローカルへ復元
+
+```bash
+TARGET_SNAPSHOT="20260223_030001"
+gsutil -m rsync -r \
+  "gs://football-delay-watching-backup/reports/${TARGET_SNAPSHOT}/" \
+  public/reports/
+```
+
+### 5. デプロイ前の必須確認
+
+```bash
+find public/reports -type f | wc -l
+ls -la public/reports | head
+test -f public/reports/manifest.json && echo "manifest exists"
+```
+
+`public/firebase_config.json` と `public/allowed_emails.json` が必要です。
+不足している場合は環境変数から再生成します。
+
+```bash
+echo "$FIREBASE_CONFIG" > public/firebase_config.json
+echo "$ALLOWED_EMAILS" > public/allowed_emails.json
+```
+
+### 6. Firebase Hosting に反映
+
+```bash
+firebase deploy --only hosting
+```
+
+### 7. 復旧後同期と最終確認
+
+復旧後の実態をローカルにも揃えます。
 
 ```bash
 python scripts/sync_firebase_reports.py
 ```
 
-実行後、`ls public/reports/` 等で意図したレポートがローカルに復旧しているか（Downloaded件数と実際のファイル）を確認し、タスク完了を報告します。
+確認項目:
 
-## ⚠️ 失敗・注意ポイント (Common Pitfalls)
+- Hosting 上で対象レポート URL が表示できる
+- `public/reports/manifest.json` に対象レポートが含まれる
+- `public/reports/` の件数が想定値以上である
 
-- Firebase CLI の `firebase hosting:versions:list` コマンドは非推奨/未実装であることが多いため、**REST API + gcloud auth の使用が必須**です。
-- リクエスト時に `quota project is not set` エラーが出る場合は、必ず `--billing-project` と `-H "x-goog-user-project: ..."` ヘッダーを付与してください。
-- ロールバックするだけでは不完全です。必ず `sync_firebase_reports.py` を使ってローカルのファイルを最新化してください。
+## 事故時の最短手順
+
+時間優先で復旧する場合のみ使用します。
+
+```bash
+TARGET_SNAPSHOT="<restore_snapshot>"
+NOW=$(date +%Y%m%d_%H%M%S)
+mkdir -p "temp/restore_backups/${NOW}"
+[ -d public/reports ] && mv public/reports "temp/restore_backups/${NOW}/reports_before_restore"
+mkdir -p public/reports
+gsutil -m rsync -r "gs://football-delay-watching-backup/reports/${TARGET_SNAPSHOT}/" public/reports/
+echo "$FIREBASE_CONFIG" > public/firebase_config.json
+echo "$ALLOWED_EMAILS" > public/allowed_emails.json
+firebase deploy --only hosting
+python scripts/sync_firebase_reports.py
+```
+
+## 注意事項
+
+- 復旧操作は破壊的です。対象スナップショット時刻を必ずユーザーに確認してください。
+- `scripts/safe_deploy.sh` は復旧時に使わないでください（先に Firebase から同期してしまうため）。
+- GCS バックアップに存在しないファイルは復旧できません。
+
+## 検証ステータス
+
+- 2026-02-23 時点で、この手順の実リストア動作確認は未実施です。
+- 次回実際にリストアを実行したタイミングで、成功可否、所要時間、詰まった点をこの `SKILL.md` に追記更新してください。
