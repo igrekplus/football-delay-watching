@@ -13,6 +13,37 @@
     margin-bottom: var(--spacing-2xl);
 }
 
+.calendar-user-info {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: var(--spacing-md);
+    color: var(--color-text-subtle);
+    font-size: 0.9rem;
+}
+
+.calendar-user-email {
+    max-width: min(70vw, 420px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-logout-btn {
+    background: transparent;
+    border: 1px solid #888;
+    color: #888;
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.calendar-logout-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
 /* フィルタUI */
 .filter-container {
     margin-bottom: var(--spacing-2xl);

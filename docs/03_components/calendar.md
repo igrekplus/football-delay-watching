@@ -9,6 +9,7 @@
 - 複数リーグの試合日程を横断的に俯瞰できるようにする
 - 生成済みレポートへ直接遷移できるようにする
 - 配信実況情報（解説/実況）を試合単位で確認できるようにする
+- ログイン後の主導線をカレンダーに統一し、閲覧導線を単純化する（Issue #215）
 
 ---
 
@@ -17,8 +18,9 @@
 | コンポーネント | 責務 |
 |---|---|
 | `src/calendar_generator.py` | カレンダーHTML生成（4週間、週別/リーグ別表示） |
-| `settings/calendar_data_loader.py` | カレンダーCSV読込、`fixture_id`単位の情報取得、レポートリンク更新（GCS保存） |
-| `src/html_generator.py` | レポート生成時に`update_report_link()`を呼び、GCS上の確認状況を更新 |
+| `public/assets/auth_common.js` | 認証共通処理（設定読込・許可判定・ログアウト） |
+| `settings/calendar_data_loader.py` | カレンダーCSV読込、`fixture_id`単位の情報取得、レポートリンク更新 |
+| `src/html_generator.py` | レポート生成時にCSVへ`report_link`を書き戻し |
 | `public/calendar.html` | 生成物（Firebase公開対象） |
 
 ---
@@ -34,8 +36,7 @@
 
 ### 3.2 付加情報（CSV）
 
-- 基本データ（実況者など）: `settings/calendar/*.csv`
-- 確認状況（`report_link`）: `gs://football-delay-watching-cache/schedule/calendar/*.csv`
+- 保存先: `settings/calendar/*.csv`
 - 主キー: `fixture_id`
 - 主なカラム:
   - `fixture_id`
@@ -67,6 +68,20 @@
   - 会場
   - 実況情報（`commentator`/`announcer`がある場合）
 
+### 4.3 画面遷移導線（Issue #215）
+
+- 認証成功後の初期表示は `index.html` ではなく `calendar.html` とする
+- カレンダー画面の導線は以下の2系統をサポートする
+  - `ログイン画面 → カレンダー → レポート`
+  - `ログイン画面 → カレンダー → レポート一覧 → レポート`
+- 既存のレポート一覧画面（`/`）は「サブ導線」として維持する
+
+### 4.4 レポート一覧導線（Issue #215）
+
+- カレンダーヘッダーに `📋 レポート一覧へ行く` 導線を表示する
+- 導線先は `/?view=reports` とし、一覧表示を明示的に開く
+- カレンダーヘッダー右上にログイン中ユーザー表示と `ログアウト` ボタンを配置する
+
 ---
 
 ## 5. レポートリンク連携
@@ -77,17 +92,16 @@
 
 ### 5.2 更新方式
 
-- 既存行がある場合: 該当行を更新（GCS）
-- 既存行がない場合: 対応リーグCSVへ新規追記（GCS）
+- 既存行がある場合: 該当行を更新
+- 既存行がない場合: 対応リーグCSVへ新規追記
 - 書き込み後は `load_all_calendar_data()` のキャッシュをクリア
-- GCSバケットは書き込み時にバージョニング有効を確認する（未有効なら有効化）
 
 ---
 
 ## 6. 運用フロー（GitHub Actions）
 
 1. `python main.py` でレポート生成
-2. GCS上の `schedule/calendar/*.csv` を更新（`report_link`反映）
+2. `settings/calendar/*.csv` を更新（`report_link`反映）
 3. `python -m src.calendar_generator` で `public/calendar.html` を再生成
 4. Firebase Hostingへデプロイ
 

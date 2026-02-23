@@ -24,16 +24,27 @@ Firebase Hosting へのデプロイ方法と注意事項をまとめたドキュ
 > `firebase deploy --only hosting` は **ローカルの `public/` で Firebase を完全に上書き**する。
 > ローカルに存在しないファイルは **Firebase 上から削除される**。
 
-### 2. レポート紛失の防止
+### 2. レポート紛失の防止 + 必須設定ファイルガード
 
 GitHub Actions で生成されたレポートはローカルに存在しない場合がある。
 
-**必ずデプロイ前に同期スクリプトを実行すること:**
+**必ずデプロイ前に `scripts/safe_deploy.sh` を実行すること:**
 
 ```bash
-python scripts/sync_firebase_reports.py
-firebase deploy --only hosting
+./scripts/safe_deploy.sh
 ```
+
+`scripts/safe_deploy.sh` は以下を実施する。
+
+1. `public/firebase_config.json` / `public/allowed_emails.json` の存在確認
+2. 上記 JSON の構文検証（不正JSONなら fail-fast）
+3. `scripts/sync_firebase_reports.py` による同期
+4. `firebase deploy --only hosting`
+
+### 3. キャッシュ制御の整合性
+
+ルート (`/`) は `index.html` と同等に `no-cache, no-store, must-revalidate` を付与する。
+また `reports/manifest.json` も同一ポリシーを付与し、同期時の stale manifest 取得を防ぐ。
 
 ---
 
@@ -41,12 +52,14 @@ firebase deploy --only hosting
 
 ```mermaid
 flowchart TD
-    A[デプロイ開始] --> B[scripts/sync_firebase_reports.py]
-    B --> C[Firebase上のmanifest.json取得]
-    C --> D[不足レポートをダウンロード]
-    D --> E[ローカルpublic/reports/にマージ]
-    E --> F[firebase deploy --only hosting]
-    F --> G[デプロイ完了]
+    A[デプロイ開始] --> B[必須JSONファイル存在/構文チェック]
+    B --> C[scripts/sync_firebase_reports.py]
+    C --> D[Firebase上のmanifest.json取得]
+    D --> E[不足レポートをダウンロード]
+    E --> F[ローカルpublic/reports/にマージ]
+    F --> G[firebase deploy --only hosting]
+    G --> H[スモークテスト: 必須3エンドポイント確認]
+    H --> I[デプロイ完了]
 ```
 
 ---
@@ -58,20 +71,22 @@ flowchart TD
 - Firebase CLI がインストール済み (`firebase --version`)
 - Firebase プロジェクトにログイン済み (`firebase login`)
 
-### 2. 同期 → デプロイ
+### 2. 安全デプロイ
 
 ```bash
-# 1. Firebaseからレポートを同期
-python scripts/sync_firebase_reports.py
-
-# 2. デプロイ
-firebase deploy --only hosting
+# ガード + 同期 + デプロイを一括実行
+./scripts/safe_deploy.sh
 ```
 
 ### 3. 確認
 
 ```bash
 open https://football-delay-watching-a8830.web.app
+
+# 必須エンドポイントのスモーク確認
+curl -fsS https://football-delay-watching-a8830.web.app/firebase_config.json > /dev/null
+curl -fsS https://football-delay-watching-a8830.web.app/allowed_emails.json > /dev/null
+curl -fsS https://football-delay-watching-a8830.web.app/reports/manifest.json > /dev/null
 ```
 
 ---
@@ -92,8 +107,8 @@ open https://football-delay-watching-a8830.web.app
 ### 実行後のデプロイ
 
 ```bash
-# 同期 + デプロイ（必ずセットで実行）
-source ~/.zshrc && python scripts/sync_firebase_reports.py && firebase deploy --only hosting
+# ガード + 同期 + デプロイ（必ずセットで実行）
+source ~/.zshrc && ./scripts/safe_deploy.sh
 ```
 
 > [!WARNING]
@@ -114,11 +129,12 @@ AIアシスタント向けに `.agent/workflows/debug-run.md` を用意。
 
 1. レポート生成 (`python main.py`)
 2. GCSバックアップ (`gsutil rsync`)
-3. 既存レポート同期 (`python scripts/sync_firebase_reports.py`)
+3. 既存レポート同期（`python scripts/sync_firebase_reports.py`。内部で cache-buster を付与）
 4. カレンダー更新 (`python -m src.calendar_generator`)
 5. カレンダーCSV更新のコミット/プッシュ
-6. 設定ファイル生成 (firebase_config.json, allowed_emails.json)
+6. Secret 空チェック + 設定ファイル生成 (`firebase_config.json`, `allowed_emails.json`)
 7. `firebase deploy --only hosting`
+8. デプロイ後スモークテスト（必須3エンドポイント）
 
 ### 注意
 

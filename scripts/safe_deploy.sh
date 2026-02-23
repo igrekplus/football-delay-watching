@@ -19,17 +19,37 @@ if [ ! -d ".venv" ]; then
     exit 1
 fi
 
-# 2. 同期処理の実行
-echo -e "${GREEN}Step 1: Syncing reports from Firebase to local...${NC}"
+# 2. Python実行環境の有効化
 source .venv/bin/activate
+
+# 3. 必須JSONファイルの存在・構文チェック
+echo -e "${GREEN}Step 1: Validating required deploy JSON files...${NC}"
+REQUIRED_JSON_FILES=("public/firebase_config.json" "public/allowed_emails.json")
+
+for json_file in "${REQUIRED_JSON_FILES[@]}"; do
+    if [ ! -f "${json_file}" ]; then
+        echo -e "${RED}Error: Required file not found: ${json_file}${NC}"
+        echo "Please create the file before deploy."
+        exit 1
+    fi
+
+    if ! python -m json.tool "${json_file}" > /dev/null 2>&1; then
+        echo -e "${RED}Error: Invalid JSON format: ${json_file}${NC}"
+        exit 1
+    fi
+done
+echo -e "${GREEN}Required JSON files are valid.${NC}"
+
+# 4. 同期処理の実行
+echo -e "${GREEN}Step 2: Syncing reports from Firebase to local...${NC}"
 python scripts/sync_firebase_reports.py
 
-# 2.5. カレンダーHTMLの再生成（CSVのレポートリンクを反映）
-echo -e "${GREEN}Step 1.5: Regenerating calendar.html from CSV data...${NC}"
+# 5. カレンダーHTMLの再生成（CSVのレポートリンクを反映）
+echo -e "${GREEN}Step 3: Regenerating calendar.html from CSV data...${NC}"
 python -m src.calendar_generator
 echo -e "${GREEN}Calendar HTML updated.${NC}"
 
-# 3. ユーザー確認 (CI環境以外の場合)
+# 6. ユーザー確認 (CI環境以外の場合)
 if [ -t 0 ]; then
     echo -e "${GREEN}Sync complete.${NC}"
     read -p "Do you want to proceed with firebase deploy? (y/n) " -n 1 -r
@@ -40,8 +60,8 @@ if [ -t 0 ]; then
     fi
 fi
 
-# 4. デプロイ実行
-echo -e "${GREEN}Step 2: Deploying to Firebase Hosting...${NC}"
+# 7. デプロイ実行
+echo -e "${GREEN}Step 4: Deploying to Firebase Hosting...${NC}"
 firebase deploy --only hosting
 
 echo -e "${GREEN}=== Safe Deploy Complete ===${NC}"

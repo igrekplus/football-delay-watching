@@ -18,7 +18,7 @@ on:
         type: boolean
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate-report:
@@ -46,18 +46,6 @@ jobs:
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
-
-    - name: Ensure GCS Object Versioning
-      run: |
-        echo "=== Checking GCS bucket versioning ==="
-        VERSIONING_STATUS=$(gsutil versioning get gs://football-delay-watching-cache)
-        echo "$VERSIONING_STATUS"
-        if echo "$VERSIONING_STATUS" | grep -q "Enabled"; then
-          echo "✅ Versioning already enabled"
-        else
-          gsutil versioning set on gs://football-delay-watching-cache
-          echo "✅ Versioning enabled"
-        fi
 
     - name: Run Report Generator
       env:
@@ -129,21 +117,61 @@ jobs:
         python -m src.calendar_generator
         echo "✅ Updated calendar.html with new links"
 
+    - name: Commit and push CSV changes
+      if: env.SKIP_DEPLOY != 'true'
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add settings/calendar/*.csv
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "docs: update report links in calendar CSVs [skip ci]"
+          git push origin main
+        fi
+
+
+
+    - name: Validate Firebase deploy secrets
+      if: env.SKIP_DEPLOY != 'true'
+      env:
+        FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
+      run: |
+        set -euo pipefail
+        if [ -z "${FIREBASE_CONFIG}" ]; then
+          echo "❌ FIREBASE_CONFIG is empty"
+          exit 1
+        fi
+        if [ -z "${ALLOWED_EMAILS}" ]; then
+          echo "❌ ALLOWED_EMAILS is empty"
+          exit 1
+        fi
+        printf '%s' "${FIREBASE_CONFIG}" > public/firebase_config.json
+        printf '%s' "${ALLOWED_EMAILS}" > public/allowed_emails.json
+        python -m json.tool public/firebase_config.json > /dev/null
+        python -m json.tool public/allowed_emails.json > /dev/null
+        echo "✅ Firebase deploy secrets are valid JSON"
+
     - name: Deploy to Firebase Hosting
       if: env.SKIP_DEPLOY != 'true'
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
-        ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
       run: |
-        # Firebase設定ファイルを生成
-        echo "$FIREBASE_CONFIG" > public/firebase_config.json
-        echo "$ALLOWED_EMAILS" > public/allowed_emails.json
-        
         npm install -g firebase-tools
         firebase deploy --only hosting --token "$FIREBASE_TOKEN"
         echo "✅ Deployed to Firebase Hosting"
         echo "URL: https://football-delay-watching-a8830.web.app"
+
+    - name: Smoke test required endpoints
+      if: env.SKIP_DEPLOY != 'true'
+      run: |
+        set -euo pipefail
+        BASE_URL="https://football-delay-watching-a8830.web.app"
+        curl -fsS "${BASE_URL}/firebase_config.json" > /dev/null
+        curl -fsS "${BASE_URL}/allowed_emails.json" > /dev/null
+        curl -fsS "${BASE_URL}/reports/manifest.json" > /dev/null
+        echo "✅ Smoke test passed"
 
     - name: Summary (No Deploy)
       if: env.SKIP_DEPLOY == 'true'

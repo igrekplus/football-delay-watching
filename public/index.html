@@ -285,13 +285,6 @@
             <p>ネタバレなしで試合を楽しむために</p>
         </header>
 
-        <nav class="main-nav" style="text-align: center; margin-bottom: 30px;">
-            <a href="/calendar.html" class="nav-link"
-                style="color: #feca57; text-decoration: none; font-weight: bold; border: 1px solid rgba(254, 202, 87, 0.4); padding: 12px 25px; border-radius: 12px; display: inline-block; background: rgba(255, 255, 255, 0.05); transition: all 0.2s;">
-                📅 試合日程カレンダーを表示
-            </a>
-        </nav>
-
         <div id="user-info" class="user-info" style="display:none;">
             <span id="user-email"></span>
             <button class="logout-btn" onclick="logout()">ログアウト</button>
@@ -356,12 +349,28 @@
             onAuthStateChanged,
             signInWithEmailAndPassword,
             GoogleAuthProvider,
-            signInWithPopup,
-            signOut
+            signInWithPopup
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import {
+            fetchFirebaseConfig,
+            fetchAllowedEmails,
+            isAllowedEmail,
+            logoutUser
+        } from '/assets/auth_common.js';
 
         // フィルタ状態（'all' または 'production'）
         let currentFilter = 'all';
+
+        function isReportsViewRequested() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('view') === 'reports';
+        }
+
+        function shouldRedirectToCalendarAfterLogin() {
+            const path = window.location.pathname;
+            const isTopPath = path === '/' || path.endsWith('/index.html');
+            return isTopPath && !isReportsViewRequested();
+        }
 
         // タブ切り替え
         window.setFilter = function (filter) {
@@ -379,25 +388,25 @@
 
         // 許可するメールアドレス（allowed_emails.jsonから読み込み）
         let ALLOWED_EMAILS = [];
+        let authInitErrorMessage = '';
+
+        function setAuthButtonsEnabled(enabled) {
+            const loginBtn = document.querySelector('.login-btn');
+            const googleBtn = document.querySelector('.google-btn');
+            [loginBtn, googleBtn].forEach((btn) => {
+                if (!btn) return;
+                btn.disabled = !enabled;
+                btn.style.opacity = enabled ? '1' : '0.6';
+                btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+            });
+        }
 
         // 初期化
         async function initializeAppMain() {
             try {
                 // Firebase設定を読み込み
-                const configResponse = await fetch('/firebase_config.json');
-                if (configResponse.ok) {
-                    firebaseConfig = await configResponse.json();
-                } else {
-                    console.error('Firebase config not found');
-                    return;
-                }
-
-                // 許可メールアドレスを読み込み
-                const emailsResponse = await fetch('/allowed_emails.json');
-                if (emailsResponse.ok) {
-                    const data = await emailsResponse.json();
-                    ALLOWED_EMAILS = data.emails || [];
-                }
+                firebaseConfig = await fetchFirebaseConfig();
+                ALLOWED_EMAILS = await fetchAllowedEmails();
 
                 // Firebase初期化
                 const app = initializeApp(firebaseConfig);
@@ -422,26 +431,23 @@
                     if (user) {
                         // 許可リストが空の場合は再取得を試みる（レースコンディション対策）
                         if (ALLOWED_EMAILS.length === 0) {
-                            try {
-                                const emailsResponse = await fetch('/allowed_emails.json');
-                                if (emailsResponse.ok) {
-                                    const data = await emailsResponse.json();
-                                    ALLOWED_EMAILS = data.emails || [];
-                                }
-                            } catch (e) {
-                                console.error('Failed to fetch allowed emails:', e);
-                            }
+                            ALLOWED_EMAILS = await fetchAllowedEmails();
                         }
 
-                        const userEmailLower = user.email.toLowerCase();
-                        const isAllowed = ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(userEmailLower);
+                        const isAllowed = isAllowedEmail(user.email, ALLOWED_EMAILS);
 
                         if (isAllowed) {
                             showSuccess('ログイン成功！');
-                            setTimeout(() => showContent(user), 300);
+                            if (shouldRedirectToCalendarAfterLogin()) {
+                                setTimeout(() => {
+                                    window.location.href = '/calendar.html';
+                                }, 300);
+                            } else {
+                                setTimeout(() => showContent(user), 300);
+                            }
                         } else {
                             showError('このアカウントは許可リストに登録されていません: ' + user.email);
-                            signOut(auth);
+                            await logoutUser(auth);
                         }
                     } else {
                         showLogin();
@@ -450,6 +456,11 @@
 
                 // ログイン関数をグローバルに設定
                 window.login = function () {
+                    if (authInitErrorMessage) {
+                        showError(authInitErrorMessage);
+                        return;
+                    }
+
                     const email = document.getElementById('email').value;
                     const password = document.getElementById('password').value;
 
@@ -476,6 +487,11 @@
 
                 // Googleログイン関数をグローバルに設定
                 window.googleLogin = function () {
+                    if (authInitErrorMessage) {
+                        showError(authInitErrorMessage);
+                        return;
+                    }
+
                     const provider = new GoogleAuthProvider();
                     signInWithPopup(auth, provider)
                         .catch((error) => {
@@ -491,16 +507,29 @@
                 };
 
                 window.logout = function () {
-                    signOut(auth);
+                    logoutUser(auth);
                 };
+
+                setAuthButtonsEnabled(true);
 
             } catch (e) {
                 console.error('Failed to initialize app:', e);
-                showError('アプリケーションの初期化に失敗しました');
+                authInitErrorMessage = 'アプリケーションの初期化に失敗しました';
+                showError(authInitErrorMessage);
             }
         }
 
+        setAuthButtonsEnabled(false);
         initializeAppMain();
+
+        // 初期化完了前にボタン押下されても例外を出さないためのガード
+        window.login = function () {
+            showError(authInitErrorMessage || '初期化中です。少し待ってから再試行してください。');
+        };
+
+        window.googleLogin = function () {
+            showError(authInitErrorMessage || '初期化中です。少し待ってから再試行してください。');
+        };
 
         window.showLogin = function () {
             document.getElementById('login-section').style.display = 'block';
