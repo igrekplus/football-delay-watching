@@ -17,6 +17,7 @@ Firebase Hosting からレポートを同期するスクリプト
 
 import json
 import logging
+import time
 from pathlib import Path
 
 import requests
@@ -33,13 +34,26 @@ LOCAL_REPORTS_DIR = Path("public/reports")
 LOCAL_IMAGES_DIR = LOCAL_REPORTS_DIR / "images"
 
 
+def build_cache_busted_manifest_url() -> str:
+    """manifest.json のキャッシュを避けるためのURLを生成"""
+    cache_buster = int(time.time() * 1000)
+    return f"{FIREBASE_URL}/reports/manifest.json?cb={cache_buster}"
+
+
 def fetch_remote_manifest() -> dict:
     """Firebase上のmanifest.jsonを取得"""
-    url = f"{FIREBASE_URL}/reports/manifest.json"
+    url = build_cache_busted_manifest_url()
     logger.info(f"Fetching remote manifest: {url}")
 
     try:
-        response = requests.get(url, timeout=30)
+        response = requests.get(
+            url,
+            timeout=30,
+            headers={
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+            },
+        )
         if response.status_code == 200:
             return response.json()
         else:
