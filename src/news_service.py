@@ -111,6 +111,7 @@ class NewsService:
             summary = self.llm.summarize_interview(
                 team_name,
                 opponent_team=opponent_team,
+                is_home=is_home,
                 manager_name=manager_name,
                 opponent_manager_name=opponent_manager_name,
             )
@@ -151,7 +152,10 @@ class NewsService:
         for is_home in [True, False]:
             team_name = match.core.home_team if is_home else match.core.away_team
             news = self.llm.generate_transfer_news(
-                team_name, match_date=match_date, transfer_window_context=context
+                team_name,
+                match_date=match_date,
+                transfer_window_context=context,
+                is_home=is_home,
             )
             news = self.filter.check_text(news)
 

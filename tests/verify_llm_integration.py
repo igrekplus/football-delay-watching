@@ -19,22 +19,17 @@ def verify_llm_integration():
     client = LLMClient(use_mock=False)
 
     team_name = "Manchester City"
-    # Groundingプロンプトでは articles は検索キーワードのヒントには使っていないが、
-    # 引数としては必要。
-    dummy_articles = [
-        {
-            "content": "Dummy content",
-            "title": "Dummy Title",
-            "source": "Dummy Source",
-            "url": "http://dummy.com",
-        }
-    ]
+    opponent_team = "Liverpool"
 
     print(f"\nCalling summarize_interview for {team_name}...")
     print("Expected behavior: Should call GeminiRestClient and perform Google Search.")
 
     try:
-        summary = client.summarize_interview(team_name, dummy_articles)
+        summary = client.summarize_interview(
+            team_name,
+            opponent_team=opponent_team,
+            is_home=True,
+        )
 
         print("\n" + "=" * 50)
         print("GENERATED SUMMARY")
