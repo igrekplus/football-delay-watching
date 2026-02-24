@@ -117,18 +117,7 @@ jobs:
         python -m src.calendar_generator
         echo "✅ Updated calendar.html with new links"
 
-    - name: Commit and push CSV changes
-      if: env.SKIP_DEPLOY != 'true'
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add settings/calendar/*.csv
-        if git diff --cached --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "docs: update report links in calendar CSVs [skip ci]"
-          git push origin main
-        fi
+
 
 
 
