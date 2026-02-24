@@ -62,7 +62,7 @@ class TestCalendarGenerator(TestCase):
 
         weeks = self.generator._build_timeline(fixtures)
 
-        self.assertEqual(weeks[0]["label"], "UTC 2/16(月) - 2/22(日)")
+        self.assertEqual(weeks[0]["label"], "2/16(月) - 2/22(日)")
         self.assertIn("EPL", weeks[0]["leagues"])
         self.assertEqual(weeks[0]["leagues"]["EPL"][0]["fixture_id"], 2001)
         self.assertNotIn("EPL", weeks[1]["leagues"])
