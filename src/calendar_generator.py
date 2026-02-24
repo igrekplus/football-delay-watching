@@ -134,7 +134,7 @@ class CalendarGenerator:
             # 「今週」などの相対表記を廃止し、日付範囲（曜日付き）にする
             weekday_s = ["月", "火", "水", "木", "金", "土", "日"][s.weekday()]
             weekday_e = ["月", "火", "水", "木", "金", "土", "日"][end_label.weekday()]
-            label = f"UTC {s.month}/{s.day}({weekday_s}) - {end_label.month}/{end_label.day}({weekday_e})"
+            label = f"{s.month}/{s.day}({weekday_s}) - {end_label.month}/{end_label.day}({weekday_e})"
             weeks.append(
                 {
                     "start": s,
