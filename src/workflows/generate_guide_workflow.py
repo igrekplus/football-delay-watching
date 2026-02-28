@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 from config import config
 from src.cache_warmer import run_cache_warming
@@ -57,6 +58,9 @@ class GenerateGuideWorkflow:
         logger.info("GitHub Actions / ワークフロー実行開始")
         logger.info(f"実行時刻 (JST): {now_jst.strftime('%Y-%m-%d %H:%M:%S')}")
         logger.info(f"TARGET_DATE: {config.TARGET_DATE.strftime('%Y-%m-%d %H:%M JST')}")
+        target_fixture_id = os.getenv("TARGET_FIXTURE_ID", "").strip()
+        if target_fixture_id:
+            logger.info(f"TARGET_FIXTURE_ID: {target_fixture_id}")
         logger.info(
             f"モード: {'モック' if config.USE_MOCK_DATA else 'デバッグ' if config.DEBUG_MODE else '本番'}"
         )

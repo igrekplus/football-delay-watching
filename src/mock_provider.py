@@ -222,9 +222,9 @@ class MockProvider:
         ]
 
         # Issue #40: Instagram URL設定（CSVから読み込み）
-        from settings.player_instagram import get_player_instagram_urls
+        from settings.player_instagram import get_player_instagram_urls_by_name
 
-        instagram_urls = get_player_instagram_urls()
+        instagram_urls = get_player_instagram_urls_by_name()
 
         all_players = (
             match.home_lineup + match.home_bench + match.away_lineup + match.away_bench

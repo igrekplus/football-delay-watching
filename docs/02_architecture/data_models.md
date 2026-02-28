@@ -126,7 +126,7 @@ flowchart TD
 | API-Football `/fixtures/headtohead` | 対戦成績 | 24時間 |
 | Gemini API (Grounding) | 要約テキスト, ニュース取得 | キャッシュなし |
 | YouTube Data API | 動画リスト | 24時間 |
-| Instagram CSV | Instagramリンク | ファイル読込 |
+| Instagram CSV | Instagramリンク（`player_id` で紐づけ） | ファイル読込 |
 
 ---
 

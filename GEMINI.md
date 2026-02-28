@@ -19,6 +19,8 @@
 python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 
 # 2. 詳細な実行方法は `/debug-run` ワークフローを参照
+# 3. 特定の1試合だけ確認したい場合は `TARGET_FIXTURE_ID` を併用する
+#    例: TARGET_DATE="2026-02-27" TARGET_FIXTURE_ID="1379248" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 ```
 
 ---
@@ -153,6 +155,7 @@ python -m unittest tests/test_datetime_util.py
 |------|------|
 | デプロイ後にレポートが消える | `/deploy` ワークフローの手順（`scripts/safe_deploy.sh`）に従うこと。必ず同期が行われます。 |
 | TARGET_DATE指定ミス | `/debug-run` ワークフローの「TARGET_DATEの計算ガイド」を参照 |
+| 狙った試合が選ばれない | `/debug-run` で `TARGET_FIXTURE_ID` を併用し、対象fixtureを固定する |
 | キャッシュが古い | `rm -rf .gemini/cache` でローカルキャッシュをクリア |
 | モックモードで実API検証 | ログ開始直後の `Mock: False` を必ず目視確認 |
 

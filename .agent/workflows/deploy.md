@@ -14,6 +14,8 @@ description: firebase上へのデプロイを行い、URLを返す
 ### 1. 安全なデプロイスクリプトの実行
 このスクリプトは内部で `sync_firebase_reports.py` を実行し、デプロイ前にサーバー上の最新状態をローカルに同期します。これにより、GitHub Actionsなどで生成された最新レポートを誤って上書きして消去してしまう事故を防止します。
 
+狙った1試合の確認結果を反映したい場合は、先に `/debug-run` で `TARGET_FIXTURE_ID` を使って対象fixtureのHTMLを生成してから、この手順を実行すること。
+
 ```bash
 ./scripts/safe_deploy.sh
 ```

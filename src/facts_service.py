@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 
 from config import config
-from settings.player_instagram import get_player_instagram_urls
+from settings.player_instagram import get_player_instagram_urls_by_id
 from src.clients.api_football_client import ApiFootballClient
 from src.clients.llm_client import LLMClient
 from src.domain.models import MatchAggregate
@@ -65,7 +65,7 @@ class FactsService:
             self._fetch_player_details(match, player_id_pairs)
 
         # Instagram URL
-        self._set_instagram_urls(match)
+        self._set_instagram_urls(match, player_id_pairs)
 
         # Injuries
         self.formatter.format_injuries(match, raw.injuries)
@@ -110,20 +110,16 @@ class FactsService:
                 logger.warning(f"Error fetching details for player {player_id}: {e}")
                 continue
 
-    def _set_instagram_urls(self, match: MatchAggregate):
-        """選手のInstagram URLをCSVから設定"""
-        instagram_urls = get_player_instagram_urls()
+    def _set_instagram_urls(
+        self, match: MatchAggregate, player_id_name_pairs: list[tuple[int, str, str]]
+    ):
+        """選手のInstagram URLをCSVから設定（player_id優先）"""
+        instagram_urls_by_id = get_player_instagram_urls_by_id()
 
-        all_players = (
-            match.facts.home_lineup
-            + match.facts.home_bench
-            + match.facts.away_lineup
-            + match.facts.away_bench
-        )
-
-        for player_name in all_players:
-            if player_name in instagram_urls:
-                match.facts.player_instagram[player_name] = instagram_urls[player_name]
+        for player_id, player_name, _ in player_id_name_pairs:
+            instagram_url = instagram_urls_by_id.get(player_id)
+            if instagram_url:
+                match.facts.player_instagram[player_name] = instagram_url
 
         if match.facts.player_instagram:
             logger.debug(
