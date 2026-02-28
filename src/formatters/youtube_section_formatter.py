@@ -122,17 +122,17 @@ class YouTubeSectionFormatter:
         if not removed and not overflow and not match_rank:
             return ""
 
-        lines = ["<h3>■ デバッグ情報</h3>", ""]
+        lines = [
+            '<details class="collapsible-section">',
+            "<summary>🛠️ デバッグ情報</summary>",
+            '<div class="section-content">',
+        ]
 
-        # Issue #133: Match Rank (Importance) を折りたたみの外に表示
         if match_rank:
             lines.append(f"<p><strong>Importance:</strong> {match_rank}</p>")
 
-        # 対象外動画がある場合のみ折りたたみセクションを生成
         if removed or overflow:
-            lines.append('<details class="debug-info-collapsible">')
-            lines.append("<summary>対象外動画一覧</summary>")
-            # テーブル開始
+            lines.append("<p><strong>対象外動画一覧</strong></p>")
             lines.append('<div class="debug-video-table-container">')
             lines.append('<table class="debug-video-table">')
             lines.append(
@@ -140,17 +140,14 @@ class YouTubeSectionFormatter:
             )
             lines.append("<tbody>")
 
-            # データをリスト化して処理
             all_excluded = []
             for v in overflow:
                 all_excluded.append({**v, "status": "ソート落ち"})
             for v in removed:
                 all_excluded.append({**v, "status": "除外"})
 
-            # カテゴリ順にソート (CATEGORY_LABELSの順序)
             def sort_key(v):
                 cat = v.get("category", "")
-                # CATEGORY_LABELSのキーのインデックスを取得、なければ末尾
                 keys = list(self.CATEGORY_LABELS.keys())
                 try:
                     return keys.index(cat)
@@ -168,8 +165,6 @@ class YouTubeSectionFormatter:
                 channel = v.get("channel_name", "Unknown")
                 published = v.get("published_at", "")
                 reason = v.get("filter_reason", "-")
-
-                # 日時フォーマット
                 date_display = DateTimeUtil.format_relative_date(published)
 
                 row = f"""<tr>
@@ -184,8 +179,8 @@ class YouTubeSectionFormatter:
 
             lines.append("</tbody></table>")
             lines.append("</div>")
-            lines.append("</details>")  # Close collapsible
 
-        lines.append("")
+        lines.append("</div>")
+        lines.append("</details>")
 
         return "\n".join(lines)
