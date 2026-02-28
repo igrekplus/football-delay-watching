@@ -18,12 +18,17 @@ Firebase Hosting からレポートを同期するスクリプト
 import json
 import logging
 import shutil
+import sys
 import time
 from pathlib import Path
 
-import requests
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-from src.clients.firebase_sync_client import get_shared_reports_dir
+import requests  # noqa: E402
+
+from src.clients.firebase_sync_client import get_shared_reports_dir  # noqa: E402
 
 # ロギング設定
 logging.basicConfig(
