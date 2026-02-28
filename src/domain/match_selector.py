@@ -24,7 +24,7 @@ class MatchSelector:
 
         # Sort logic
         def sort_key(m: MatchAggregate):
-            r_score = rank_order.get(m.core.rank, 99)
+            r_score = rank_order.get(m.rank, 99)
             # Competition priority: CL > LALIGA > EPL > COPA > FA > EFL
             comp_priority = {
                 "CL": 0,
@@ -34,14 +34,14 @@ class MatchSelector:
                 "FA": 4,
                 "EFL": 5,
             }
-            comp_score = comp_priority.get(m.core.competition, 99)
+            comp_score = comp_priority.get(m.competition, 99)
             return (r_score, comp_score)
 
         sorted_matches = sorted(matches, key=sort_key)
         limit = config.MATCH_LIMIT
 
-        high_rank_matches = [m for m in sorted_matches if m.core.rank != "None"]
-        low_rank_matches = [m for m in sorted_matches if m.core.rank == "None"]
+        high_rank_matches = [m for m in sorted_matches if m.rank != "None"]
+        low_rank_matches = [m for m in sorted_matches if m.rank == "None"]
 
         selected_count = 0
         result = []
@@ -49,26 +49,26 @@ class MatchSelector:
         # 1. Select High Rank Matches
         for match in high_rank_matches:
             if selected_count < limit:
-                match.core.is_target = True
-                match.core.selection_reason = None
+                match.is_target = True
+                match.selection_reason = None
                 selected_count += 1
             else:
-                match.core.is_target = False
-                match.core.selection_reason = "Out of quota"
+                match.is_target = False
+                match.selection_reason = "Out of quota"
             result.append(match)
 
         # 2. Fill with Low Rank Matches
         for match in low_rank_matches:
             if selected_count < limit:
-                match.core.is_target = True
-                match.core.selection_reason = "Included as filler"
+                match.is_target = True
+                match.selection_reason = "Included as filler"
                 logger.info(
-                    f"Including low-rank match as filler: {match.core.home_team} vs {match.core.away_team}"
+                    f"Including low-rank match as filler: {match.home_team} vs {match.away_team}"
                 )
                 selected_count += 1
             else:
-                match.core.is_target = False
-                match.core.selection_reason = "Low rank"
+                match.is_target = False
+                match.selection_reason = "Low rank"
             result.append(match)
 
         logger.info(f"Selected {selected_count} matches (limit: {limit})")

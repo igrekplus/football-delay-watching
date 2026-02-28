@@ -66,17 +66,25 @@ class TestLLMResponseLogging(unittest.TestCase):
     def test_cache_hit_logs_response(self, mock_logger, mock_api_stats):
         """キャッシュヒット時に _log_llm_response が source=cache で呼び出されること"""
         cache_key = "grounding/test/h_vs_a.json"
+        # TTL = 7日のキャッシュ。現在時刻を固定することで期限切れを防ぐ
         data = {"timestamp": "2026-02-15T18:00:00", "content": "cached_content"}
         self.mock_cache_store.read.return_value = data
 
-        # _log_llm_response を監視対象にする
-        with patch.object(self.client, "_log_llm_response") as mock_log_resp:
-            content = self.client._read_grounding_cache(cache_key, "test")
+        from datetime import datetime
 
-            self.assertEqual(content, "cached_content")
-            mock_log_resp.assert_called_once_with(
-                "test", "cached_content", source="cache"
-            )
+        fixed_now = datetime(2026, 2, 16, 0, 0, 0)  # timestamp の翌日 = age_days=0
+
+        with patch("src.clients.llm_client.datetime") as mock_dt:
+            mock_dt.fromisoformat.side_effect = datetime.fromisoformat
+            mock_dt.now.return_value = fixed_now
+
+            with patch.object(self.client, "_log_llm_response") as mock_log_resp:
+                content = self.client._read_grounding_cache(cache_key, "test")
+
+                self.assertEqual(content, "cached_content")
+                mock_log_resp.assert_called_once_with(
+                    "test", "cached_content", source="cache"
+                )
 
     @patch("src.clients.llm_client.LLMClient.generate_content")
     @patch("src.clients.llm_client.logger")

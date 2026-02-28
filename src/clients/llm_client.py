@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from datetime import datetime
 
 from config import config
 from settings.cache_config import GROUNDING_TTL_DAYS
@@ -370,8 +371,6 @@ class LLMClient:
             data = self.cache_store.read(cache_key)
             if data:
                 # TTLチェック
-                from datetime import datetime
-
                 timestamp_str = data.get("timestamp")
                 ttl_days = GROUNDING_TTL_DAYS.get(type_name, 7)
 

@@ -65,12 +65,9 @@ def test_format_injury_cards():
 def test_matchup_placeholders():
     formatter = MatchupFormatter()
     matchup = PlayerMatchup(
-        player1_name="Player A",
-        player1_team="Team A",
-        player2_name="Player B",
-        player2_team="Team B",
-        description="Matchup description",
         header="Matchup Header",
+        players=[("Player A", "Team A"), ("Player B", "Team B")],
+        description="Matchup description",
     )
 
     # 写真がない場合

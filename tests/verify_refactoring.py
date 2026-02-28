@@ -11,7 +11,7 @@ from config import config
 from src.clients.api_football_client import ApiFootballClient
 from src.domain.match_ranker import MatchRanker
 from src.domain.match_selector import MatchSelector
-from src.domain.models import MatchData
+from src.domain.models import MatchAggregate, MatchCore
 from src.utils.execution_policy import ExecutionPolicy
 
 # Setup logging
@@ -54,33 +54,29 @@ def verify_domain_logic():
     selector = MatchSelector()
 
     # Create dummy matches
-    m1 = MatchData(
-        id="1",
-        home_team="Manchester City",
-        away_team="Everton",
-        competition="EPL",
-        kickoff_jst="2024/01/01 20:00 JST",
-        kickoff_local="",
-        rank="None",
-        venue="",
-        referee="",
-        home_logo="",
-        away_logo="",
-        kickoff_at_utc=datetime.now(),
+    m1 = MatchAggregate(
+        core=MatchCore(
+            id="1",
+            home_team="Manchester City",
+            away_team="Everton",
+            competition="EPL",
+            kickoff_jst="2024/01/01 20:00 JST",
+            kickoff_local="",
+            rank="None",
+            kickoff_at_utc=datetime.now(),
+        )
     )
-    m2 = MatchData(
-        id="2",
-        home_team="Brighton",
-        away_team="Luton",
-        competition="EPL",
-        kickoff_jst="2024/01/01 20:00 JST",
-        kickoff_local="",
-        rank="None",
-        venue="",
-        referee="",
-        home_logo="",
-        away_logo="",
-        kickoff_at_utc=datetime.now(),
+    m2 = MatchAggregate(
+        core=MatchCore(
+            id="2",
+            home_team="Brighton",
+            away_team="Luton",
+            competition="EPL",
+            kickoff_jst="2024/01/01 20:00 JST",
+            kickoff_local="",
+            rank="None",
+            kickoff_at_utc=datetime.now(),
+        )
     )
 
     # Rank
