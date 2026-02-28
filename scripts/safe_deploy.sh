@@ -46,6 +46,12 @@ echo -e "${GREEN}Step 1: Validating required deploy JSON files...${NC}"
 REQUIRED_JSON_FILES=("public/firebase_config.json" "public/allowed_emails.json")
 
 for json_file in "${REQUIRED_JSON_FILES[@]}"; do
+    if [ ! -f "${json_file}" ] && [ -n "${SHARED_REPO_ROOT}" ] && [ -f "${SHARED_REPO_ROOT}/${json_file}" ]; then
+        mkdir -p "$(dirname "${json_file}")"
+        cp "${SHARED_REPO_ROOT}/${json_file}" "${json_file}"
+        echo -e "${GREEN}Copied shared config into worktree: ${json_file}${NC}"
+    fi
+
     if [ ! -f "${json_file}" ]; then
         echo -e "${RED}Error: Required file not found: ${json_file}${NC}"
         echo "Please create the file before deploy."
