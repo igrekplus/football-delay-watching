@@ -26,12 +26,15 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
 # チームID -> CSVファイル名のマッピング
 TEAM_CSV_FILES = {
+    33: "player_instagram_33.csv",  # Manchester United
     39: "player_instagram_39.csv",  # Wolves
+    40: "player_instagram_40.csv",  # Liverpool
+    42: "player_instagram_42.csv",  # Arsenal
+    47: "player_instagram_47.csv",  # Tottenham
+    49: "player_instagram_49.csv",  # Chelsea
     50: "player_instagram_50.csv",  # Manchester City
     66: "player_instagram_66.csv",  # Aston Villa
     # 将来的に他のチームを追加
-    # 42: "player_instagram_42.csv",  # Arsenal
-    # 40: "player_instagram_40.csv",  # Liverpool
 }
 
 
