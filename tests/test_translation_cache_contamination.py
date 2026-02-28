@@ -91,9 +91,14 @@ class TestTranslationCacheContamination(unittest.TestCase):
             }
         }
 
-        html = "<h4>O'Reillyの成長</h4><p>O'Reillyが中盤を支える。</p>"
+        html = (
+            "<span>Nico O&#39;Reilly</span>"
+            "<h4>O'Reillyの成長</h4>"
+            "<p>O'Reillyが中盤を支える。</p>"
+        )
         result = translator.translate_names_in_html(html, ["Nico O'Reilly"])
 
+        self.assertIn("<span>ニコ・オライリー</span>", result)
         self.assertIn("ニコ・オライリーの成長", result)
         self.assertIn("ニコ・オライリーが中盤を支える。", result)
 

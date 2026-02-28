@@ -7,6 +7,7 @@ HTML生成後に選手名を一括変換し、GCSにキャッシュする。
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import logging
 import re
@@ -61,7 +62,8 @@ class NameTranslator:
         result = html
         for english_name, katakana_name in translations.items():
             if katakana_name and katakana_name != english_name:
-                result = result.replace(english_name, katakana_name)
+                for source_variant in self._build_html_name_variants(english_name):
+                    result = result.replace(source_variant, katakana_name)
 
         # フルネームで置換しきれない「姓のみ」の参照も、対象が一意なら補完する
         for alias, katakana_name in self._build_unique_name_aliases(
@@ -413,5 +415,26 @@ class NameTranslator:
 
     def _replace_alias_token(self, html: str, alias: str, translated: str) -> str:
         """英字の前後境界を見て、姓のみ表記を安全側で置換する"""
-        pattern = re.compile(rf"(?<![A-Za-z]){re.escape(alias)}(?![A-Za-z])")
-        return pattern.sub(translated, html)
+        result = html
+        for source_variant in self._build_html_name_variants(alias):
+            pattern = re.compile(
+                rf"(?<![A-Za-z]){re.escape(source_variant)}(?![A-Za-z])"
+            )
+            result = pattern.sub(translated, result)
+        return result
+
+    def _build_html_name_variants(self, name: str) -> list[str]:
+        """HTML中に現れうる同一名前の表記揺れを列挙する"""
+        variants = [
+            name,
+            html.escape(name, quote=True),
+            name.replace("'", "&#39;"),
+            name.replace("'", "&#x27;"),
+            name.replace("'", "&apos;"),
+        ]
+
+        deduped: list[str] = []
+        for variant in variants:
+            if variant not in deduped:
+                deduped.append(variant)
+        return deduped
