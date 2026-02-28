@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import unicodedata
 
 from config import config
 from src.clients.cache_store import CacheStore, create_cache_store
@@ -85,7 +86,9 @@ class NameTranslator:
             logger.info(
                 f"[NAME_TRANSLATION] Cache MISS: {len(names_to_translate)} names to translate"
             )
-            new_translations = self._batch_translate(names_to_translate)
+            new_translations = self._align_translations_to_requested_names(
+                names_to_translate, self._batch_translate(names_to_translate)
+            )
 
             # キャッシュに保存
             for name, trans_data in new_translations.items():
@@ -94,7 +97,7 @@ class NameTranslator:
 
         return translations
 
-    def _batch_translate(self, names: list[str]) -> dict[str, str]:
+    def _batch_translate(self, names: list[str]) -> dict[str, dict[str, str]]:
         """
         複数の選手名を一括変換（1回のAPIコール）
 
@@ -124,7 +127,7 @@ class NameTranslator:
 
         return all_translations
 
-    def _translate_batch(self, names: list[str]) -> dict[str, str]:
+    def _translate_batch(self, names: list[str]) -> dict[str, dict[str, str]]:
         """単一バッチの変換"""
         from settings.gemini_prompts import build_prompt
 
@@ -148,18 +151,7 @@ class NameTranslator:
                 f"[NAME_TRANSLATION] Translated {len(translations)} names via Gemini"
             )
 
-            # 形式の正規化（古い形式 {name: full} が返ってきた場合の対策）
-            normalized = {}
-            for k, v in translations.items():
-                if isinstance(v, str):
-                    normalized[k] = {"full": v, "short": v}
-                elif isinstance(v, dict):
-                    normalized[k] = v
-                    # shortがない場合はfullを使う
-                    if "short" not in normalized[k]:
-                        normalized[k]["short"] = normalized[k].get("full", k)
-
-            return normalized
+            return self._align_translations_to_requested_names(names, translations)
 
         except json.JSONDecodeError as e:
             logger.error(f"[NAME_TRANSLATION] Failed to parse Gemini response: {e}")
@@ -185,9 +177,17 @@ class NameTranslator:
             cache_path = self._get_cache_path(name)
             data = self.cache_store.read(cache_path)
             if data and data.get("original") == name:
-                # 旧形式: shortがない場合はキャッシュミス扱いにして再取得を促す
-                if "short" not in data:
+                full = str(data.get("full") or data.get("katakana") or "").strip()
+                short = str(data.get("short") or "").strip()
+
+                # 旧形式や空文字キャッシュはキャッシュミス扱いにして再取得を促す
+                if not full or not short:
+                    logger.info(
+                        f"[NAME_TRANSLATION] Incomplete cache detected and ignored: {name}"
+                    )
+                    self.cache_store.delete(cache_path)
                     return None
+
                 # 新形式
                 if "full" in data and "short" in data:
                     if not self.use_mock and self._is_mock_contaminated(data):
@@ -196,7 +196,7 @@ class NameTranslator:
                         )
                         self.cache_store.delete(cache_path)
                         return None
-                    return {"full": data["full"], "short": data["short"]}
+                    return {"full": full, "short": short}
         except Exception as e:
             logger.debug(f"[NAME_TRANSLATION] Cache read error: {e}")
         return None
@@ -280,7 +280,9 @@ class NameTranslator:
             logger.info(
                 f"[NAME_TRANSLATION] Translating {len(names_to_translate)} names for short name retrieval"
             )
-            new_translations = self._batch_translate(names_to_translate)
+            new_translations = self._align_translations_to_requested_names(
+                names_to_translate, self._batch_translate(names_to_translate)
+            )
             for name, trans_data in new_translations.items():
                 # trans_data is {"full": ..., "short": ...}
                 self._write_cache(name, trans_data)
@@ -297,3 +299,71 @@ class NameTranslator:
             or self._is_mock_value(katakana)
             or self._is_mock_value(short)
         )
+
+    def _normalize_name_key(self, value: str) -> str:
+        """アクセントや記号差を吸収した比較用キーを返す"""
+        normalized = unicodedata.normalize("NFKD", value)
+        without_marks = "".join(
+            ch for ch in normalized if not unicodedata.combining(ch)
+        )
+        simplified = (
+            without_marks.casefold()
+            .replace("’", "'")
+            .replace("`", "'")
+            .replace("・", ".")
+        )
+        compact = "".join(ch for ch in simplified if ch.isalnum())
+        return compact or simplified.strip()
+
+    def _normalize_translation_entry(
+        self, raw_key: str, raw_value: object
+    ) -> dict[str, str]:
+        """Geminiレスポンス1件分を内部形式へ正規化"""
+        if isinstance(raw_value, str):
+            full_name = raw_value.strip() or raw_key
+            return {"full": full_name, "short": full_name}
+
+        if isinstance(raw_value, dict):
+            full_name = str(
+                raw_value.get("full") or raw_value.get("katakana") or ""
+            ).strip()
+            if not full_name:
+                full_name = raw_key
+
+            short_name = str(raw_value.get("short") or "").strip() or full_name
+            return {"full": full_name, "short": short_name}
+
+        return {"full": raw_key, "short": raw_key}
+
+    def _align_translations_to_requested_names(
+        self, requested_names: list[str], raw_translations: dict[str, object]
+    ) -> dict[str, dict[str, str]]:
+        """Geminiが返したキーを、要求時のAPI-Football名へ寄せて揃える"""
+        normalized_requested: dict[str, list[str]] = {}
+        for name in requested_names:
+            normalized_requested.setdefault(self._normalize_name_key(name), []).append(
+                name
+            )
+
+        aligned: dict[str, dict[str, str]] = {}
+        for raw_key, raw_value in raw_translations.items():
+            target_key = raw_key if raw_key in requested_names else None
+
+            if target_key is None:
+                candidates = normalized_requested.get(
+                    self._normalize_name_key(raw_key), []
+                )
+                if len(candidates) == 1:
+                    target_key = candidates[0]
+
+            if target_key is None:
+                continue
+
+            aligned[target_key] = self._normalize_translation_entry(
+                target_key, raw_value
+            )
+
+        for name in requested_names:
+            aligned.setdefault(name, {"full": name, "short": name})
+
+        return aligned

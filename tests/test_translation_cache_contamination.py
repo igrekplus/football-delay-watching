@@ -51,6 +51,36 @@ class TestTranslationCacheContamination(unittest.TestCase):
         self.assertIsNotNone(cached)
         self.assertEqual(cached["full"], "ニコ・ゴンサレス")
 
+    def test_name_translator_repairs_blank_short_cache_and_aligned_keys(self):
+        store = InMemoryCacheStore()
+        translator = NameTranslator(cache_store=store, use_mock=False)
+        name = "Marc Guéhi"
+        path = translator._get_cache_path(name)
+        store.write(
+            path,
+            {
+                "original": name,
+                "full": name,
+                "short": "",
+                "katakana": name,
+            },
+        )
+
+        translator._batch_translate = lambda names: {
+            "Marc Guehi": {"full": "マーク・グエイ", "short": "M.グエイ"}
+        }
+
+        translations = translator._get_translations([name])
+        self.assertEqual(translations[name], "マーク・グエイ")
+
+        short_names = translator.get_short_names([name])
+        self.assertEqual(short_names[name], "M.グエイ")
+
+        cached = store.read(path)
+        self.assertIsNotNone(cached)
+        self.assertEqual(cached["full"], "マーク・グエイ")
+        self.assertEqual(cached["short"], "M.グエイ")
+
     def test_team_translator_ignores_mock_cache_in_non_mock_mode(self):
         store = InMemoryCacheStore()
         translator = TeamNameTranslator(cache_store=store, use_mock=False)

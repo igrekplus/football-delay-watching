@@ -10,6 +10,8 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 
+from src.utils.nationality_flags import get_flagcdn_country_code
+
 logger = logging.getLogger(__name__)
 
 # Pitch dimensions (pixels) - reduced for compact display
@@ -328,44 +330,6 @@ def distribute_x_percent(num_players: int) -> list[float]:
     return positions
 
 
-# Country name to ISO Alpha-2 code mapping (for flagcdn)
-COUNTRY_TO_ISO = {
-    "Spain": "es",
-    "England": "gb-eng",
-    "France": "fr",
-    "Germany": "de",
-    "Italy": "it",
-    "Portugal": "pt",
-    "Brazil": "br",
-    "Argentina": "ar",
-    "Netherlands": "nl",
-    "Belgium": "be",
-    "Japan": "jp",
-    "South Korea": "kr",
-    "Norway": "no",
-    "Sweden": "se",
-    "Denmark": "dk",
-    "Croatia": "hr",
-    "Switzerland": "ch",
-    "Uruguay": "uy",
-    "Colombia": "co",
-    "Senegal": "sn",
-    "Nigeria": "ng",
-    "Egypt": "eg",
-    "Morocco": "ma",
-    "Ukraine": "ua",
-    "Poland": "pl",
-    "Scotland": "gb-sct",
-    "Wales": "gb-wls",
-    "Northern Ireland": "gb-nir",
-    "Ireland": "ie",
-    "USA": "us",
-    "Canada": "ca",
-    "Mexico": "mx",
-    "Australia": "au",
-}
-
-
 def get_formation_layout_data(
     formation: str,
     players: list[str],
@@ -409,7 +373,7 @@ def get_formation_layout_data(
             if player_idx < len(players):
                 name = players[player_idx]
                 nationality_name = player_nationalities.get(name, "")
-                nationality_code = COUNTRY_TO_ISO.get(nationality_name, "")
+                nationality_code = get_flagcdn_country_code(nationality_name)
                 # Generate full flag URL in Python (avoid Jinja2 filter issues)
                 flag_url = (
                     f"https://flagcdn.com/{nationality_code}.svg"
@@ -419,8 +383,12 @@ def get_formation_layout_data(
 
                 # Use provided short name, fallback to manual shortening if not provided
                 short_name = name
-                if player_short_names and name in player_short_names:
-                    short_name = player_short_names[name]
+                provided_short_name = ""
+                if player_short_names:
+                    provided_short_name = (player_short_names.get(name) or "").strip()
+
+                if provided_short_name:
+                    short_name = provided_short_name
                 else:
                     # Fallback manual shortening logic
                     parts = name.split()

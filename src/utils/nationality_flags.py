@@ -203,6 +203,13 @@ NATIONALITY_FLAGS = {
     "Macedonia": "🇲🇰",
 }
 
+FLAGCDN_SPECIAL_CODES = {
+    "England": "gb-eng",
+    "Scotland": "gb-sct",
+    "Wales": "gb-wls",
+    "Northern Ireland": "gb-nir",
+}
+
 
 def get_flag_emoji(nationality: str) -> str:
     """
@@ -254,3 +261,26 @@ def format_player_with_flag(name: str, nationality: str) -> str:
     if flag:
         return f"{name} {flag}"
     return name
+
+
+def get_flagcdn_country_code(nationality: str) -> str:
+    """
+    国名から flagcdn 用の国コードを取得
+    """
+    if not nationality:
+        return ""
+
+    decoded = html.unescape(nationality)
+    special_code = FLAGCDN_SPECIAL_CODES.get(decoded)
+    if special_code:
+        return special_code
+
+    flag = get_flag_emoji(decoded)
+    if len(flag) != 2:
+        return ""
+
+    first, second = (ord(ch) for ch in flag)
+    if not (0x1F1E6 <= first <= 0x1F1FF and 0x1F1E6 <= second <= 0x1F1FF):
+        return ""
+
+    return f"{chr(first - 0x1F1E6 + ord('a'))}" f"{chr(second - 0x1F1E6 + ord('a'))}"
