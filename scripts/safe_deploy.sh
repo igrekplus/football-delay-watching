@@ -5,6 +5,16 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${REPO_ROOT}"
+
+GIT_COMMON_DIR="$(git rev-parse --git-common-dir 2>/dev/null || true)"
+SHARED_REPO_ROOT=""
+if [ -n "${GIT_COMMON_DIR}" ]; then
+    SHARED_REPO_ROOT="$(cd "${GIT_COMMON_DIR}/.." && pwd)"
+fi
+
 # 色の定義
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,14 +23,23 @@ NC='\033[0m' # No Color
 echo -e "${GREEN}=== Safe Deploy Process Starting ===${NC}"
 
 # 1. venv の確認
-if [ ! -d ".venv" ]; then
+VENV_DIR="${REPO_ROOT}/.venv"
+if [ ! -d "${VENV_DIR}" ] && [ -n "${SHARED_REPO_ROOT}" ] && [ -d "${SHARED_REPO_ROOT}/.venv" ]; then
+    VENV_DIR="${SHARED_REPO_ROOT}/.venv"
+fi
+
+if [ ! -d "${VENV_DIR}" ]; then
     echo -e "${RED}Error: .venv directory not found.${NC}"
     echo "Please run: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
     exit 1
 fi
 
 # 2. Python実行環境の有効化
-source .venv/bin/activate
+source "${VENV_DIR}/bin/activate"
+
+if [ "${VENV_DIR}" != "${REPO_ROOT}/.venv" ]; then
+    echo -e "${GREEN}Using shared virtualenv: ${VENV_DIR}${NC}"
+fi
 
 # 3. 必須JSONファイルの存在・構文チェック
 echo -e "${GREEN}Step 1: Validating required deploy JSON files...${NC}"

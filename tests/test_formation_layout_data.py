@@ -9,6 +9,14 @@ class TestFormationLayoutData(unittest.TestCase):
         self.assertEqual(get_flagcdn_country_code("Ghana"), "gh")
         self.assertEqual(get_flagcdn_country_code("Algeria"), "dz")
         self.assertEqual(get_flagcdn_country_code("England"), "gb-eng")
+        self.assertEqual(get_flagcdn_country_code("Czechia"), "cz")
+        self.assertEqual(get_flagcdn_country_code("United States of America"), "us")
+        self.assertEqual(get_flagcdn_country_code("Korea, Republic of"), "kr")
+        self.assertEqual(get_flagcdn_country_code("Russian Federation"), "ru")
+        self.assertEqual(get_flagcdn_country_code("Cape Verde Islands"), "cv")
+        self.assertEqual(get_flagcdn_country_code("Brunei Darussalam"), "bn")
+        self.assertEqual(get_flagcdn_country_code("Curaçao"), "cw")
+        self.assertEqual(get_flagcdn_country_code("State of Palestine"), "ps")
 
     def test_blank_short_name_falls_back_to_manual_abbreviation(self):
         layout = get_formation_layout_data(

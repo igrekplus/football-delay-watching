@@ -76,17 +76,15 @@ ls -lt public/reports/*.html | head -n 5
 ls -la public/reports/images/*.png | tail -5
 ```
 
-### 3. Firebaseとの同期（必須：他人の進捗を上書きしないため）
+### 3. デプロイ（必須：他人の進捗を上書きしないため）
+`safe_deploy.sh` を使うこと。これが Firebase 同期と `calendar.html` 再生成を内包する。  
+`git worktree` から実行する場合も、このスクリプトを使うこと。共有の `.venv` を自動で再利用する。
+
 ```bash
-python scripts/sync_firebase_reports.py
+./scripts/safe_deploy.sh
 ```
 
-### 4. デプロイ
-```bash
-firebase deploy --only hosting
-```
-
-### 5. URLの確認と報告
+### 4. URLの確認と報告
 デプロイ完了後、公開URL（https://football-delay-watching-a8830.web.app）を開く。
 **まずLLM（あなた）が確認してから、ユーザ側に報告を促すこと。**
 

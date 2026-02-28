@@ -17,10 +17,13 @@ Firebase Hosting からレポートを同期するスクリプト
 
 import json
 import logging
+import shutil
 import time
 from pathlib import Path
 
 import requests
+
+from src.clients.firebase_sync_client import get_shared_reports_dir
 
 # ロギング設定
 logging.basicConfig(
@@ -32,6 +35,7 @@ logger = logging.getLogger(__name__)
 FIREBASE_URL = "https://football-delay-watching-a8830.web.app"
 LOCAL_REPORTS_DIR = Path("public/reports")
 LOCAL_IMAGES_DIR = LOCAL_REPORTS_DIR / "images"
+SHARED_REPORTS_DIR = get_shared_reports_dir()
 
 
 def build_cache_busted_manifest_url() -> str:
@@ -93,6 +97,7 @@ def get_local_files() -> set[str]:
 def download_file(remote_path: str, local_path: Path) -> bool:
     """ファイルをダウンロード"""
     url = f"{FIREBASE_URL}/reports/{remote_path}"
+    cache_path = SHARED_REPORTS_DIR / remote_path
 
     try:
         response = requests.get(url, timeout=60)
@@ -100,6 +105,10 @@ def download_file(remote_path: str, local_path: Path) -> bool:
             local_path.parent.mkdir(parents=True, exist_ok=True)
             with open(local_path, "wb") as f:
                 f.write(response.content)
+            if cache_path != local_path:
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(cache_path, "wb") as f:
+                    f.write(response.content)
             logger.info(f"Downloaded: {remote_path}")
             return True
         else:
@@ -108,6 +117,18 @@ def download_file(remote_path: str, local_path: Path) -> bool:
     except Exception as e:
         logger.error(f"Error downloading {remote_path}: {e}")
         return False
+
+
+def restore_from_shared_cache(remote_path: str, local_path: Path) -> bool:
+    """共有キャッシュからローカルに復元する"""
+    cache_path = SHARED_REPORTS_DIR / remote_path
+    if not cache_path.exists():
+        return False
+
+    local_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(cache_path, local_path)
+    logger.info(f"Restored from shared cache: {remote_path}")
+    return True
 
 
 def merge_manifests(local: dict, remote: dict) -> dict:
@@ -163,6 +184,7 @@ def sync_reports() -> None:
     # ディレクトリ作成
     LOCAL_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     LOCAL_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    SHARED_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
     # マニフェスト取得
     remote_manifest = fetch_remote_manifest()
@@ -179,6 +201,7 @@ def sync_reports() -> None:
 
     # 不足しているレポートをダウンロード
     downloaded_count = 0
+    restored_count = 0
 
     # reports_by_dateから
     for date_key, date_data in remote_by_date.items():
@@ -186,9 +209,12 @@ def sync_reports() -> None:
             file_name = match.get("file")
             if file_name and file_name not in local_files:
                 local_path = LOCAL_REPORTS_DIR / file_name
-                if download_file(file_name, local_path):
+                if restore_from_shared_cache(file_name, local_path):
+                    restored_count += 1
+                elif download_file(file_name, local_path):
                     downloaded_count += 1
 
+    logger.info(f"Restored {restored_count} reports from shared cache")
     logger.info(f"Downloaded {downloaded_count} new reports")
 
     # マニフェストをマージして保存

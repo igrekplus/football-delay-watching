@@ -1,9 +1,26 @@
 import html
+import re
+import unicodedata
 
 """
 国名から国旗絵文字へのマッピング辞書
 API-Football が返す国名に対応
 """
+
+
+def _normalize_lookup_key(value: str) -> str:
+    """表記揺れ吸収用の比較キーを返す。"""
+    decoded = html.unescape(value or "").strip()
+    if not decoded:
+        return ""
+
+    normalized = unicodedata.normalize("NFKD", decoded)
+    without_marks = "".join(
+        ch for ch in normalized if not unicodedata.combining(ch)
+    ).casefold()
+    without_marks = without_marks.replace("&", " and ")
+    return re.sub(r"[^a-z0-9]+", "", without_marks)
+
 
 # 主要なサッカー選手の国籍マッピング
 NATIONALITY_FLAGS = {
@@ -31,10 +48,12 @@ NATIONALITY_FLAGS = {
     "Sweden": "🇸🇪",
     "Norway": "🇳🇴",
     "Finland": "🇫🇮",
+    "Czechia": "🇨🇿",
     "Czech Republic": "🇨🇿",
     "Greece": "🇬🇷",
     "Turkey": "🇹🇷",
     "Russia": "🇷🇺",
+    "Russian Federation": "🇷🇺",
     "Romania": "🇷🇴",
     "Hungary": "🇭🇺",
     "Slovakia": "🇸🇰",
@@ -51,6 +70,7 @@ NATIONALITY_FLAGS = {
     "Georgia": "🇬🇪",
     "Belarus": "🇧🇾",
     "Moldova": "🇲🇩",
+    "Moldova, Republic of": "🇲🇩",
     "Estonia": "🇪🇪",
     "Latvia": "🇱🇻",
     "Lithuania": "🇱🇹",
@@ -65,6 +85,7 @@ NATIONALITY_FLAGS = {
     "Azerbaijan": "🇦🇿",
     "Kazakhstan": "🇰🇿",
     "Israel": "🇮🇱",
+    "Monaco": "🇲🇨",
     # 南米
     "Brazil": "🇧🇷",
     "Argentina": "🇦🇷",
@@ -81,8 +102,13 @@ NATIONALITY_FLAGS = {
     # 北中米カリブ海
     "USA": "🇺🇸",
     "United States": "🇺🇸",
+    "United States of America": "🇺🇸",
+    "United Kingdom": "🇬🇧",
+    "Great Britain": "🇬🇧",
     "Mexico": "🇲🇽",
     "Canada": "🇨🇦",
+    "Bahamas": "🇧🇸",
+    "Aruba": "🇦🇼",
     "Jamaica": "🇯🇲",
     "Costa Rica": "🇨🇷",
     "Panama": "🇵🇦",
@@ -94,15 +120,26 @@ NATIONALITY_FLAGS = {
     "Trinidad & Tobago": "🇹🇹",
     "Haiti": "🇭🇹",
     "Curacao": "🇨🇼",
+    "Curaçao": "🇨🇼",
     "Cuba": "🇨🇺",
     "Dominican Republic": "🇩🇴",
+    "Dominica": "🇩🇲",
     "Grenada": "🇬🇩",
     "Barbados": "🇧🇧",
     "Saint Kitts and Nevis": "🇰🇳",
     "Saint Lucia": "🇱🇨",
+    "Saint Vincent and the Grenadines": "🇻🇨",
     "Antigua and Barbuda": "🇦🇬",
     "Bermuda": "🇧🇲",
     "Belize": "🇧🇿",
+    "Puerto Rico": "🇵🇷",
+    "Cayman Islands": "🇰🇾",
+    "British Virgin Islands": "🇻🇬",
+    "US Virgin Islands": "🇻🇮",
+    "Turks and Caicos Islands": "🇹🇨",
+    "Anguilla": "🇦🇮",
+    "Montserrat": "🇲🇸",
+    "Sint Maarten": "🇸🇽",
     "Martinique": "🇲🇶",
     "Guadeloupe": "🇬🇵",
     # アフリカ
@@ -131,6 +168,7 @@ NATIONALITY_FLAGS = {
     "Gambia": "🇬🇲",
     "Benin": "🇧🇯",
     "Cape Verde": "🇨🇻",
+    "Cape Verde Islands": "🇨🇻",
     "Congo": "🇨🇬",
     "Equatorial Guinea": "🇬🇶",
     "Guinea-Bissau": "🇬🇼",
@@ -145,6 +183,7 @@ NATIONALITY_FLAGS = {
     "Madagascar": "🇲🇬",
     "Mauritania": "🇲🇷",
     "Sudan": "🇸🇩",
+    "South Sudan": "🇸🇸",
     "Libya": "🇱🇾",
     "Comoros": "🇰🇲",
     "Central African Republic": "🇨🇫",
@@ -152,18 +191,52 @@ NATIONALITY_FLAGS = {
     "Ethiopia": "🇪🇹",
     "Rwanda": "🇷🇼",
     "Malawi": "🇲🇼",
+    "Botswana": "🇧🇼",
+    "Chad": "🇹🇩",
+    "Djibouti": "🇩🇯",
+    "Eritrea": "🇪🇷",
+    "Lesotho": "🇱🇸",
+    "Mauritius": "🇲🇺",
+    "Niger": "🇳🇪",
+    "Seychelles": "🇸🇨",
+    "Somalia": "🇸🇴",
     # アジア・オセアニア
+    "Afghanistan": "🇦🇫",
     "Japan": "🇯🇵",
     "Korea Republic": "🇰🇷",
+    "Korea, Republic of": "🇰🇷",
     "South Korea": "🇰🇷",
+    "Korea, Democratic People's Republic of": "🇰🇵",
     "China": "🇨🇳",
+    "Macao": "🇲🇴",
+    "Macau": "🇲🇴",
     "Australia": "🇦🇺",
+    "New Zealand": "🇳🇿",
+    "Papua New Guinea": "🇵🇬",
+    "Fiji": "🇫🇯",
+    "Solomon Islands": "🇸🇧",
+    "Vanuatu": "🇻🇺",
+    "Samoa": "🇼🇸",
+    "American Samoa": "🇦🇸",
+    "Tonga": "🇹🇴",
+    "Guam": "🇬🇺",
+    "Northern Mariana Islands": "🇲🇵",
+    "Cook Islands": "🇨🇰",
+    "Tahiti": "🇵🇫",
     "Iran": "🇮🇷",
+    "Iran, Islamic Republic of": "🇮🇷",
     "Saudi Arabia": "🇸🇦",
     "Qatar": "🇶🇦",
     "UAE": "🇦🇪",
     "United Arab Emirates": "🇦🇪",
     "Iraq": "🇮🇶",
+    "Bangladesh": "🇧🇩",
+    "Cambodia": "🇰🇭",
+    "Nepal": "🇳🇵",
+    "Pakistan": "🇵🇰",
+    "Sri Lanka": "🇱🇰",
+    "Maldives": "🇲🇻",
+    "Mongolia": "🇲🇳",
     "Uzbekistan": "🇺🇿",
     "Thailand": "🇹🇭",
     "Vietnam": "🇻🇳",
@@ -173,14 +246,26 @@ NATIONALITY_FLAGS = {
     "Jordan": "🇯🇴",
     "Oman": "🇴🇲",
     "Bahrain": "🇧🇭",
+    "Brunei": "🇧🇳",
+    "Brunei Darussalam": "🇧🇳",
+    "Laos": "🇱🇦",
+    "Myanmar": "🇲🇲",
+    "Singapore": "🇸🇬",
     "Syria": "🇸🇾",
+    "Syrian Arab Republic": "🇸🇾",
     "Lebanon": "🇱🇧",
     "Palestine": "🇵🇸",
+    "State of Palestine": "🇵🇸",
     "Kuwait": "🇰🇼",
     "India": "🇮🇳",
     "Kyrgyzstan": "🇰🇬",
     "Tajikistan": "🇹🇯",
     "Turkmenistan": "🇹🇲",
+    "North Korea": "🇰🇵",
+    "Eswatini": "🇸🇿",
+    "Sao Tome and Principe": "🇸🇹",
+    "Timor-Leste": "🇹🇱",
+    "Timor Leste": "🇹🇱",
     # API-Football specific names (hyphenated) and variations
     "South-Korea": "🇰🇷",
     "Saudi-Arabia": "🇸🇦",
@@ -210,6 +295,33 @@ FLAGCDN_SPECIAL_CODES = {
     "Northern Ireland": "gb-nir",
 }
 
+NORMALIZED_NATIONALITY_FLAGS = {
+    _normalize_lookup_key(country): flag for country, flag in NATIONALITY_FLAGS.items()
+}
+
+NORMALIZED_NATIONALITY_ALIASES = {
+    "republicofireland": "Ireland",
+    "korearepublic": "South Korea",
+    "korearepublicof": "South Korea",
+    "republicofkorea": "South Korea",
+    "iranislamicrepublicof": "Iran",
+    "moldovarepublicof": "Moldova",
+    "tanzaniaunitedrepublicof": "Tanzania",
+    "russianfederation": "Russia",
+    "syrianarabrepublic": "Syria",
+    "boliviaplurinationalstateof": "Bolivia",
+    "venezuelabolivarianrepublicof": "Venezuela",
+    "unitedstatesofamerica": "United States",
+    "thegambia": "Gambia",
+    "caboverde": "Cape Verde",
+    "capeverdeislands": "Cape Verde",
+    "bruneidarussalam": "Brunei",
+    "democraticpeoplesrepublicofkorea": "North Korea",
+    "timorleste": "Timor-Leste",
+    "palestinestateof": "Palestine",
+    "palestinianterritories": "Palestine",
+}
+
 
 def get_flag_emoji(nationality: str) -> str:
     """
@@ -227,26 +339,34 @@ def get_flag_emoji(nationality: str) -> str:
     if flag:
         return flag
 
-    # 2. 空白をハイフンに置換して再試行 (API-Football 形式: "South Korea" -> "South-Korea")
-    hyphenated = decoded.replace(" ", "-")
+    # 2. クォート差や空白差を吸収して再試行
+    normalized_quotes = (
+        decoded.replace("’", "'").replace("`", "'").replace("´", "'").strip()
+    )
+    if normalized_quotes != decoded:
+        flag = NATIONALITY_FLAGS.get(normalized_quotes)
+        if flag:
+            return flag
+
+    # 3. 空白をハイフンに置換して再試行 (API-Football 形式: "South Korea" -> "South-Korea")
+    hyphenated = normalized_quotes.replace(" ", "-")
     flag = NATIONALITY_FLAGS.get(hyphenated)
     if flag:
         return flag
 
-    # 3. ハイフンを空白に置換して再試行 ("Cote-D-Ivoire" -> "Cote D'Ivoire" などは難しいが一般的なものはカバー)
-    spaced = decoded.replace("-", " ")
+    # 4. ハイフンを空白に置換して再試行
+    spaced = normalized_quotes.replace("-", " ")
     flag = NATIONALITY_FLAGS.get(spaced)
     if flag:
         return flag
 
-    # 4. 特定の有名なエイリアス対応
-    aliases = {
-        "Republic of Ireland": "Ireland",
-        "DR Congo": "Congo DR",
-        "North Macedonia": "Macedonia",
-        "Bosnia and Herzegovina": "Bosnia",
-    }
-    alias_target = aliases.get(decoded)
+    # 5. 正規化して既知の国名・別名へ寄せる
+    normalized_key = _normalize_lookup_key(normalized_quotes)
+    flag = NORMALIZED_NATIONALITY_FLAGS.get(normalized_key)
+    if flag:
+        return flag
+
+    alias_target = NORMALIZED_NATIONALITY_ALIASES.get(normalized_key)
     if alias_target:
         return NATIONALITY_FLAGS.get(alias_target, "")
 
