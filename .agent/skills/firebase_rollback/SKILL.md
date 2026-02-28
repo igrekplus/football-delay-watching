@@ -18,6 +18,7 @@ description: Firebase Hosting上のレポート消失時に、GCSバックアッ
 ## トリガー条件
 
 - ユーザーから「レポートが消えた」「復旧したい」と依頼されたとき
+- Firebase 上の特定レポートURLが 404 になっているとき
 - Firebase 上の `reports/` 件数が急減しているとき
 - ローカル誤デプロイで過去レポートを消した可能性が高いとき
 
@@ -116,7 +117,48 @@ python scripts/sync_firebase_reports.py
 - `public/reports/manifest.json` に対象レポートが含まれる
 - `public/reports/` の件数が想定値以上である
 
-## 事故時の最短手順
+## パターン B: 個別ファイルのピンポイント復旧（✅ 2026-02-24 実証済み）
+
+Firebase 上で **特定レポートのみ 404** になっている場合（全件消失ではない）に使う軽量手順。`safe_deploy.sh` を使っても問題ない。
+
+### B-1. バックアップ内の対象ファイルを確認
+
+```bash
+# 対象ファイルが最新バックアップに存在するか確認
+gsutil ls "gs://football-delay-watching-backup/reports/**/*<試合名キーワード>*"
+```
+
+例（Everton vs ManchesterUnited の場合）:
+
+```bash
+gsutil ls "gs://football-delay-watching-backup/reports/**/*Everton*Manchester*"
+# → gs://football-delay-watching-backup/reports/20260223_214934/2026-02-23_Everton_vs_ManchesterUnited_20260224_064418.html
+```
+
+### B-2. ローカルへコピー
+
+```bash
+gsutil cp "gs://football-delay-watching-backup/reports/<SNAPSHOT>/<filename>.html" public/reports/
+```
+
+### B-3. safe_deploy.sh で通常デプロイ
+
+個別ファイルの場合は全件上書きにならないため、`safe_deploy.sh` を使って安全にデプロイできる。
+
+```bash
+./scripts/safe_deploy.sh
+```
+
+### B-4. URL 疎通確認
+
+```bash
+curl -fsS "https://football-delay-watching-a8830.web.app/reports/<filename>.html" -o /dev/null -w "%{http_code}"
+# → 200 が返れば復旧完了
+```
+
+---
+
+## 事故時の最短手順（全件消失）
 
 時間優先で復旧する場合のみ使用します。
 
@@ -135,11 +177,14 @@ python scripts/sync_firebase_reports.py
 
 ## 注意事項
 
-- 復旧操作は破壊的です。対象スナップショット時刻を必ずユーザーに確認してください。
-- `scripts/safe_deploy.sh` は復旧時に使わないでください（先に Firebase から同期してしまうため）。
+- 全件復旧は破壊的操作です。対象スナップショット時刻を必ずユーザーに確認してください。
+- `scripts/safe_deploy.sh` は**全件復旧時**は使わないでください（先に Firebase から同期してしまうため）。個別ファイル復旧時は使用可。
 - GCS バックアップに存在しないファイルは復旧できません。
+- バックアップの検索は `gsutil ls "gs://.../**/*キーワード*"` で絞り込める（`--filter` は非対応）。
 
 ## 検証ステータス
 
-- 2026-02-23 時点で、この手順の実リストア動作確認は未実施です。
-- 次回実際にリストアを実行したタイミングで、成功可否、所要時間、詰まった点をこの `SKILL.md` に追記更新してください。
+| 手順 | 実施日 | 結果 |
+|-----|--------|------|
+| パターン B（個別ファイル復旧） | 2026-02-24 | ✅ 成功（Everton vs ManchesterUnited HTML を復旧、所要約5分） |
+| パターン A（全件 rsync 復旧） | 未実施 | - |
