@@ -70,6 +70,11 @@ flowchart TB
 | `away_manager` | `str` | アウェイ監督名 |
 | `h2h_summary` | `str` | 対戦成績 |
 
+> [!IMPORTANT]
+> `player_nationalities` / `player_numbers` / `player_photos` などの `player_*` 辞書は、
+> API-Football の生名（`/fixtures/lineups` の `player.name`）をキーとして保持する。
+> 表示用の日本語名は `ReportGenerator` の翻訳レイヤでのみ扱い、ドメインデータのキー自体は置き換えない。
+
 ### MatchPreview（LLM生成データ）
 
 | フィールド | 型 | 説明 |
