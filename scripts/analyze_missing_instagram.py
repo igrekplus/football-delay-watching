@@ -5,6 +5,7 @@ import csv
 from pathlib import Path
 
 DEFAULT_TEAM_ID = 50
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 def parse_args() -> argparse.Namespace:
@@ -27,8 +28,14 @@ def parse_args() -> argparse.Namespace:
 
 def resolve_csv_path(team_id: int, csv_override: str | None) -> Path:
     if csv_override:
-        return Path(csv_override)
-    return Path(f"data/player_instagram_{team_id}.csv")
+        csv_path = Path(csv_override)
+    else:
+        csv_path = Path("data") / f"player_instagram_{team_id}.csv"
+
+    if not csv_path.is_absolute():
+        csv_path = PROJECT_ROOT / csv_path
+
+    return csv_path
 
 
 def main():

@@ -13,23 +13,49 @@ Team IDs:
     Tottenham: 47
 """
 
+from __future__ import annotations
+
 import argparse
 import csv
 import logging
-import os
 import sys
+from pathlib import Path
 
 import requests
 
 # プロジェクトルートをパスに追加
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from config import config
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://v3.football.api-sports.io"
+
+
+def get_api_football_key() -> str:
+    """設定モジュールから API-Football のキーを取得する。"""
+    from config import config
+
+    return config.API_FOOTBALL_KEY
+
+
+def resolve_output_path(team_id: int, output_override: str | None) -> Path:
+    """
+    出力先パスをプロジェクトルート基準で解決する。
+
+    相対パス指定でも、呼び出し元の cwd ではなくリポジトリ直下に出力する。
+    これにより worktree 間で誤って別ディレクトリへ CSV を生成しにくくする。
+    """
+    if output_override:
+        output_path = Path(output_override)
+    else:
+        output_path = Path("data") / f"player_instagram_{team_id}.csv"
+
+    if not output_path.is_absolute():
+        output_path = PROJECT_ROOT / output_path
+
+    return output_path
 
 
 def fetch_squad(team_id: int) -> list:
@@ -43,7 +69,7 @@ def fetch_squad(team_id: int) -> list:
         選手リスト [{"id": 123, "name": "Player Name", ...}, ...]
     """
     url = f"{BASE_URL}/players/squads"
-    headers = {"x-apisports-key": config.API_FOOTBALL_KEY}
+    headers = {"x-apisports-key": get_api_football_key()}
     params = {"team": team_id}
 
     logger.info(f"Fetching squad for team ID: {team_id}")
@@ -115,13 +141,10 @@ def main():
     args = parser.parse_args()
 
     # デフォルト出力先
-    if args.output:
-        output_path = args.output
-    else:
-        output_path = f"data/player_instagram_{args.team_id}.csv"
+    output_path = resolve_output_path(args.team_id, args.output)
 
     # 出力ディレクトリを作成
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # 選手リスト取得
     players = fetch_squad(args.team_id)
@@ -131,7 +154,7 @@ def main():
         sys.exit(1)
 
     # CSV出力
-    export_to_csv(players, output_path)
+    export_to_csv(players, str(output_path))
 
     print(f"\n✅ Exported to: {output_path}")
     print("📝 Please manually fill in the 'instagram_url' column")
