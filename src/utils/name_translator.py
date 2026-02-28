@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import unicodedata
 
 from config import config
@@ -61,6 +62,13 @@ class NameTranslator:
         for english_name, katakana_name in translations.items():
             if katakana_name and katakana_name != english_name:
                 result = result.replace(english_name, katakana_name)
+
+        # フルネームで置換しきれない「姓のみ」の参照も、対象が一意なら補完する
+        for alias, katakana_name in self._build_unique_name_aliases(
+            unique_names, translations
+        ).items():
+            if katakana_name and katakana_name != alias:
+                result = self._replace_alias_token(result, alias, katakana_name)
 
         return result
 
@@ -367,3 +375,43 @@ class NameTranslator:
             aligned.setdefault(name, {"full": name, "short": name})
 
         return aligned
+
+    def _build_unique_name_aliases(
+        self, names: list[str], translations: dict[str, str]
+    ) -> dict[str, str]:
+        """一意に識別できる姓のみの別名を構築する"""
+        alias_to_source: dict[str, list[str]] = {}
+        for name in names:
+            alias = self._extract_last_name_alias(name)
+            if alias:
+                alias_to_source.setdefault(alias, []).append(name)
+
+        result: dict[str, str] = {}
+        for alias, source_names in alias_to_source.items():
+            if len(source_names) != 1:
+                continue
+
+            source_name = source_names[0]
+            translated = translations.get(source_name, "")
+            if translated and translated != source_name:
+                result[alias] = translated
+
+        return result
+
+    def _extract_last_name_alias(self, name: str) -> str:
+        """姓だけ表記されがちな末尾トークンを返す"""
+        parts = name.split()
+        if len(parts) < 2:
+            return ""
+
+        alias = parts[-1].strip()
+        normalized = alias.replace("’", "'")
+        if len(normalized.replace("'", "")) < 3:
+            return ""
+
+        return alias
+
+    def _replace_alias_token(self, html: str, alias: str, translated: str) -> str:
+        """英字の前後境界を見て、姓のみ表記を安全側で置換する"""
+        pattern = re.compile(rf"(?<![A-Za-z]){re.escape(alias)}(?![A-Za-z])")
+        return pattern.sub(translated, html)

@@ -81,6 +81,22 @@ class TestTranslationCacheContamination(unittest.TestCase):
         self.assertEqual(cached["full"], "マーク・グエイ")
         self.assertEqual(cached["short"], "M.グエイ")
 
+    def test_name_translator_replaces_unique_last_name_alias(self):
+        store = InMemoryCacheStore()
+        translator = NameTranslator(cache_store=store, use_mock=False)
+        translator._batch_translate = lambda names: {
+            "Nico O'Reilly": {
+                "full": "ニコ・オライリー",
+                "short": "N.オライリー",
+            }
+        }
+
+        html = "<h4>O'Reillyの成長</h4><p>O'Reillyが中盤を支える。</p>"
+        result = translator.translate_names_in_html(html, ["Nico O'Reilly"])
+
+        self.assertIn("ニコ・オライリーの成長", result)
+        self.assertIn("ニコ・オライリーが中盤を支える。", result)
+
     def test_team_translator_ignores_mock_cache_in_non_mock_mode(self):
         store = InMemoryCacheStore()
         translator = TeamNameTranslator(cache_store=store, use_mock=False)
