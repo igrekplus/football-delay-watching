@@ -188,11 +188,24 @@ class CalendarGenerator:
     <title>試合日程カレンダー | サッカー観戦ガイド</title>
     <link rel="stylesheet" href="/assets/report_styles.css">
     <link rel="stylesheet" href="/assets/calendar_styles.css">
+    <link rel="stylesheet" href="/assets/nav_menu.css">
 </head>
 <body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
     <div class="calendar-container">
         <header class="calendar-header">
-            <nav class="nav-back"><a href="/?view=reports" class="back-link">📋 レポート一覧へ行く</a></nav>
             <h1>📅 試合日程カレンダー</h1>
             <div id="calendar-user-info" class="calendar-user-info" style="display:none;">
                 <span id="calendar-user-email" class="calendar-user-email"></span>
@@ -294,6 +307,7 @@ class CalendarGenerator:
     </div>
 
     <script src="/assets/calendar_filter.js"></script>
+    <script src="/assets/nav_menu.js"></script>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import {
