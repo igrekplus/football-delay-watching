@@ -13,6 +13,10 @@
     margin-bottom: var(--spacing-2xl);
 }
 
+.calendar-header h1 {
+    text-align: left;
+}
+
 .calendar-user-info {
     display: flex;
     justify-content: flex-end;
