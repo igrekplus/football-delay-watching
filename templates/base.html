@@ -8,8 +8,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/report_styles.css">
+    <link rel="stylesheet" href="../assets/nav_menu.css">
 </head>
 <body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
     <div class="container">
         <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
         {% block mode_banner %}{% endblock %}
@@ -18,5 +32,6 @@
             生成日時: {{ timestamp }}
         </div>
     </div>
+    <script src="../assets/nav_menu.js"></script>
 </body>
 </html>
