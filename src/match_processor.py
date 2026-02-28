@@ -46,6 +46,11 @@ class MatchProcessor:
         """Fetch and parse matches from API-Football."""
         matches = []
         target_date = config.TARGET_DATE
+        target_fixture_id = os.getenv("TARGET_FIXTURE_ID", "").strip()
+
+        if target_fixture_id:
+            logger.info(f"TARGET_FIXTURE_ID override enabled: {target_fixture_id}")
+            return self._fetch_match_by_fixture_id(target_fixture_id, target_date)
 
         # デバッグモード: 過去24時間の試合を取得するため、今日と昨日の両方を検索
         # 本番モード(Dynamic Schedule): 現在時刻周辺の試合を拾うため、同様に複数日を検索
@@ -83,8 +88,45 @@ class MatchProcessor:
 
         return matches
 
+    def _fetch_match_by_fixture_id(
+        self, fixture_id: str, target_date: datetime
+    ) -> list[MatchAggregate]:
+        """Fetch exactly one fixture when a manual override is provided."""
+        matches: list[MatchAggregate] = []
+        data = self.client.fetch_fixtures(fixture_id=fixture_id)
+
+        for item in data.get("response", []):
+            league_name = self._resolve_league_name(item.get("league", {}))
+            match_data = self._parse_match_data(
+                item,
+                league_name,
+                target_date,
+                skip_time_window=True,
+            )
+            if match_data:
+                matches.append(match_data)
+
+        if not matches:
+            logger.warning(f"No match found for TARGET_FIXTURE_ID={fixture_id}")
+
+        return matches
+
+    def _resolve_league_name(self, league: dict[str, Any]) -> str:
+        """Map API league metadata to the project's competition key when possible."""
+        league_id = league.get("id")
+
+        for league_name, configured_id in config.LEAGUE_IDS.items():
+            if configured_id == league_id:
+                return league_name
+
+        return league.get("name", "Unknown")
+
     def _parse_match_data(
-        self, item: dict[str, Any], league_name: str, target_date: datetime
+        self,
+        item: dict[str, Any],
+        league_name: str,
+        target_date: datetime,
+        skip_time_window: bool = False,
     ) -> MatchAggregate | None:
         """Parses a single match item and returns a MatchAggregate."""
         fixture = item["fixture"]
@@ -103,7 +145,9 @@ class MatchProcessor:
         )
 
         # Time window filter
-        if not self._is_within_time_window(match_date_jst, target_date):
+        if not skip_time_window and not self._is_within_time_window(
+            match_date_jst, target_date
+        ):
             return None
 
         # Extract Venue

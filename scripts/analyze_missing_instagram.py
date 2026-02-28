@@ -1,13 +1,39 @@
+from __future__ import annotations
+
+import argparse
 import csv
-import sys
 from pathlib import Path
 
-# プロジェクトルートをパスに追加
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+DEFAULT_TEAM_ID = 50
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Analyze missing Instagram URLs in a squad CSV"
+    )
+    parser.add_argument(
+        "--team-id",
+        type=int,
+        default=DEFAULT_TEAM_ID,
+        help="API-Football team ID used to resolve data/player_instagram_<team_id>.csv",
+    )
+    parser.add_argument(
+        "--csv",
+        type=str,
+        help="Explicit CSV path to analyze. Overrides --team-id when provided.",
+    )
+    return parser.parse_args()
+
+
+def resolve_csv_path(team_id: int, csv_override: str | None) -> Path:
+    if csv_override:
+        return Path(csv_override)
+    return Path(f"data/player_instagram_{team_id}.csv")
 
 
 def main():
-    csv_path = Path("data/player_instagram_50.csv")
+    args = parse_args()
+    csv_path = resolve_csv_path(args.team_id, args.csv)
     if not csv_path.exists():
         print(f"Error: {csv_path} not found.")
         return
@@ -38,7 +64,7 @@ def main():
         print("=" * 30)
 
         if missing_count > 0:
-            print("\nTip: Run specific search for each player using 'search_web' tool.")
+            print("\nTip: Re-run with --team-id or --csv to target another squad file.")
 
     except Exception as e:
         print(f"Error reading CSV: {e}")

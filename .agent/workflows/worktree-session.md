@@ -48,6 +48,12 @@ git branch --show-current
 
 このディレクトリ内で通常どおり作業する。必要に応じて既存Workflow（`/debug-run`, `/deploy`）を実行する。
 
+特定の1試合だけを検証したい場合は、worktree内で `TARGET_FIXTURE_ID` を付けて実行する。
+
+```bash
+TARGET_DATE="2026-02-27" TARGET_FIXTURE_ID="1379248" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+```
+
 ### 5. コミット・プッシュ
 
 ```bash

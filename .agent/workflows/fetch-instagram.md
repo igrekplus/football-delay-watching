@@ -4,7 +4,7 @@ description: 選手のInstagram URLを検索してCSVを更新するワークフ
 
 # Player Instagram Fetch Workflow
 
-`data/player_instagram_50.csv` に登録されている選手のInstagram URLが未設定の場合に、Web検索を行ってURLを補完する手順書です。
+`data/player_instagram_<team_id>.csv` に登録されている選手のInstagram URLが未設定の場合に、Web検索を行ってURLを補完する手順書です。実行時の紐づけは `player_id` ベースです。
 
 ## 前提条件
 - 1回の実行で処理する人数は **5〜10名** 程度に留める（レート制限・ハルシネーション防止）。
@@ -16,6 +16,13 @@ description: 選手のInstagram URLを検索してCSVを更新するワークフ
 ```bash
 // turbo
 python scripts/analyze_missing_instagram.py
+```
+
+別チームを確認する場合:
+
+```bash
+// turbo
+python scripts/analyze_missing_instagram.py --team-id 42
 ```
 
 ### 2. 検索と更新
@@ -41,8 +48,10 @@ python scripts/analyze_missing_instagram.py
 - 検索結果が曖昧で複数候補がある場合
 
 ### 3. CSV更新
-`data/player_instagram_50.csv` の該当行の `instagram_url` カラムにURLを追記。
+`data/player_instagram_50.csv` の該当行の `instagram_url` カラムにURLを追記。対象行は `player_id` を基準に確認する。
 フォーマット: `https://www.instagram.com/{handle}/`
+
+別チームのCSVを新規作成した場合は、`settings/player_instagram.py` の `TEAM_CSV_FILES` にその `team_id` を追加しないと実行時に読み込まれない。
 
 ### 4. 結果確認
 ```bash
@@ -50,6 +59,36 @@ python scripts/analyze_missing_instagram.py
 python scripts/analyze_missing_instagram.py
 ```
 更新した選手数だけ Missing URLs が減っていることを確認。
+
+必要なら、実際の試合カード上で表示確認する:
+
+```bash
+TARGET_DATE="2026-02-27" TARGET_FIXTURE_ID="1379248" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+```
+
+狙った試合が通常のデバッグ選定で外れる場合でも、`TARGET_FIXTURE_ID` を付ければその1試合だけを強制的に確認できる。
+
+生成後は、対象HTMLにリンクが埋まっているかを確認する:
+
+```bash
+rg -n "instagram.com|player-instagram-link" public/reports/<generated_report>.html
+```
+
+#### 確認時の切り分け
+- **アイコンが出ない**: まずCSV未設定を疑う。テンプレートは `player.instagram_url` がある場合だけ表示する。
+- **CSVにはURLがあるのに出ない**: その選手がその試合の表示対象（スタメン/ベンチ）に入っていない可能性がある。
+- **リンク切れに見える**: まずHTTP応答を確認する。Instagramはログイン壁でも `200` を返すことがあるため、`404` だけを明確なリンク切れとみなす。
+
+簡易確認例:
+
+```bash
+curl -I https://www.instagram.com/<handle>/
+```
+
+表示確認まで含めて完了とする場合は、最低でも以下を満たすこと:
+1. `analyze_missing_instagram.py` の Missing URLs が減っている
+2. `TARGET_FIXTURE_ID` 付きデバッグ実行で対象カードのHTMLを生成できる
+3. 生成HTML内に対象選手の `player-instagram-link` が入っている
 
 ### 5. コミット
 ```bash
