@@ -84,12 +84,13 @@ GitHub Issueを解決するための包括的なスキルです。
 
 ## 🛠️ 関連ワークフローへの参照
 このスキルを実行中に、以下の固定手順（Workflow）を呼び出してください。
+クロスエージェント運用のため、リンクではなく共通の参照パスを記載します。
 
-- **実行・検証**: [/debug-run](file:///.agent/workflows/debug-run.md)
-- **デプロイ**: [/deploy](file:///.agent/workflows/deploy.md)
-- **クローズ確認**: [/check-close](file:///.agent/workflows/check-close.md)
-- **プロンプト調整**: [/tune-gemini](file:///.agent/workflows/tune-gemini.md)
-- **不備修正**: [/delete-report](file:///.agent/workflows/delete-report.md)
+- **実行・検証**: `.agent/workflows/debug-run.md`
+- **デプロイ**: `.agent/workflows/deploy.md`
+- **クローズ確認**: `.agent/workflows/check-close.md`
+- **プロンプト調整**: `.agent/workflows/tune-gemini.md`
+- **不備修正**: `.agent/workflows/delete-report.md`
 
 ---
 
