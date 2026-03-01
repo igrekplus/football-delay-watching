@@ -10,13 +10,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Analyze missing Instagram URLs in a squad CSV"
+        description="Analyze missing Instagram URLs in a local player CSV working copy"
     )
     parser.add_argument(
         "--team-id",
         type=int,
         default=DEFAULT_TEAM_ID,
-        help="API-Football team ID used to resolve data/player_<team_id>.csv",
+        help="API-Football team ID used to resolve local data/player_<team_id>.csv",
     )
     parser.add_argument(
         "--csv",
@@ -46,6 +46,9 @@ def main():
         return
 
     print(f"Analyzing {csv_path}...\n")
+    print(
+        "Note: this script reads the local working copy. Pull from GCS first if needed.\n"
+    )
 
     missing_count = 0
     total_count = 0
