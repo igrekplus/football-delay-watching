@@ -12,6 +12,7 @@ class TestPlayerProfileUi(unittest.TestCase):
             lineup=["R. Cherki"],
             formation="4-3-3",
             team_name="Manchester City",
+            player_photos={"R. Cherki": "https://example.com/cherki.png"},
             player_profiles={
                 "R. Cherki": {
                     "format": "labelled_lines_v1",
@@ -20,8 +21,10 @@ class TestPlayerProfileUi(unittest.TestCase):
             },
         )
 
-        self.assertIn('class="player-profile-trigger"', html)
+        self.assertIn('class="player-card player-card-profile-available"', html)
+        self.assertIn('class="player-profile-badge"', html)
         self.assertIn('data-player-profile-id="player-profile-r-cherki"', html)
+        self.assertIn('data-player-photo="https://example.com/cherki.png"', html)
         self.assertNotIn("タップで詳細", html)
 
         html_without_profile = formatter.format_player_cards(
@@ -31,7 +34,7 @@ class TestPlayerProfileUi(unittest.TestCase):
             player_profiles={},
         )
 
-        self.assertNotIn('class="player-profile-trigger"', html_without_profile)
+        self.assertNotIn('class="player-profile-badge"', html_without_profile)
         self.assertNotIn(
             'data-player-profile-id="player-profile-rodri"', html_without_profile
         )

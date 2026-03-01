@@ -67,3 +67,34 @@
 - [x] `tests/test_player_instagram.py` にプロフィール読み込みのテストを追加する
 - [x] 実データで `TARGET_FIXTURE_ID=\"1379244\"` の debug 実行を行う
 - [x] `walkthrough.md` に結果を整理する
+
+---
+
+# Issue #234 タスク分解
+
+作成日: 2026-03-01
+
+## Phase 0: 準備
+
+- [x] Issue本文の要件を確認する
+- [x] `in-progress` ラベルを付与する
+- [x] 既存のデバッグセクションとリンク定義箇所を確認する
+
+## Phase 1: 設計反映
+
+- [x] `implementation_plan.md` に #234 の計画を追記する
+- [x] `docs/03_components/report_rendering.md` にデバッグ情報の統合ルールを追記する
+- [x] `docs/04_operations/api_quota.md` にデバッグリンクの運用URLを追記する
+
+## Phase 2: 実装
+
+- [x] デバッグ情報を単一の折りたたみセクションへ統合する
+- [x] `Fixture ID` をデバッグ情報へ表示する
+- [x] `対象外動画一覧` の出力をやめる
+- [x] `Gemini API` / `Gemini Grounding` のリンクを更新する
+
+## Phase 3: テストと確認
+
+- [x] デバッグ表示の単体テストを追加する
+- [x] ローカルで関連テストを実行する
+- [x] debug 実行で実画面を確認する

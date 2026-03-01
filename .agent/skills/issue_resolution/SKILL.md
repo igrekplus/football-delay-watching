@@ -43,6 +43,7 @@ GitHub Issueを解決するための包括的なスキルです。
     - UIの修正のみの場合は`/debug-run` の設定（`USE_MOCK_DATA=true`）を選択する。具体的にはHTMLとtemplate、cssの修正である。
     - GeminiGroundingの修正に関する修正の場合は`USE_MOCK_DATA=false`を選択すること。（デフォルトで良い）
     - `TARGET_DATE` はスタメン確定済みの「2日以上前の日付」を指定する（詳細は `/debug-run` 参照）。
+    - レポートHTMLの見た目確認を伴う修正では、`DEBUG_MODE` 時に限り、生成物を `file://` でそのまま開いて確認しやすいよう、`/assets/...` のようなルート相対参照ではなく相対パスで成立する出力を優先すること。ローカル確認のたびに簡易Webサーバ起動を前提にしない。
 - **デプロイと確認**:
     - デプロイ前にcommitを行うこと。他のセッションも修正している可能性があるため、commitは修正したファイル・コードのみcommitする。
     - `/deploy` ワークフローを使用して Firebase Hosting にデプロイする。

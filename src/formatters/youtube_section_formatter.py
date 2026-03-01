@@ -104,81 +104,27 @@ class YouTubeSectionFormatter:
 
     def format_debug_video_section(
         self,
-        youtube_videos: dict[str, list[dict]],
-        match_key: str,
-        match_rank: str = None,
+        fixture_id: str,
+        match_rank: str | None = None,
+        shared_debug_html: str = "",
     ) -> str:
-        """デバッグ用：対象外動画（ソート落ち、除外）の一覧テーブルを生成 + Importance表示"""
-        # Match Keyで該当試合のデータを取得
-        video_data = youtube_videos.get(match_key, {})
-        if not isinstance(video_data, dict):
-            video_data = {}
-
-        # 除外(removed)とソート落ち(overflow)を統合
-        removed = video_data.get("removed", [])
-        overflow = video_data.get("overflow", [])
-
-        # Issue #133: Importanceがある場合、対象外動画がなくてもセクションを生成
-        if not removed and not overflow and not match_rank:
-            return ""
+        """デバッグ用の統合セクションを生成する。"""
+        normalized_rank = (match_rank or "").strip()
+        if normalized_rank == "None":
+            normalized_rank = ""
 
         lines = [
             '<details class="collapsible-section">',
             "<summary>🛠️ デバッグ情報</summary>",
             '<div class="section-content">',
+            f"<p><strong>Fixture ID:</strong> {fixture_id}</p>",
         ]
 
-        if match_rank:
-            lines.append(f"<p><strong>Importance:</strong> {match_rank}</p>")
+        if normalized_rank:
+            lines.append(f"<p><strong>Importance:</strong> {normalized_rank}</p>")
 
-        if removed or overflow:
-            lines.append("<p><strong>対象外動画一覧</strong></p>")
-            lines.append('<div class="debug-video-table-container">')
-            lines.append('<table class="debug-video-table">')
-            lines.append(
-                "<thead><tr><th>Category</th><th>Status</th><th>Title / URL</th><th>Channel</th><th>Date</th><th>Reason</th></tr></thead>"
-            )
-            lines.append("<tbody>")
-
-            all_excluded = []
-            for v in overflow:
-                all_excluded.append({**v, "status": "ソート落ち"})
-            for v in removed:
-                all_excluded.append({**v, "status": "除外"})
-
-            def sort_key(v):
-                cat = v.get("category", "")
-                keys = list(self.CATEGORY_LABELS.keys())
-                try:
-                    return keys.index(cat)
-                except ValueError:
-                    return 999
-
-            all_excluded.sort(key=sort_key)
-
-            for v in all_excluded:
-                cat_key = v.get("category", "unknown")
-                cat_label = self.CATEGORY_LABELS.get(cat_key, cat_key)
-                status = v.get("status", "")
-                title = v.get("title", "No Title")
-                url = v.get("url", "#")
-                channel = v.get("channel_name", "Unknown")
-                published = v.get("published_at", "")
-                reason = v.get("filter_reason", "-")
-                date_display = DateTimeUtil.format_relative_date(published)
-
-                row = f"""<tr>
-<td>{cat_label}</td>
-<td>{status}</td>
-<td><a href="{url}" target="_blank">{title}</a></td>
-<td>{channel}</td>
-<td>{date_display}</td>
-<td>{reason}</td>
-</tr>"""
-                lines.append(row)
-
-            lines.append("</tbody></table>")
-            lines.append("</div>")
+        if shared_debug_html:
+            lines.append(shared_debug_html)
 
         lines.append("</div>")
         lines.append("</details>")

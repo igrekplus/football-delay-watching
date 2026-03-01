@@ -48,6 +48,13 @@
 - 同国対決: 構造化データ（`same_country_matchups`）を優先し、必要時のみテキストパースへフォールバック
 - 古巣対決: `parse_former_club_text()` で構造化し、カード形式へ変換
 
+### 4.3 デバッグ情報
+
+- デバッグ表示は 1 つの `<details class="collapsible-section">` に統合し、部分的に分離しない
+- 先頭に `Fixture ID` と `Importance` を表示し、調査対象の試合を即判別できるようにする
+- YouTube の `removed` / `overflow` 一覧は画面に出力しない
+- API使用状況や選外試合リストなどの共有情報は、同じ折りたたみ内に差し込む
+
 ---
 
 ## 5. 翻訳レイヤ

@@ -559,43 +559,34 @@ pre {
     fill: var(--color-instagram);
 }
 
-.player-profile-trigger,
-.formation-profile-trigger {
+.player-profile-badge,
+.formation-profile-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 20px;
     height: 20px;
-    border: 0;
     border-radius: 999px;
-    padding: 0;
-    cursor: pointer;
-    transition: transform 0.2s, filter 0.2s, opacity 0.2s;
 }
 
-.player-profile-trigger {
+.player-profile-badge {
     background: rgba(104, 187, 255, 0.16);
     color: #68bbff;
-}
-
-.player-profile-trigger:hover,
-.player-profile-trigger:focus-visible,
-.formation-profile-trigger:hover,
-.formation-profile-trigger:focus-visible {
-    transform: scale(1.08);
-    filter: brightness(1.08);
-}
-
-.player-profile-trigger:focus-visible,
-.formation-profile-trigger:focus-visible {
-    outline: 2px solid rgba(104, 187, 255, 0.6);
-    outline-offset: 2px;
 }
 
 .player-profile-icon {
     width: 14px;
     height: 14px;
     fill: currentColor;
+}
+
+.player-card-profile-available {
+    cursor: pointer;
+}
+
+.player-card-profile-available:focus-visible {
+    outline: 2px solid rgba(104, 187, 255, 0.45);
+    outline-offset: 2px;
 }
 
 .player-profile-modal {
@@ -617,9 +608,7 @@ pre {
     max-height: min(80vh, 720px);
     margin: 7vh auto 0;
     overflow-y: auto;
-    background:
-        radial-gradient(circle at top right, rgba(104, 187, 255, 0.16), transparent 38%),
-        linear-gradient(180deg, #0a1831 0%, #071225 100%);
+    background: #071225;
     border-radius: 18px;
     border: 1px solid rgba(104, 187, 255, 0.18);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
@@ -646,6 +635,36 @@ pre {
     margin-bottom: 16px;
 }
 
+.player-profile-modal-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.player-profile-modal-photo-frame {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    border: 1px solid rgba(104, 187, 255, 0.22);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.player-profile-modal-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.player-profile-modal-heading {
+    min-width: 0;
+}
+
 .player-profile-modal-eyebrow {
     margin: 0 0 6px;
     color: #68bbff;
@@ -657,6 +676,7 @@ pre {
 .player-profile-modal-title {
     margin: 0;
     color: #f4bf4f;
+    line-height: 1.2;
 }
 
 .player-profile-section + .player-profile-section {
@@ -1815,7 +1835,7 @@ body.player-profile-open {
     letter-spacing: 0.5px;
 }
 
-.formation-profile-trigger {
+.formation-profile-badge {
     position: absolute;
     top: 6px;
     right: 6px;
@@ -1824,6 +1844,15 @@ body.player-profile-open {
     background: rgba(6, 16, 34, 0.78);
     color: #f4bf4f;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.player-card-horizontal-profile-available {
+    cursor: pointer;
+}
+
+.player-card-horizontal-profile-available:focus-visible {
+    outline: 2px solid rgba(104, 187, 255, 0.55);
+    outline-offset: 2px;
 }
 
 /* Responsive Layouts (Issue #167) */

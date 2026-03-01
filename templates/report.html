@@ -180,7 +180,6 @@
 
 <hr>
 {{ debug_youtube_html | safe }}
-{{ excluded_section | safe }}
 
 <script>
 (() => {
@@ -191,6 +190,8 @@
 
     const title = modal.querySelector(".player-profile-modal-title");
     const content = modal.querySelector(".player-profile-modal-content");
+    const photoFrame = modal.querySelector("#player-profile-modal-photo-frame");
+    const photo = modal.querySelector("#player-profile-modal-photo");
     const closeTargets = modal.querySelectorAll("[data-player-profile-close]");
     let lastTrigger = null;
 
@@ -214,6 +215,16 @@
 
         const template = document.getElementById(profileId);
         title.textContent = trigger.getAttribute("data-player-name") || "";
+        const photoUrl = trigger.getAttribute("data-player-photo") || "";
+        if (photoUrl) {
+            photo.src = photoUrl;
+            photo.alt = title.textContent;
+            photoFrame.hidden = false;
+        } else {
+            photo.removeAttribute("src");
+            photo.alt = "";
+            photoFrame.hidden = true;
+        }
         if (template) {
             content.innerHTML = template.innerHTML;
         } else {

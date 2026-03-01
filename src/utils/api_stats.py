@@ -49,11 +49,11 @@ class ApiStats:
         },
         "Gemini API": {
             "quota_limit_str": "~1,500/日",
-            "console_url": "https://aistudio.google.com/app/apikey",
+            "console_url": "https://aistudio.google.com/app/u/1/api-keys?pli=1&project=gen-lang-client-0394252790",
         },
         "Gemini Grounding": {
             "quota_limit_str": "課金制",
-            "console_url": "https://console.cloud.google.com/billing",
+            "console_url": "https://console.cloud.google.com/billing?authuser=1",
         },
         "Gmail API": {"quota_limit_str": "500/日*", "console_url": ""},
     }

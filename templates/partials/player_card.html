@@ -3,7 +3,9 @@
     <p>選手情報なし</p>
     {% else %}
     {% for player in players %}
-    <div class="player-card">
+    <div class="player-card{% if player.has_profile %} player-card-profile-available{% endif %}"{% if player.has_profile %}
+        data-player-profile-id="{{ player.profile_id }}" data-player-name="{{ player.name }}"
+        data-player-photo="{{ player.photo_url }}" role="button" tabindex="0" aria-haspopup="dialog"{% endif %}>
         <div class="player-card-header">
             <span class="player-card-title">{{ player.name }}</span>
             <div class="player-card-actions">
@@ -17,14 +19,13 @@
                 </a>
                 {% endif %}
                 {% if player.has_profile %}
-                <button type="button" class="player-profile-trigger" data-player-profile-id="{{ player.profile_id }}"
-                    data-player-name="{{ player.name }}" aria-haspopup="dialog" aria-label="{{ player.name }}の詳細プロフィール">
+                <span class="player-profile-badge" aria-hidden="true">
                     <svg class="player-profile-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                         aria-hidden="true">
                         <path
                             d="M12 2a10 10 0 1 0 10 10A10.012 10.012 0 0 0 12 2zm0 3.2a1.4 1.4 0 1 1-1.4 1.4A1.4 1.4 0 0 1 12 5.2zm1.8 13h-3.6v-1.8h.9V11h-.9V9.2h2.7v7.2h.9z" />
                     </svg>
-                </button>
+                </span>
                 {% endif %}
             </div>
         </div>
