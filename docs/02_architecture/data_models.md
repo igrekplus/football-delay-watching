@@ -182,6 +182,11 @@ player_positions: Dict[str, str]      # {"Erling Haaland": "F"}
 player_instagram: Dict[str, str]      # {"Erling Haaland": "https://instagram.com/..."}
 ```
 
+選手マスタCSVの命名は `player_<team_id>.csv` とし、Instagram 情報は
+ファイル名ではなく `instagram_url` 列で表現する。
+実行時の参照元は GCS `master/player/player_<team_id>.csv` を優先し、
+ローカル `data/player_<team_id>.csv` は存在する場合のみフォールバック用に利用する。
+
 ### 5.2 将来の拡張候補
 
 | データ種別 | 現在 | 将来案 |

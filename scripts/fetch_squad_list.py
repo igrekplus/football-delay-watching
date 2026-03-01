@@ -50,7 +50,7 @@ def resolve_output_path(team_id: int, output_override: str | None) -> Path:
     if output_override:
         output_path = Path(output_override)
     else:
-        output_path = Path("data") / f"player_instagram_{team_id}.csv"
+        output_path = Path("data") / f"player_{team_id}.csv"
 
     if not output_path.is_absolute():
         output_path = PROJECT_ROOT / output_path
@@ -158,6 +158,7 @@ def main():
 
     print(f"\n✅ Exported to: {output_path}")
     print("📝 Please manually fill in the 'instagram_url' column")
+    print("☁️  After editing, run: python scripts/migrate_player_csv_to_gcs.py")
 
 
 if __name__ == "__main__":

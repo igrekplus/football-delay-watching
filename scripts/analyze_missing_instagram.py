@@ -16,7 +16,7 @@ def parse_args() -> argparse.Namespace:
         "--team-id",
         type=int,
         default=DEFAULT_TEAM_ID,
-        help="API-Football team ID used to resolve data/player_instagram_<team_id>.csv",
+        help="API-Football team ID used to resolve data/player_<team_id>.csv",
     )
     parser.add_argument(
         "--csv",
@@ -30,7 +30,7 @@ def resolve_csv_path(team_id: int, csv_override: str | None) -> Path:
     if csv_override:
         csv_path = Path(csv_override)
     else:
-        csv_path = Path("data") / f"player_instagram_{team_id}.csv"
+        csv_path = Path("data") / f"player_{team_id}.csv"
 
     if not csv_path.is_absolute():
         csv_path = PROJECT_ROOT / csv_path

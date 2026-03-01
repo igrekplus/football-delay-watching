@@ -11,7 +11,7 @@ class TestPlayerInstagram(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.data_dir = Path(self.temp_dir.name)
-        self.csv_path = self.data_dir / "player_instagram_999.csv"
+        self.csv_path = self.data_dir / "player_999.csv"
         self._write_rows(
             [
                 [
@@ -36,14 +36,19 @@ class TestPlayerInstagram(unittest.TestCase):
             player_instagram, "DATA_DIR", str(self.data_dir)
         )
         self.team_files_patcher = mock.patch.object(
-            player_instagram, "TEAM_CSV_FILES", {999: "player_instagram_999.csv"}
+            player_instagram, "TEAM_CSV_FILES", {999: "player_999.csv"}
+        )
+        self.use_gcs_patcher = mock.patch.object(
+            player_instagram, "USE_GCS_PLAYER_DATA", False
         )
         self.data_dir_patcher.start()
         self.team_files_patcher.start()
+        self.use_gcs_patcher.start()
         player_instagram.clear_cache()
 
     def tearDown(self):
         player_instagram.clear_cache()
+        self.use_gcs_patcher.stop()
         self.team_files_patcher.stop()
         self.data_dir_patcher.stop()
         self.temp_dir.cleanup()
@@ -112,6 +117,44 @@ class TestPlayerInstagram(unittest.TestCase):
             player_instagram.get_instagram_url(1100),
             "https://www.instagram.com/erling_updated/",
         )
+
+    def test_prefers_gcs_csv_when_enabled(self):
+        gcs_rows = [
+            {
+                "player_id": "1100",
+                "name": "Erling Haaland",
+                "position": "Attacker",
+                "number": "9",
+                "instagram_url": "https://www.instagram.com/erling_gcs/",
+            }
+        ]
+
+        with mock.patch.object(player_instagram, "USE_GCS_PLAYER_DATA", True):
+            with mock.patch.object(
+                player_instagram,
+                "_load_gcs_csv",
+                return_value=player_instagram._rows_to_url_maps(
+                    gcs_rows, "gcs://test/player_999.csv"
+                ),
+            ) as gcs_loader:
+                player_instagram.clear_cache()
+                self.assertEqual(
+                    player_instagram.get_instagram_url(1100),
+                    "https://www.instagram.com/erling_gcs/",
+                )
+                gcs_loader.assert_called_once_with("player_999.csv")
+
+    def test_falls_back_to_local_csv_when_gcs_is_unavailable(self):
+        with mock.patch.object(player_instagram, "USE_GCS_PLAYER_DATA", True):
+            with mock.patch.object(
+                player_instagram, "_load_gcs_csv", return_value=None
+            ) as gcs_loader:
+                player_instagram.clear_cache()
+                self.assertEqual(
+                    player_instagram.get_instagram_url(1100),
+                    "https://www.instagram.com/erling/",
+                )
+                gcs_loader.assert_called_once_with("player_999.csv")
 
 
 if __name__ == "__main__":

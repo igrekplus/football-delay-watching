@@ -10,7 +10,7 @@ class TestInstagramScriptPaths(unittest.TestCase):
 
         self.assertEqual(
             csv_path,
-            analyze_missing_instagram.PROJECT_ROOT / "data" / "player_instagram_50.csv",
+            analyze_missing_instagram.PROJECT_ROOT / "data" / "player_50.csv",
         )
 
     def test_analyze_missing_instagram_resolves_relative_override_from_project_root(
@@ -28,11 +28,11 @@ class TestInstagramScriptPaths(unittest.TestCase):
 
         self.assertEqual(
             output_path,
-            fetch_squad_list.PROJECT_ROOT / "data" / "player_instagram_42.csv",
+            fetch_squad_list.PROJECT_ROOT / "data" / "player_42.csv",
         )
 
     def test_fetch_squad_list_keeps_absolute_override(self):
-        absolute_path = Path("/tmp/player_instagram_test.csv")
+        absolute_path = Path("/tmp/player_test.csv")
 
         self.assertEqual(
             fetch_squad_list.resolve_output_path(42, str(absolute_path)),
