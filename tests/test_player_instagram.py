@@ -57,7 +57,15 @@ class TestPlayerInstagram(unittest.TestCase):
         with open(self.csv_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(
-                ["player_id", "name", "position", "number", "instagram_url"]
+                [
+                    "player_id",
+                    "name",
+                    "position",
+                    "number",
+                    "instagram_url",
+                    "profile_format",
+                    "profile_detail",
+                ]
             )
             writer.writerows(rows)
 
@@ -116,6 +124,35 @@ class TestPlayerInstagram(unittest.TestCase):
         self.assertEqual(
             player_instagram.get_instagram_url(1100),
             "https://www.instagram.com/erling_updated/",
+        )
+
+    def test_loads_player_profiles_by_id_and_name(self):
+        self._write_rows(
+            [
+                [
+                    156477,
+                    "R. Cherki",
+                    "Midfielder",
+                    10,
+                    "",
+                    "labelled_lines_v1",
+                    "生まれ::フランス・リヨン\n特徴::狭い局面でのターンとラストパスに強み",
+                ]
+            ]
+        )
+        player_instagram.clear_cache()
+
+        expected_profile = {
+            "format": "labelled_lines_v1",
+            "detail": "生まれ::フランス・リヨン\n特徴::狭い局面でのターンとラストパスに強み",
+        }
+        self.assertEqual(
+            player_instagram.get_player_profiles_by_id(),
+            {156477: expected_profile},
+        )
+        self.assertEqual(
+            player_instagram.get_player_profiles_by_name(),
+            {"R. Cherki": expected_profile},
         )
 
     def test_prefers_gcs_csv_when_enabled(self):

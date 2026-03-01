@@ -453,6 +453,15 @@ pre {
     box-shadow: var(--card-hover-shadow);
 }
 
+.player-card-clickable {
+    cursor: pointer;
+}
+
+.player-card-clickable:hover,
+.player-card-clickable:focus-visible {
+    border-color: var(--color-primary);
+}
+
 .player-card-header {
     display: flex;
     justify-content: space-between;
@@ -529,6 +538,13 @@ pre {
     font-size: 0.75rem;
 }
 
+.player-card-hint {
+    margin-top: 6px;
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
 /* Instagram link styles */
 .player-instagram-link {
     display: inline-flex;
@@ -550,6 +566,85 @@ pre {
     width: 16px;
     height: 16px;
     fill: var(--color-instagram);
+}
+
+.player-profile-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+}
+
+.player-profile-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 18, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.player-profile-modal-dialog {
+    position: relative;
+    width: min(680px, calc(100vw - 32px));
+    max-height: min(80vh, 720px);
+    margin: 7vh auto 0;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    padding: 24px;
+}
+
+.player-profile-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.08);
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.player-profile-modal-header {
+    padding-right: 44px;
+    margin-bottom: 16px;
+}
+
+.player-profile-modal-eyebrow {
+    margin: 0 0 6px;
+    color: var(--color-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.player-profile-modal-title {
+    margin: 0;
+    color: var(--color-primary);
+}
+
+.player-profile-section + .player-profile-section {
+    margin-top: 16px;
+}
+
+.player-profile-section h4 {
+    margin: 0 0 6px;
+    color: var(--color-secondary);
+    font-size: 0.95rem;
+}
+
+.player-profile-section p {
+    margin: 0;
+    color: var(--color-text);
+    line-height: 1.7;
+    white-space: normal;
+}
+
+body.player-profile-open {
+    overflow: hidden;
 }
 
 /* Injury Card Styles */
@@ -1597,6 +1692,16 @@ pre {
     border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
+.player-card-horizontal-clickable {
+    cursor: pointer;
+}
+
+.player-card-horizontal-clickable:hover,
+.player-card-horizontal-clickable:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+}
+
 /* Photo: top-left, spans 2 rows */
 .player-photo-container {
     grid-column: 1;
@@ -1721,6 +1826,13 @@ pre {
         width: 90px;
         height: 85px;
         padding: 4px;
+    }
+
+    .player-profile-modal-dialog {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 24px);
+        margin-top: 12px;
+        padding: 18px;
     }
 
     .player-photo-container {

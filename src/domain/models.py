@@ -69,6 +69,7 @@ class MatchFacts:
     player_birthdates: dict[str, str] = field(default_factory=dict)
     player_positions: dict[str, str] = field(default_factory=dict)
     player_instagram: dict[str, str] = field(default_factory=dict)
+    player_profiles: dict[str, dict[str, str]] = field(default_factory=dict)
 
     # 負傷者情報
     injuries_list: list[dict] = field(default_factory=list)
@@ -420,6 +421,14 @@ class MatchAggregate:
         self.facts.player_instagram = value
 
     @property
+    def player_profiles(self) -> dict[str, dict[str, str]]:
+        return self.facts.player_profiles
+
+    @player_profiles.setter
+    def player_profiles(self, value: dict[str, dict[str, str]]):
+        self.facts.player_profiles = value
+
+    @property
     def injuries_list(self) -> list[dict]:
         return self.facts.injuries_list
 
@@ -676,6 +685,9 @@ class MatchData:
     player_birthdates: dict = None  # {"Player Name": "2000-03-06", ...}
     player_positions: dict = None  # {"Player Name": "G", ...} (G=GK, D=DF, M=MF, F=FW)
     player_instagram: dict = None  # {"Player Name": "https://instagram.com/...", ...}
+    player_profiles: dict = (
+        None  # {"Player Name": {"format": "...", "detail": "..."}, ...}
+    )
 
     # 負傷者・出場停止情報
     injuries_list: list = (
@@ -745,6 +757,8 @@ class MatchData:
             self.player_positions = {}
         if self.player_instagram is None:
             self.player_instagram = {}
+        if self.player_profiles is None:
+            self.player_profiles = {}
         if self.injuries_list is None:
             self.injuries_list = []
         if self.h2h_details is None:

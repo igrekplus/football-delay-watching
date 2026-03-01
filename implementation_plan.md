@@ -92,3 +92,86 @@
   - 対策: 対象を `/` と `manifest` のみに限定し、静的資産全体には波及させない
 3. 認可強化は設計範囲が大きく、同一Issueで完了しにくい  
   - 対策: Phase 3 は別Issue化して実装スコープを分離
+
+---
+
+# Issue #232 実装計画（選手詳細モーダル）
+
+作成日: 2026-03-01  
+対象Issue: [#232](https://github.com/igrekplus/football-delay-watching/issues/232)
+
+## 1. 背景と課題
+
+スタメン一覧とフォーメーション図には、現状は選手の基本カードしかありません。  
+Issue #232 では、画面遷移なしでタップ時に詳細を読める導線を追加し、まずは 2026-02-28 開催の Leeds vs Manchester City における `R. Cherki` の詳細表示を成立させます。
+
+## 2. ゴール / 非ゴール
+
+### 2.1 ゴール
+
+1. `R. Cherki` に対して、生まれ・所属クラブ履歴・特徴・面白いエピソードを保持できるデータ構造を追加する
+2. スタメンカードから詳細モーダルを開けるようにする
+3. フォーメーション図からも同じ詳細モーダルを開けるようにする
+4. 詳細データを持たない選手には既存表示を維持し、回帰を起こさない
+
+### 2.2 非ゴール
+
+1. 全チーム・全選手の詳細データ収集
+2. 詳細情報の自動スクレイピングや LLM 自動生成
+3. 別ページ遷移や URL ルーティング追加
+
+## 3. 実装方針
+
+### Phase 1: データ保持
+
+- GCS 上の `player_<team_id>.csv` を実行時に直接読み、既存フォーマットを後方互換のまま拡張する
+- `profile_format` / `profile_detail` の2列を追加し、詳細ブロックのラベルと改行ルールを持てるようにする
+- `settings/player_instagram.py` で Instagram URL と同時に詳細プロフィールもロードできるようにする
+- `FactsService` で `player_id` ベースに `MatchFacts` へ取り込む
+
+### Phase 2: レポート UI
+
+- スタメンカードに、詳細を持つ場合のみクリック可能な属性を付与する
+- フォーメーションの選手カードにも同じ属性を付与する
+- `report.html` に共通モーダルを 1 つだけ配置し、JS で内容を差し替えて開閉する
+- CSS は既存のカードデザインを崩さず、タップ可能状態だけ視認できるようにする
+
+### Phase 3: 初期データ投入
+
+- GCS 上の `player_50.csv` に `R. Cherki` の詳細を投入して表示できる前提にする
+- 将来の横展開を見据え、他選手は空欄でも壊れない設計にする
+
+## 4. 変更対象ファイル
+
+1. `implementation_plan.md`
+2. `task.md`
+3. `docs/02_architecture/domain_models.md`
+4. `settings/player_instagram.py`
+5. `src/domain/models.py`
+6. `src/facts_service.py`
+7. `src/formatters/player_formatter.py`
+8. `src/utils/formation_image.py`
+9. `src/utils/player_profile.py`
+10. `src/report_generator.py`
+11. `templates/partials/player_card.html`
+12. `templates/partials/formation_section.html`
+13. `templates/partials/player_profile_modal.html`
+14. `templates/report.html`
+15. `public/assets/report_styles.css`
+16. `scripts/fetch_squad_list.py`
+17. `tests/test_player_instagram.py`
+
+## 5. 検証計画
+
+1. `python -m unittest tests.test_player_instagram`
+2. `TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DATA=False .venv/bin/python main.py`
+3. 生成された `public/reports/*Leeds_vs_ManchesterCity*.html` を確認し、`R. Cherki` に詳細セクションが表示され、他選手もタップでモーダルが開くことを確認する
+
+## 6. リスクと対策
+
+1. 既存 CSV に新列がなくても読み込みで落ちる
+  - 対策: 新列はすべて任意列として `DictReader.get()` ベースで扱う
+2. カード内の Instagram リンククリックでモーダルが誤発火する
+  - 対策: JS 側で `player-instagram-link` クリックを明示的に除外する
+3. 名前翻訳後の HTML 置換が data 属性を壊す
+  - 対策: モーダル表示に必要な値はプレーン文字列で保持し、JS では `textContent` で描画する

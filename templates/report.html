@@ -176,9 +176,99 @@
 {% endif %}
 
 {{ youtube_html | safe }}
+{{ player_profile_modal_html | safe }}
 
 <hr>
 {{ debug_youtube_html | safe }}
 {{ excluded_section | safe }}
+
+<script>
+(() => {
+    const modal = document.getElementById("player-profile-modal");
+    if (!modal) {
+        return;
+    }
+
+    const title = modal.querySelector(".player-profile-modal-title");
+    const content = modal.querySelector(".player-profile-modal-content");
+    const closeTargets = modal.querySelectorAll("[data-player-profile-close]");
+    let lastTrigger = null;
+
+    const closeModal = () => {
+        if (modal.hidden) {
+            return;
+        }
+        modal.hidden = true;
+        document.body.classList.remove("player-profile-open");
+        if (lastTrigger) {
+            lastTrigger.focus();
+            lastTrigger = null;
+        }
+    };
+
+    const openModal = (trigger) => {
+        const profileId = trigger.getAttribute("data-player-profile-id");
+        if (!profileId) {
+            return;
+        }
+
+        const template = document.getElementById(profileId);
+        title.textContent = trigger.getAttribute("data-player-name") || "";
+        if (template) {
+            content.innerHTML = template.innerHTML;
+        } else {
+            content.innerHTML = `
+                <section class="player-profile-section">
+                    <h4>詳細</h4>
+                    <p>この選手の詳細プロフィールは準備中です。</p>
+                </section>
+            `;
+        }
+        lastTrigger = trigger;
+        modal.hidden = false;
+        document.body.classList.add("player-profile-open");
+    };
+
+    document.addEventListener("click", (event) => {
+        if (event.target.closest(".player-instagram-link")) {
+            return;
+        }
+
+        const closeTrigger = event.target.closest("[data-player-profile-close]");
+        if (closeTrigger) {
+            closeModal();
+            return;
+        }
+
+        const trigger = event.target.closest("[data-player-profile-id]");
+        if (trigger) {
+            openModal(trigger);
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeModal();
+            return;
+        }
+
+        if (event.key !== "Enter" && event.key !== " ") {
+            return;
+        }
+
+        const trigger = event.target.closest("[data-player-profile-id]");
+        if (!trigger) {
+            return;
+        }
+
+        event.preventDefault();
+        openModal(trigger);
+    });
+
+    closeTargets.forEach((button) => {
+        button.addEventListener("click", closeModal);
+    });
+})();
+</script>
 
 {% endblock %}

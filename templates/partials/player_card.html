@@ -3,7 +3,8 @@
     <p>選手情報なし</p>
     {% else %}
     {% for player in players %}
-    <div class="player-card">
+    <div class="player-card player-card-clickable" data-player-profile-id="{{ player.profile_id }}"
+        data-player-name="{{ player.name }}" role="button" tabindex="0" aria-haspopup="dialog">
         <div class="player-card-header">
             <span>{{ player.name }}</span>
             {% if player.instagram_url %}
@@ -27,6 +28,7 @@
                 <div class="player-card-nationality">{% if player.flag %}{{ player.flag }} {% endif %}{{
                     player.nationality }}</div>
                 <div class="player-card-age">{{ player.age_display }}</div>
+                <div class="player-card-hint">タップで詳細</div>
             </div>
         </div>
     </div>

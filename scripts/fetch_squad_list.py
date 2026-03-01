@@ -97,12 +97,22 @@ def export_to_csv(players: list, output_path: str, team_name: str = ""):
     選手リストをCSVにエクスポート
 
     CSV Format:
-        player_id,name,position,number,instagram_url
+        player_id,name,position,number,instagram_url,profile_format,profile_detail
     """
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         # ヘッダー
-        writer.writerow(["player_id", "name", "position", "number", "instagram_url"])
+        writer.writerow(
+            [
+                "player_id",
+                "name",
+                "position",
+                "number",
+                "instagram_url",
+                "profile_format",
+                "profile_detail",
+            ]
+        )
 
         # 選手データ（ポジション順にソート: GK, DF, MF, FW）
         position_order = {
@@ -127,7 +137,17 @@ def export_to_csv(players: list, output_path: str, team_name: str = ""):
             # instagram_url は手動で埋める（初期値は空）
             instagram_url = ""
 
-            writer.writerow([player_id, name, position, number, instagram_url])
+            writer.writerow(
+                [
+                    player_id,
+                    name,
+                    position,
+                    number,
+                    instagram_url,
+                    "",
+                    "",
+                ]
+            )
 
     logger.info(f"Exported {len(players)} players to {output_path}")
 
@@ -157,7 +177,7 @@ def main():
     export_to_csv(players, str(output_path))
 
     print(f"\n✅ Exported to: {output_path}")
-    print("📝 Please manually fill in the 'instagram_url' column")
+    print("📝 Please manually fill in the 'instagram_url' / 'profile_*' columns")
     print("☁️  After editing, run: python scripts/migrate_player_csv_to_gcs.py")
 
 
