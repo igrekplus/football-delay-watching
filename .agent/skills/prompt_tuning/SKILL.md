@@ -131,8 +131,8 @@ TARGET_DATE="YYYY-MM-DD" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 - [ ] コードブロックの残骸（```）がない
 
 ### 3. ワークフロー参照
-- プロンプト調整: [/tune-gemini](file:///.agent/workflows/tune-gemini.md)
-- デバッグ実行: [/debug-run](file:///.agent/workflows/debug-run.md)
+- プロンプト調整: `.agent/workflows/tune-gemini.md`
+- デバッグ実行: `.agent/workflows/debug-run.md`
 
 ---
 
