@@ -43,6 +43,7 @@ TEAM_CSV_FILES = {
     47: "player_47.csv",  # Tottenham
     49: "player_49.csv",  # Chelsea
     50: "player_50.csv",  # Manchester City
+    52: "player_52.csv",  # Crystal Palace
     66: "player_66.csv",  # Aston Villa
     # 将来的に他のチームを追加
 }
