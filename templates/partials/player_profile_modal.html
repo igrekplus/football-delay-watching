@@ -1,0 +1,33 @@
+{% if profiles %}
+<div class="player-profile-store" hidden>
+    {% for profile in profiles %}
+    <div id="{{ profile.profile_id }}" class="player-profile-template">
+        {% for section in profile.sections %}
+        <section class="player-profile-section">
+            <h4>{{ section.label }}</h4>
+            <p>{% for line in section.body.split('\n') %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
+        </section>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="player-profile-modal" id="player-profile-modal" hidden>
+    <div class="player-profile-modal-backdrop" data-player-profile-close></div>
+    <div class="player-profile-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="player-profile-modal-title">
+        <button type="button" class="player-profile-modal-close" data-player-profile-close aria-label="閉じる">×</button>
+        <div class="player-profile-modal-header">
+            <div class="player-profile-modal-identity">
+                <div class="player-profile-modal-photo-frame" id="player-profile-modal-photo-frame" hidden>
+                    <img id="player-profile-modal-photo" class="player-profile-modal-photo" alt="">
+                </div>
+                <div class="player-profile-modal-heading">
+                    <p class="player-profile-modal-eyebrow">PLAYER PROFILE</p>
+                    <h3 id="player-profile-modal-title" class="player-profile-modal-title"></h3>
+                </div>
+            </div>
+        </div>
+        <div class="player-profile-modal-content"></div>
+    </div>
+</div>

@@ -29,6 +29,11 @@ description: デバッグモードでレポートを生成し、Firebase Hosting
 
 // turbo-all
 
+> [!IMPORTANT]
+> レポートHTMLのUI確認を行う修正では、`DEBUG_MODE` の生成物は `file://` で直接開いても確認しやすい状態を優先すること。
+> `public/reports/*.html` を開くたびにローカルWebサーバを立てる運用を前提にしない。
+> そのため、必要に応じて `DEBUG_MODE` 時のみ `/assets/...` のようなルート相対参照を、HTMLファイル基準の相対パスで解決できるよう実装を調整してから確認する。
+
 ### 1. venv の有効化とレポート生成
 
 以下のコマンドを実行する。**`USE_MOCK_DATA=False` を忘れると、APIを叩かずに偽データで動くので注意。**

@@ -40,6 +40,44 @@
 
 ---
 
+# Issue #232 Walkthrough
+
+## 解決状況
+
+| 課題 | 方針 | 結果 |
+| --- | --- | --- |
+| 選手詳細を手元ファイルではなく実行時に GCS から参照したい | 既存の Instagram URL 読み込みと同じ `player_<team_id>.csv` を流用し、同一 CSV に `profile_format` / `profile_detail` を追加して一括取得する | `settings/player_instagram.py` で Instagram URL とプロフィール詳細を同時に読み込み、`FactsService` から `player_id` ベースで各試合データへ反映するようにした |
+| CSV のスキーマが未確定で、見せ方ルールも持たせたい | 表示ルールを 2 列に限定し、`profile_format=labelled_lines_v1` と `profile_detail` の組み合わせで解釈する | `profile_detail` に `ラベル::本文` を改行区切りで並べるだけで、モーダル上では見出し付きセクションとして整形表示できるようにした |
+| スタメン一覧とフォーメーションの両方から詳細へ遷移したい | 共有モーダルを 1 つ用意し、スタメン一覧とフォーメーションの両方から同じプロフィールを開く | 2/28 の Leeds vs Manchester City で `Rayan Cherki` をスタメン一覧・フォーメーションのどちらからでもクリックすると、同じモーダルで `生まれ / 経歴 / 特徴 / 面白いエピソード` を表示できる |
+| 情報がない選手まで押せるとノイズになる | `has_profile` を持つ選手だけをクリック可能にし、未登録選手は通常カードのままにする | `Rodri` などプロフィール未登録の選手は非クリック、プロフィール登録済みの選手だけ詳細モーダルを開けるようにした |
+| `i` アイコンが小さく、フォーメーションでは国旗に被る | スタメン一覧は視認用の `i` バッジだけ残し、実際のトリガーはカード全体へ移す。フォーメーションは `i` を消してカード全体クリックに統一する | スタメン一覧は Instagram の右に情報バッジだけを表示し、フォーメーションはアイコンなしでカード本体クリック時のみモーダルが開くようにした |
+| モーダルが白背景で見づらく、情報の視認性が低い | ダークトーンのモーダルへ変更し、選手名の横に顔写真を表示する | モーダルは濃紺背景に変更し、右上付近の背景グラデーションを削除、選手名の横に枠付きの顔写真を表示するようにした |
+
+## 検証
+
+- ユニットテスト: `.venv/bin/python -m unittest tests.test_player_instagram tests.test_player_profile_ui tests.test_formation_layout_data`
+- 実データデバッグ実行: `TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DATA=False .venv/bin/python main.py`
+- デプロイ: `./scripts/safe_deploy.sh`
+- 公開確認URL:
+  - トップ: [https://football-delay-watching-a8830.web.app](https://football-delay-watching-a8830.web.app)
+  - レポート: [https://football-delay-watching-a8830.web.app/reports/2026-02-28_Leeds_vs_ManchesterCity_20260301_224531.html](https://football-delay-watching-a8830.web.app/reports/2026-02-28_Leeds_vs_ManchesterCity_20260301_224531.html)
+
+## 補足
+
+- GCS 上の `master/player/player_50.csv` に `profile_format,profile_detail` を追加し、初回サンプルとして `R. Cherki` の詳細プロフィールを投入した。
+- 公開済みレポート HTML では `player-profile-rayan-cherki` のテンプレート、`生まれ` / `経歴` / `特徴` / `面白いエピソード` の各セクション、モーダルの顔写真、フォーメーション側のカードクリック導線を確認済み。
+
+## ブランチと更新状況
+
+- 作業ブランチ: `feature-232/player-profile-modal`
+- 主要コミット:
+  - `fd78405 feat(#232): add player profile modal`
+  - `f5486ea docs(#232): update task and walkthrough`
+  - `2cfd799 fix(#232): limit profile interactions to info icons`
+  - `6a599f1 feat: finalize player profile UX and debug info updates`
+- 最終的に `main` へマージして取り込む前提で整理した
+
+---
 # Issue #234 Walkthrough
 
 ## 解決状況
@@ -56,32 +94,21 @@
 - ユニットテスト: `python -m unittest tests.test_debug_info`
 - 実データデバッグ実行: `TARGET_DATE="2026-02-27" TARGET_FIXTURE_ID="1379248" DEBUG_MODE=True USE_MOCK_DATA=False .venv/bin/python main.py`
 - デプロイ: `./scripts/safe_deploy.sh`
-- 公開確認URL:
-  - トップ: [https://football-delay-watching-a8830.web.app](https://football-delay-watching-a8830.web.app)
-  - レポート: [https://football-delay-watching-a8830.web.app/reports/2026-02-27_Wolves_vs_AstonVilla_20260301_220926.html](https://football-delay-watching-a8830.web.app/reports/2026-02-27_Wolves_vs_AstonVilla_20260301_220926.html)
 - ローカル確認:
+  - 生成HTML: `public/reports/2026-02-27_Wolves_vs_AstonVilla_20260301_220926.html`
   - `Fixture ID: 1379248` を確認
   - `https://aistudio.google.com/app/u/1/api-keys?pli=1&project=gen-lang-client-0394252790` を確認
   - `https://console.cloud.google.com/billing?authuser=1` を確認
   - `対象外動画一覧` が含まれないことを確認
-
-## ブランチと更新状況
-
-- 作業ブランチ: `codex/issue-234-close`
-- `main` との差分: #234 の変更のみ
-- 作業ツリー: クリーン化してから main へ取り込む前提
-- 更新ファイル:
-  - `docs/03_components/report_rendering.md` `commit済み / push前`
-  - `docs/04_operations/api_quota.md` `commit済み / push前`
-  - `implementation_plan.md` `commit済み / push前`
-  - `src/formatters/youtube_section_formatter.py` `commit済み / push前`
-  - `src/report_generator.py` `commit済み / push前`
-  - `src/utils/api_stats.py` `commit済み / push前`
-  - `task.md` `commit済み / push前`
-  - `templates/report.html` `commit済み / push前`
-  - `tests/test_debug_info.py` `commit済み / push前`
-  - `walkthrough.md` `commit済み / push前`
+- 公開確認URL:
+  - トップ: [https://football-delay-watching-a8830.web.app](https://football-delay-watching-a8830.web.app)
+  - レポート: [https://football-delay-watching-a8830.web.app/reports/2026-02-27_Wolves_vs_AstonVilla_20260301_220926.html](https://football-delay-watching-a8830.web.app/reports/2026-02-27_Wolves_vs_AstonVilla_20260301_220926.html)
 
 ## 補足
 
 - `TARGET_FIXTURE_ID=1379248` の実行でも `rank=None` のため YouTube 検索がスキップされ、今回の確認は動画一覧が空のケースでのデバッグ表示検証に留まった。
+
+## ブランチと更新状況
+
+- 初回の #234 は別ブランチで整理・クローズ済み
+- その後の関連ドキュメント更新と最終調整は `feature-232/player-profile-modal` の `6a599f1` にも含めて取り込んだ

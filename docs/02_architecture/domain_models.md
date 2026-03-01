@@ -65,6 +65,7 @@ flowchart TB
 | `player_nationalities` | `Dict[str, str]` | 選手国籍 |
 | `player_numbers` | `Dict[str, int]` | 背番号 |
 | `player_photos` | `Dict[str, str]` | 選手写真URL |
+| `player_profiles` | `Dict[str, Dict[str, str]]` | 手動管理の選手詳細プロフィール |
 | `injuries_list` | `List[Dict]` | 負傷者リスト |
 | `home_manager` | `str` | ホーム監督名 |
 | `away_manager` | `str` | アウェイ監督名 |
@@ -74,6 +75,8 @@ flowchart TB
 > `player_nationalities` / `player_numbers` / `player_photos` などの `player_*` 辞書は、
 > API-Football の生名（`/fixtures/lineups` の `player.name`）をキーとして保持する。
 > 表示用の日本語名は `ReportGenerator` の翻訳レイヤでのみ扱い、ドメインデータのキー自体は置き換えない。
+> `player_profiles` は GCS 上の `player_<team_id>.csv` にある `profile_format` / `profile_detail` を読み込み、
+> `player_id` で紐づけた後に同じ生名キーで `MatchFacts` に保持する。
 
 ### MatchPreview（LLM生成データ）
 

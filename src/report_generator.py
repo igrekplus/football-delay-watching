@@ -17,6 +17,10 @@ from src.parsers import (
 from src.utils.api_stats import ApiStats
 from src.utils.datetime_util import DateTimeUtil
 from src.utils.formation_image import get_formation_layout_data
+from src.utils.player_profile import (
+    build_player_profile_id,
+    parse_player_profile_sections,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -143,6 +147,25 @@ class ReportGenerator:
             f"[REPORT] Single match report completed: {match_report_context.get('filename', 'unknown')}"
         )
         return html_content, image_paths
+
+    def _build_player_profile_modal_html(self, match: MatchAggregate) -> str:
+        """選手プロフィールのモーダル HTML を生成する。"""
+        from src.template_engine import render_template
+
+        profiles = []
+        for player_name, profile in sorted(match.facts.player_profiles.items()):
+            sections = parse_player_profile_sections(profile)
+            if not sections:
+                continue
+            profiles.append(
+                {
+                    "name": player_name,
+                    "profile_id": build_player_profile_id(player_name),
+                    "sections": sections,
+                }
+            )
+
+        return render_template("partials/player_profile_modal.html", profiles=profiles)
 
     def _generate_shared_debug_section(
         self, matches: list[MatchAggregate], youtube_stats: dict[str, int]
@@ -274,6 +297,7 @@ class ReportGenerator:
             match.facts.player_birthdates,
             match.facts.player_photos,
             player_instagram=match.facts.player_instagram,
+            player_profiles=match.facts.player_profiles,
         )
         away_cards_html = self.player_formatter.format_player_cards(
             match.facts.away_lineup,
@@ -284,6 +308,7 @@ class ReportGenerator:
             match.facts.player_birthdates,
             match.facts.player_photos,
             player_instagram=match.facts.player_instagram,
+            player_profiles=match.facts.player_profiles,
         )
         home_bench_html = self.player_formatter.format_player_cards(
             match.facts.home_bench,
@@ -296,6 +321,7 @@ class ReportGenerator:
             position_label="SUB",
             player_positions=match.facts.player_positions,
             player_instagram=match.facts.player_instagram,
+            player_profiles=match.facts.player_profiles,
             css_class="player-cards-scroll",
         )
         away_bench_html = self.player_formatter.format_player_cards(
@@ -309,6 +335,7 @@ class ReportGenerator:
             position_label="SUB",
             player_positions=match.facts.player_positions,
             player_instagram=match.facts.player_instagram,
+            player_profiles=match.facts.player_profiles,
             css_class="player-cards-scroll",
         )
 
@@ -340,6 +367,7 @@ class ReportGenerator:
             player_nationalities=match.facts.player_nationalities,
             player_numbers=match.facts.player_numbers,
             player_photos=match.facts.player_photos,
+            player_profiles=match.facts.player_profiles,
             player_short_names=short_names_dict,
         )
         away_formation_data = get_formation_layout_data(
@@ -352,6 +380,7 @@ class ReportGenerator:
             player_nationalities=match.facts.player_nationalities,
             player_numbers=match.facts.player_numbers,
             player_photos=match.facts.player_photos,
+            player_profiles=match.facts.player_profiles,
             player_short_names=short_names_dict,
         )
 
@@ -544,6 +573,7 @@ class ReportGenerator:
             "home_injury_html": home_injury_html,
             "away_injury_html": away_injury_html,
             "formation_html": formation_html,
+            "player_profile_modal_html": self._build_player_profile_modal_html(match),
             "has_recent_form": bool(
                 match.facts.home_recent_form_details
                 or match.facts.away_recent_form_details

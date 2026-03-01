@@ -11,6 +11,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 from src.utils.nationality_flags import get_flagcdn_country_code
+from src.utils.player_profile import build_player_profile_id
 
 logger = logging.getLogger(__name__)
 
@@ -340,6 +341,7 @@ def get_formation_layout_data(
     player_nationalities: dict[str, str],
     player_numbers: dict[str, int],
     player_photos: dict[str, str],
+    player_profiles: dict[str, dict[str, str]] | None = None,
     player_short_names: dict[str, str] = None,  # New argument
 ) -> dict:
     """
@@ -351,6 +353,8 @@ def get_formation_layout_data(
     if not layout:
         logger.warning(f"Unknown formation: {formation}, using 4-4-2")
         layout = FORMATION_LAYOUTS["4-4-2"]
+    if player_profiles is None:
+        player_profiles = {}
 
     player_data = []
     player_idx = 0
@@ -405,6 +409,10 @@ def get_formation_layout_data(
                         "flag_url": flag_url,
                         "top_percent": round(base_top_percent + y_offsets[i], 1),
                         "left_percent": round(left_percent, 1),
+                        "has_profile": bool(
+                            player_profiles.get(name, {}).get("detail")
+                        ),
+                        "profile_id": build_player_profile_id(name),
                     }
                 )
                 player_idx += 1

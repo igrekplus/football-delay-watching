@@ -463,11 +463,18 @@ pre {
     font-weight: bold;
 }
 
-.player-card-header span {
+.player-card-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 140px;
+}
+
+.player-card-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .player-card-body {
@@ -550,6 +557,154 @@ pre {
     width: 16px;
     height: 16px;
     fill: var(--color-instagram);
+}
+
+.player-profile-badge,
+.formation-profile-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+}
+
+.player-profile-badge {
+    background: rgba(104, 187, 255, 0.16);
+    color: #68bbff;
+}
+
+.player-profile-icon {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+.player-card-profile-available {
+    cursor: pointer;
+}
+
+.player-card-profile-available:focus-visible {
+    outline: 2px solid rgba(104, 187, 255, 0.45);
+    outline-offset: 2px;
+}
+
+.player-profile-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+}
+
+.player-profile-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 8, 22, 0.82);
+    backdrop-filter: blur(6px);
+}
+
+.player-profile-modal-dialog {
+    position: relative;
+    width: min(680px, calc(100vw - 32px));
+    max-height: min(80vh, 720px);
+    margin: 7vh auto 0;
+    overflow-y: auto;
+    background: #071225;
+    border-radius: 18px;
+    border: 1px solid rgba(104, 187, 255, 0.18);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    padding: 24px;
+    color: #e8f1ff;
+}
+
+.player-profile-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f4bf4f;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.player-profile-modal-header {
+    padding-right: 44px;
+    margin-bottom: 16px;
+}
+
+.player-profile-modal-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.player-profile-modal-photo-frame {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    border: 1px solid rgba(104, 187, 255, 0.22);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.player-profile-modal-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.player-profile-modal-heading {
+    min-width: 0;
+}
+
+.player-profile-modal-eyebrow {
+    margin: 0 0 6px;
+    color: #68bbff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.player-profile-modal-title {
+    margin: 0;
+    color: #f4bf4f;
+    line-height: 1.2;
+}
+
+.player-profile-section + .player-profile-section {
+    margin-top: 14px;
+}
+
+.player-profile-section {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(104, 187, 255, 0.08);
+}
+
+.player-profile-section h4 {
+    margin: 0 0 6px;
+    color: #68bbff;
+    font-size: 0.95rem;
+}
+
+.player-profile-section p {
+    margin: 0;
+    color: #e8f1ff;
+    line-height: 1.7;
+    white-space: normal;
+}
+
+body.player-profile-open {
+    overflow: hidden;
 }
 
 /* Injury Card Styles */
@@ -1680,6 +1835,26 @@ pre {
     letter-spacing: 0.5px;
 }
 
+.formation-profile-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    background: rgba(6, 16, 34, 0.78);
+    color: #f4bf4f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.player-card-horizontal-profile-available {
+    cursor: pointer;
+}
+
+.player-card-horizontal-profile-available:focus-visible {
+    outline: 2px solid rgba(104, 187, 255, 0.55);
+    outline-offset: 2px;
+}
+
 /* Responsive Layouts (Issue #167) */
 
 /* Mobile (< 768px): 1 team per view with horizontal scroll */
@@ -1721,6 +1896,13 @@ pre {
         width: 90px;
         height: 85px;
         padding: 4px;
+    }
+
+    .player-profile-modal-dialog {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 24px);
+        margin-top: 12px;
+        padding: 18px;
     }
 
     .player-photo-container {
