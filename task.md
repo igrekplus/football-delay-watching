@@ -65,5 +65,5 @@
 
 - [x] `docs/02_architecture/domain_models.md` に `player_profiles` の責務を追記する
 - [x] `tests/test_player_instagram.py` にプロフィール読み込みのテストを追加する
-- [ ] 実データで `TARGET_FIXTURE_ID=\"1379244\"` の debug 実行を行う
-- [ ] `walkthrough.md` に結果を整理する
+- [x] 実データで `TARGET_FIXTURE_ID=\"1379244\"` の debug 実行を行う
+- [x] `walkthrough.md` に結果を整理する

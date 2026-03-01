@@ -37,3 +37,30 @@
 
 - 旧レポートURL（例: `..._20260301_001526.html` より前の生成物）は静的ファイルとして残るため、古いURLを開くと未修正表示が残る。カレンダーは最新レポート `..._20260301_002206.html` を参照している。
 - `ruff` はローカルコマンドとして直接は入っていなかったが、commit時の pre-commit フック経由では実行・整形済み。
+
+---
+
+# Issue #232 Walkthrough
+
+## 解決状況
+
+| 課題 | 方針 | 結果 |
+| --- | --- | --- |
+| 選手詳細を手元ファイルではなく実行時に GCS から参照したい | 既存の Instagram URL 読み込みと同じ `player_<team_id>.csv` を流用し、同一 CSV に `profile_format` / `profile_detail` を追加して一括取得する | `settings/player_instagram.py` で Instagram URL とプロフィール詳細を同時に読み込み、`FactsService` から `player_id` ベースで各試合データへ反映するようにした |
+| CSV のスキーマが未確定で、見せ方ルールも持たせたい | 表示ルールを 2 列に限定し、`profile_format=labelled_lines_v1` と `profile_detail` の組み合わせで解釈する | `profile_detail` に `ラベル::本文` を改行区切りで並べるだけで、モーダル上では見出し付きセクションとして整形表示できるようにした |
+| スタメン一覧とフォーメーションの両方から詳細へ遷移したい | すべての選手カードとフォーメーションノードをタップ対象にし、共有モーダルを開く | ベンチ含む全カードに「タップで詳細」を付与し、詳細未登録選手は準備中メッセージ、登録済み選手は CSV の内容をモーダル表示するようにした |
+
+## 検証
+
+- ユニットテスト: `.venv/bin/python -m unittest tests.test_player_instagram tests.test_player_profile_ui tests.test_formation_layout_data`
+- 実データデバッグ実行: `TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DATA=False .venv/bin/python main.py`
+- デプロイ: `./scripts/safe_deploy.sh`
+- 公開確認URL:
+  - トップ: [https://football-delay-watching-a8830.web.app](https://football-delay-watching-a8830.web.app)
+  - レポート: [https://football-delay-watching-a8830.web.app/reports/2026-02-28_Leeds_vs_ManchesterCity_20260301_214941.html](https://football-delay-watching-a8830.web.app/reports/2026-02-28_Leeds_vs_ManchesterCity_20260301_214941.html)
+
+## 補足
+
+- GCS 上の `master/player/player_50.csv` に `profile_format,profile_detail` を追加し、初回サンプルとして `R. Cherki` の詳細プロフィールを投入した。
+- 公開済みレポート HTML では `player-profile-rayan-cherki` のテンプレート、`生まれ` / `経歴` / `特徴` / `面白いエピソード` の各セクション、および `経歴` の `<br>` 改行を確認済み。
+- 作業ブランチは `feature-232/player-profile-modal`、実装コミットは `fd78405 feat(#232): add player profile modal`。
