@@ -16,8 +16,7 @@
                 <div class="pitch-area goal-area-bottom"></div>
             </div>
             {% for player in home.players %}
-            <div class="player-card-horizontal player-card-horizontal-clickable"
-                data-player-profile-id="{{ player.profile_id }}" data-player-name="{{ player.name }}" role="button" tabindex="0" aria-haspopup="dialog"
+            <div class="player-card-horizontal"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
                 <div class="player-photo-container">
                     {% if player.photo %}
@@ -33,6 +32,16 @@
                     <span class="player-number-badge">#{{ player.number }}</span>
                 </div>
                 <span class="player-name-text">{{ player.short_name }}</span>
+                {% if player.has_profile %}
+                <button type="button" class="formation-profile-trigger" data-player-profile-id="{{ player.profile_id }}"
+                    data-player-name="{{ player.name }}" aria-haspopup="dialog" aria-label="{{ player.name }}の詳細プロフィール">
+                    <svg class="player-profile-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true">
+                        <path
+                            d="M12 2a10 10 0 1 0 10 10A10.012 10.012 0 0 0 12 2zm0 3.2a1.4 1.4 0 1 1-1.4 1.4A1.4 1.4 0 0 1 12 5.2zm1.8 13h-3.6v-1.8h.9V11h-.9V9.2h2.7v7.2h.9z" />
+                    </svg>
+                </button>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -56,8 +65,7 @@
                 <div class="pitch-area goal-area-bottom"></div>
             </div>
             {% for player in away.players %}
-            <div class="player-card-horizontal player-card-horizontal-clickable"
-                data-player-profile-id="{{ player.profile_id }}" data-player-name="{{ player.name }}" role="button" tabindex="0" aria-haspopup="dialog"
+            <div class="player-card-horizontal"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
                 <div class="player-photo-container">
                     {% if player.photo %}
@@ -73,6 +81,16 @@
                     <span class="player-number-badge">#{{ player.number }}</span>
                 </div>
                 <span class="player-name-text">{{ player.short_name }}</span>
+                {% if player.has_profile %}
+                <button type="button" class="formation-profile-trigger" data-player-profile-id="{{ player.profile_id }}"
+                    data-player-name="{{ player.name }}" aria-haspopup="dialog" aria-label="{{ player.name }}の詳細プロフィール">
+                    <svg class="player-profile-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true">
+                        <path
+                            d="M12 2a10 10 0 1 0 10 10A10.012 10.012 0 0 0 12 2zm0 3.2a1.4 1.4 0 1 1-1.4 1.4A1.4 1.4 0 0 1 12 5.2zm1.8 13h-3.6v-1.8h.9V11h-.9V9.2h2.7v7.2h.9z" />
+                    </svg>
+                </button>
+                {% endif %}
             </div>
             {% endfor %}
         </div>

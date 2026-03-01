@@ -5,7 +5,7 @@ from src.utils.formation_image import get_formation_layout_data
 
 
 class TestPlayerProfileUi(unittest.TestCase):
-    def test_player_cards_include_profile_trigger_attributes(self):
+    def test_player_cards_include_profile_trigger_for_profiled_players_only(self):
         formatter = PlayerFormatter()
 
         html = formatter.format_player_cards(
@@ -20,8 +20,21 @@ class TestPlayerProfileUi(unittest.TestCase):
             },
         )
 
+        self.assertIn('class="player-profile-trigger"', html)
         self.assertIn('data-player-profile-id="player-profile-r-cherki"', html)
-        self.assertIn("タップで詳細", html)
+        self.assertNotIn("タップで詳細", html)
+
+        html_without_profile = formatter.format_player_cards(
+            lineup=["Rodri"],
+            formation="4-3-3",
+            team_name="Manchester City",
+            player_profiles={},
+        )
+
+        self.assertNotIn('class="player-profile-trigger"', html_without_profile)
+        self.assertNotIn(
+            'data-player-profile-id="player-profile-rodri"', html_without_profile
+        )
 
     def test_formation_layout_data_marks_profile_availability(self):
         layout = get_formation_layout_data(

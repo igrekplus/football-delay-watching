@@ -453,15 +453,6 @@ pre {
     box-shadow: var(--card-hover-shadow);
 }
 
-.player-card-clickable {
-    cursor: pointer;
-}
-
-.player-card-clickable:hover,
-.player-card-clickable:focus-visible {
-    border-color: var(--color-primary);
-}
-
 .player-card-header {
     display: flex;
     justify-content: space-between;
@@ -472,11 +463,18 @@ pre {
     font-weight: bold;
 }
 
-.player-card-header span {
+.player-card-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 140px;
+}
+
+.player-card-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .player-card-body {
@@ -538,13 +536,6 @@ pre {
     font-size: 0.75rem;
 }
 
-.player-card-hint {
-    margin-top: 6px;
-    color: var(--color-primary);
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
 /* Instagram link styles */
 .player-instagram-link {
     display: inline-flex;
@@ -568,6 +559,45 @@ pre {
     fill: var(--color-instagram);
 }
 
+.player-profile-trigger,
+.formation-profile-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 999px;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s, opacity 0.2s;
+}
+
+.player-profile-trigger {
+    background: rgba(104, 187, 255, 0.16);
+    color: #68bbff;
+}
+
+.player-profile-trigger:hover,
+.player-profile-trigger:focus-visible,
+.formation-profile-trigger:hover,
+.formation-profile-trigger:focus-visible {
+    transform: scale(1.08);
+    filter: brightness(1.08);
+}
+
+.player-profile-trigger:focus-visible,
+.formation-profile-trigger:focus-visible {
+    outline: 2px solid rgba(104, 187, 255, 0.6);
+    outline-offset: 2px;
+}
+
+.player-profile-icon {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
 .player-profile-modal {
     position: fixed;
     inset: 0;
@@ -577,8 +607,8 @@ pre {
 .player-profile-modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(5, 10, 18, 0.7);
-    backdrop-filter: blur(4px);
+    background: rgba(2, 8, 22, 0.82);
+    backdrop-filter: blur(6px);
 }
 
 .player-profile-modal-dialog {
@@ -587,11 +617,14 @@ pre {
     max-height: min(80vh, 720px);
     margin: 7vh auto 0;
     overflow-y: auto;
-    background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+    background:
+        radial-gradient(circle at top right, rgba(104, 187, 255, 0.16), transparent 38%),
+        linear-gradient(180deg, #0a1831 0%, #071225 100%);
     border-radius: 18px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    border: 1px solid rgba(104, 187, 255, 0.18);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
     padding: 24px;
+    color: #e8f1ff;
 }
 
 .player-profile-modal-close {
@@ -602,8 +635,8 @@ pre {
     height: 36px;
     border: 0;
     border-radius: 999px;
-    background: rgba(15, 23, 42, 0.08);
-    color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f4bf4f;
     font-size: 1.4rem;
     cursor: pointer;
 }
@@ -615,7 +648,7 @@ pre {
 
 .player-profile-modal-eyebrow {
     margin: 0 0 6px;
-    color: var(--color-secondary);
+    color: #68bbff;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -623,22 +656,29 @@ pre {
 
 .player-profile-modal-title {
     margin: 0;
-    color: var(--color-primary);
+    color: #f4bf4f;
 }
 
 .player-profile-section + .player-profile-section {
-    margin-top: 16px;
+    margin-top: 14px;
+}
+
+.player-profile-section {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(104, 187, 255, 0.08);
 }
 
 .player-profile-section h4 {
     margin: 0 0 6px;
-    color: var(--color-secondary);
+    color: #68bbff;
     font-size: 0.95rem;
 }
 
 .player-profile-section p {
     margin: 0;
-    color: var(--color-text);
+    color: #e8f1ff;
     line-height: 1.7;
     white-space: normal;
 }
@@ -1692,16 +1732,6 @@ body.player-profile-open {
     border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-.player-card-horizontal-clickable {
-    cursor: pointer;
-}
-
-.player-card-horizontal-clickable:hover,
-.player-card-horizontal-clickable:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.8);
-    outline-offset: 2px;
-}
-
 /* Photo: top-left, spans 2 rows */
 .player-photo-container {
     grid-column: 1;
@@ -1783,6 +1813,17 @@ body.player-profile-open {
     margin-top: 4px;
     line-height: 1.2;
     letter-spacing: 0.5px;
+}
+
+.formation-profile-trigger {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    background: rgba(6, 16, 34, 0.78);
+    color: #f4bf4f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 /* Responsive Layouts (Issue #167) */
