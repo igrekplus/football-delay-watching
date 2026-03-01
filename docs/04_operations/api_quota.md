@@ -99,6 +99,11 @@
 - GitHub Actions での実行前に、前日消費量が上限の80%を超えていたら slack/email でアラート（要別途実装）。  
 - 料金改定は頻繁。月初に公式価格ページの更新日を確認し、本ファイルの見直しを行うこと。
 
+### レポート内デバッグリンク
+
+- `Gemini Grounding` の請求確認リンクは `https://console.cloud.google.com/billing?authuser=1` を使用する
+- `Gemini API` の APIキー確認リンクは `https://aistudio.google.com/app/u/1/api-keys?pli=1&project=gen-lang-client-0394252790` を使用する
+
 ## 6.5. ヘルスチェックスクリプト
 
 各APIのクォータ・ステータスを確認するスクリプト:

@@ -44,8 +44,8 @@ class ReportGenerator:
         if youtube_stats is None:
             youtube_stats = {"api_calls": 0, "cache_hits": 0}
 
-        # 共通セクションを生成
-        excluded_section = self._generate_excluded_section(matches, youtube_stats)
+        # 共有デバッグセクションを生成
+        shared_debug_html = self._generate_shared_debug_section(matches, youtube_stats)
 
         # 各試合のレポートを生成
         generation_datetime = DateTimeUtil.format_filename_datetime()
@@ -55,7 +55,7 @@ class ReportGenerator:
 
         for match in target_matches:
             markdown_content, image_paths = self.generate_single_match(
-                match, youtube_videos, excluded_section
+                match, youtube_videos, shared_debug_html
             )
 
             # MatchCore に get_report_filename があるか、MatchAggregate にあるか
@@ -81,7 +81,7 @@ class ReportGenerator:
         self,
         match: MatchAggregate,
         youtube_videos: dict[str, list[dict]],
-        excluded_section: str,
+        shared_debug_html: str,
     ) -> tuple:
         """
         1試合分のHTMLレポートを生成（選手名カタカナ変換込み）
@@ -114,7 +114,7 @@ class ReportGenerator:
 
         image_paths = []
         match_report_context, match_images = self._get_match_report_context(
-            match, youtube_videos
+            match, youtube_videos, shared_debug_html
         )
         image_paths.extend(match_images)
 
@@ -124,7 +124,6 @@ class ReportGenerator:
                 "mode_prefix": mode_prefix,
                 "mode_banner": mode_banner,
                 "timestamp": timestamp,
-                "excluded_section": excluded_section,
                 "competition_display": "Premier League"
                 if match.core.competition == "EPL"
                 else match.core.competition,
@@ -145,14 +144,14 @@ class ReportGenerator:
         )
         return html_content, image_paths
 
-    def _generate_excluded_section(
+    def _generate_shared_debug_section(
         self, matches: list[MatchAggregate], youtube_stats: dict[str, int]
     ) -> str:
-        """選外試合リストとAPI使用状況のセクションを生成（HTML形式）"""
+        """共有デバッグ情報（選外試合リスト + API使用状況）を生成する。"""
         excluded = [m for m in matches if not m.core.is_target]
 
         html_parts = ['<div class="debug-info">']
-        html_parts.append("<h3>選外試合リスト</h3>")
+        html_parts.append("<h4>選外試合リスト</h4>")
         if not excluded:
             html_parts.append("<p>なし</p>")
         else:
@@ -163,7 +162,7 @@ class ReportGenerator:
                 )
             html_parts.append("</ul>")
 
-        html_parts.append("<h3>API使用状況</h3>")
+        html_parts.append("<h4>API使用状況</h4>")
         api_table = ApiStats.format_table()  # Markdown table
         # Convert Markdown table to HTML
         html_parts.append(self._markdown_table_to_html(api_table))
@@ -215,7 +214,10 @@ class ReportGenerator:
         return render_template("partials/form_table.html", form_details=form_details)
 
     def _get_match_report_context(
-        self, match: MatchAggregate, youtube_videos: dict[str, list[dict]]
+        self,
+        match: MatchAggregate,
+        youtube_videos: dict[str, list[dict]],
+        shared_debug_html: str,
     ) -> tuple:
         """
         1試合分のレポート用コンテキストデータを生成
@@ -517,7 +519,9 @@ class ReportGenerator:
             video_data, match_key
         )
         debug_youtube_html = self.youtube_formatter.format_debug_video_section(
-            youtube_videos, match_key, match_rank=match.core.rank
+            fixture_id=match.core.id,
+            match_rank=match.core.rank,
+            shared_debug_html=shared_debug_html,
         )
 
         # 順位表 (Issue #192)
