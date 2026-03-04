@@ -350,10 +350,18 @@ class ReportGenerator:
             if i.get("team", "") == match.core.away_team
         ]
         home_injury_html = self.player_formatter.format_injury_cards(
-            home_injuries, match.facts.player_photos, css_class="player-cards-scroll"
+            home_injuries,
+            match.facts.player_photos,
+            player_nationalities=match.facts.player_nationalities,
+            player_birthdates=match.facts.player_birthdates,
+            css_class="player-cards-scroll",
         )
         away_injury_html = self.player_formatter.format_injury_cards(
-            away_injuries, match.facts.player_photos, css_class="player-cards-scroll"
+            away_injuries,
+            match.facts.player_photos,
+            player_nationalities=match.facts.player_nationalities,
+            player_birthdates=match.facts.player_birthdates,
+            css_class="player-cards-scroll",
         )
 
         # フォーメーションデータ
@@ -728,8 +736,8 @@ class ReportGenerator:
         # 負傷者
         if match.facts.injuries_list:
             for injury in match.facts.injuries_list:
-                if injury.get("player"):
-                    names.append(injury["player"])
+                if injury.get("name"):
+                    names.append(injury["name"])
 
         # 監督名
         if match.facts.home_manager:

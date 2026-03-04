@@ -11,11 +11,12 @@
             {% else %}
             <div class="player-card-photo player-card-photo-placeholder"></div>
             {% endif %}
-            <div class="player-card-info">
-                <div class="player-card-position">🏥 OUT</div>
-                <div class="player-card-nationality">{{ injury.team }}</div>
-                <div class="player-card-age injury-reason">⚠️ {{ injury.reason }}</div>
-            </div>
+        <div class="player-card-info">
+            <div class="player-card-nationality">{% if injury.flag %}{{ injury.flag }} {% endif %}{{
+                injury.nationality }}</div>
+            <div class="player-card-age">{{ injury.age_display }}</div>
+            <div class="injury-reason">⚠️ {{ injury.reason }}</div>
+        </div>
         </div>
     </div>
     {% endfor %}

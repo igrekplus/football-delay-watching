@@ -239,6 +239,8 @@ class PlayerFormatter:
         self,
         injuries_list: list,
         player_photos: dict[str, str] = None,
+        player_nationalities: dict[str, str] = None,
+        player_birthdates: dict[str, str] = None,
         css_class: str = "player-cards",
     ) -> str:
         """
@@ -251,6 +253,10 @@ class PlayerFormatter:
 
         if player_photos is None:
             player_photos = {}
+        if player_nationalities is None:
+            player_nationalities = {}
+        if player_birthdates is None:
+            player_birthdates = {}
 
         injuries_data = []
         for injury in injuries_list:
@@ -260,8 +266,30 @@ class PlayerFormatter:
             raw_photo_url = injury.get("photo", "") or player_photos.get(name, "")
             photo_url = self._sanitize_photo_url(raw_photo_url)
 
+            # 国籍・年齢情報の取得 (Issue #235)
+            nationality = player_nationalities.get(name, "")
+            birthdate = player_birthdates.get(name, "")
+            flag = (
+                format_player_with_flag("", nationality).strip() if nationality else ""
+            )
+            age = self.calculate_age(birthdate)
+
+            # 表示用データの整理
+            birthdate_formatted = birthdate.replace("-", "/") if birthdate else ""
+            age_display = f"{age}歳" if age else ""
+            if birthdate_formatted and age_display:
+                age_display = f"{age_display} ({birthdate_formatted})"
+
             injuries_data.append(
-                {"name": name, "team": team, "reason": reason, "photo_url": photo_url}
+                {
+                    "name": name,
+                    "team": team,
+                    "reason": reason,
+                    "photo_url": photo_url,
+                    "nationality": nationality,
+                    "flag": flag,
+                    "age_display": age_display,
+                }
             )
 
         return render_template(

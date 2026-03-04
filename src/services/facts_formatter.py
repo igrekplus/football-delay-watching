@@ -91,10 +91,15 @@ class FactsFormatter:
 
         return player_id_name_pairs
 
-    def format_injuries(self, match: MatchAggregate, data: dict[str, Any]):
-        """怪我人情報を整形"""
+    def format_injuries(
+        self, match: MatchAggregate, data: dict[str, Any]
+    ) -> list[tuple[int, str, str]]:
+        """怪我人情報を整形し、選手詳細取得用のIDリストを返す"""
         injuries = []
+        player_id_name_pairs = []
+
         for item in data.get("response", []):
+            player_id = item["player"].get("id")
             player_name = item["player"]["name"]
             team_name = item["team"]["name"]
             reason = item["player"].get("reason", "Unknown")
@@ -109,6 +114,9 @@ class FactsFormatter:
                 }
             )
 
+            if player_id:
+                player_id_name_pairs.append((player_id, player_name, team_name))
+
             if photo:
                 match.facts.player_photos[player_name] = photo
 
@@ -121,6 +129,8 @@ class FactsFormatter:
         else:
             match.facts.injuries_list = []
             match.facts.injuries_info = "なし"
+
+        return player_id_name_pairs
 
     def format_recent_form(
         self, match: MatchAggregate, home_raw: dict[str, Any], away_raw: dict[str, Any]

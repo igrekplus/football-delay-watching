@@ -64,14 +64,18 @@ class FactsService:
         # 2. データの整形と流し込み
         # lineups & player details
         player_id_pairs = self.formatter.format_lineups(match, raw.lineups)
-        if player_id_pairs:
-            self._fetch_player_details(match, player_id_pairs)
-
-        # Instagram URL / 手動プロフィール
-        self._set_player_csv_data(match, player_id_pairs)
 
         # Injuries
-        self.formatter.format_injuries(match, raw.injuries)
+        player_id_pairs_injuries = self.formatter.format_injuries(match, raw.injuries)
+
+        # 合計の選手IDリスト（詳細取得用）
+        all_player_id_pairs = player_id_pairs + player_id_pairs_injuries
+
+        if all_player_id_pairs:
+            self._fetch_player_details(match, all_player_id_pairs)
+
+        # Instagram URL / 手動プロフィール
+        self._set_player_csv_data(match, all_player_id_pairs)
 
         # Recent Form
         self.formatter.format_recent_form(match, raw.home_form, raw.away_form)
