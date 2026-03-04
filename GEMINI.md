@@ -231,3 +231,4 @@ python -m unittest tests/test_datetime_util.py
   - `issue_resolution`: Issue解決のライフサイクル管理
   - `reviewer_mode`: 高度な技術レビュー
   - `research_commentary_info`: 実況・解説情報の調査
+  - `generate_player_profiles`: 選手詳細プロフィールの作成（基本情報＋深掘りエピソード）
