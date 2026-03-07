@@ -13,13 +13,12 @@ def build_player_profile_id(player_name: str) -> str:
 
 
 def build_player_profile_slug(player_id: int, player_name: str) -> str:
-    """player_id + name -> URL slug（例: 41621-matheus-nunes）"""
-    name_slug = re.sub(r"[^a-z0-9]+", "-", player_name.lower()).strip("-") or "player"
-    return f"{player_id}-{name_slug}"
+    """player_id ベースの固定URL用 slug（例: 41621）"""
+    return str(player_id)
 
 
 def build_player_profile_url(player_id: int, player_name: str) -> str:
-    """選手プロフィールHTMLの相対URL（例: /player-profiles/41621-matheus-nunes.html）"""
+    """選手プロフィールHTMLの相対URL（例: /player-profiles/41621.html）"""
     return f"/player-profiles/{build_player_profile_slug(player_id, player_name)}.html"
 
 

@@ -83,16 +83,17 @@ python scripts/migrate_player_csv_to_gcs.py --team-id 50
 
 #### これは何か
 
-- `public/player-profiles/<slug>.html` に置かれる、選手プロフィール本文だけの単体 HTML
+- 通常は `public/player-profiles/<player_id>.html` に置かれる、選手プロフィール本文だけの単体 HTML
 - レポート HTML のカードはこのファイルを `fetch()` してモーダルに表示する
 
 #### 何に注意するか
 
-- **レポート HTML が参照している URL と同じファイル名で上書きすること**
+- **通常の生成先は `player_id` ベースの固定ファイル名であり、レポート HTML が参照している URL と同じファイル名で上書きすること**
 - `経歴::` が複数行あるプロフィールは、この段階でエラーとして止まる。先に CSV を修正する
 - 既存選手を更新する場合は、まず現在の参照先を確認する
   - `public/reports/<report>.html` 内の `data-player-profile-url`
   - または `public/player-profiles/` に既にある対象ファイル
+- 任意の `--output-path` で別名ファイルを生成することもできるが、その場合は既存レポートの参照先は自動では切り替わらない
 
 #### 最低限の生成方法
 
@@ -106,7 +107,7 @@ python scripts/generate_player_profile_html.py --team-id 50 --player-id 156477
 python scripts/generate_player_profile_html.py \
   --team-id 50 \
   --player-id 156477 \
-  --output-path public/player-profiles/156477-rayan-cherki.html
+  --output-path public/player-profiles/156477.html
 ```
 
 ### Step 7: deploy する
@@ -133,3 +134,4 @@ TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DA
 2. standalone HTML を更新した場合は、対象の `public/player-profiles/*.html` に期待する本文断片が出ていることを確認する。
 3. deploy 後は、公開 URL 側でもプロフィール本文の断片語句を検索して確認する。
 4. レポートから確認する場合は、対象レポート HTML がその `data-player-profile-url` を参照していることを確認する。
+5. レポートのモーダル確認は `fetch()` を使うため、`file://` 直開きではなく、deploy 後の公開 URL かローカル HTTP サーバ経由で確認する。

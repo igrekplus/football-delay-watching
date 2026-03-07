@@ -14,15 +14,11 @@ class TestPlayerProfileUi(unittest.TestCase):
             formation="4-3-3",
             team_name="Manchester City",
             player_photos={"R. Cherki": "https://example.com/cherki.png"},
-            player_profile_urls={
-                "R. Cherki": "/player-profiles/156477-rayan-cherki.html"
-            },
+            player_profile_urls={"R. Cherki": "/player-profiles/156477.html"},
         )
 
         # Static HTML should ONLY have the data attribute. Badge/Classes are added by JS.
-        self.assertIn(
-            'data-player-profile-url="/player-profiles/156477-rayan-cherki.html"', html
-        )
+        self.assertIn('data-player-profile-url="/player-profiles/156477.html"', html)
         self.assertIn('data-player-photo="https://example.com/cherki.png"', html)
         # Class and badge are now added dynamically by JS, so they shouldn't be in static HTML
         self.assertNotIn("player-card-profile-available", html)
@@ -39,15 +35,11 @@ class TestPlayerProfileUi(unittest.TestCase):
             player_nationalities={"R. Cherki": "France"},
             player_numbers={"R. Cherki": 10},
             player_photos={},
-            player_profile_urls={
-                "R. Cherki": "/player-profiles/156477-rayan-cherki.html"
-            },
+            player_profile_urls={"R. Cherki": "/player-profiles/156477.html"},
         )
 
         player = layout["players"][0]
-        self.assertEqual(
-            player["profile_url"], "/player-profiles/156477-rayan-cherki.html"
-        )
+        self.assertEqual(player["profile_url"], "/player-profiles/156477.html")
         self.assertNotIn("has_profile", player)
         self.assertNotIn("profile_id", player)
 

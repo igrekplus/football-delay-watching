@@ -258,10 +258,11 @@ class ReportGenerator:
         )
 
         # 選手プロフィールURLマップの作成 (Issue #237)
+        # プロフィール本文が未作成でも固定URLを先に埋めておけば、
+        # 後から standalone HTML を追加した際に既存レポートから拾える。
         player_profile_urls = {
             name: build_player_profile_url(pid, name)
             for name, pid in match.facts.player_id_map.items()
-            if name in match.facts.player_profiles
         }
 
         # 選手カードの生成
