@@ -19,8 +19,6 @@ Usage:
     profile = profiles.get(156477)
 """
 
-from __future__ import annotations
-
 import csv
 import io
 import logging
@@ -37,12 +35,14 @@ USE_GCS_PLAYER_DATA = os.getenv("PLAYER_DATA_USE_GCS", "True").lower() == "true"
 # チームID -> CSVファイル名のマッピング
 TEAM_CSV_FILES = {
     33: "player_33.csv",  # Manchester United
+    34: "player_34.csv",  # Newcastle
     39: "player_39.csv",  # Wolves
     40: "player_40.csv",  # Liverpool
     42: "player_42.csv",  # Arsenal
     47: "player_47.csv",  # Tottenham
     49: "player_49.csv",  # Chelsea
     50: "player_50.csv",  # Manchester City
+    51: "player_51.csv",  # Brighton
     52: "player_52.csv",  # Crystal Palace
     65: "player_65.csv",  # Nottingham Forest
     66: "player_66.csv",  # Aston Villa

@@ -4,8 +4,6 @@ Fixtureステータス管理クライアント
 Fixture単位でレポート処理状況を管理するCSVをGCSに保存・読み込みする。
 """
 
-from __future__ import annotations
-
 import csv
 import io
 import logging

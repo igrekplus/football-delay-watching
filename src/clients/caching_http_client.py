@@ -5,8 +5,6 @@ CacheStoreとHttpClientを組み合わせ、TTL判定を行いながら
 APIレスポンスをキャッシュする高レベルクライアント。
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import logging

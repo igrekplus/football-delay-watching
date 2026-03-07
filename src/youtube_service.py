@@ -8,8 +8,6 @@ Issue #27: クエリ削減（20→13/試合）とpost-fetchフィルタ方式へ
 Issue #102:検索/キャッシュはYouTubeSearchClientに統一
 """
 
-from __future__ import annotations
-
 import logging
 from collections.abc import Callable
 from datetime import datetime

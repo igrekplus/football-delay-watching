@@ -7,8 +7,6 @@ LLMClient用のプロンプトテンプレートを集約。
 Issue #120: LLMプロンプトの外部設定化（疎結合化）
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
 

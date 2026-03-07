@@ -5,8 +5,6 @@
 キックオフ1時間前〜直後の試合を対象とする。
 """
 
-from __future__ import annotations
-
 import logging
 from datetime import timedelta
 

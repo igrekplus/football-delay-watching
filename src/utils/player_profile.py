@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 
 PROFILE_DETAIL_FORMAT_DEFAULT = "labelled_lines_v1"

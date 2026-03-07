@@ -5,8 +5,6 @@
 依存性注入（DI）によるテスト容易性と拡張性を提供する。
 """
 
-from __future__ import annotations
-
 import json
 import logging
 from abc import ABC, abstractmethod
