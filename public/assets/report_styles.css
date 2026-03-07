@@ -604,9 +604,9 @@ pre {
 
 .player-profile-modal-dialog {
     position: relative;
-    width: min(680px, calc(100vw - 32px));
-    max-height: min(80vh, 720px);
-    margin: 7vh auto 0;
+    width: min(1560px, calc(100vw - 32px));
+    max-height: min(90vh, 900px);
+    margin: 3vh auto 0;
     overflow-y: auto;
     background: #071225;
     border-radius: 18px;
@@ -705,6 +705,16 @@ pre {
 
 body.player-profile-open {
     overflow: hidden;
+}
+
+/* Issue #239: Desktop/iPad - 2-column layout for player profile sections */
+@media (min-width: 769px) {
+    .player-profile-modal-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        align-items: start;
+    }
 }
 
 /* Injury Card Styles */

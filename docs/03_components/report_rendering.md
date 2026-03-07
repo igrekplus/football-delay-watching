@@ -96,3 +96,14 @@
 - 1セクション1パーシャルを原則とする
 - データ整形はPython側（Formatter/Parser）で実施し、テンプレートは表示責務に限定する
 - 新規セクション追加時は `templates/partials/` に追加し、`report.html` で組み込む
+
+---
+
+## 7. 選手詳細モーダル
+
+- 実装: `templates/partials/player_profile_modal.html`, `templates/report.html`, `public/assets/report_styles.css`
+- モーダル本体は表示責務のみを持ち、本文は外部の選手プロフィールHTMLを事前fetchして差し込む
+- レスポンシブ方針:
+  - モバイルは1カラムを維持する
+  - `769px` 以上では本文カードを2カラム表示にして、デスクトップ/iPadでの縦スクロールを減らす
+  - 画面幅が十分に大きくても、可読性のためモーダル最大幅には上限を設ける
