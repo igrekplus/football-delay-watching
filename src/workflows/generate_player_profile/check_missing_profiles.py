@@ -5,7 +5,9 @@ import os
 import sys
 
 # Add base path so we can import src modules
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+)
 
 from src.clients.api_football_client import ApiFootballClient
 

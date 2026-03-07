@@ -403,4 +403,4 @@ def get_flagcdn_country_code(nationality: str) -> str:
     if not (0x1F1E6 <= first <= 0x1F1FF and 0x1F1E6 <= second <= 0x1F1FF):
         return ""
 
-    return f"{chr(first - 0x1F1E6 + ord('a'))}" f"{chr(second - 0x1F1E6 + ord('a'))}"
+    return f"{chr(first - 0x1F1E6 + ord('a'))}{chr(second - 0x1F1E6 + ord('a'))}"
