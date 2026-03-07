@@ -132,11 +132,22 @@ TARGET_DATE="2026-03-07" TARGET_FIXTURE_ID="1523413" python main.py
 
 ### 7. デプロイする
 
+古い HTML を削除した fixture を再生成した場合は、`safe_deploy.sh` を使わないこと。
+`safe_deploy.sh` は deploy 前に Firebase から既存レポートを同期するため、削除した旧 HTML がローカルへ戻ってしまう。
+
+削除を伴わず、単に既存ファイルの内容を上書きするだけなら通常どおり `safe_deploy.sh` を使ってよい。
+
+#### 旧 HTML を消した状態で反映したい場合
+
+```bash
+firebase deploy --only hosting
+```
+
+#### 旧 HTML を残したまま通常 deploy してよい場合
+
 ```bash
 ./scripts/safe_deploy.sh
 ```
-
-対話環境で確認プロンプトが不要な場合は、状況に応じて `firebase deploy --only hosting` でもよいが、原則は `safe_deploy.sh` を優先する。
 
 ### 8. 公開確認する
 
@@ -157,6 +168,7 @@ TARGET_DATE="2026-03-07" TARGET_FIXTURE_ID="1523413" python main.py
 ## 失敗しやすい点
 
 - `manifest.json` のみ削除しても、古い公開 HTML が残ると remote merge で戻る
+- 古い HTML を消した後に `safe_deploy.sh` を実行すると、deploy 前同期で旧 HTML が Firebase から戻る
 - GCS の lineups キャッシュを消さずに再生成すると欠損が再利用される
 - ローカル CSV を更新せず GCS だけ直すと、次回ローカル起点の更新で巻き戻る
 - `DEBUG_MODE=True` で作ると debug バッジ付きの別レポートが増える

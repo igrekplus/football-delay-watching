@@ -176,7 +176,10 @@ def main():
 
     print(f"\n✅ Exported to: {output_path}")
     print("📝 Please manually fill in the 'instagram_url' / 'profile_*' columns")
-    print("☁️  After editing, run: python scripts/migrate_player_csv_to_gcs.py")
+    print(
+        "☁️  After editing, run: "
+        "python src/workflows/generate_player_profile/push_csv.py"
+    )
 
 
 if __name__ == "__main__":

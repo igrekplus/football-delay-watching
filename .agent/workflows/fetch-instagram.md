@@ -16,7 +16,7 @@ description: 選手のInstagram URLを検索して、GCS上の選手マスタCSV
 
 ### 2. GCSから作業コピーを取得
 ```bash
-python scripts/pull_player_csv_from_gcs.py --team-id 42
+python src/workflows/generate_player_profile/pull_csv.py --team-id 42
 ```
 
 未登録チームで初期CSVを作った直後など、GCSにまだ正本がない場合は `SKIP` を確認してそのまま続行します。
@@ -34,7 +34,7 @@ python scripts/analyze_missing_instagram.py --team-id 42
 
 ### 5. GCSへ反映
 ```bash
-python scripts/migrate_player_csv_to_gcs.py --team-id 42
+python src/workflows/generate_player_profile/push_csv.py --team-id 42
 ```
 
 ### 6. 結果確認

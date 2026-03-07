@@ -35,7 +35,7 @@ skill の内部名は `fetch_instagram` とし、workflow / symlink 側は `fetc
 
 ### 2. GCSから作業コピーを取得
 ```bash
-python scripts/pull_player_csv_from_gcs.py --team-id 42
+python src/workflows/generate_player_profile/pull_csv.py --team-id 42
 ```
 
 未登録チームで初期CSVを作った直後など、GCSに正本がまだない場合は `SKIP` になってもそのまま続行します。
@@ -78,7 +78,7 @@ https://www.instagram.com/{handle}/
 
 ### 5. GCSへ反映
 ```bash
-python scripts/migrate_player_csv_to_gcs.py --team-id 42
+python src/workflows/generate_player_profile/push_csv.py --team-id 42
 ```
 
 ### 6. 検証
@@ -127,6 +127,6 @@ git commit -m "docs: register Barcelona player instagram CSV"
 ## 関連ファイル
 - `settings/player_instagram.py`
 - `scripts/fetch_squad_list.py`
-- `scripts/pull_player_csv_from_gcs.py`
+- `src/workflows/generate_player_profile/pull_csv.py`
 - `scripts/analyze_missing_instagram.py`
-- `scripts/migrate_player_csv_to_gcs.py`
+- `src/workflows/generate_player_profile/push_csv.py`
