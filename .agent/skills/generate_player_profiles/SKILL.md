@@ -1,192 +1,130 @@
 ---
 name: generate_player_profiles
-description: 試合レポートの「選手詳細（player_profiles）」セクションを作成するためのスキル。基本情報から熱心なファン向けのエピソードまで網羅的に調査・整形する。
+description: 試合レポートの「選手詳細（player_profiles）」を更新する統括スキル。GCS上の選手CSV更新、standalone HTML生成、deploy までを扱う。調査と本文生成は `research_player_profile_content` を参照する。
 ---
 
 # 選手詳細作成スキル
 
 ## 概要
 
-このスキルは、試合に出場する選手（スタメン・ベンチ）の「選手詳細プロフィール」をインデプスに調査・作成します。
-skill の内部名は `generate_player_profiles` とし、symlink 側は `generate-player-profiles` を使います。
+この skill は、選手プロフィール更新の入口です。
 
-単なる情報収集にとどまらず、基本情報（生年月日や経歴・移籍金）と「熱心なファンでもへぇーとなる」レベルの興味深いエピソードを結合し、
-最終的にレポートの `player_profiles` フィールドに投入できる `labelled_lines_v1` 形式のテキストを出力します。
+- 正本は GCS の `master/player/player_<team_id>.csv`
+- ローカル作業コピーは `data/player_<team_id>.csv`
+- 公開表示は **レポート HTML 本体** と **選手ごとの standalone HTML** に分離されている
 
-実運用では、選手プロフィールの正本は GCS の `master/player/player_<team_id>.csv` です。
-`data/player_<team_id>.csv` はローカル作業コピーであり、ここを書き換えただけでは本番のレポート生成には反映されません。
-既存の公開レポートは静的 HTML なので、GCS 更新後に「次回以降の生成」で自然に反映される一方、**すでに生成済みのレポートへ反映したい場合は対象 fixture の再生成と再デプロイが必要**です。
+そのため、この方式で生成済みのレポートであれば、CSV 更新後に standalone HTML を更新して deploy するだけで、同じレポート URL をリロードして最新プロフィールを確認できます。
 
----
+## この skill の担当範囲
 
-## 調査対象の選定
+1. 対象チーム CSV の特定と GCS からの pull
+2. 調査・`labelled_lines_v1` 本文作成・`temp/*.md` 出力の起点
+3. ローカル CSV 更新
+4. GCS 正本への upload
+5. standalone HTML 生成
+6. deploy
+7. 必要時のみ debug-run
 
-- **スタメン全員** を原則として調査する。
-- ベンチ・欠場者は注目度の高い選手（代表格、大物、若手有望株）のみ追加で調査する。
-- 1試合あたり **8〜16名** を目安とする。
+## 下位 skill
 
----
+本文の調査と下書き作成は、以下の skill を参照します。
 
-## 収集すべき情報（必須フィールドと拡張フィールド）
+- [research_player_profile_content](/Users/nagataryou/football-delay-watching/.agent/skills/research_player_profile_content/SKILL.md)
 
-選手一人につき、以下の情報を収集します。
+この下位 skill は、以下までを担当します。
 
-### 1. 基本情報（必須）
-| ラベル | 内容 | 記載例 |
-|--------|------|----|
-| `生まれ` | 生年月日と出生地 | `2003年8月17日、フランス・リヨン` |
-| `国籍` | 代表国籍（複数持つ場合は全て） | `フランス（アルジェリア系）` |
-| `ポジション` | メインポジション | `左ウィンガー / アタッキングMF` |
-| `身長・利き足`| 身体情報、利き足 | `176cm / 左利き` |
-| `経歴` | ユースも含む所属クラブの履歴（複数行可） | `2010-2024: オリンピック・リヨン\n2025-: マンチェスター・シティ` |
-| `移籍金` | 獲得時の移籍金額（推測/報道ベースでOK） | `約4000万ユーロ（報道）` |
+- 情報源の選定
+- `labelled_lines_v1` 形式での本文生成
+- セルフレビュー
+- `temp/player_profiles_YYYYMMDD_[team]_[player].md` の出力
 
-### 2. 深掘りエピソード・トリビア（最低1〜2項目必須）
-以下のカテゴリから**最も刺さる項目を厳選**して追加する。「へぇー」となる事実を優先すること。
+## 実行フロー
 
-| ラベル（例） | 具体例 |
-|--------|--------|
-| `特徴` | プレースタイルの詳細な説明、得意なプレー（2〜3文） |
-| `監督・選手の発言`| 試合後会見やインタビューでの注目コメント（褒め言葉・苦言・比較）<br>_（例：ペップ「メッシがそんなクロスを蹴るのを見たことがない」）_ |
-| `移籍の裏話` | 獲得争奪戦の経緯、電撃移籍の背景 |
-| `意外な経歴` | 一度プロを諦めた、元は別ポジションだったなどの過去 |
-| `記録` | クラブ最年少記録や特定のスタジアムでの連続ゴールなど |
+### Step 1: 対象チーム CSV の特定
 
----
+`settings/player_instagram.py` の `TEAM_CSV_FILES` で対象チームの `team_id` と CSV 名を確認する。
 
-## 調査手順
-
-### Step 1: 選手リストの確認
-対象試合の選手リストを確認する（`mock_data/facts.json`やHTMLレポート等から）。
-
-### Step 1.5: 対象チームCSVの特定
-プロフィールは選手単位ではなくチーム単位 CSV に保存する。
-
-1. `settings/player_instagram.py` の `TEAM_CSV_FILES` で対象チームの `team_id` と CSV 名を確認する。
-2. まず GCS 正本をローカルへ pull する。
+### Step 2: GCS 正本をローカルへ pull
 
 ```bash
 python scripts/pull_player_csv_from_gcs.py --team-id 50
 ```
 
 注意:
-- 既存の `data/player_<team_id>.csv` をそのまま編集し始めないこと。先に GCS 版を取得し、上書き事故を避ける。
-- 必要なら pull 前のローカルファイルを `temp/` へ退避し、差分確認してから 1 行だけマージする。
+- 既存の `data/player_<team_id>.csv` をそのまま編集し始めないこと。
+- 先に GCS 版を取得し、上書き事故を避ける。
 
-### Step 2: 情報収集（並列実行）
-以下の情報源を活用して調査を行う。
+### Step 3: 本文調査と `temp/*.md` 出力
 
-| 優先度 | ソース | 使用方法 |
-|--------|--------|---------|
-| 1 | **Wikipedia（英語版）/ Transfermarkt** | 基本情報・経歴・移籍金の収集。`https://en.wikipedia.org/wiki/[Player_Name]` |
-| 2 | **監督・チームメートの発言（重要）** | Google検索 `"[Manager]" "[Player]" press conference` または `site:premierleague.com "[Player]"` で会見テキストを取得。「プレーに対する監督自身の評価や言葉」に重きを置く。 |
-| 3 | **The Athletic / Guardian 等** | Google検索 `"[Player Name]" interesting facts career story site:theathletic.com` |
-| 4 | **Google検索** | `"[選手名] trivia" OR "untold story"` |
+この工程は下位 skill を使う。
 
-### Step 3: 情報の整形 (`labelled_lines_v1` 形式)
-収集した情報を以下のフォーマットで整形する。
+- [research_player_profile_content](/Users/nagataryou/football-delay-watching/.agent/skills/research_player_profile_content/SKILL.md)
 
-#### フォーマット仕様・ルール
-- 各行は `ラベル::本文` の形式とする。
-- 複数行の経歴などは別行（別の `::`）に分けるか `\n` で結合する。
-- **事実のみ記載**し、推測（「〜と思われる」）は排除する。
-- 最終的な出力は**日本語**とする。
-- `経歴` は 1 行に詰め込まず、クラブごとに `経歴::` を複数行に分ける。
-- ただし `経歴::` を細かく分けすぎて読みにくくしない。クラブ数が多い選手は、**読者が知りたい流れが一目で分かる粒度に圧縮**する。
-- 具体的には「生まれた国からの移住」「無名期の下積み」「ブレイクしたクラブ」「直前所属クラブ」「現所属」が追える構成を優先する。
-- ユースとトップ昇格が同一クラブ内で連続する場合は、`エリセイレンセ（ユース→トップ）` のように 1 行へまとめてよい。
-- 直前所属クラブと、ブレイクしたクラブを混同しない。たとえば移籍文脈で重要なのが「直前所属」なのか「評価を上げたクラブ」なのかを意識して書く。
-- 監督コメントは、できるだけ「どの時期に、どういう文脈で出た発言か」が分かるよう短く補足する。
-- ポジションは**本職を先に書く**。コンバート先や臨時起用先は `〜も対応` `〜でも起用` など、従であることが分かる表現にする。
-- `記録` ラベルは安易に使わない。月間賞やシーズン賞なら `受賞`、節目の達成なら `記録`、プレースタイルなら `特徴` など、ラベルと中身を一致させる。
+### Step 4: ローカル CSV へ反映
 
-### Step 3.5: セルフレビュー
-整形後、最低限以下を自分で確認する。
+`data/player_<team_id>.csv` の対象選手行に以下 2 カラムを反映する。
 
-1. 経歴が「情報量は多いのに流れが追えない」状態になっていないか。
-2. ポジション欄が、本職よりもコンバート先を強く見せていないか。
-3. 監督・選手の発言欄で、複数時期のコメントを雑に 1 文へ混ぜていないか。
-4. ラベル名 (`特徴` / `受賞` / `記録` など) と本文内容がずれていないか。
-5. 1人だけ情報密度が高すぎて、同一試合内の他選手と比べて読みにくくなっていないか。
+- `profile_format`: `labelled_lines_v1`
+- `profile_detail`: `\n` 区切りの本文
 
-#### 良い出力例
-```text
-生まれ::2003年8月17日、フランス・リヨン
-国籍::フランス（アルジェリア系）
-ポジション::左ウィンガー / アタッキングMF
-身長・利き足::176cm / 左利き
-経歴::2010-2024: オリンピック・リヨン（アカデミー→トップチーム）
-経歴::2025-: マンチェスター・シティ
-移籍金::約4000万ユーロ（報道）
-特徴::狭い局面でのターン、右ハーフスペースからのドリブル前進、ラストパスに強み。
-面白いエピソード::2025年12月vsサンダーランド戦でラボーナアシストを記録。試合後、グアルディオラ監督は「メッシがそんなクロスを蹴るのを見たことがない。メッシの強みはシンプルさだ」と言及し、婉曲にシンプルさを求めた。
-移籍の裏話::複数ビッグクラブが獲得を打診したが、グアルディオラとの直接対話でシティ行きを決断。
-```
+反映前に、差分がその選手の 1 行だけであることを確認する。
 
----
-
-## Step 4: 出力と適用
-
-1. 作成したプロフィールデータを `temp/player_profiles_YYYYMMDD_[team]_[player].md` または `temp/player_profiles_YYYYMMDD_[home]_vs_[away].md` に一時保存する。
-2. `data/player_<team_id>.csv` の対象選手行に以下 2 カラムを反映する。
-   - `profile_format`: `labelled_lines_v1`
-   - `profile_detail`: `\n` 区切りの本文
-3. 反映前に、差分がその選手の 1 行だけであることを確認する。
-4. 問題なければ GCS 正本へ upload する。
+### Step 5: GCS 正本へ upload
 
 ```bash
 python scripts/migrate_player_csv_to_gcs.py --team-id 50
 ```
 
-5. 必要に応じてデバッグ実行で表示確認する。
+### Step 6: standalone HTML を生成する
+
+#### これは何か
+
+- `public/player-profiles/<slug>.html` に置かれる、選手プロフィール本文だけの単体 HTML
+- レポート HTML のカードはこのファイルを `fetch()` してモーダルに表示する
+
+#### 何に注意するか
+
+- **レポート HTML が参照している URL と同じファイル名で上書きすること**
+- 既存選手を更新する場合は、まず現在の参照先を確認する
+  - `public/reports/<report>.html` 内の `data-player-profile-url`
+  - または `public/player-profiles/` に既にある対象ファイル
+
+#### 最低限の生成方法
+
+```bash
+python scripts/generate_player_profile_html.py --team-id 50 --player-id 156477
+```
+
+必要なら出力先を明示する。
+
+```bash
+python scripts/generate_player_profile_html.py \
+  --team-id 50 \
+  --player-id 156477 \
+  --output-path public/player-profiles/156477-rayan-cherki.html
+```
+
+### Step 7: deploy する
+
+standalone HTML を生成したら、既存の deploy workflow に従って Hosting へ反映する。
+
+- 参照先: [.agent/workflows/deploy.md](/Users/nagataryou/football-delay-watching/.agent/workflows/deploy.md)
+
+```bash
+./scripts/safe_deploy.sh
+```
+
+### Step 8: 必要に応じて debug-run
+
+以下は必須ではない。新規プロフィールで URL 自体を確認したい場合や、対象レポートがまだその選手を参照していない場合に限って使う。
 
 ```bash
 TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
 ```
 
-### 適用先の原則
-- **正本**: `gs://<bucket>/master/player/player_<team_id>.csv`
-- **ローカル作業コピー**: `data/player_<team_id>.csv`
-- `data/` は `.gitignore` 対象なので、通常は git commit しない。
-- 実行時は `settings/player_instagram.py` により GCS が既定で優先される。
+## 最低限の検証
 
-### デバッグ再実行が必要なケース
-- **必要ない**: 今後の新規生成にだけ反映されればよい場合。GCS 更新だけで十分。
-- **必要**: すでに生成済みの公開レポートにも反映したい場合。対象 fixture を再生成し、必要なら再デプロイする。
-
-### 最低限の検証
 1. ローカル CSV の対象行に `profile_format` / `profile_detail` が入っていることを確認する。
-2. 可能なら `PLAYER_DATA_USE_GCS=False` でローカルローダー確認を行う。
-3. GCS upload 後、対象 fixture を再生成した場合は HTML に `player-card-profile-available` や `data-player-profile-id` が出ることを確認する。
-4. 公開反映まで行った場合は、公開 URL 側でもプロフィール本文の断片語句を検索して確認する。
-5. ユーザーから文言レビューが入った場合は、ローカル修正だけで終えず、必要に応じて GCS 正本まで再 upload する。
-
-### 参考コマンド
-```bash
-# 対象行の確認
-python - <<'PY'
-import csv
-from pathlib import Path
-with Path('data/player_50.csv').open(encoding='utf-8', newline='') as f:
-    for row in csv.DictReader(f):
-        if row['player_id'] == '41621':
-            print(row['profile_format'])
-            print(row['profile_detail'])
-            break
-PY
-
-# 公開HTMLに反映されたかの確認
-curl -s https://football-delay-watching-a8830.web.app/reports/<generated>.html | \
-  rg "player-profile-matheus-nunes|ポルトガル / ブラジル"
-```
-
-```json
-{
-  "player_profiles": {
-    "ラヤン・シェルキ": {
-      "format": "labelled_lines_v1",
-      "detail": "生まれ::2003年8月17日、フランス・リヨン\n国籍::フランス（アルジェリア系）\nポジション::左ウィンガー / アタッキングMF\n身長・利き足::176cm / 左利き\n経歴::2010-2024: オリンピック・リヨン（アカデミー→トップチーム）\n経歴::2025-: マンチェスター・シティ\n移籍金::約4000万ユーロ（報道）\n特徴::狭い局面でのターン、右ハーフスペースからのドリブル前進、ラストパスに強み。\n面白いエピソード::2025年12月vsサンダーランド戦でラボーナアシストを記録。試合後、グアルディオラ監督は「メッシがそんなクロスを蹴るのを見たことがない。メッシの強みはシンプルさだ」と言及し、婉曲にシンプルさを求めた。"
-    }
-  }
-}
-```
+2. standalone HTML を更新した場合は、対象の `public/player-profiles/*.html` に期待する本文断片が出ていることを確認する。
+3. deploy 後は、公開 URL 側でもプロフィール本文の断片語句を検索して確認する。
+4. レポートから確認する場合は、対象レポート HTML がその `data-player-profile-url` を参照していることを確認する。
