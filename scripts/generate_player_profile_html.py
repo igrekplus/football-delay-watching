@@ -94,7 +94,10 @@ def resolve_output_path(
 
 def render_profile_html(row: dict[str, str]) -> str:
     from src.template_engine import render_template
-    from src.utils.player_profile import parse_player_profile_sections
+    from src.utils.player_profile import (
+        parse_player_profile_sections,
+        validate_player_profile_sections,
+    )
 
     profile = {
         "format": row.get("profile_format", ""),
@@ -105,6 +108,11 @@ def render_profile_html(row: dict[str, str]) -> str:
         raise ValueError(
             f"player_id={row.get('player_id')} has no renderable profile_detail"
         )
+    validate_player_profile_sections(
+        sections,
+        player_id=row.get("player_id"),
+        player_name=row.get("name"),
+    )
 
     return render_template("partials/player_profile_standalone.html", sections=sections)
 

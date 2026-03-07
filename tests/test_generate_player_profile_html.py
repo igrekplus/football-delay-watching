@@ -49,6 +49,17 @@ class TestGeneratePlayerProfileHtml(unittest.TestCase):
             / "player-profile.html",
         )
 
+    def test_render_profile_html_rejects_split_history_cards(self):
+        row = {
+            "player_id": "21138",
+            "name": "R. Aït-Nouri",
+            "profile_format": "labelled_lines_v1",
+            "profile_detail": "経歴::アンジェ\\n経歴::ウルヴァーハンプトン",
+        }
+
+        with self.assertRaisesRegex(ValueError, "must stay in a single card.*経歴"):
+            generate_player_profile_html.render_profile_html(row)
+
 
 if __name__ == "__main__":
     unittest.main()

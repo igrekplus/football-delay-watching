@@ -1,6 +1,7 @@
 import re
 
 PROFILE_DETAIL_FORMAT_DEFAULT = "labelled_lines_v1"
+SINGLE_CARD_LABELS = {"経歴"}
 
 
 def build_player_profile_id(player_name: str) -> str:
@@ -68,3 +69,39 @@ def parse_player_profile_sections(
             sections.append({"label": "詳細", "body": line})
 
     return [section for section in sections if section.get("body")]
+
+
+def validate_player_profile_sections(
+    sections: list[dict[str, str]],
+    *,
+    player_id: str | int | None = None,
+    player_name: str | None = None,
+) -> None:
+    """プロフィール表示上、分割を許容しないラベルの重複を検知する。"""
+    label_counts: dict[str, int] = {}
+    for section in sections:
+        label = (section.get("label") or "").strip()
+        if not label:
+            continue
+        label_counts[label] = label_counts.get(label, 0) + 1
+
+    duplicated_labels = sorted(
+        label
+        for label, count in label_counts.items()
+        if label in SINGLE_CARD_LABELS and count > 1
+    )
+    if not duplicated_labels:
+        return
+
+    context_parts = []
+    if player_id is not None:
+        context_parts.append(f"player_id={player_id}")
+    if player_name:
+        context_parts.append(f"player_name={player_name}")
+    context = f" ({', '.join(context_parts)})" if context_parts else ""
+
+    raise ValueError(
+        "Profile contains labels that must stay in a single card"
+        f"{context}: {', '.join(duplicated_labels)}. "
+        "Use one `経歴::` line and continue the timeline on following unlabeled lines."
+    )

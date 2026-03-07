@@ -6,6 +6,7 @@ from src.template_engine import render_template
 from src.utils.player_profile import (
     build_player_profile_slug,
     parse_player_profile_sections,
+    validate_player_profile_sections,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,11 @@ def write_player_profile_files(
         sections = parse_player_profile_sections(profile)
         if not sections:
             continue
+        validate_player_profile_sections(
+            sections,
+            player_id=player_id,
+            player_name=player_name,
+        )
 
         # \u30c6\u30f3\u30d7\u30ec\u30fc\u30c8\u3092\u30ec\u30f3\u30c0\u30ea\u30f3\u30b0\uff08standalone\u7528\uff09
         html_fragment = render_template(

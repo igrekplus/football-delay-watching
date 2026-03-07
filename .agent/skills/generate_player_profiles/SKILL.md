@@ -67,6 +67,10 @@ python scripts/pull_player_csv_from_gcs.py --team-id 50
 - `profile_format`: `labelled_lines_v1`
 - `profile_detail`: `\n` 区切りの本文
 
+重要:
+- `経歴` は **1 回だけ `経歴::` を使い、続きはラベルなし行で改行追記する**
+- `経歴::` が複数回あると standalone HTML 生成時にエラーになる
+
 反映前に、差分がその選手の 1 行だけであることを確認する。
 
 ### Step 5: GCS 正本へ upload
@@ -85,6 +89,7 @@ python scripts/migrate_player_csv_to_gcs.py --team-id 50
 #### 何に注意するか
 
 - **レポート HTML が参照している URL と同じファイル名で上書きすること**
+- `経歴::` が複数行あるプロフィールは、この段階でエラーとして止まる。先に CSV を修正する
 - 既存選手を更新する場合は、まず現在の参照先を確認する
   - `public/reports/<report>.html` 内の `data-player-profile-url`
   - または `public/player-profiles/` に既にある対象ファイル
