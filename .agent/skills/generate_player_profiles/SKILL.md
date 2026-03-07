@@ -13,6 +13,10 @@ skill の内部名は `generate_player_profiles` とし、symlink 側は `genera
 単なる情報収集にとどまらず、基本情報（生年月日や経歴・移籍金）と「熱心なファンでもへぇーとなる」レベルの興味深いエピソードを結合し、
 最終的にレポートの `player_profiles` フィールドに投入できる `labelled_lines_v1` 形式のテキストを出力します。
 
+実運用では、選手プロフィールの正本は GCS の `master/player/player_<team_id>.csv` です。
+`data/player_<team_id>.csv` はローカル作業コピーであり、ここを書き換えただけでは本番のレポート生成には反映されません。
+既存の公開レポートは静的 HTML なので、GCS 更新後に「次回以降の生成」で自然に反映される一方、**すでに生成済みのレポートへ反映したい場合は対象 fixture の再生成と再デプロイが必要**です。
+
 ---
 
 ## 調査対象の選定
@@ -55,6 +59,20 @@ skill の内部名は `generate_player_profiles` とし、symlink 側は `genera
 ### Step 1: 選手リストの確認
 対象試合の選手リストを確認する（`mock_data/facts.json`やHTMLレポート等から）。
 
+### Step 1.5: 対象チームCSVの特定
+プロフィールは選手単位ではなくチーム単位 CSV に保存する。
+
+1. `settings/player_instagram.py` の `TEAM_CSV_FILES` で対象チームの `team_id` と CSV 名を確認する。
+2. まず GCS 正本をローカルへ pull する。
+
+```bash
+python scripts/pull_player_csv_from_gcs.py --team-id 50
+```
+
+注意:
+- 既存の `data/player_<team_id>.csv` をそのまま編集し始めないこと。先に GCS 版を取得し、上書き事故を避ける。
+- 必要なら pull 前のローカルファイルを `temp/` へ退避し、差分確認してから 1 行だけマージする。
+
 ### Step 2: 情報収集（並列実行）
 以下の情報源を活用して調査を行う。
 
@@ -73,6 +91,23 @@ skill の内部名は `generate_player_profiles` とし、symlink 側は `genera
 - 複数行の経歴などは別行（別の `::`）に分けるか `\n` で結合する。
 - **事実のみ記載**し、推測（「〜と思われる」）は排除する。
 - 最終的な出力は**日本語**とする。
+- `経歴` は 1 行に詰め込まず、クラブごとに `経歴::` を複数行に分ける。
+- ただし `経歴::` を細かく分けすぎて読みにくくしない。クラブ数が多い選手は、**読者が知りたい流れが一目で分かる粒度に圧縮**する。
+- 具体的には「生まれた国からの移住」「無名期の下積み」「ブレイクしたクラブ」「直前所属クラブ」「現所属」が追える構成を優先する。
+- ユースとトップ昇格が同一クラブ内で連続する場合は、`エリセイレンセ（ユース→トップ）` のように 1 行へまとめてよい。
+- 直前所属クラブと、ブレイクしたクラブを混同しない。たとえば移籍文脈で重要なのが「直前所属」なのか「評価を上げたクラブ」なのかを意識して書く。
+- 監督コメントは、できるだけ「どの時期に、どういう文脈で出た発言か」が分かるよう短く補足する。
+- ポジションは**本職を先に書く**。コンバート先や臨時起用先は `〜も対応` `〜でも起用` など、従であることが分かる表現にする。
+- `記録` ラベルは安易に使わない。月間賞やシーズン賞なら `受賞`、節目の達成なら `記録`、プレースタイルなら `特徴` など、ラベルと中身を一致させる。
+
+### Step 3.5: セルフレビュー
+整形後、最低限以下を自分で確認する。
+
+1. 経歴が「情報量は多いのに流れが追えない」状態になっていないか。
+2. ポジション欄が、本職よりもコンバート先を強く見せていないか。
+3. 監督・選手の発言欄で、複数時期のコメントを雑に 1 文へ混ぜていないか。
+4. ラベル名 (`特徴` / `受賞` / `記録` など) と本文内容がずれていないか。
+5. 1人だけ情報密度が高すぎて、同一試合内の他選手と比べて読みにくくなっていないか。
 
 #### 良い出力例
 ```text
@@ -92,8 +127,58 @@ skill の内部名は `generate_player_profiles` とし、symlink 側は `genera
 
 ## Step 4: 出力と適用
 
-1. 作成したプロフィールデータを `temp/player_profiles_YYYYMMDD_[home]_vs_[away].md` などのファイルに一時保存・出力する。
-2. その出力結果をもとに、`mock_data/facts.json` (またはシステムに適用する `player_profiles.json` など) の `player_profiles` フィールドへ以下のように統合する。
+1. 作成したプロフィールデータを `temp/player_profiles_YYYYMMDD_[team]_[player].md` または `temp/player_profiles_YYYYMMDD_[home]_vs_[away].md` に一時保存する。
+2. `data/player_<team_id>.csv` の対象選手行に以下 2 カラムを反映する。
+   - `profile_format`: `labelled_lines_v1`
+   - `profile_detail`: `\n` 区切りの本文
+3. 反映前に、差分がその選手の 1 行だけであることを確認する。
+4. 問題なければ GCS 正本へ upload する。
+
+```bash
+python scripts/migrate_player_csv_to_gcs.py --team-id 50
+```
+
+5. 必要に応じてデバッグ実行で表示確認する。
+
+```bash
+TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
+```
+
+### 適用先の原則
+- **正本**: `gs://<bucket>/master/player/player_<team_id>.csv`
+- **ローカル作業コピー**: `data/player_<team_id>.csv`
+- `data/` は `.gitignore` 対象なので、通常は git commit しない。
+- 実行時は `settings/player_instagram.py` により GCS が既定で優先される。
+
+### デバッグ再実行が必要なケース
+- **必要ない**: 今後の新規生成にだけ反映されればよい場合。GCS 更新だけで十分。
+- **必要**: すでに生成済みの公開レポートにも反映したい場合。対象 fixture を再生成し、必要なら再デプロイする。
+
+### 最低限の検証
+1. ローカル CSV の対象行に `profile_format` / `profile_detail` が入っていることを確認する。
+2. 可能なら `PLAYER_DATA_USE_GCS=False` でローカルローダー確認を行う。
+3. GCS upload 後、対象 fixture を再生成した場合は HTML に `player-card-profile-available` や `data-player-profile-id` が出ることを確認する。
+4. 公開反映まで行った場合は、公開 URL 側でもプロフィール本文の断片語句を検索して確認する。
+5. ユーザーから文言レビューが入った場合は、ローカル修正だけで終えず、必要に応じて GCS 正本まで再 upload する。
+
+### 参考コマンド
+```bash
+# 対象行の確認
+python - <<'PY'
+import csv
+from pathlib import Path
+with Path('data/player_50.csv').open(encoding='utf-8', newline='') as f:
+    for row in csv.DictReader(f):
+        if row['player_id'] == '41621':
+            print(row['profile_format'])
+            print(row['profile_detail'])
+            break
+PY
+
+# 公開HTMLに反映されたかの確認
+curl -s https://football-delay-watching-a8830.web.app/reports/<generated>.html | \
+  rg "player-profile-matheus-nunes|ポルトガル / ブラジル"
+```
 
 ```json
 {
