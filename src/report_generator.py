@@ -17,10 +17,7 @@ from src.parsers import (
 from src.utils.api_stats import ApiStats
 from src.utils.datetime_util import DateTimeUtil
 from src.utils.formation_image import get_formation_layout_data
-from src.utils.player_profile import (
-    build_player_profile_id,
-    parse_player_profile_sections,
-)
+from src.utils.player_profile import build_player_profile_url
 
 logger = logging.getLogger(__name__)
 
@@ -149,23 +146,10 @@ class ReportGenerator:
         return html_content, image_paths
 
     def _build_player_profile_modal_html(self, match: MatchAggregate) -> str:
-        """選手プロフィールのモーダル HTML を生成する。"""
+        """選手プロフィールのモーダル HTML シェルを生成する。"""
         from src.template_engine import render_template
 
-        profiles = []
-        for player_name, profile in sorted(match.facts.player_profiles.items()):
-            sections = parse_player_profile_sections(profile)
-            if not sections:
-                continue
-            profiles.append(
-                {
-                    "name": player_name,
-                    "profile_id": build_player_profile_id(player_name),
-                    "sections": sections,
-                }
-            )
-
-        return render_template("partials/player_profile_modal.html", profiles=profiles)
+        return render_template("partials/player_profile_modal.html")
 
     def _generate_shared_debug_section(
         self, matches: list[MatchAggregate], youtube_stats: dict[str, int]
@@ -253,22 +237,8 @@ class ReportGenerator:
         from src.template_engine import render_template
         from src.utils.name_translator import NameTranslator
 
-        image_paths = []
-
-        # デバッグ/モックモードの見出し設定
-        if config.USE_MOCK_DATA:
-            pass
-        elif config.DEBUG_MODE:
-            pass
-
-        # 生成日時
-        from src.utils.datetime_util import DateTimeUtil
-
-        DateTimeUtil.format_display_timestamp()
-
         # コンテキストデータの準備
         image_paths = []
-
         # 選手名をカタカナに変換（フォーメーション図の短縮名用にも必要）
         player_names = self._extract_player_names(match)
         translator = NameTranslator()
@@ -283,9 +253,16 @@ class ReportGenerator:
             if eng_name in match.facts.player_photos and jp_name:
                 player_photos_extended[jp_name] = match.facts.player_photos[eng_name]
 
-        print(
-            f"DEBUG: Home Logo: {match.core.home_logo}, Away Logo: {match.core.away_logo}"
+        logger.debug(
+            "Home Logo: %s, Away Logo: %s", match.core.home_logo, match.core.away_logo
         )
+
+        # 選手プロフィールURLマップの作成 (Issue #237)
+        player_profile_urls = {
+            name: build_player_profile_url(pid, name)
+            for name, pid in match.facts.player_id_map.items()
+            if name in match.facts.player_profiles
+        }
 
         # 選手カードの生成
         home_cards_html = self.player_formatter.format_player_cards(
@@ -297,7 +274,7 @@ class ReportGenerator:
             match.facts.player_birthdates,
             match.facts.player_photos,
             player_instagram=match.facts.player_instagram,
-            player_profiles=match.facts.player_profiles,
+            player_profile_urls=player_profile_urls,
         )
         away_cards_html = self.player_formatter.format_player_cards(
             match.facts.away_lineup,
@@ -308,7 +285,7 @@ class ReportGenerator:
             match.facts.player_birthdates,
             match.facts.player_photos,
             player_instagram=match.facts.player_instagram,
-            player_profiles=match.facts.player_profiles,
+            player_profile_urls=player_profile_urls,
         )
         home_bench_html = self.player_formatter.format_player_cards(
             match.facts.home_bench,
@@ -321,7 +298,7 @@ class ReportGenerator:
             position_label="SUB",
             player_positions=match.facts.player_positions,
             player_instagram=match.facts.player_instagram,
-            player_profiles=match.facts.player_profiles,
+            player_profile_urls=player_profile_urls,
             css_class="player-cards-scroll",
         )
         away_bench_html = self.player_formatter.format_player_cards(
@@ -335,7 +312,7 @@ class ReportGenerator:
             position_label="SUB",
             player_positions=match.facts.player_positions,
             player_instagram=match.facts.player_instagram,
-            player_profiles=match.facts.player_profiles,
+            player_profile_urls=player_profile_urls,
             css_class="player-cards-scroll",
         )
 
@@ -375,7 +352,7 @@ class ReportGenerator:
             player_nationalities=match.facts.player_nationalities,
             player_numbers=match.facts.player_numbers,
             player_photos=match.facts.player_photos,
-            player_profiles=match.facts.player_profiles,
+            player_profile_urls=player_profile_urls,
             player_short_names=short_names_dict,
         )
         away_formation_data = get_formation_layout_data(
@@ -388,7 +365,7 @@ class ReportGenerator:
             player_nationalities=match.facts.player_nationalities,
             player_numbers=match.facts.player_numbers,
             player_photos=match.facts.player_photos,
-            player_profiles=match.facts.player_profiles,
+            player_profile_urls=player_profile_urls,
             player_short_names=short_names_dict,
         )
 

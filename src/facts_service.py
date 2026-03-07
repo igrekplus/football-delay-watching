@@ -123,6 +123,9 @@ class FactsService:
         profiles_by_id = get_player_profiles_by_id()
 
         for player_id, player_name, _ in player_id_name_pairs:
+            # player_id_map を記録
+            match.facts.player_id_map[player_name] = player_id
+
             instagram_url = instagram_urls_by_id.get(player_id)
             if instagram_url:
                 match.facts.player_instagram[player_name] = instagram_url

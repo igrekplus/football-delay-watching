@@ -68,6 +68,7 @@ class MatchFacts:
     player_positions: dict[str, str] = field(default_factory=dict)
     player_instagram: dict[str, str] = field(default_factory=dict)
     player_profiles: dict[str, dict[str, str]] = field(default_factory=dict)
+    player_id_map: dict[str, int] = field(default_factory=dict)  # name -> player_id
 
     # 負傷者情報
     injuries_list: list[dict] = field(default_factory=list)
@@ -427,6 +428,14 @@ class MatchAggregate:
         self.facts.player_profiles = value
 
     @property
+    def player_id_map(self) -> dict[str, int]:
+        return self.facts.player_id_map
+
+    @player_id_map.setter
+    def player_id_map(self, value: dict[str, int]):
+        self.facts.player_id_map = value
+
+    @property
     def injuries_list(self) -> list[dict]:
         return self.facts.injuries_list
 
@@ -686,6 +695,7 @@ class MatchData:
     player_profiles: dict = (
         None  # {"Player Name": {"format": "...", "detail": "..."}, ...}
     )
+    player_id_map: dict = None  # {"Player Name": 41621, ...}
 
     # 負傷者・出場停止情報
     injuries_list: list = (
@@ -757,6 +767,8 @@ class MatchData:
             self.player_instagram = {}
         if self.player_profiles is None:
             self.player_profiles = {}
+        if self.player_id_map is None:
+            self.player_id_map = {}
         if self.injuries_list is None:
             self.injuries_list = []
         if self.h2h_details is None:

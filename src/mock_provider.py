@@ -9,6 +9,7 @@ Issue #73: モックデータの外部化
 
 import json
 import logging
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union
@@ -221,18 +222,29 @@ class MockProvider:
             },
         ]
 
-        # Issue #40: Instagram URL設定（CSVから読み込み）
-        from settings.player_instagram import get_player_instagram_urls_by_name
-
-        instagram_urls = get_player_instagram_urls_by_name()
-
-        all_players = (
-            match.home_lineup + match.home_bench + match.away_lineup + match.away_bench
+        # Issue #40: Instagram URL / Issue #237: Player Profiles
+        from settings.player_instagram import (
+            get_player_instagram_urls_by_id,
+            get_player_profiles_by_id,
         )
 
-        for player_name in all_players:
-            if player_name in instagram_urls:
-                match.player_instagram[player_name] = instagram_urls[player_name]
+        instagram_urls_by_id = get_player_instagram_urls_by_id()
+        profiles_by_id = get_player_profiles_by_id()
+
+        # player_photos の URL から ID を抽出して id_map を作成
+        player_photos = facts.get("player_photos", {})
+        for name, photo_url in player_photos.items():
+            match.facts.player_photos[name] = photo_url
+            match_id = re.search(r"/players/(\d+)\.png", photo_url)
+            if match_id:
+                player_id = int(match_id.group(1))
+                match.facts.player_id_map[name] = player_id
+
+                # CSVデータから補完
+                if player_id in instagram_urls_by_id:
+                    match.facts.player_instagram[name] = instagram_urls_by_id[player_id]
+                if player_id in profiles_by_id:
+                    match.facts.player_profiles[name] = dict(profiles_by_id[player_id])
 
     @classmethod
     def get_youtube_videos(cls, home_team: str, away_team: str) -> list[dict]:

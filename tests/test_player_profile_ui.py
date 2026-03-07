@@ -5,41 +5,30 @@ from src.utils.formation_image import get_formation_layout_data
 
 
 class TestPlayerProfileUi(unittest.TestCase):
-    def test_player_cards_include_profile_trigger_for_profiled_players_only(self):
+    def test_player_cards_include_profile_url_data_attribute(self):
         formatter = PlayerFormatter()
 
+        # Test with profile URL
         html = formatter.format_player_cards(
             lineup=["R. Cherki"],
             formation="4-3-3",
             team_name="Manchester City",
             player_photos={"R. Cherki": "https://example.com/cherki.png"},
-            player_profiles={
-                "R. Cherki": {
-                    "format": "labelled_lines_v1",
-                    "detail": "生まれ::フランス・リヨン",
-                }
+            player_profile_urls={
+                "R. Cherki": "/player-profiles/156477-rayan-cherki.html"
             },
         )
 
-        self.assertIn('class="player-card player-card-profile-available"', html)
-        self.assertIn('class="player-profile-badge"', html)
-        self.assertIn('data-player-profile-id="player-profile-r-cherki"', html)
+        # Static HTML should ONLY have the data attribute. Badge/Classes are added by JS.
+        self.assertIn(
+            'data-player-profile-url="/player-profiles/156477-rayan-cherki.html"', html
+        )
         self.assertIn('data-player-photo="https://example.com/cherki.png"', html)
-        self.assertNotIn("タップで詳細", html)
+        # Class and badge are now added dynamically by JS, so they shouldn't be in static HTML
+        self.assertNotIn("player-card-profile-available", html)
+        self.assertNotIn("player-profile-badge", html)
 
-        html_without_profile = formatter.format_player_cards(
-            lineup=["Rodri"],
-            formation="4-3-3",
-            team_name="Manchester City",
-            player_profiles={},
-        )
-
-        self.assertNotIn('class="player-profile-badge"', html_without_profile)
-        self.assertNotIn(
-            'data-player-profile-id="player-profile-rodri"', html_without_profile
-        )
-
-    def test_formation_layout_data_marks_profile_availability(self):
+    def test_formation_layout_data_includes_profile_url(self):
         layout = get_formation_layout_data(
             formation="4-3-3",
             players=["R. Cherki"],
@@ -50,17 +39,17 @@ class TestPlayerProfileUi(unittest.TestCase):
             player_nationalities={"R. Cherki": "France"},
             player_numbers={"R. Cherki": 10},
             player_photos={},
-            player_profiles={
-                "R. Cherki": {
-                    "format": "labelled_lines_v1",
-                    "detail": "生まれ::フランス・リヨン",
-                }
+            player_profile_urls={
+                "R. Cherki": "/player-profiles/156477-rayan-cherki.html"
             },
         )
 
         player = layout["players"][0]
-        self.assertTrue(player["has_profile"])
-        self.assertEqual(player["profile_id"], "player-profile-r-cherki")
+        self.assertEqual(
+            player["profile_url"], "/player-profiles/156477-rayan-cherki.html"
+        )
+        self.assertNotIn("has_profile", player)
+        self.assertNotIn("profile_id", player)
 
 
 if __name__ == "__main__":

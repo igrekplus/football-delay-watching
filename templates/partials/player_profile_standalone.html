@@ -1,0 +1,6 @@
+{% for section in sections %}
+<section class="player-profile-section">
+    <h4>{{ section.label }}</h4>
+    <p>{% for line in section.body.split('\n') %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
+</section>
+{% endfor %}

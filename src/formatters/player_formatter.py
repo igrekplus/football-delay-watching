@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 from src.utils.nationality_flags import format_player_with_flag
-from src.utils.player_profile import build_player_profile_id
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +154,7 @@ class PlayerFormatter:
         position_label: str = None,
         player_positions: dict[str, str] = None,
         player_instagram: dict[str, str] = None,
-        player_profiles: dict[str, dict[str, str]] = None,
+        player_profile_urls: dict[str, str] = None,
         css_class: str = "player-cards",
     ) -> str:
         """
@@ -178,8 +177,8 @@ class PlayerFormatter:
             player_positions = {}
         if player_instagram is None:
             player_instagram = {}
-        if player_profiles is None:
-            player_profiles = {}
+        if player_profile_urls is None:
+            player_profile_urls = {}
 
         if not lineup:
             return f'<div class="{css_class}"><p>選手情報なし</p></div>'
@@ -201,7 +200,7 @@ class PlayerFormatter:
             birthdate = player_birthdates.get(name, "")
             photo_url = self._sanitize_photo_url(player_photos.get(name, ""))
             instagram_url = player_instagram.get(name, "")
-            profile = player_profiles.get(name)
+            profile_url = player_profile_urls.get(name, "")
             age = self.calculate_age(birthdate)
 
             # 国旗を取得
@@ -226,8 +225,7 @@ class PlayerFormatter:
                     "age_display": age_display,
                     "photo_url": photo_url,
                     "instagram_url": instagram_url,
-                    "has_profile": bool(profile and profile.get("detail")),
-                    "profile_id": build_player_profile_id(name),
+                    "profile_url": profile_url,
                 }
             )
 

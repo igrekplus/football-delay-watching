@@ -16,9 +16,8 @@
                 <div class="pitch-area goal-area-bottom"></div>
             </div>
             {% for player in home.players %}
-            <div class="player-card-horizontal{% if player.has_profile %} player-card-horizontal-profile-available{% endif %}"{% if player.has_profile %}
-                data-player-profile-id="{{ player.profile_id }}" data-player-name="{{ player.name }}"
-                data-player-photo="{{ player.photo }}" role="button" tabindex="0" aria-haspopup="dialog"{% endif %}
+            <div class="player-card-horizontal" data-player-profile-url="{{ player.profile_url }}"
+                data-player-name="{{ player.name }}" data-player-photo="{{ player.photo }}"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
                 <div class="player-photo-container">
                     {% if player.photo %}
@@ -57,9 +56,8 @@
                 <div class="pitch-area goal-area-bottom"></div>
             </div>
             {% for player in away.players %}
-            <div class="player-card-horizontal{% if player.has_profile %} player-card-horizontal-profile-available{% endif %}"{% if player.has_profile %}
-                data-player-profile-id="{{ player.profile_id }}" data-player-name="{{ player.name }}"
-                data-player-photo="{{ player.photo }}" role="button" tabindex="0" aria-haspopup="dialog"{% endif %}
+            <div class="player-card-horizontal" data-player-profile-url="{{ player.profile_url }}"
+                data-player-name="{{ player.name }}" data-player-photo="{{ player.photo }}"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
                 <div class="player-photo-container">
                     {% if player.photo %}

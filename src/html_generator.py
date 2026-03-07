@@ -15,6 +15,7 @@ from config import config
 from settings.calendar_data_loader import update_report_link
 from src.clients.firebase_sync_client import FirebaseSyncClient
 from src.manifest_manager import ManifestManager
+from src.player_profile_generator import write_player_profile_files
 from src.utils.datetime_util import DateTimeUtil
 
 logger = logging.getLogger(__name__)
@@ -162,6 +163,9 @@ def generate_html_reports(report_list: list) -> list:
         output_path = os.path.join(REPORTS_DIR, html_filename)
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
+
+        # プロフィールHTML生成 (Issue #237)
+        write_player_profile_files(match, output_dir="public/player-profiles")
 
         html_paths.append(output_path)
         logger.info(f"Generated HTML: {output_path}")

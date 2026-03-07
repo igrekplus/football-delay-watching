@@ -11,6 +11,17 @@ def build_player_profile_id(player_name: str) -> str:
     return f"player-profile-{slug}"
 
 
+def build_player_profile_slug(player_id: int, player_name: str) -> str:
+    """player_id + name -> URL slug（例: 41621-matheus-nunes）"""
+    name_slug = re.sub(r"[^a-z0-9]+", "-", player_name.lower()).strip("-") or "player"
+    return f"{player_id}-{name_slug}"
+
+
+def build_player_profile_url(player_id: int, player_name: str) -> str:
+    """選手プロフィールHTMLの相対URL（例: /player-profiles/41621-matheus-nunes.html）"""
+    return f"/player-profiles/{build_player_profile_slug(player_id, player_name)}.html"
+
+
 def parse_player_profile_sections(
     profile: dict[str, str] | None,
 ) -> list[dict[str, str]]:
