@@ -232,3 +232,4 @@ python -m unittest tests/test_datetime_util.py
   - `reviewer_mode`: 高度な技術レビュー
   - `research_commentary_info`: 実況・解説情報の調査
   - `generate_player_profiles`: 選手詳細プロフィールの作成（基本情報＋深掘りエピソード）
+  - `create_codex_skill_reference`: Gemini / Antigravity 由来の skill を Codex の `$...` で使える状態にする
