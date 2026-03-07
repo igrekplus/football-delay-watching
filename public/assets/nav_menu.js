@@ -12,24 +12,60 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Toggle Menu
-    const toggleMenu = () => {
-        const isOpen = drawer.classList.contains('open');
+    const setMenuOpen = (isOpen) => {
         if (isOpen) {
-            drawer.classList.remove('open');
-            overlay.classList.remove('visible');
-            btn.innerHTML = '☰';
-            document.body.style.overflow = ''; // Restore scroll
-        } else {
             drawer.classList.add('open');
             overlay.classList.add('visible');
             btn.innerHTML = '✕';
+            btn.setAttribute('aria-expanded', 'true');
             document.body.style.overflow = 'hidden'; // Prevent scroll
+        } else {
+            drawer.classList.remove('open');
+            overlay.classList.remove('visible');
+            btn.innerHTML = '☰';
+            btn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = ''; // Restore scroll
         }
+    };
+
+    const toggleMenu = () => {
+        setMenuOpen(!drawer.classList.contains('open'));
+    };
+
+    const isTypingTarget = (target) => {
+        if (!(target instanceof HTMLElement)) {
+            return false;
+        }
+
+        const tagName = target.tagName;
+        return (
+            target.isContentEditable ||
+            tagName === 'INPUT' ||
+            tagName === 'TEXTAREA' ||
+            tagName === 'SELECT'
+        );
     };
 
     btn.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', toggleMenu);
+
+    document.addEventListener('keydown', (event) => {
+        if (
+            event.defaultPrevented ||
+            event.repeat ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.altKey ||
+            isTypingTarget(event.target)
+        ) {
+            return;
+        }
+
+        if (event.key === '[') {
+            event.preventDefault();
+            toggleMenu();
+        }
+    });
 
     // Highlight active link
     const currentPath = window.location.pathname;
@@ -49,8 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
     links.forEach(link => {
         link.addEventListener('click', () => {
             if (drawer.classList.contains('open')) {
-                toggleMenu();
+                setMenuOpen(false);
             }
         });
     });
+
+    setMenuOpen(false);
 });

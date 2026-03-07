@@ -227,12 +227,19 @@ class CalendarGenerator:
         <div class="weeks-wrapper">
 """
 
+        first_rendered_week = True
+
         for week in weeks_data:
             if not any(league in week["leagues"] for league in league_order):
                 continue
 
+            section_classes = "week-section"
+            if first_rendered_week:
+                section_classes += " collapsed"
+                first_rendered_week = False
+
             html += f"""
-            <section class="week-section">
+            <section class="{section_classes}">
                 <h2 class="week-header" onclick="toggleWeekSection(this)">🗓️ {week["label"]} <span class="fold-icon">▼</span></h2>
                 <div class="league-columns week-content">
 """

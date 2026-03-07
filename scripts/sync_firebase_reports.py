@@ -29,6 +29,7 @@ if str(REPO_ROOT) not in sys.path:
 import requests  # noqa: E402
 
 from src.clients.firebase_sync_client import get_shared_reports_dir  # noqa: E402
+from src.manifest_manager import prune_missing_manifest_entries  # noqa: E402
 
 # ロギング設定
 logging.basicConfig(
@@ -224,10 +225,17 @@ def sync_reports() -> None:
 
     # マニフェストをマージして保存
     merged = merge_manifests(local_manifest, remote_manifest)
+    merged, removed_files = prune_missing_manifest_entries(merged, LOCAL_REPORTS_DIR)
     manifest_path = LOCAL_REPORTS_DIR / "manifest.json"
 
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(merged, f, ensure_ascii=False, indent=4)
+
+    if removed_files:
+        logger.info(
+            "Pruned %d stale manifest entries that do not exist locally",
+            len(removed_files),
+        )
 
     # 新構造対応のログ出力
     match_count = sum(

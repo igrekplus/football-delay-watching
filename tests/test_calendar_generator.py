@@ -67,6 +67,42 @@ class TestCalendarGenerator(TestCase):
         self.assertEqual(weeks[0]["leagues"]["EPL"][0]["fixture_id"], 2001)
         self.assertNotIn("EPL", weeks[1]["leagues"])
 
+    def test_render_html_collapses_only_oldest_rendered_week_by_default(self):
+        fixture = {
+            "fixture_id": 3001,
+            "kickoff_jst": pytz.timezone("Asia/Tokyo").localize(
+                datetime(2026, 2, 23, 20, 0, 0)
+            ),
+            "home_team": "Home",
+            "away_team": "Away",
+            "home_logo": "home.png",
+            "away_logo": "away.png",
+            "round": "Regular Season - 1",
+            "venue": "Test Stadium",
+            "commentary": {},
+        }
+        weeks = [
+            {"label": "2/16(月) - 2/22(日)", "leagues": {}},
+            {"label": "2/23(月) - 3/1(日)", "leagues": {"EPL": [fixture]}},
+            {"label": "3/2(月) - 3/8(日)", "leagues": {"EPL": [fixture]}},
+        ]
+
+        html = self.generator._render_html(weeks)
+
+        self.assertEqual(html.count('class="week-section collapsed"'), 1)
+        self.assertIn(
+            '<section class="week-section collapsed">\n'
+            '                <h2 class="week-header" onclick="toggleWeekSection(this)">'
+            "🗓️ 2/23(月) - 3/1(日)",
+            html,
+        )
+        self.assertIn(
+            '<section class="week-section">\n'
+            '                <h2 class="week-header" onclick="toggleWeekSection(this)">'
+            "🗓️ 3/2(月) - 3/8(日)",
+            html,
+        )
+
     @staticmethod
     def _fixture_item(fixture_id: int, date_iso: str) -> dict:
         return {
