@@ -4,8 +4,6 @@ Jinja2 テンプレートエンジン設定モジュール
 レポート生成用のテンプレート環境を提供する。
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape

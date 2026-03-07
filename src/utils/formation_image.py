@@ -3,8 +3,6 @@ Formation Image Generator
 Generates formation diagram images using Pillow (PIL)
 """
 
-from __future__ import annotations
-
 import logging
 import os
 

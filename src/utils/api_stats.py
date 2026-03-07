@@ -4,8 +4,6 @@ API統計管理モジュール
 すべてのAPI呼び出し統計を一元管理し、レポートやメール通知で使用する。
 """
 
-from __future__ import annotations
-
 import logging
 from dataclasses import dataclass
 

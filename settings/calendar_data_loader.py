@@ -2,8 +2,6 @@
 カレンダー情報（解説者・レポートリンク）の読み込み・管理モジュール
 """
 
-from __future__ import annotations
-
 import csv
 import io
 import logging

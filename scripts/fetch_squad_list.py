@@ -13,8 +13,6 @@ Team IDs:
     Tottenham: 47
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import logging
