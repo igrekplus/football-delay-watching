@@ -302,15 +302,8 @@ class CalendarGenerator:
                 </div>
             </section>"""
 
-        html += (
-            """
+        html += """
         </div>
-
-        <footer class="timestamp">
-            ページ更新時刻: """
-            + DateTimeUtil.format_display_timestamp()
-            + """
-        </footer>
     </div>
 
     <script src="/assets/calendar_filter.js"></script>
@@ -385,7 +378,6 @@ class CalendarGenerator:
 </body>
 </html>
 """
-        )
         return html
 
 
