@@ -190,6 +190,9 @@
         const content = modal.querySelector(".player-profile-modal-content");
         const photoFrame = modal.querySelector("#player-profile-modal-photo-frame");
         const photo = modal.querySelector("#player-profile-modal-photo");
+        const meta = modal.querySelector("#player-profile-modal-meta");
+        const flag = modal.querySelector("#player-profile-modal-flag");
+        const teamLogo = modal.querySelector("#player-profile-modal-team-logo");
         const preloadedProfiles = new Map();
 
         const closeModal = () => {
@@ -203,14 +206,42 @@
             if (!url || !preloadedProfiles.has(url)) return;
 
             title.textContent = trigger.getAttribute("data-player-name") || "";
+            const playerName = title.textContent;
             const photoUrl = trigger.getAttribute("data-player-photo") || "";
             if (photoUrl) {
                 photo.src = photoUrl;
-                photo.alt = title.textContent;
+                photo.alt = playerName;
                 photoFrame.hidden = false;
             } else {
+                photo.removeAttribute("src");
+                photo.alt = "";
                 photoFrame.hidden = true;
             }
+
+            const flagUrl = trigger.getAttribute("data-player-flag-url") || "";
+            const nationality = trigger.getAttribute("data-player-nationality") || "";
+            if (flagUrl) {
+                flag.src = flagUrl;
+                flag.alt = nationality ? `${nationality}の国旗` : "";
+                flag.hidden = false;
+            } else {
+                flag.removeAttribute("src");
+                flag.alt = "";
+                flag.hidden = true;
+            }
+
+            const teamLogoUrl = trigger.getAttribute("data-player-team-logo") || "";
+            const teamName = trigger.getAttribute("data-player-team-name") || "";
+            if (teamLogoUrl) {
+                teamLogo.src = teamLogoUrl;
+                teamLogo.alt = teamName ? `${teamName}のロゴ` : "";
+                teamLogo.hidden = false;
+            } else {
+                teamLogo.removeAttribute("src");
+                teamLogo.alt = "";
+                teamLogo.hidden = true;
+            }
+            meta.hidden = !flagUrl && !teamLogoUrl;
 
             content.innerHTML = preloadedProfiles.get(url);
             modal.hidden = false;

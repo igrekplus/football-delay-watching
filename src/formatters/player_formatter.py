@@ -1,7 +1,10 @@
 import logging
 from datetime import datetime
 
-from src.utils.nationality_flags import format_player_with_flag
+from src.utils.nationality_flags import (
+    format_player_with_flag,
+    get_flagcdn_country_code,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +159,7 @@ class PlayerFormatter:
         player_instagram: dict[str, str] = None,
         player_profile_urls: dict[str, str] = None,
         css_class: str = "player-cards",
+        team_logo: str = "",
     ) -> str:
         """
         選手リストをカード形式のHTMLに変換
@@ -207,6 +211,12 @@ class PlayerFormatter:
             flag = (
                 format_player_with_flag("", nationality).strip() if nationality else ""
             )
+            nationality_code = get_flagcdn_country_code(nationality)
+            flag_url = (
+                f"https://flagcdn.com/{nationality_code}.svg"
+                if nationality_code
+                else ""
+            )
 
             # 表示用データの整理
             number_display = f"#{number}" if number is not None else ""
@@ -221,11 +231,14 @@ class PlayerFormatter:
                     "position": position,
                     "number_display": number_display,
                     "nationality": nationality,
+                    "flag_url": flag_url,
                     "flag": flag,
                     "age_display": age_display,
                     "photo_url": photo_url,
                     "instagram_url": instagram_url,
                     "profile_url": profile_url,
+                    "team_logo": team_logo,
+                    "team_name": team_name,
                 }
             )
 

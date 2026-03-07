@@ -18,6 +18,8 @@
             {% for player in home.players %}
             <div class="player-card-horizontal" data-player-profile-url="{{ player.profile_url }}"
                 data-player-name="{{ player.name }}" data-player-photo="{{ player.photo }}"
+                data-player-flag-url="{{ player.flag_url }}" data-player-nationality="{{ player.nationality_name }}"
+                data-player-team-logo="{{ player.team_logo }}" data-player-team-name="{{ player.team_name }}"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
                 <div class="player-photo-container">
                     {% if player.photo %}
@@ -58,6 +60,8 @@
             {% for player in away.players %}
             <div class="player-card-horizontal" data-player-profile-url="{{ player.profile_url }}"
                 data-player-name="{{ player.name }}" data-player-photo="{{ player.photo }}"
+                data-player-flag-url="{{ player.flag_url }}" data-player-nationality="{{ player.nationality_name }}"
+                data-player-team-logo="{{ player.team_logo }}" data-player-team-name="{{ player.team_name }}"
                 style="top: {{ player.top_percent }}%; left: {{ player.left_percent }}%;">
                 <div class="player-photo-container">
                     {% if player.photo %}

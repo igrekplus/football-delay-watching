@@ -58,6 +58,30 @@ class TestGeneratePlayerProfileHtml(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "must stay in a single card.*経歴"):
             generate_player_profile_html.render_profile_html(row)
 
+    def test_render_profile_html_groups_basic_info_card(self):
+        row = {
+            "player_id": "1622",
+            "name": "G. Donnarumma",
+            "profile_format": "labelled_lines_v1",
+            "profile_detail": (
+                "生まれ::1999年2月25日、イタリア・カステッランマーレ・ディ・スタービア\\n"
+                "国籍::イタリア\\n"
+                "ポジション::ゴールキーパー\\n"
+                "身長・利き足::196cm / 右足\\n"
+                "特徴::至近距離への反応に強い"
+            ),
+        }
+
+        html = generate_player_profile_html.render_profile_html(row)
+
+        self.assertIn("<h4>基本情報</h4>", html)
+        self.assertIn(
+            "生まれ：1999年2月25日、イタリア・カステッランマーレ・ディ・スタービア",
+            html,
+        )
+        self.assertIn("国籍：イタリア", html)
+        self.assertIn("<h4>特徴</h4>", html)
+
 
 if __name__ == "__main__":
     unittest.main()

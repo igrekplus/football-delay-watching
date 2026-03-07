@@ -2,6 +2,8 @@ import re
 
 PROFILE_DETAIL_FORMAT_DEFAULT = "labelled_lines_v1"
 SINGLE_CARD_LABELS = {"経歴"}
+BASIC_INFO_LABELS = ("生まれ", "国籍", "ポジション", "身長・利き足")
+BASIC_INFO_LABEL_SET = set(BASIC_INFO_LABELS)
 
 
 def build_player_profile_id(player_name: str) -> str:
@@ -67,7 +69,39 @@ def parse_player_profile_sections(
         else:
             sections.append({"label": "詳細", "body": line})
 
-    return [section for section in sections if section.get("body")]
+    sections = [section for section in sections if section.get("body")]
+    return _collapse_basic_info_sections(sections)
+
+
+def _collapse_basic_info_sections(
+    sections: list[dict[str, str]],
+) -> list[dict[str, str]]:
+    """基本情報系ラベルを1枚のカードにまとめる。"""
+    collapsed_sections: list[dict[str, str]] = []
+    basic_info_lines: list[str] = []
+    basic_info_insert_index: int | None = None
+
+    for section in sections:
+        label = (section.get("label") or "").strip()
+        body = (section.get("body") or "").strip()
+        if not body:
+            continue
+
+        if label in BASIC_INFO_LABEL_SET:
+            if basic_info_insert_index is None:
+                basic_info_insert_index = len(collapsed_sections)
+            basic_info_lines.append(f"{label}：{body}")
+            continue
+
+        collapsed_sections.append(section)
+
+    if basic_info_lines:
+        collapsed_sections.insert(
+            basic_info_insert_index if basic_info_insert_index is not None else 0,
+            {"label": "基本情報", "body": "\n".join(basic_info_lines)},
+        )
+
+    return collapsed_sections
 
 
 def validate_player_profile_sections(

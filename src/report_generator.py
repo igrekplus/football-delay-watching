@@ -276,6 +276,7 @@ class ReportGenerator:
             match.facts.player_photos,
             player_instagram=match.facts.player_instagram,
             player_profile_urls=player_profile_urls,
+            team_logo=match.core.home_logo,
         )
         away_cards_html = self.player_formatter.format_player_cards(
             match.facts.away_lineup,
@@ -287,6 +288,7 @@ class ReportGenerator:
             match.facts.player_photos,
             player_instagram=match.facts.player_instagram,
             player_profile_urls=player_profile_urls,
+            team_logo=match.core.away_logo,
         )
         home_bench_html = self.player_formatter.format_player_cards(
             match.facts.home_bench,
@@ -301,6 +303,7 @@ class ReportGenerator:
             player_instagram=match.facts.player_instagram,
             player_profile_urls=player_profile_urls,
             css_class="player-cards-scroll",
+            team_logo=match.core.home_logo,
         )
         away_bench_html = self.player_formatter.format_player_cards(
             match.facts.away_bench,
@@ -315,6 +318,7 @@ class ReportGenerator:
             player_instagram=match.facts.player_instagram,
             player_profile_urls=player_profile_urls,
             css_class="player-cards-scroll",
+            team_logo=match.core.away_logo,
         )
 
         home_injuries = [

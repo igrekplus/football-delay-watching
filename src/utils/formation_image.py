@@ -403,10 +403,13 @@ def get_formation_layout_data(
                         "number": player_numbers.get(name, ""),
                         "photo": player_photos.get(name, ""),
                         "nationality": nationality_code,
+                        "nationality_name": nationality_name,
                         "flag_url": flag_url,
                         "top_percent": round(base_top_percent + y_offsets[i], 1),
                         "left_percent": round(left_percent, 1),
                         "profile_url": player_profile_urls.get(name, ""),
+                        "team_logo": team_logo,
+                        "team_name": team_name,
                     }
                 )
                 player_idx += 1
