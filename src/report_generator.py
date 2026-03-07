@@ -258,12 +258,15 @@ class ReportGenerator:
         )
 
         # 選手プロフィールURLマップの作成 (Issue #237)
-        # プロフィール本文が未作成でも固定URLを先に埋めておけば、
-        # 後から standalone HTML を追加した際に既存レポートから拾える。
+        # 翻訳後の日本語名でも同じURLを引けるようにしておく。
         player_profile_urls = {
             name: build_player_profile_url(pid, name)
             for name, pid in match.facts.player_id_map.items()
         }
+        for eng_name, jp_name in translations.items():
+            if not jp_name or eng_name not in match.facts.player_id_map:
+                continue
+            player_profile_urls[jp_name] = player_profile_urls[eng_name]
 
         # 選手カードの生成
         home_cards_html = self.player_formatter.format_player_cards(

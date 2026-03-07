@@ -24,8 +24,18 @@ def write_player_profile_files(
 
     generated_files = []
 
-    # name -> player_id \u306e\u30de\u30c3\u30d7\u3092\u5229\u7528
-    player_id_map = match.facts.player_id_map
+    # name -> player_id のマップを利用。翻訳後の日本語名も拾えるよう拡張する。
+    player_id_map = dict(match.facts.player_id_map)
+    try:
+        from src.utils.name_translator import NameTranslator
+
+        translator = NameTranslator()
+        translations = translator._get_translations(list(player_id_map.keys()))
+        for eng_name, jp_name in translations.items():
+            if jp_name and eng_name in player_id_map:
+                player_id_map[jp_name] = player_id_map[eng_name]
+    except Exception:
+        logger.warning("Failed to extend player_id_map with translated names")
 
     for player_name, profile in match.facts.player_profiles.items():
         player_id = player_id_map.get(player_name)
