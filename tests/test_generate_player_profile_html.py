@@ -6,11 +6,9 @@ from scripts import generate_player_profile_html
 
 
 class TestGeneratePlayerProfileHtml(unittest.TestCase):
-    def test_resolve_output_path_prefers_existing_file(self):
+    def test_resolve_output_path_uses_player_id_stable_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_dir = Path(tmp_dir)
-            existing = output_dir / "156477-rayan-cherki.html"
-            existing.write_text("", encoding="utf-8")
 
             resolved = generate_player_profile_html.resolve_output_path(
                 player_id="156477",
@@ -19,9 +17,9 @@ class TestGeneratePlayerProfileHtml(unittest.TestCase):
                 output_dir=str(output_dir),
             )
 
-            self.assertEqual(resolved, existing)
+            self.assertEqual(resolved, output_dir / "156477.html")
 
-    def test_resolve_output_path_falls_back_to_slug(self):
+    def test_resolve_output_path_falls_back_to_player_id_filename(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_dir = Path(tmp_dir)
 
@@ -32,7 +30,7 @@ class TestGeneratePlayerProfileHtml(unittest.TestCase):
                 output_dir=str(output_dir),
             )
 
-            self.assertEqual(resolved, output_dir / "41621-matheus-nunes.html")
+            self.assertEqual(resolved, output_dir / "41621.html")
 
     def test_resolve_output_path_uses_project_root_for_relative_override(self):
         resolved = generate_player_profile_html.resolve_output_path(

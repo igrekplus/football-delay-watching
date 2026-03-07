@@ -79,15 +79,6 @@ def resolve_output_path(
         return resolve_project_path(output_path)
 
     resolved_output_dir = resolve_project_path(output_dir)
-    existing_files = sorted(resolved_output_dir.glob(f"{player_id}-*.html"))
-    if len(existing_files) == 1:
-        return existing_files[0]
-    if len(existing_files) > 1:
-        raise ValueError(
-            f"Multiple existing standalone profile files found for player_id={player_id}: "
-            + ", ".join(str(path) for path in existing_files)
-        )
-
     slug = build_player_profile_slug(int(player_id), player_name)
     return resolved_output_dir / f"{slug}.html"
 
