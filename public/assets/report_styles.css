@@ -663,13 +663,17 @@ pre {
 
 .player-profile-modal-heading {
     min-width: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    flex: 1;
 }
 
-.player-profile-modal-title-row {
+.player-profile-modal-heading-main {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
 }
 
 .player-profile-modal-eyebrow {
@@ -689,7 +693,14 @@ pre {
 .player-profile-modal-meta {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    align-self: stretch;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(104, 187, 255, 0.22);
+    background: rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
+    min-height: 62px;
 }
 
 .player-profile-modal-flag,
@@ -700,18 +711,20 @@ pre {
 }
 
 .player-profile-modal-flag {
-    width: 24px;
-    height: 18px;
-    border-radius: 3px;
+    width: 42px;
+    height: 30px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 }
 
 .player-profile-modal-team-logo {
-    width: 24px;
-    height: 24px;
+    width: 42px;
+    height: 42px;
     border-radius: 999px;
-    padding: 2px;
+    padding: 4px;
     box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 }
 
 .player-profile-section + .player-profile-section {
@@ -1957,6 +1970,27 @@ body.player-profile-open {
 
     .player-name-text {
         font-size: 10px;
+    }
+
+    .player-profile-modal-heading {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .player-profile-modal-meta {
+        width: 100%;
+        min-height: 0;
+        padding: 8px 12px;
+    }
+
+    .player-profile-modal-flag {
+        width: 36px;
+        height: 26px;
+    }
+
+    .player-profile-modal-team-logo {
+        width: 36px;
+        height: 36px;
     }
 
     .player-number-badge {
