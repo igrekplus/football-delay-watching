@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Player Profile Modal Preview</title>
+    <link rel="stylesheet" href="/assets/report_styles.css">
+    <style>
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top, rgba(38, 110, 202, 0.25), transparent 35%),
+                #020d22;
+            min-height: 100vh;
+        }
+
+        .player-profile-modal {
+            position: static;
+            inset: auto;
+            display: block;
+            min-height: 100vh;
+        }
+
+        .player-profile-modal-backdrop,
+        .player-profile-modal-close {
+            display: none;
+        }
+
+        .player-profile-modal-dialog {
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body class="player-profile-open">
+    <div class="player-profile-modal" id="player-profile-modal">
+        <div class="player-profile-modal-dialog" role="dialog" aria-modal="true"
+            aria-labelledby="player-profile-modal-title">
+            <div class="player-profile-modal-header">
+                <div class="player-profile-modal-identity">
+                    <div class="player-profile-modal-photo-frame" id="player-profile-modal-photo-frame">
+                        <img id="player-profile-modal-photo" class="player-profile-modal-photo"
+                            src="https://media.api-sports.io/football/players/162489.png" alt="ジェームズ・トラフォード">
+                    </div>
+                    <div class="player-profile-modal-heading">
+                        <div class="player-profile-modal-heading-main">
+                            <p class="player-profile-modal-eyebrow">PLAYER PROFILE</p>
+                            <h3 id="player-profile-modal-title" class="player-profile-modal-title">ジェームズ・トラフォード</h3>
+                        </div>
+                        <div class="player-profile-modal-meta" id="player-profile-modal-meta">
+                            <img id="player-profile-modal-flag" class="player-profile-modal-flag"
+                                src="https://flagcdn.com/gb-eng.svg" alt="イングランドの国旗">
+                            <img id="player-profile-modal-team-logo" class="player-profile-modal-team-logo"
+                                src="https://media.api-sports.io/football/teams/50.png" alt="マンチェスター・シティのロゴ">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="player-profile-modal-content">
+                <section class="player-profile-section">
+                    <h4>基本情報</h4>
+                    <p>生まれ：2002年10月10日、イングランド・カンブリア州グレイサウゼン<br>国籍：イングランド<br>ポジション：ゴールキーパー<br>身長・利き足：197cm / 右利き</p>
+                </section>
+                <section class="player-profile-section">
+                    <h4>経歴</h4>
+                    <p>9歳までミッドフィルダーとしてプレーした後、GKに転向。カーライル・ユナイテッドを経て12歳でマンチェスター・シティのアカデミーへ。<br>2021-2023: マンチェスター・シティ（途中アクリントン、ボルトンへ期限付き移籍）<br>2023-2025: バーンリー<br>2025-: マンチェスター・シティ</p>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
