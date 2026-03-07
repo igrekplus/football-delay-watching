@@ -64,7 +64,7 @@ python src/workflows/generate_player_profile/pull_csv.py --team-id 50
 
 前提:
 - `data/player_*.csv` は `profile_format` / `profile_detail` 列を持つ新形式を前提とする
-- もし古いCSVが見つかった場合は、先に次のスクリプトで一括マイグレーションする
+- もし例外的に古いCSVが見つかった場合のみ、先に次のスクリプトで一括マイグレーションする
 
 ```bash
 python src/workflows/generate_player_profile/migrate_player_csv_format.py
