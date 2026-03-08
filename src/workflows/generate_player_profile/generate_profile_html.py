@@ -59,7 +59,7 @@ def load_player_row(team_id: int, player_id: str) -> dict[str, str]:
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV not found: {csv_path}")
 
-    with csv_path.open(encoding="utf-8", newline="") as f:
+    with csv_path.open(encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             if row.get("player_id") == str(player_id):
                 return row
