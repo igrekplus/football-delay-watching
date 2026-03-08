@@ -6,20 +6,21 @@
 
 | 方式 | 説明 | 用途 |
 |------|------|------|
-| ID/PW認証 | メールアドレス+パスワードでログイン | テスト・開発用（管理者のみ発行可能） |
-| Google OAuth | Googleアカウントでログイン | 本運用向け（許可リスト制御） |
+| ID/PW認証 | メールアドレス+パスワードでログイン | テスト・開発用（許可リスト登録済みアカウントのみ） |
+| Google OAuth | Googleアカウントでログイン | 本運用向け（初回ログインを含め全員利用可） |
 
 ### 1.2 認可ルール
 
-- **許可リスト制御**: `allowed_emails.json` に登録されたメールアドレスのみアクセス可能
-- 管理者が許可リストを編集 → デプロイで反映
+- **Google OAuth**: Firebase Authentication の Google Provider が有効なら、誰でも初回ログイン可能
+- **ID/PW認証**: `allowed_emails.json` に登録されたメールアドレスのみアクセス可能
+- 管理者が `allowed_emails.json` を編集 → デプロイで ID/PW 許可対象に反映
 
 ### 1.3 エラーメッセージ
 
 | ケース | メッセージ |
 |--------|-----------|
 | ID/PW間違い | 「メールアドレスまたはパスワードが間違っています」 |
-| OAuth許可リスト外 | 「このアカウントは許可リストに登録されていません」 |
+| ID/PW許可リスト外 | 「ID/PWログインは許可リストに登録されたアカウントのみ利用できます」 |
 
 ### 1.4 ログイン後の遷移
 
@@ -39,7 +40,9 @@
   - Email/Password Provider
   - Google Provider (Popup mode only)
   - **Persistence**: 明示的に `LOCAL` を設定（ブラウザを閉じても維持）
-- **認可チェック**: クライアント側で `allowed_emails.json` と照合
+- **認可チェック**:
+  - Google OAuth はログイン済みであれば通過
+  - ID/PW はクライアント側で `allowed_emails.json` と照合
 - **Mobile Support**: Limited (Popup may be blocked or fail on some mobile browsers)
 
 ### 2.2 ファイル構成
@@ -48,8 +51,8 @@
 public/
 ├── index.html           # ログイン画面 + レポート一覧（サブ導線）
 ├── calendar.html        # ログイン後の主導線（カレンダー）
-├── assets/auth_common.js # 認証共通処理（設定読込・許可判定・ログアウト）
-├── allowed_emails.json  # 許可メールアドレスリスト
+├── assets/auth_common.js # 認証共通処理（設定読込・provider判定・ログアウト）
+├── allowed_emails.json  # ID/PWログイン用の許可メールアドレスリスト
 └── firebase_config.json # Firebase設定
 ```
 
@@ -63,16 +66,20 @@ flowchart TD
     C --> E{認証成功?}
     D --> E
     E -->|失敗| F[エラー表示: ID/PW間違い]
-    E -->|成功| G{許可リストに存在?}
-    G -->|No| H[エラー表示: 許可リスト外]
+    E -->|成功| G{Googleログイン?}
     G -->|Yes| I[カレンダーへ遷移]
+    G -->|No| H{許可リストに存在?}
+    H -->|No| M[エラー表示: ID/PW許可リスト外]
+    H -->|Yes| I[カレンダーへ遷移]
     I --> J[レポートへ直接遷移]
     I --> K[レポート一覧へ遷移]
     K --> L[レポートへ遷移]
-    H --> M[サインアウト]
+    M --> N[サインアウト]
 ```
 
 ### 2.4 allowed_emails.json 形式
+
+`allowed_emails.json` は **ID/PW ログイン専用**。Google OAuth では参照しない。
 
 ```json
 {
@@ -142,6 +149,7 @@ flowchart TD
         -   Email link (passwordless sign-in): `Disabled`
     -   **Google**: `Enabled` (有効)
         -   Web SDK configuration: Client ID / Secret が正しく設定されていること（GCP連携時に自動設定されるが要確認）
+        -   初回ログイン時のユーザー自動作成を妨げる追加の許可リストは設けない
 
 2.  **Settings (全般設定)**
     -   **Authorized domains (承認済みドメイン)**
@@ -157,9 +165,11 @@ flowchart TD
 
 ### 5.2 ユーザー追加手順
 
-1.  `public/allowed_emails.json` に許可するメールアドレスを追加
-2.  `firebase deploy --only hosting` でデプロイ
-3.  Email/Password認証を使う場合は、Firebase Console > Authentication > Users で事前にユーザーを作成する必要がある
+1.  **Google OAuth ユーザー**: 事前登録不要。Google ログイン時に Firebase Authentication 側でユーザーが自動作成される
+2.  **ID/PW ユーザー**:
+    - `public/allowed_emails.json` に許可するメールアドレスを追加
+    - `firebase deploy --only hosting` で反映
+    - Firebase Console > Authentication > Users で事前にユーザーを作成する
 
 ### 5.3 Hosting 設定
 - **Hosting URL**: `https://football-delay-watching-a8830.web.app`
@@ -173,4 +183,4 @@ flowchart TD
 |------|----------|-------|
 | Email/Password認証が機能しない | 未対応 | [#183](https://github.com/igrekplus/football-delay-watching/issues/183) |
 | Firebase SDK v8 → v9 移行 | 対応済み | [#184](https://github.com/igrekplus/football-delay-watching/issues/184) |
-| `allowed_emails.json` の公開露出 | 許容（ドキュメント化済み） | - |
+| `allowed_emails.json` の公開露出 | 許容（ID/PW向けの限定リスト用途として継続） | - |

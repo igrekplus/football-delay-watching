@@ -53,5 +53,14 @@
         ]
       }
     ]
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "football-delay-watching",
+        "supportEmail": "nakame.kate@gmail.com"
+      }
+    }
   }
 }

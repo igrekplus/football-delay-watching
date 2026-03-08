@@ -319,7 +319,7 @@ class CalendarGenerator:
         import {
             fetchFirebaseConfig,
             fetchAllowedEmails,
-            isAllowedEmail,
+            evaluateUserAccess,
             logoutUser,
             showUserInfo
         } from '/assets/auth_common.js';
@@ -353,8 +353,8 @@ class CalendarGenerator:
                         allowedEmails = await fetchAllowedEmails();
                     }
 
-                    const isAllowed = isAllowedEmail(user.email || '', allowedEmails);
-                    if (!isAllowed) {
+                    const accessPolicy = await evaluateUserAccess(user, allowedEmails);
+                    if (!accessPolicy.allowed) {
                         await logoutUser(auth, redirectToLogin);
                         return;
                     }

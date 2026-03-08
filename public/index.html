@@ -365,7 +365,7 @@
         import {
             fetchFirebaseConfig,
             fetchAllowedEmails,
-            isAllowedEmail,
+            evaluateUserAccess,
             logoutUser
         } from '/assets/auth_common.js';
 
@@ -397,7 +397,7 @@
         // Firebase設定を外部ファイルから読み込み
         let firebaseConfig = {};
 
-        // 許可するメールアドレス（allowed_emails.jsonから読み込み）
+        // ID/PWログインのみ許可するメールアドレス（allowed_emails.jsonから読み込み）
         let ALLOWED_EMAILS = [];
         let authInitErrorMessage = '';
 
@@ -445,9 +445,10 @@
                             ALLOWED_EMAILS = await fetchAllowedEmails();
                         }
 
-                        const isAllowed = isAllowedEmail(user.email, ALLOWED_EMAILS);
+                        const accessPolicy = await evaluateUserAccess(user, ALLOWED_EMAILS);
+                        console.log('[AUTH] Access policy:', accessPolicy.signInProvider || 'unknown');
 
-                        if (isAllowed) {
+                        if (accessPolicy.allowed) {
                             showSuccess('ログイン成功！');
                             if (shouldRedirectToCalendarAfterLogin()) {
                                 setTimeout(() => {
@@ -462,7 +463,8 @@
                                 }, 300);
                             }
                         } else {
-                            showError('このアカウントは許可リストに登録されていません: ' + user.email);
+                            const deniedIdentity = user.email ? `${accessPolicy.message}: ${user.email}` : accessPolicy.message;
+                            showError(deniedIdentity);
                             await logoutUser(auth);
                         }
                     } else {
