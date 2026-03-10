@@ -46,7 +46,11 @@ TEAM_CSV_FILES = {
     52: "player_52.csv",  # Crystal Palace
     65: "player_65.csv",  # Nottingham Forest
     66: "player_66.csv",  # Aston Villa
+    85: "player_85.csv",  # Paris Saint Germain
+    157: "player_157.csv",  # Bayern Munich
     529: "player_529.csv",  # Barcelona
+    530: "player_530.csv",  # Atletico Madrid
+    541: "player_541.csv",  # Real Madrid
     # 将来的に他のチームを追加
 }
 
