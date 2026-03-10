@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[DEBUG] Nottingham Forest vs Manchester City - EPL (17:36:38)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .player-instagram-link:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .player-instagram-icon {
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        <div style="background:#ff6b6b;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🔧 DEBUG MODE - このレポートはデバッグ用です</div>
+        <h1>Nottingham Forest vs Manchester City</h1>
+<p><strong>EPL</strong> / S</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/27(土) 21:30 JST<br><span class="match-info-subtext">2025-12-27 12:30 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">City Ground, Nottingham</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/65.png" alt="Nottingham Forest" class="team-logo"> Nottingham Forest（4-2-3-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>John Victor</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/70366.png" alt="John Victor" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #13</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">29歳 (1996/02/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nicolò Savona</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/181806.png" alt="Nicolò Savona" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #37</div>
+<div class="player-card-nationality">🇮🇹 Italy</div>
+<div class="player-card-age">22歳 (2003/03/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nikola Milenković</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2817.png" alt="Nikola Milenković" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #31</div>
+<div class="player-card-nationality">🇷🇸 Serbia</div>
+<div class="player-card-age">28歳 (1997/10/12)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Murillo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/363695.png" alt="Murillo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">23歳 (2002/07/04)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Neco Williams</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138780.png" alt="Neco Williams" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</div>
+<div class="player-card-age">24歳 (2001/04/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Elliot Anderson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138908.png" alt="Elliot Anderson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</div>
+<div class="player-card-age">23歳 (2002/11/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nicolás Domínguez</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/6056.png" alt="Nicolás Domínguez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #16</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">27歳 (1998/06/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Omari Hutchinson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284428.png" alt="Omari Hutchinson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #21</div>
+<div class="player-card-nationality">🇯🇲 Jamaica</div>
+<div class="player-card-age">22歳 (2003/10/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Morgan Gibbs-White</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18746.png" alt="Morgan Gibbs-White" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/01/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Callum Hudson-Odoi</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2298.png" alt="Callum Hudson-Odoi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #7</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/11/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Igor Jesus</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/9366.png" alt="Igor Jesus" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #19</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">24歳 (2001/02/25)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Matz Sels</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2919.png" alt="Matz Sels" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #26</div>
+<div class="player-card-nationality">🇧🇪 Belgium</div>
+<div class="player-card-age">33歳 (1992/02/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Morato</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/67943.png" alt="Morato" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #4</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">24歳 (2001/06/30)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Oleksandr Zinchenko</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/641.png" alt="Oleksandr Zinchenko" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #35</div>
+<div class="player-card-nationality">🇺🇦 Ukraine</div>
+<div class="player-card-age">29歳 (1996/12/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Zach Abbott</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/329357.png" alt="Zach Abbott" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #44</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/05/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Douglas Luiz</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47522.png" alt="Douglas Luiz" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #12</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">27歳 (1998/05/09)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>James McAtee</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/158697.png" alt="James McAtee" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #24</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/10/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Dilane Bakwa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129695.png" alt="Dilane Bakwa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #29</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">23歳 (2002/08/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Taiwo Awoniyi</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/8598.png" alt="Taiwo Awoniyi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇳🇬 Nigeria</div>
+<div class="player-card-age">28歳 (1997/08/12)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Arnaud Kalimuendo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/147831.png" alt="Arnaud Kalimuendo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #15</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">23歳 (2002/01/20)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>O. Aina</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2771.png" alt="O. Aina" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>W. Boly</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18739.png" alt="W. Boly" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>D. Ndoye</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/48648.png" alt="D. Ndoye" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>I. Sangare</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22149.png" alt="I. Sangare" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>C. Wood</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18931.png" alt="C. Wood" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/50.png" alt="Manchester City" class="team-logo"> Manchester City（4-3-2-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Gianluigi Donnarumma</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1622.png" alt="Gianluigi Donnarumma" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #25</div>
+<div class="player-card-nationality">🇮🇹 Italy</div>
+<div class="player-card-age">26歳 (1999/02/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Matheus Nunes</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/41621.png" alt="Matheus Nunes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #27</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">27歳 (1998/08/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Rúben Dias</span><a href="https://www.instagram.com/rubendias/" target="_blank" rel="noopener noreferrer" class="player-instagram-link" title="Instagram"><svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/567.png" alt="Rúben Dias" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">28歳 (1997/05/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Joško Gvardiol</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129033.png" alt="Joško Gvardiol" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #24</div>
+<div class="player-card-nationality">🇭🇷 Croatia</div>
+<div class="player-card-age">23歳 (2002/01/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nico O'Reilly</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/307123.png" alt="Nico O'Reilly" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #33</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/03/21)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Bernardo Silva</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/636.png" alt="Bernardo Silva" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #20</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">31歳 (1994/08/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nico González</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/161933.png" alt="Nico González" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #14</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">23歳 (2002/01/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Tijjani Reijnders</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/36902.png" alt="Tijjani Reijnders" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #4</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">27歳 (1998/07/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Rayan Cherki</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/156477.png" alt="Rayan Cherki" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">22歳 (2003/08/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Phil Foden</span><a href="https://www.instagram.com/philfoden/" target="_blank" rel="noopener noreferrer" class="player-instagram-link" title="Instagram"><svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/631.png" alt="Phil Foden" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #47</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/05/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Erling Haaland</span><a href="https://www.instagram.com/erling/" target="_blank" rel="noopener noreferrer" class="player-instagram-link" title="Instagram"><svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1100.png" alt="Erling Haaland" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇳🇴 Norway</div>
+<div class="player-card-age">25歳 (2000/07/21)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>James Trafford</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162489.png" alt="James Trafford" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/10/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nathan Aké</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18861.png" alt="Nathan Aké" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #6</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">30歳 (1995/02/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Abdukodir Khusanov</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/360114.png" alt="Abdukodir Khusanov" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #45</div>
+<div class="player-card-nationality"> Uzbekistan</div>
+<div class="player-card-age">21歳 (2004/02/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Rico Lewis</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284230.png" alt="Rico Lewis" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #82</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/11/21)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Rodri</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/44.png" alt="Rodri" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #16</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">29歳 (1996/06/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Savinho</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/266657.png" alt="Savinho" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #26</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">21歳 (2004/04/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Divine Mukasa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/380681.png" alt="Divine Mukasa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #63</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/08/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ryan McAidoo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/442048.png" alt="Ryan McAidoo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #56</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">17歳 (2008/06/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Reigan Heskey</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/448969.png" alt="Reigan Heskey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #92</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">17歳 (2008/01/19)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home LDDWL (❌➖➖✅❌) / Away WWDWW (✅✅➖✅✅)</li>
+<li>過去の対戦成績：過去5試合: Nottingham Forest 1勝, 引分 0, Manchester City 4勝</li>
+<li>主審：Robert Jones, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Nottingham Forest" src="/reports/images/1379146_home.png" /><br />
+<img alt="Manchester City" src="/reports/images/1379146_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグの優勝争いと残留争いが交錯する注目のカード、ノッティンガム・フォレストがホームのシティ・グラウンドに王者マンチェスター・シティを迎える。</li>
+</ul>
+<p>ホームのフォレストは、降格圏とわずか1ポイント差という厳しい状況でこの大一番に臨む。チームは直近のエヴァートン戦で物議を醸したVAR判定を巡り、クラブが審判団体に公式に抗議し、VARの音声データ開示を要求するなどピッチ外で異例の事態に発展。この逆境と不満を力に変え、ホームの大声援を背に絶対王者から貴重な勝ち点を奪えるか、チームの団結力が試される。</p>
+<p>一方、前人未到の4連覇を目指すアウェイのシティは、タイトルレースを優位に進めるために一戦も落とせない状況が続く。しかし、チームには懸念材料も浮上している。報道によると、攻守のキーマンであるDFジョン・ストーンズと快足アタッカーのジェレミー・ドクが負傷によりこの試合を欠場する見込みだ。主力選手を欠く中で、チームの総合力が問われることになる。</p>
+<p>残留への執念を燃やすフォレストがホームで意地を見せるのか、それとも王座を目指すシティが盤石の強さで勝ち点3を確実に掴むのか。シーズンのクライマックスに向け、それぞれの目標達成のために絶対に負けられない両チームの激突から目が離せない。</p>
+<details>
+<summary><strong>📚 Sources (3件)</strong></summary>
+<ul>
+<li><a href="https://www.facebook.com/61556509649909/posts/nottingham-forest-vs-everton-preview-sean-dyche-welcomes-former-teamfull-match-p/122270224760216988/" target="_blank">Nottingham Forest vs Everton Preview: Sean Dyche Welcomes ...</a> (www.facebook.com)</li>
+<li><a href="https://www.reddit.com/r/MCFC/comments/1pyrtit/sky_sports_nottingham_forest_have_formally/" target="_blank">[Sky Sports] Nottingham Forest have formally complained to the ...</a> (www.reddit.com)</li>
+<li><a href="https://www.bbc.com/sport/football/articles/c7vmv8n4nj6o" target="_blank">Nottingham Forest: Forest ask for VAR audio after Manchester City ...</a> (www.bbc.com)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>マンチェスター・シティがボールを支配し、ノッティンガム・フォレストが堅守速攻で対抗するという構図が予想される。</li>
+</ul>
+<p>シティは、アンカーのロドリを軸としたポゼッションサッカーで試合をコントロールし、ケヴィン・デ・ブライネやフィル・フォーデンといった選手がハーフスペースで起点を作り、フォレストの守備ブロックの攻略を試みるだろう。ただし、ジョン・ストーンズとジェレミー・ドクの欠場は戦術に影響を与える可能性がある。ストーンズが不在のためビルドアップの形が変化し、また、ドクがいないことでウイングからの個人での突破力は若干低下するかもしれない。</p>
+<p>一方のフォレストは、5-4-1に近い形で低い位置でコンパクトな守備ブロックを形成し、シティに中央のスペースを与えないことを最優先するだろう。ボールを奪った後は、攻撃の起点となるモーガン・ギブス＝ホワイトを経由し、アンソニー・エランガやカラム・ハドソン＝オドイといった快足ウインガーのスピードを活かした速いトランジション（カウンター）でゴールを狙う。</p>
+<p>注目のマッチアップは、シティの創造性豊かな中盤がフォレストの組織的な守備ブロックをいかに攻略するかという点、そしてフォレストの高速カウンターに対し、シティの最終ライン、特に高い位置を取るサイドバックの背後のスペースをどう管理するかという点になるだろう。</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/7.png" alt="Sean Dyche" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Nottingham Forest</div>
+<div class="manager-name">Sean Dyche</div>
+<div class="manager-comment">【Nottingham Forest】
+エヴァートン戦を前に、ショーン・ダイク監督が会見でコメントしました。クリスマス休暇後の選手のコンディション管理について、一部の監督とは異なるアプローチを明かし、「（休暇明けに）選手たちの体重を測ることはしない」と発言。これは、選手のプロとしての自己管理能力を信頼している姿勢の表れと見られます。マンチェスター・シティ戦やエヴァートン戦など、重要な試合が続く中、チームは準備を進めています。</div>
+</div>
+</div>
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/4.png" alt="Pep Guardiola" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Manchester City</div>
+<div class="manager-name">Pep Guardiola</div>
+<div class="manager-comment">【Manchester City】
+次戦を前に、ペップ・グアルディオラ監督が試合前の記者会見を欠席することが報じられました。監督は以前、クラブの今後について率直に語っており、次なる挑戦への備えの重要性を強調していました。
+
+記事によると、監督は「クラブは次に備えるべきだ」と述べたとされ、常に先を見据え、チームに慢心がないよう気を引き締めている様子がうかがえます。監督は会見に姿を見せないものの、その哲学はチームに浸透しており、選手たちは目の前の試合に向けて準備を進めていると見られます。監督のコメントは、短期的な結果だけでなく、クラブの継続的な成功を視野に入れたものであることが示唆されています。</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=NMBZxrIvm50" target="_blank"><img src="https://i.ytimg.com/vi/NMBZxrIvm50/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=NMBZxrIvm50" target="_blank">【Sean Dyche】 THE OFFICIALS CLEARLY AFFECTED THE GA...</a></strong><br/>📺 <strong>⚠️ BeanymanSports2</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mO4ZDoMM5G8" target="_blank"><img src="https://i.ytimg.com/vi/mO4ZDoMM5G8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mO4ZDoMM5G8" target="_blank">【Pep Guardiola】 Nottingham Forest 1-2 Manchester City...</a></strong><br/>📺 <strong>⚠️ CaughtOffsideTV</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4_uPvHGS40Q" target="_blank"><img src="https://i.ytimg.com/vi/4_uPvHGS40Q/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4_uPvHGS40Q" target="_blank">【Sean Dyche】 Pep Guardiola Sean Dyche Interview Po...</a></strong><br/>📺 <strong>⚠️ music music viral</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Doe_VIW5CGg" target="_blank"><img src="https://i.ytimg.com/vi/Doe_VIW5CGg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Doe_VIW5CGg" target="_blank">【Pep Guardiola】 I SHOUT AT CHERKI AND I WANT TO KISS ...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=SQ4XaWDkQZQ" target="_blank"><img src="https://i.ytimg.com/vi/SQ4XaWDkQZQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=SQ4XaWDkQZQ" target="_blank">【Sean Dyche】 Nottingham Forest vs Manchester City ...</a></strong><br/>📺 <strong>⚠️ music music viral</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JnMWcz6jk9I" target="_blank"><img src="https://i.ytimg.com/vi/JnMWcz6jk9I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JnMWcz6jk9I" target="_blank">【Pep Guardiola】 HILARIOUS Pep Guardiola admits he has...</a></strong><br/>📺 <strong>⚠️ TNT Sports Football</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=PJ_WgJTfZCc" target="_blank"><img src="https://i.ytimg.com/vi/PJ_WgJTfZCc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=PJ_WgJTfZCc" target="_blank">【Sean Dyche】 MOTD Nottingham Forest 1 vs 2 Manches...</a></strong><br/>📺 <strong>⚠️ music music viral</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HzUzwB8rc2I" target="_blank"><img src="https://i.ytimg.com/vi/HzUzwB8rc2I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HzUzwB8rc2I" target="_blank">【Pep Guardiola】 I SHOUT AT CHERKI AND THEN I WANT TO ...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qU0RrgT4kR0" target="_blank"><img src="https://i.ytimg.com/vi/qU0RrgT4kR0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qU0RrgT4kR0" target="_blank">【Sean Dyche】 Tijjani Reijnders Interview Post Nott...</a></strong><br/>📺 <strong>⚠️ music music viral</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=N2qm0w_Dn24" target="_blank"><img src="https://i.ytimg.com/vi/N2qm0w_Dn24/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=N2qm0w_Dn24" target="_blank">【Pep Guardiola】 Enzo Maresca Shuts Down Man City Link...</a></strong><br/>📺 <strong>⚠️ Based Football</strong> ・ 🕐 3日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (9件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=EXai0CAuDeg" target="_blank">【Sean Dyche】 Rayan Cherki Interview Post Nottingham Forest 1...</a> - music music viral</li>
+<li><a href="https://www.youtube.com/watch?v=rOqPqMcCGZs" target="_blank">【Sean Dyche】 SURPRISE RODRI RETURN? | NOTTINGHAM FOREST vs M...</a> - Esteemed Kompany - Man City Fan Channel </li>
+<li><a href="https://www.youtube.com/watch?v=flGOpN-4_84" target="_blank">【Pep Guardiola】 🚨 MASSIVE Man City Transfer News As SHOCK Move ...</a> - ETIHAD FOCUS </li>
+<li><a href="https://www.youtube.com/watch?v=eBhjYrZ4MvA" target="_blank">【Pep Guardiola】 Shirka jaraa&#39;id Pep Guardiola iyo Mikel Art...</a> - Zakariye Cabdi</li>
+<li><a href="https://www.youtube.com/watch?v=vFhpNqVBxUU" target="_blank">【Pep Guardiola】 Pep Guardiola post-match press conference | Not...</a> - BlueMoonLatest</li>
+<li><a href="https://www.youtube.com/watch?v=AaSzMDaHgVw" target="_blank">【Pep Guardiola】 আমি অনন্তকাল ম্যানসিটিতে থাকবো না – পেপ গার্দিও...</a> - Time24 TV NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=P3lJbPNNZvQ" target="_blank">【Pep Guardiola】 CHOC! PEP GUARDIOLA Pierde Todo: 5 DERROTAS + D...</a> -  Dossier España</li>
+<li><a href="https://www.youtube.com/watch?v=aHlu2jF1vcg" target="_blank">【Pep Guardiola】 I SHOUT AT CHERKI AND THEN I WANT TO KISS HIM! ...</a> - BlueMoonLatest</li>
+<li><a href="https://www.youtube.com/watch?v=AXkaWKAZ8C8" target="_blank">【Pep Guardiola】 Rodri&#39;s BACK! Can He Save Man City&#39;s Ti...</a> - Manchester City News Unofficial</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (5件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=_kJtXu_X4FI" target="_blank">【Sean Dyche】 Pep Guardiola Explains Why Forest Was One of Ma...</a> - Winners Circle Sports Highlights <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Mwto1VBIl7c" target="_blank">【Sean Dyche】 CHERKI GENIUS AGAIN! NOTTINGHAM FOREST 1-2 MAN ...</a> - Esteemed Kompany - Man City Fan Channel  <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_kJtXu_X4FI" target="_blank">【Pep Guardiola】 Pep Guardiola Explains Why Forest Was One of Ma...</a> - Winners Circle Sports Highlights <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=nrEHMpLSduI" target="_blank">【Pep Guardiola】 NOTTINGHAM FOREST v MAN CITY | WATCH MATCHDAY L...</a> - Man City <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Mwto1VBIl7c" target="_blank">【Pep Guardiola】 CHERKI GENIUS AGAIN! NOTTINGHAM FOREST 1-2 MAN ...</a> - Esteemed Kompany - Man City Fan Channel  <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kokTCu00ZOQ" target="_blank"><img src="https://i.ytimg.com/vi/kokTCu00ZOQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kokTCu00ZOQ" target="_blank">HIGHLIGHTS | Man City 3-0 Nottingham ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/12/05</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ir6u02Y5a7Q" target="_blank"><img src="https://i.ytimg.com/vi/ir6u02Y5a7Q/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ir6u02Y5a7Q" target="_blank">EXTENDED HIGHLIGHTS | Nott&#39;m Fore...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 8ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mN-jF_UaVPk" target="_blank"><img src="https://i.ytimg.com/vi/mN-jF_UaVPk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mN-jF_UaVPk" target="_blank">We Take A Point 🤝 | Nottingham Forest...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=uAbSGH10wGA" target="_blank"><img src="https://i.ytimg.com/vi/uAbSGH10wGA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=uAbSGH10wGA" target="_blank">EXTENDED HIGHLIGHTS | Nottingham Fore...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 9ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kU7Odz_NKro" target="_blank"><img src="https://i.ytimg.com/vi/kU7Odz_NKro/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kU7Odz_NKro" target="_blank">HIGHLIGHTS! Fulham 4-5 Man City | Cit...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 4週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0JIU40wH9js" target="_blank"><img src="https://i.ytimg.com/vi/0JIU40wH9js/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0JIU40wH9js" target="_blank">HIGHLIGHTS! Nottingham Forest 0-2 Man...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/04/28</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Lg7Z7QJShOM" target="_blank"><img src="https://i.ytimg.com/vi/Lg7Z7QJShOM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Lg7Z7QJShOM" target="_blank">HIGHLIGHTS! Man City 3-1 Bournemouth ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=IPWDqhXfl-g" target="_blank"><img src="https://i.ytimg.com/vi/IPWDqhXfl-g/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=IPWDqhXfl-g" target="_blank">A Hard-Fought Point! 💪 | Nottingham F...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=W7FmpSH1QKA" target="_blank"><img src="https://i.ytimg.com/vi/W7FmpSH1QKA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=W7FmpSH1QKA" target="_blank">HIGHLIGHTS! City rue missed chances a...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=KmkhInbrbyA" target="_blank"><img src="https://i.ytimg.com/vi/KmkhInbrbyA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=KmkhInbrbyA" target="_blank">HIGHLIGHTS! Man City 3-2 Leeds United...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (35件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=akt90mteHgs" target="_blank">HIGHLIGHTS! City 2-0 Everton | Haaland&#39;s br...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=yy2_ib2xEE8" target="_blank">HIGHLIGHTS | Man City 3-0 Man United | Derby de...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=U8HE6jRtII8" target="_blank">Nottingham Forest 0-2 Man City | Extended highl...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=a9LlVP7TDXI" target="_blank">HIGHLIGHTS! Dias strike kickstarts comprehensiv...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=eALUmEgbb2A" target="_blank">Nottingham Forest 3-0 Spurs | Premier League Hi...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=Qhca8zf1mG0" target="_blank">That Rodri pass... 😮‍💨</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=8cfwD8ybFfw" target="_blank">EXTENDED HIGHLIGHTS Manchester City 3-0 Man Uni...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=FAEgFRMeH_E" target="_blank">HIGHLIGHTS | Man City 2-0 Brentford | Through t...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=bjofZ4r7vms" target="_blank">HIGHLIGHTS! Wolves 0-4 Man City | Haaland (2), ...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=iiehJRse_l8" target="_blank">EXTENDED HIGHLIGHTS | Crystal Palace 0-3 Man Ci...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=Cmqz63yCmvo" target="_blank">EXTENDED HIGHLIGHTS | Man City 3-1 Bournemouth ...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=rSY5H8QW278" target="_blank">HIGHLIGHTS | Man City 0-2 Tottenham Hotspur | J...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=pl0z8T6CzHw" target="_blank">HIGHLIGHTS! Brentford 0-1 City | Early Haaland ...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=tlNuxGt7mDw" target="_blank">HIGHLIGHTS | Man City 8-0 Salford | McAtee hat-...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=zzq2FJnDhH0" target="_blank">Forest 1-0 Manchester City | Extended Highlight...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=lWH5OU3e7Ug" target="_blank">Nottingham Forest v Manchester City | Key Momen...</a> - The Emirates FA Cup</li>
+<li><a href="https://www.youtube.com/watch?v=0oo29O6EFI0" target="_blank">MGW &amp; Savona On Target! 🎯 | Nottingham Fore...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=RpVa7nt5p-4" target="_blank">LATE HUDSON-ODOI WINNER! 😍 | Forest 1-0 Manches...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=_WA9fXCMGjQ" target="_blank">SENSATIONAL SANGARÉ STRIKE! 😱 | Nottingham Fore...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=vfItpKJ1GSg" target="_blank">Nottingham Forest 2-2 Manchester United | Exten...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=Zv9o9rLy4PM" target="_blank">Nottingham Forest 0-3 Chelsea | HIGHLIGHTS | Pr...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=lpgn1vdEH-0" target="_blank">BIG THREE POINTS! 🔥 | Nottingham Forest 3-1 Lee...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=d-TWkVq4c4w" target="_blank">Nottingham Forest 0-3 Chelsea | Premier League ...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=jQfRv_gPOjM" target="_blank">Manchester City vs Nottingham forest 3:0 Highli...</a> - Lucid Dream</li>
+<li><a href="https://www.youtube.com/watch?v=LJVoLrfwLyI" target="_blank">MANCHESTER CITY 2-0 EVERTON | Premier League Hi...</a> - Everton Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=7niwR3RQ02c" target="_blank">Nottingham Forest vs Manchester United | Premie...</a> - Wavear</li>
+<li><a href="https://www.youtube.com/watch?v=bw0XnFtfbcU" target="_blank">Clinton &amp; Hemp Send City Through! 🚀 | Notti...</a> - Barclays Women's Super League</li>
+<li><a href="https://www.youtube.com/watch?v=wwBcSNXOIyw" target="_blank">HUDSON-ODOI STUNNER! 😳 | Nottingham Forest 3-0 ...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=XO65JWklMyY" target="_blank">Nottingham forest vs Manchester City 1:0 premie...</a> - Lucid Dream</li>
+<li><a href="https://www.youtube.com/watch?v=Z8qwNLu81Sw" target="_blank">Forest 0-1 Sunderland | Premier League Highlights</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=WBkCZ8MaAl8" target="_blank">HIGHLIGHTS | Brighton v Man City | Premier League</a> - Official Brighton & Hove Albion FC</li>
+<li><a href="https://www.youtube.com/watch?v=T6CEhFtxcvw" target="_blank">🔥 How Garnacho went from prodigy to unwanted un...</a> - Prime Footy TV</li>
+<li><a href="https://www.youtube.com/watch?v=cFaLH8Own0g" target="_blank">Newcastle United 2 Manchester City 1 | EXTENDED...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=x-FiEmED1Gc" target="_blank">Opening Day Win! 🔥 | Forest 3-1 Brentford | Pre...</a> - Nottingham Forest FC </li>
+<li><a href="https://www.youtube.com/watch?v=8RJ_HRC0PHQ" target="_blank">Swansea 3-2 Forest | Carabao Cup Highlights</a> - Nottingham Forest FC </li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=B6RgCAiLg44" target="_blank"><img src="https://i.ytimg.com/vi/B6RgCAiLg44/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=B6RgCAiLg44" target="_blank">【Manchester City】 【試合総括】マンチェスターCvsナポリを解説！ナポリの守備を攻略したペップ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U" target="_blank"><img src="https://i.ytimg.com/vi/a_VNw2C7Y6U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U" target="_blank">【Manchester City】 【プレミアリーグ】アーセナル vs マンチェスター・シティ 戦術的攻防を徹...</a></strong><br/>📺 <strong>✅ スポルティーバ</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=3gI3005pYKo" target="_blank"><img src="https://i.ytimg.com/vi/3gI3005pYKo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=3gI3005pYKo" target="_blank">【Manchester City】 【三笘躍動！】ブライトンvsマンチェスターシティを戦術的観点から解説｜ブラ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw" target="_blank"><img src="https://i.ytimg.com/vi/5_Z5xUa9kiw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw" target="_blank">【Manchester City】 【戦術の進化】マンチェスターシティvsトッテナムを戦術的観点から解説｜シテ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank"><img src="https://i.ytimg.com/vi/vAO1BPQStBg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank">【Manchester City】 【プレミアリーグ展望】お金持ちのプレス回避術／ペップの新戦術／トッテナム優...</a></strong><br/>📺 <strong>✅ PIVOT 公式チャンネル</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=gsmh0GLPV-I" target="_blank"><img src="https://i.ytimg.com/vi/gsmh0GLPV-I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=gsmh0GLPV-I" target="_blank">【Manchester City】 ペップシティの何が変わった！？守備復活とクサノフ覚醒の要因を徹底分析【レオ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=J66oZ-dOWWU" target="_blank"><img src="https://i.ytimg.com/vi/J66oZ-dOWWU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=J66oZ-dOWWU" target="_blank">【Manchester City】 リバプール完敗の真相。グアルディオラが“監督1000試合目”で見せた究極の...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Vbo_K0_0YLg" target="_blank"><img src="https://i.ytimg.com/vi/Vbo_K0_0YLg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Vbo_K0_0YLg" target="_blank">【Manchester City】 シティとアーセナル優勝するのはどっち？●●が圧倒的に違います。【レオザ切り...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BHJBYP2mmr0" target="_blank"><img src="https://i.ytimg.com/vi/BHJBYP2mmr0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BHJBYP2mmr0" target="_blank">【Manchester City】 ハーランドが完全復活！マンCがボーンマスを3-1撃破、ロドリ復帰で2位浮上...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=34BFQrt9GdQ" target="_blank"><img src="https://i.ytimg.com/vi/34BFQrt9GdQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=34BFQrt9GdQ" target="_blank">【Manchester City】 ペップ体制ついに終焉か…開幕から不安だらけのマンチェスター・シティ、勝てな...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 3ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (82件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=NxEgPBfsiPM" target="_blank">【Manchester City】 マンチェスター・ダービーはシティ完勝！ハーランド2発で3-0圧倒【レオザ切り抜き】</a> - レオザマニア【Leothefootball】公認切り抜き</li>
+<li><a href="https://www.youtube.com/watch?v=u25qXq0ipr8" target="_blank">【Nottingham Forest】 リヴァプール 0-3 ノッティンガム・フォレスト 試合後分析 | 戦術分析、選手評価</a> - Context Football </li>
+<li><a href="https://www.youtube.com/watch?v=c3xfQDMenx4" target="_blank">【Manchester City】 選手目線マニアック分析、CL レアル・マドリー vs マンチェスター・C。マンシティ完勝の理由...</a> - 小澤一郎 Periodista</li>
+<li><a href="https://www.youtube.com/watch?v=T9Mf2n9Rl2A" target="_blank">【Nottingham Forest】 How Chelsea CRUSHED Nottingham Forest.</a> - Zekko Football</li>
+<li><a href="https://www.youtube.com/watch?v=vYGurPMqq_c" target="_blank">【Nottingham Forest】 Arsenal vs Nottingham Forest | Tactical Analysis</a> - Tactical Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=tSQopDhNeqk" target="_blank">【Nottingham Forest】 Nottingham Forest vs Manchester United | How Am...</a> - Football stories and tips </li>
+<li><a href="https://www.youtube.com/watch?v=BOx5Cn1GoP8" target="_blank">【Nottingham Forest】 ノッティンガム・フォレストを倒す方法… #footballtactics #football ...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=_vSdzo3qbqM" target="_blank">【Nottingham Forest】 グラーフェンベルフが重要な役割を担う！｜リヴァプールがフォレストに勝利した方法</a> - David Lynch - Liverpool FC</li>
+<li><a href="https://www.youtube.com/watch?v=BAbflxMeQnY" target="_blank">【Manchester City】 ペップが今シーズン使用する3つの新しい戦術システム。</a> - James Lawrence Allcott</li>
+<li><a href="https://www.youtube.com/watch?v=SyvZx4hrYoA" target="_blank">【Nottingham Forest】 アーセナル vs ノッティンガム・フォレスト | 試合分析と注目ポイント</a> - Antonio Silva Stocks</li>
+<li><a href="https://www.youtube.com/watch?v=H4D7LdVgH1Q" target="_blank">【Manchester City】 パスと動きがドンピシャ過ぎるオライリー×ハーランド #サッカー</a> - BALLISTAR365</li>
+<li><a href="https://www.youtube.com/watch?v=Yga_1GIHAZc" target="_blank">【Nottingham Forest】 スパーズがフォレスト戦で惨めに見えた理由 | ノッティンガム・フォレスト (3) vs トッテ...</a> - Hollie's Hotspurs</li>
+<li><a href="https://www.youtube.com/watch?v=hVZqMP9GIRM" target="_blank">【Manchester City】 【大復活】マンチェスター・シティの全選手を紹介します！ペップの下に集いし天才たちがヤバい…</a> - クラックフットボール</li>
+<li><a href="https://www.youtube.com/watch?v=rhVZA5kIeTk" target="_blank">【Nottingham Forest】 Noni Madueke: The Rising Star&#39;s Game Analys...</a> - Arsenal Pulse</li>
+<li><a href="https://www.youtube.com/watch?v=1pzDN1xv_X4" target="_blank">【Nottingham Forest】 079 1/4 アーセナル vs ノッティンガム・フォレスト | 戦術分析とスコア予想 | プ...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=n2mUMgF04iE" target="_blank">【Manchester City】 【新たなペップ・シティ戦術】サッカー戦術解説　#マンチェスターシティ #サッカー #プレミアリーグ</a> - FOOTBALL BASE〜サッカーの秘密基地〜</li>
+<li><a href="https://www.youtube.com/watch?v=C98zMpiuWOQ" target="_blank">【Nottingham Forest】 How Sean Dyche INSTANTLY Improved Nottingham Fo...</a> - Cameron Schultz</li>
+<li><a href="https://www.youtube.com/watch?v=PXp7oj5Cj5A" target="_blank">【Manchester City】 【30秒戦術】マンチェスターシティ0-2トッテナム　信念か、結果か　#30秒戦術 #サッカー戦...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=x1uF1picfxQ" target="_blank">【Manchester City】 グアルディオラの新システムがいかにしてリバプールを破壊したか</a> - Football Meta</li>
+<li><a href="https://www.youtube.com/watch?v=izZzHxJ7tiM" target="_blank">【Nottingham Forest】 さようなら、アーネ・スロット！？ リバプールのプレーは信じられない！フォレスト、0-3で敗戦</a> - Alice- ECILA Football</li>
+<li><a href="https://www.youtube.com/watch?v=d1VRGh0JzKI" target="_blank">【Manchester City】 ペップ・グアルディオラがいかにして戦術を進化させたか。</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=A8y_GCo57bs" target="_blank">【Nottingham Forest】 114 1 / 5 チェルシー対ノッティンガム・フォレスト – 2025/26シーズンのプレミ...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=ub4VvdCT7hQ" target="_blank">【Nottingham Forest】 How Amorim&#39;s System Was Neutralized By Nott...</a> - Emeka Transition</li>
+<li><a href="https://www.youtube.com/watch?v=IwnEmCr5HUc" target="_blank">【Manchester City】 「アモリム、覚悟はあるか？」 #サッカー戦術分析 #サッカー #プレミアリーグ #MU復活</a> - サッカーワールド</li>
+<li><a href="https://www.youtube.com/watch?v=NltzMDua9r8" target="_blank">【Nottingham Forest】 SACKED! 😡 Ange Postecoglou FIRED After Chelsea ...</a> - The Sports Verdict</li>
+<li><a href="https://www.youtube.com/watch?v=D6aG0SveUno" target="_blank">【Manchester City】 デブライネだけの技術低速CK戦術の秘密</a> - ボランチ </li>
+<li><a href="https://www.youtube.com/watch?v=eTkXpQK-02o" target="_blank">【Nottingham Forest】 アーセナルはノッティンガム・フォレスト戦で疑念を抱く者を黙らせるだろう！</a> - The Football Terrace Xtra</li>
+<li><a href="https://www.youtube.com/watch?v=e7rUcbrtYQE" target="_blank">【Manchester City】 「ジェラド・ピケはマンチェスター・ユナイテッドでプレーする準備ができていなかった」パトリス・エブラ</a> - UR Football</li>
+<li><a href="https://www.youtube.com/watch?v=W_ujfBSToeY" target="_blank">【Nottingham Forest】 HASIL PERTANDINGAN | MAN CITY VS HUDDERSFIELD |...</a> - JadwalBolaViral</li>
+<li><a href="https://www.youtube.com/watch?v=UmQQZC1EAIY" target="_blank">【Manchester City】 天才だけが見る世界デブルイネの視線</a> - ボランチ </li>
+<li><a href="https://www.youtube.com/watch?v=AsK7lYBEbVg" target="_blank">【Manchester City】 【分析】ネイマールがボールロストをしない理由 #サッカー解説 #戦術分析 #ドリブル #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=HA1NDLAmyFI" target="_blank">【Nottingham Forest】 🔴 ライブ：ノッティンガム・フォレスト vs チェルシー | フルシミュレーション | プレミ...</a> - NexGoal TV</li>
+<li><a href="https://www.youtube.com/watch?v=vLF5iELPqNQ" target="_blank">【Manchester City】 マンチェスターシティーの象徴フォーデン！</a> - The_Fantasista</li>
+<li><a href="https://www.youtube.com/watch?v=eqUTDYCeht8" target="_blank">【Nottingham Forest】 アーセナル vs ノッティンガム・フォレスト | プレミアリーグ 2025 | eFootba...</a> - ROCK RISHAD</li>
+<li><a href="https://www.youtube.com/watch?v=T1JMoV7xNaE" target="_blank">【Manchester City】 【速報】マルムシュ、1月にマンチェスター・シティ退団説が急浮上</a> - 2chサッカー神反応集【ネット民厳選】</li>
+<li><a href="https://www.youtube.com/watch?v=8KjIGEP-1H4" target="_blank">【Nottingham Forest】 ARSENAL VS NOTTINGHAM FOREST PREVIEW! ARTETA VS...</a> - The Gunners Report01</li>
+<li><a href="https://www.youtube.com/watch?v=nZH73uCtlt0" target="_blank">【Manchester City】 【30秒戦術】マンチェスターダービー｜シティの5-4-1攻略　#マンチェスターダービー #マン...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=ov0f7740Gb0" target="_blank">【Nottingham Forest】 💥 Chelsea FC Lineup &amp; Attacking Strategy #s...</a> - Fit Plus Now </li>
+<li><a href="https://www.youtube.com/watch?v=fYQ6ARionsc" target="_blank">【Manchester City】 ハイプレスを回避する | マンチェスター・シティ対ボーンマス戦術プレビュー</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=SUJ0xVh5xJM" target="_blank">【Nottingham Forest】 マンチェスター・ユナイテッドがノッティンガム・フォレストに勝つ理由はこれだ…</a> - Old Truthford</li>
+<li><a href="https://www.youtube.com/watch?v=oNNt9RQkvSA" target="_blank">【Manchester City】 ドクがバーンリーのブロックを破った方法 | マンチェスター・シティ 5 - 1 バーンリー分析</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=SpNgkOkwifU" target="_blank">【Nottingham Forest】 【足球指标分析】英超 諾定咸森林 - 車路士 | 预测谁先进球、角球多少、计时进球、让受球。。...</a> - RicharLaw</li>
+<li><a href="https://www.youtube.com/watch?v=XJJOQszkc-g" target="_blank">【Nottingham Forest】 079 3/4 アーセナル vs ノッティンガム・フォレスト | フルプレビュー、主要バトル、...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=YN-rfnwq3rQ" target="_blank">【Manchester City】 【崩壊の足音】マンチェスター・シティが2連敗した理由がヤバい…ペップシティは終わりなのか？</a> - クラックフットボール</li>
+<li><a href="https://www.youtube.com/watch?v=bSweQGSASUc" target="_blank">【Nottingham Forest】 ヴィカリオ2つのミス！フランクは完全にアウト！ノッティンガム・フォレスト 3-0 トッテナム ...</a> - Durag Diaries</li>
+<li><a href="https://www.youtube.com/watch?v=fddcKHZi6dQ" target="_blank">【Manchester City】 【衝撃】なぜハーランドはニンジンを食べていたのか？真相がヤバい</a> - JP Football Insider</li>
+<li><a href="https://www.youtube.com/watch?v=Zm49pAoBA1g" target="_blank">【Nottingham Forest】 アルテタは諦めるのではなく、立ち直る必要がある | アーセナル vs ノッティンガム・フォレスト</a> - TK24 Sports</li>
+<li><a href="https://www.youtube.com/watch?v=yy0xCbWYikg" target="_blank">【Manchester City】 「プレミア4節終了！真のNo 1監督は誰だ？」#プレミアリーグ #監督分析#サッカー戦術</a> - サッカーワールド</li>
+<li><a href="https://www.youtube.com/watch?v=MOB8E9zkAP8" target="_blank">【Nottingham Forest】 ノッティンガム・フォレストのMGW移籍延期戦略｜徹底分析</a> - SpursTalkShow</li>
+<li><a href="https://www.youtube.com/watch?v=rW6xYSUGrY4" target="_blank">【Manchester City】 マンチェスター・シティ対トッテナム：見逃せない戦術的チェスマッチ</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=2kQqAyAD4cw" target="_blank">【Nottingham Forest】 ノッティンガム・フォレスト対チェルシー | プレミアリーグ | 試合前3</a> - Talk Forest TV</li>
+<li><a href="https://www.youtube.com/watch?v=JptFfkC8NyM" target="_blank">【Manchester City】 形、システム、フォーメーション – 違いを知っていますか？ | マンチェスター・ユナイテッドの...</a> - Cash talk's Football</li>
+<li><a href="https://www.youtube.com/watch?v=Ej2tQyi6Mfg" target="_blank">【Nottingham Forest】 ウルブス ノッティンガム・フォレスト | プレミアリーグ | ダン・ビュー</a> - Talk Forest TV</li>
+<li><a href="https://www.youtube.com/watch?v=v3Oi3OPeEt4" target="_blank">【Manchester City】 アサレ・ボアドゥによる戦術分析：マンチェスター・ユナイテッドがアモリムを解任すべき理由、シティ...</a> - AGENDA BOYS SHOW </li>
+<li><a href="https://www.youtube.com/watch?v=8oAcQAtMQck" target="_blank">【Nottingham Forest】 141 3 OF 5 リヴァプール vs ノッティンガム・フォレスト 試合後分析 | 戦術分析...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=lzhQkuG-1xs" target="_blank">【Manchester City】 🚨 「試合に勝つに値する」エンツォ・マレスカが、チェルシーがブレントフォード戦でポイントを落と...</a> - UR Football</li>
+<li><a href="https://www.youtube.com/watch?v=fQlEFoqmcCk" target="_blank">【Nottingham Forest】 🔥 アーセナル vs ノッティンガム・フォレスト – 試合プレビュー！🔥</a> - Beyond The Match</li>
+<li><a href="https://www.youtube.com/watch?v=Buir6ptTT_k" target="_blank">【Manchester City】 「心配だ」ダービーデーのシティ対ユナイテッド戦で屈辱を受ける</a> - American Red Devils</li>
+<li><a href="https://www.youtube.com/watch?v=6oLFmXTRe1s" target="_blank">【Nottingham Forest】 JADWAL PERTANDINGAN | REAL BETIS VS GENK | NOTT...</a> - JadwalBolaViral</li>
+<li><a href="https://www.youtube.com/watch?v=SHaLYychHR0" target="_blank">【Manchester City】 マンチェスター・シティ💙対マンチェスター・ユナイテッド戦の予想ラインナップ🔴｜プレミアリーグ2...</a> - Epic Final XI</li>
+<li><a href="https://www.youtube.com/watch?v=QHN0RQxzQ0k" target="_blank">【Nottingham Forest】 🔵 ノッティンガム・フォレスト VS チェルシー | フルマッチプレビュー、チームニュース、戦...</a> - Chelsea 247 news</li>
+<li><a href="https://www.youtube.com/watch?v=KRFZtEK69J4" target="_blank">【Manchester City】 インザーギがグアルディオラを圧倒した方法｜マンチェスター・シティ戦でのアル・ヒラルの戦術マスタ...</a> - Scarlet Report</li>
+<li><a href="https://www.youtube.com/watch?v=3gkC5WeyuNU" target="_blank">【Nottingham Forest】 エリオット・アンダーソン：ユナイテッドの中盤の火付け役となる可能性⚡</a> - Stephen Howson</li>
+<li><a href="https://www.youtube.com/watch?v=EbaXEnRc9oM" target="_blank">【Manchester City】 キーパーを困らせた予想外のプレー#サッカー解説 #戦術分析 #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=zbkFDdM_D5g" target="_blank">【Nottingham Forest】 チェルシー、ノッティンガム・フォレストを3-0で圧倒｜監督が電撃解任</a> - Destvado Football Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=MATZJ5jRkQg" target="_blank">【Manchester City】 イングランド代表スコールズ：ベストポジションと戦術分析</a> - Pundit Bible</li>
+<li><a href="https://www.youtube.com/watch?v=gpkDSGRnsvs" target="_blank">【Nottingham Forest】 ボーンマス 2-0 ノッティンガム・フォレスト：フォレストの苦戦の真の問題</a> - Cash talk's Football</li>
+<li><a href="https://www.youtube.com/watch?v=9NlSpRmuwsA" target="_blank">【Nottingham Forest】 プレミアリーグ2025 第3節 混沌！ 私の大胆予想で衝撃の展開に！ #EPL #footba...</a> - Mystery Tales by Angel</li>
+<li><a href="https://www.youtube.com/watch?v=iKg1uDBVWWM" target="_blank">【Manchester City】 チャンスメイクもこなす破壊神ハーランドのIQ/Haaland’s Vision Is Crazy</a> - BALLISTAR365</li>
+<li><a href="https://www.youtube.com/watch?v=ULReTmcUH2Y" target="_blank">【Nottingham Forest】 クリスティアン・モスケラがすでにアーセナルのトップディフェンダーである理由</a> - Woklz Football</li>
+<li><a href="https://www.youtube.com/watch?v=UdPYKoLWkWQ" target="_blank">【Manchester City】 マンチェスターデブライネのIQプレー</a> - The_Fantasista</li>
+<li><a href="https://www.youtube.com/watch?v=l_c2BqcgMPc" target="_blank">【Nottingham Forest】 🔴 ノッティンガム・フォレスト vs チェルシー | プレミアリーグ 2025/26 ライブ ...</a> - Cris Football</li>
+<li><a href="https://www.youtube.com/watch?v=NhnUlWmG9ag" target="_blank">【Manchester City】 120 1 / 6 ⚽ マンチェスター・ユナイテッド vs ブライトン 反応と分析 | プレミ...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=UimYQnIdawM" target="_blank">【Nottingham Forest】 ブルーノ・フェルナンデス vs エリオット・アンダーソン！4連勝？！ノッティンガム・フォレスト...</a> - Stephen Howson</li>
+<li><a href="https://www.youtube.com/watch?v=8axdc14qbuo" target="_blank">【Manchester City】 【30秒戦術】シティ4-0快勝の裏側　“攻撃の課題”とSB運用　#30秒戦術 #サッカー戦術 ...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=6rLusoir_ng" target="_blank">【Nottingham Forest】 114 3/5 チェルシー vs ノッティンガム・フォレスト – どちらが勝ちたい？！🔥 プレ...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=XVNA9yexb5M" target="_blank">【Manchester City】 マンチェスター・シティ 2-0 エバートン戦の5つの観察事項</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=8gYbSYSjwnY" target="_blank">【Nottingham Forest】 アーセナル vs ノッティンガム・フォレスト 2025：フルマッチタイムライン＆分析｜プレミア...</a> - NewsDrift</li>
+<li><a href="https://www.youtube.com/watch?v=TapNwY-AzDI" target="_blank">【Nottingham Forest】 リヴァプール vs ノッティンガム・フォレスト | プレミアリーグ 2025/26 | フルマ...</a> - Gaming wave</li>
+<li><a href="https://www.youtube.com/watch?v=NWUBIRpmVa8" target="_blank">【Manchester City】 【マンチェスター・シティ vs ナポリ】UEFAチャンピオンズリーグ 2025-26 リーグフ...</a> - WOWOWサッカー official</li>
+<li><a href="https://www.youtube.com/watch?v=O_DmhUPvaZA" target="_blank">【Nottingham Forest】 アルテタの秘密 – アーセナルはノッティンガム・フォレストに対してこのように勝てるか？</a> - TK24 Sports</li>
+<li><a href="https://www.youtube.com/watch?v=_YRM9AyoegI" target="_blank">【Manchester City】 【衝撃】三笘薫がマンC撃破の立役者に！試合後グアルディオラ監督が苦言＆称賛の嵐！【海外の反応】 1</a> - JP Football Insider</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (7件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=VsHCK8EM0ko" target="_blank">【Nottingham Forest】 N. FOREST 0-3 CHELSEA.  • Player Ratings • Tact...</a> - LIFESTYLE <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=4S8tabi2yWc" target="_blank">【Nottingham Forest】 How Nottingham Forest Completely OUTPLAYED Live...</a> - Zekko Football <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Rs8FypLkeA8" target="_blank">【Nottingham Forest】 マドゥエケは最高！アーセナルがノッティンガム・フォレストを圧倒！</a> - The Football Terrace Xtra <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=j2FrxyV1Gvw" target="_blank">【Nottingham Forest】 Nottingham Forest Stun Liverpool: Sean Dyche&#3;...</a> - Câu Chuyện Triết Lý <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=pwznYpn-jGM" target="_blank">【Nottingham Forest】 Slot In Trouble? Liverpool 0 - 3 Nottingham For...</a> - The Golden Sky <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=zO53RQN2k3A" target="_blank">【Nottingham Forest】 フロリアン・ヴィルツのパフォーマンスが低い理由🧐 #footballtactics #foot...</a> - Ryan Hurst <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7d2pSzWooKk" target="_blank">【Manchester City】 プレスを剥がすパスワークと一瞬の隙　vs Manchester City (2025/11/10)</a> - Liverpool Report <span style="color:#f44336">[live_stream]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI" target="_blank"><img src="https://i.ytimg.com/vi/VPgwGN9kGpI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI" target="_blank">【Erling Haaland】 Erling Haaland&#39;s First 100 Premie...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=AveLaQGyqVY" target="_blank"><img src="https://i.ytimg.com/vi/AveLaQGyqVY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=AveLaQGyqVY" target="_blank">【Erling Haaland】 ALL 100 OF ERLING HAALAND&#39;S PREMI...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Y9i6vyN3Bg0" target="_blank"><img src="https://i.ytimg.com/vi/Y9i6vyN3Bg0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Y9i6vyN3Bg0" target="_blank">【Erling Haaland】 Erling Haaland&#39;s 50 Champions Lea...</a></strong><br/>📺 <strong>✅ UEFA</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=65UDfuj3mc0" target="_blank"><img src="https://i.ytimg.com/vi/65UDfuj3mc0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=65UDfuj3mc0" target="_blank">【Erling Haaland】 Cherki Training Wonder Goal, Heavy Me...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=CIHqHxA4fYM" target="_blank"><img src="https://i.ytimg.com/vi/CIHqHxA4fYM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=CIHqHxA4fYM" target="_blank">【Erling Haaland】 EVERY GOAL OF 2025/26 SEASON SO FAR |...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=hsafo4l2oI8" target="_blank"><img src="https://i.ytimg.com/vi/hsafo4l2oI8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=hsafo4l2oI8" target="_blank">【Erling Haaland】 All 16 Haaland Goals From The Europea...</a></strong><br/>📺 <strong>✅ UEFA</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cFScXoqwbw8" target="_blank"><img src="https://i.ytimg.com/vi/cFScXoqwbw8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cFScXoqwbw8" target="_blank">【Erling Haaland】 You&#39;ve Never Seen Haaland Like Th...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=s1bN-cyzioo" target="_blank"><img src="https://i.ytimg.com/vi/s1bN-cyzioo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=s1bN-cyzioo" target="_blank">【Erling Haaland】 Haaland’s pace 😮‍💨</a></strong><br/>📺 <strong>✅ UEFA</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=-bCv4jERYFM" target="_blank"><img src="https://i.ytimg.com/vi/-bCv4jERYFM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=-bCv4jERYFM" target="_blank">【Erling Haaland】 Erling Haaland SPEED BOOST 🏃💥</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zNNsRpRLXrs" target="_blank"><img src="https://i.ytimg.com/vi/zNNsRpRLXrs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zNNsRpRLXrs" target="_blank">【Erling Haaland】 Erling Haaland struggles to remember ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (34件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=1eNiv0_bVds" target="_blank">【Erling Haaland】 Hair Down Haaland Against Arsenal 👩‍🦳</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=VDnii3geam0" target="_blank">【Erling Haaland】 THIS Is How You Stop Erling Haaland! 😲📝</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=KMNk9woL1lM" target="_blank">【Erling Haaland】 Erling Haaland&#39;s best friend in football? 🤔</a> - UEFA</li>
+<li><a href="https://www.youtube.com/watch?v=0W_rtR2bYOg" target="_blank">【Erling Haaland】 Erling Haaland LOVES playing against Man Utd! 💙</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=W_vXD5qu6yc" target="_blank">【Erling Haaland】 Cherki ➡️ Haaland ➡️ Reijnders ➡️ ⚽️</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=UjKpgtNZlJg" target="_blank">【Erling Haaland】 How did Erling Haaland miss?!</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=L5Bf2xlJiRE" target="_blank">【Erling Haaland】 Could YOU stop Erling Haaland?</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=tcFvs4Rgmb4" target="_blank">【Erling Haaland】 When Haaland sees the goal… it’s over 💀⚽ #haala...</a> - Man City</li>
+<li><a href="https://www.youtube.com/watch?v=Pc0uIsvWV50" target="_blank">【Igor Jesus】 大変な努力と醜い面を乗り越えなければならなかった！🧱 | ショーン・ダイチ | リヴァプール ...</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=wFSej8xO_64" target="_blank">【Igor Jesus】 ノッティンガム・フォレストのワイルドな成長を解説！</a> - Betting Education</li>
+<li><a href="https://www.youtube.com/watch?v=jEmlWPbFDPE" target="_blank">【Igor Jesus】 十分ではない…メンタリティが欠けている！| ロブ・エドワーズ | ウルブズ 0-1 ノッティン...</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=I_kudfF1_tQ" target="_blank">【Erling Haaland】 Erling Haaland Ballon d&#39;Or Level 2025/26 🇳🇴👑</a> - ScoutNation</li>
+<li><a href="https://www.youtube.com/watch?v=0-IaW4VMUOs" target="_blank">【Igor Jesus】 リバプール 0 対 ノッティンガム・フォレスト 3 試合結果 | まさに信じられない勝利！</a> - Forest Focus</li>
+<li><a href="https://www.youtube.com/watch?v=Zpw8t6CFxgA" target="_blank">【Igor Jesus】 😱PES EFOOTBALL 2025-26 PPSSPP ヨーロッパ 100% 更新された顔...</a> - VL Gus 2</li>
+<li><a href="https://www.youtube.com/watch?v=OsgRabQU5FU" target="_blank">【Igor Jesus】 フォレストの屈辱は続く！バカヨコがライプツィヒへ！ノッティンガム・フォレスト移籍ニュース</a> - Forest Fan TV</li>
+<li><a href="https://www.youtube.com/watch?v=Lf9ARd4EbiA" target="_blank">【Igor Jesus】 キース・スーター博士の遺産を偲んで</a> - Mirror7 News | Breaking News</li>
+<li><a href="https://www.youtube.com/watch?v=RXa8Xe6Du48" target="_blank">【Erling Haaland】 ♫ Erling Haaland | Man City Song ♫</a> - Football MP3</li>
+<li><a href="https://www.youtube.com/watch?v=uNrg5RPt378" target="_blank">【Erling Haaland】 Haaland vs Goalkeeper 🤯</a> - Xendio</li>
+<li><a href="https://www.youtube.com/watch?v=qSNjSVyolW4" target="_blank">【Erling Haaland】 Flying Haaland Over the Years 😈🤯</a> - c7epic</li>
+<li><a href="https://www.youtube.com/watch?v=DSE10xtmRdI" target="_blank">【Erling Haaland】 When Haaland Shows his Level🥶💀</a> - ron.aep18</li>
+<li><a href="https://www.youtube.com/watch?v=VUaAXGqOfL0" target="_blank">【Erling Haaland】 🔥 Erling Haaland ASMR Power 🇳🇴⚽ | Manchester Ci...</a> - ASMR taptune</li>
+<li><a href="https://www.youtube.com/watch?v=gJ0dV88Pa_4" target="_blank">【Erling Haaland】 Erling Haaland in beast mode 💪🏻</a> - Futbol y Curvas</li>
+<li><a href="https://www.youtube.com/watch?v=xdK94fFQWZM" target="_blank">【Erling Haaland】 Haaland was an absolute menace when City met Ar...</a> - Stan Sport Football</li>
+<li><a href="https://www.youtube.com/watch?v=xZPch1Ub5_w" target="_blank">【Erling Haaland】 Erling Haaland Ruined The Challenge 😂😂</a> - Hoanftbl</li>
+<li><a href="https://www.youtube.com/watch?v=REBLIgwYRhw" target="_blank">【Erling Haaland】 Haaland &amp; Cherki Friendship🥲❤️</a> - Fooftly</li>
+<li><a href="https://www.youtube.com/watch?v=Ufn9CC9BJ7A" target="_blank">【Erling Haaland】 Haaland VS Madrid Defenders 👀</a> - Slicx7</li>
+<li><a href="https://www.youtube.com/watch?v=CtM8NnMZ0FI" target="_blank">【Erling Haaland】 Portugal vs Manchester City Match Imaginary 😱🔥</a> - NDR-UPDATE</li>
+<li><a href="https://www.youtube.com/watch?v=czEe69iVAu4" target="_blank">【Erling Haaland】 this player tried to stop HAALAND but🤯💔</a> - Aaronftbl</li>
+<li><a href="https://www.youtube.com/watch?v=Quclnx-snds" target="_blank">【Erling Haaland】 In just 3 seasons 🥶 | HALLAND #halland #mancity...</a> - Barca Times</li>
+<li><a href="https://www.youtube.com/watch?v=D8VfCmfhM7w" target="_blank">【Erling Haaland】 Erling Haaland and His All Family Members #foot...</a> - RePlay Legends</li>
+<li><a href="https://www.youtube.com/watch?v=HDtuF7CcAy8" target="_blank">【Erling Haaland】 Erling Haaland adamant Man City didn&#39;t play...</a> - TNT Sports Football</li>
+<li><a href="https://www.youtube.com/watch?v=lrL1hfAQN58" target="_blank">【Erling Haaland】 Foden &amp; Cherki Fixed Their Chemistry🥲</a> - Fooftly</li>
+<li><a href="https://www.youtube.com/watch?v=-a_PwW5D0NY" target="_blank">【Erling Haaland】 Haaland Owned Them 😈</a> - FootyLibre</li>
+<li><a href="https://www.youtube.com/watch?v=TDeMAhPR-yc" target="_blank">【Erling Haaland】 KSI Regrets Challenging Haaland 💀</a> - Deadeye Footy</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (13件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=571yolVgYQw" target="_blank">【Erling Haaland】 EXTENDED HIGHLIGHTS | Man City 3 - 0 West Ham |...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=akt90mteHgs" target="_blank">【Erling Haaland】 HIGHLIGHTS! City 2-0 Everton | Haaland&#39;s br...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=07WqS-ccIrw" target="_blank">【Erling Haaland】 Monaco 2-2 Man City Champions League Highlights...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=MzFrT3YDPCM" target="_blank">【Erling Haaland】 HIGHLIGHTS! City 5-1 Burnley | Haaland (2), Est...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=VJg9Z9etmcY" target="_blank">【Erling Haaland】 EXTENDED HIGHLIGHTS | Arsenal 1-1 City | Late e...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=yy2_ib2xEE8" target="_blank">【Erling Haaland】 HIGHLIGHTS | Man City 3-0 Man United | Derby de...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XM6MDhvK3ds" target="_blank">【Erling Haaland】 EXTENDED HIGHLIGHTS | Man City 5-1 Burnley | Ci...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=eLNazH7Hlek" target="_blank">【Erling Haaland】 EXTENDED HIGHLIGHTS | Brentford 0-1 Man City | ...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Cmqz63yCmvo" target="_blank">【Erling Haaland】 EXTENDED HIGHLIGHTS | Man City 3-1 Bournemouth ...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ZlELwFiUN68" target="_blank">【Erling Haaland】 EXTENDED HIGHLIGHTS | Man City 2-0 Everton | Ha...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kU7Odz_NKro" target="_blank">【Erling Haaland】 HIGHLIGHTS! Fulham 4-5 Man City | City hold off...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=lYApWGWqu8I" target="_blank">【Erling Haaland】 Villarreal 0-2 Man City Champions League Highli...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=pl0z8T6CzHw" target="_blank">【Erling Haaland】 HIGHLIGHTS! Brentford 0-1 City | Early Haaland ...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>🏃 練習風景 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=CpE_j_9jyxI" target="_blank"><img src="https://i.ytimg.com/vi/CpE_j_9jyxI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=CpE_j_9jyxI" target="_blank">【Manchester City】 ASMR training edition 🔉</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=schbk04mipw" target="_blank"><img src="https://i.ytimg.com/vi/schbk04mipw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=schbk04mipw" target="_blank">【Manchester City】 Reijnders has it in his locker 🪄 #ski...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=yUgTkEJv0oc" target="_blank"><img src="https://i.ytimg.com/vi/yUgTkEJv0oc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=yUgTkEJv0oc" target="_blank">【Manchester City】 Bringing the noise 🔊🔊  #mancity #foot...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=G_O8Rc8rNkw" target="_blank"><img src="https://i.ytimg.com/vi/G_O8Rc8rNkw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=G_O8Rc8rNkw" target="_blank">【Manchester City】 It&#39;s not Christmas without Cherki...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=UiWAlJdnX2I" target="_blank"><img src="https://i.ytimg.com/vi/UiWAlJdnX2I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=UiWAlJdnX2I" target="_blank">【Manchester City】 The BEST Podcast Moments in 2025 | Th...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kPR7H3yMHI4" target="_blank"><img src="https://i.ytimg.com/vi/kPR7H3yMHI4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kPR7H3yMHI4" target="_blank">【Manchester City】 Reijnders is WAY too smooth with this...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=R6O9AP1wA-U" target="_blank"><img src="https://i.ytimg.com/vi/R6O9AP1wA-U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=R6O9AP1wA-U" target="_blank">【Manchester City】 Cherki x Reijnders just broke the def...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=3Vz9A0KFXPw" target="_blank"><img src="https://i.ytimg.com/vi/3Vz9A0KFXPw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=3Vz9A0KFXPw" target="_blank">【Nottingham Forest】 Donnarumma said NOT TODAY 😤🧤 #gigi #m...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kuTNDmwoQjw" target="_blank"><img src="https://i.ytimg.com/vi/kuTNDmwoQjw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kuTNDmwoQjw" target="_blank">【Manchester City】 &quot;At Man City or Man United...&qu...</a></strong><br/>📺 <strong>✅ talkSPORT</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ehDxZOAqHRM" target="_blank"><img src="https://i.ytimg.com/vi/ehDxZOAqHRM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ehDxZOAqHRM" target="_blank">【Manchester City】 “Bryan, You Always Look Down!” 👀</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 6日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (71件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=pNUdLp1LoYA" target="_blank">【Nottingham Forest】 Watch Nottingham Forest Intense Training Session 🔥</a> - UTOPIA SPORTS</li>
+<li><a href="https://www.youtube.com/watch?v=iTkXd50wmB4" target="_blank">【Nottingham Forest】 🚨🚨✅MAN City Step Up Intense Training as Full Sq...</a> - ethihad view</li>
+<li><a href="https://www.youtube.com/watch?v=BaUXHt63ZTQ" target="_blank">【Manchester City】 INSIDE MANCHESTER CITY TRAINING:Pep Guardiola,E...</a> - Meinertzhagen's Haversack</li>
+<li><a href="https://www.youtube.com/watch?v=33iV73PliLM" target="_blank">【Nottingham Forest】 Man City Today&#39;s Full Training ✅🔥 Aheat Of ...</a> - Man City Latest News Today </li>
+<li><a href="https://www.youtube.com/watch?v=g66doMbllCU" target="_blank">【Manchester City】 When Pep CONFUSED Bernardo Silva 🤨😅 #manchester...</a> - Amazon Prime Video Sport</li>
+<li><a href="https://www.youtube.com/watch?v=u0qT6CHgUyY" target="_blank">【Nottingham Forest】 PEP&#39;S BEST FORMATION FOR TITLE RACE! 🏆 MAN ...</a> - Cityzens Lineup Hub</li>
+<li><a href="https://www.youtube.com/watch?v=cQCup9Q3xr4" target="_blank">【Nottingham Forest】 🔥✅Pep Guardiola Intensifies Manchester City Pre...</a> - ETIHAD view</li>
+<li><a href="https://www.youtube.com/watch?v=7qk70-3Y8fY" target="_blank">【Nottingham Forest】 • Nottingham Forest - 2v2 ⚡ | #nottinghamforest...</a> - Tactical Touch</li>
+<li><a href="https://www.youtube.com/watch?v=rPK0Udcgf_Y" target="_blank">【Manchester City】 Rayan Cherki régale à l&#39;entrainement de Man...</a> - Foot01</li>
+<li><a href="https://www.youtube.com/watch?v=YlUatXDCElY" target="_blank">【Nottingham Forest】 Man City to weigh players before Forest game</a> - TL-NEW</li>
+<li><a href="https://www.youtube.com/watch?v=VRCGSWOnTj4" target="_blank">【Nottingham Forest】 142 Nathan Cantrill Foundation Phase Lead Notti...</a> - Inside The Academy</li>
+<li><a href="https://www.youtube.com/watch?v=DZ__vgksnIY" target="_blank">【Manchester City】 Manchester Cityplayers leaving training!#mancit...</a> - GoalMaxTv</li>
+<li><a href="https://www.youtube.com/watch?v=71UsDrzVqHc" target="_blank">【Nottingham Forest】 AI footballers 💀😂</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=ABrU-nbLleE" target="_blank">【Nottingham Forest】 Origi Lepas dari Belenggu AC Milan</a> - Blessing Soccer</li>
+<li><a href="https://www.youtube.com/watch?v=xolcWQYU5Ds" target="_blank">【Manchester City】 MANCHESTER CIT&#39;S CHRISTMAS SHOCK: The Night...</a> - Match IQ Shorts</li>
+<li><a href="https://www.youtube.com/watch?v=HlYZpkBLUiw" target="_blank">【Nottingham Forest】 The 5 footballers who served in their country’s...</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=b-Q2rLSGKO0" target="_blank">【Nottingham Forest】 The 5 best football academies in the world</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=TWW0MxeTP1U" target="_blank">【Manchester City】 Manchester City - Passing Combinations With Fou...</a> - Train Like a Pro - By The Best Football Coaches</li>
+<li><a href="https://www.youtube.com/watch?v=W9Px-izwqZo" target="_blank">【Manchester City】 Day 23/24 – Pep Guardiola Passing 🔵 | December ...</a> - Game on Drills</li>
+<li><a href="https://www.youtube.com/watch?v=yEMkY1D-WXY" target="_blank">【Nottingham Forest】 144p footballers pt. 5 😂💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=2aCLw8h_YaE" target="_blank">【Manchester City】 SEMENYO REJECTED Manchester United — The Real R...</a> - Match IQ Shorts</li>
+<li><a href="https://www.youtube.com/watch?v=XwCkQkOJt-w" target="_blank">【Nottingham Forest】 Career first goal 💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=NSkPWCcIgcU" target="_blank">【Manchester City】 Haland practicando. #manchestercity #haland</a> - okokfutbol</li>
+<li><a href="https://www.youtube.com/watch?v=irtvhIf1_mc" target="_blank">【Nottingham Forest】 Solly March scores a world class free kick to e...</a> - RulyFan</li>
+<li><a href="https://www.youtube.com/watch?v=QBcLjF2Iwfo" target="_blank">【Manchester City】 How Aston Villa Are Using City’s Academy Secret...</a> - Mythical Football Stories</li>
+<li><a href="https://www.youtube.com/watch?v=uI_OVD3K-bU" target="_blank">【Nottingham Forest】 Man City players &#39;incredibly disciplined&#3;...</a> - tl-news</li>
+<li><a href="https://www.youtube.com/watch?v=9KrC-Q7EUDY" target="_blank">【Nottingham Forest】 Top 10 Ballon d&#39;Or 2026 ► Power Rankings Up...</a> - MF WORLD UPDATES</li>
+<li><a href="https://www.youtube.com/watch?v=e-M2aNbG_9E" target="_blank">【Manchester City】 Pep Guardiola Menimbang Berat Badan Pemain Manc...</a> - Patrick Football </li>
+<li><a href="https://www.youtube.com/watch?v=6YcIN586Bzw" target="_blank">【Nottingham Forest】 Duo celebrations pt. 2💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=DJifBCXDuw0" target="_blank">【Manchester City】 Cunha salutes Shea Lacey skills in training to ...</a> - SELEVEN REPORT</li>
+<li><a href="https://www.youtube.com/watch?v=z7vlpBtpR1Q" target="_blank">【Nottingham Forest】 #crazily</a> - Richie Is The Name</li>
+<li><a href="https://www.youtube.com/watch?v=LyeFWINq4Bg" target="_blank">【Nottingham Forest】 Notts forest v Manchester City. Pre-Pep chat. T...</a> - TrueBlueThai </li>
+<li><a href="https://www.youtube.com/watch?v=z5OxLd27D-A" target="_blank">【Manchester City】 TRAINING | Guardiola Gets Haaland and Co. Sharp...</a> - Winners Circle Football Videos</li>
+<li><a href="https://www.youtube.com/watch?v=hfMLAV6KUHA" target="_blank">【Nottingham Forest】 #crazilly</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=burc7HCE3yc" target="_blank">【Manchester City】 Lock in #football #shorts #trending #mancity #t...</a> - Lucas_Ftbl</li>
+<li><a href="https://www.youtube.com/watch?v=s_1upVrVe50" target="_blank">【Nottingham Forest】 #strangerthings5</a> - 7mov_ftbl</li>
+<li><a href="https://www.youtube.com/watch?v=j7xWAPbZ-_E" target="_blank">【Nottingham Forest】 #crazily</a> - Richie Is The Name</li>
+<li><a href="https://www.youtube.com/watch?v=B5iSwwlhhBk" target="_blank">【Manchester City】 This Is Why Guardiola Weighed His Squad on Chri...</a> - TJLKUKI</li>
+<li><a href="https://www.youtube.com/watch?v=7ySEO6CuTgg" target="_blank">【Nottingham Forest】 Top 10 Ballon d&#39;Or 2026 ► Power Rankings Up...</a> - MF WORLD UPDATES</li>
+<li><a href="https://www.youtube.com/watch?v=fwSf8J5aMl4" target="_blank">【Manchester City】 Bruno Fernandes, Cunha, Sesko &amp; Manchester ...</a> - Mush Jungle</li>
+<li><a href="https://www.youtube.com/watch?v=AZIpCs7_LT8" target="_blank">【Manchester City】 SHOCKING Footage: Bruno Fernandes LIMPING Off!</a> - RED DEVILS CENTRAL </li>
+<li><a href="https://www.youtube.com/watch?v=Bm1bm085zug" target="_blank">【Nottingham Forest】 The 5 biggest wasted talents in football history</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=gnANs3TjMx0" target="_blank">【Manchester City】 Man City to weigh players before Forest game</a> - tl-news</li>
+<li><a href="https://www.youtube.com/watch?v=FN_qFGObK2o" target="_blank">【Nottingham Forest】 The 5 most unbelievable football lookalikes</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=R-tAsS1EPps" target="_blank">【Manchester City】 10 Wins in a Row! 🤩 Morgan Rogers&#39; Brace Si...</a> - Aston Villa Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=TCLrADgQelo" target="_blank">【Nottingham Forest】 #crazilly</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=7TVrykQOflk" target="_blank">【Manchester City】 Old Man Utd. x Old Man City ☠️ | #fc25 #fc24 #e...</a> - VINAYY PLAYZ </li>
+<li><a href="https://www.youtube.com/watch?v=OufdrCLwjHQ" target="_blank">【Nottingham Forest】 #crazily</a> - Richie Is The Name</li>
+<li><a href="https://www.youtube.com/watch?v=R826FWNv_lQ" target="_blank">【Manchester City】 Ruben Amorim SALUTES Shea Lacey Skills in Train...</a> - FOOTBALL THRILLS 😍</li>
+<li><a href="https://www.youtube.com/watch?v=CRi7tmX8CY0" target="_blank">【Nottingham Forest】 #crazilly</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=bIVwQq5CkGY" target="_blank">【Nottingham Forest】 #crazilly</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=Iw7pdoPRU1c" target="_blank">【Nottingham Forest】 #pepguardiola #subscribe</a> - Jiwa Bola</li>
+<li><a href="https://www.youtube.com/watch?v=gcyHG57cFfQ" target="_blank">【Manchester City】 Pep Guardiola Jujur: Berat Badan Naik 5 Kg, Dis...</a> - Bolaa Bicara Fans (HR)</li>
+<li><a href="https://www.youtube.com/watch?v=R7tdJ0WhjCw" target="_blank">【Nottingham Forest】 Top 3 Ballon d&#39;Or 2026 Messi or Haaland or ...</a> - MF WORLD UPDATES</li>
+<li><a href="https://www.youtube.com/watch?v=-qQj5i-R8Z0" target="_blank">【Manchester City】 The Reason Why Ruben Amorim Can’t Fix Mancheste...</a> - FOOTFLIX</li>
+<li><a href="https://www.youtube.com/watch?v=NNTp7n_IDMU" target="_blank">【Nottingham Forest】 Messi or Mbappé Ballon d&#39;Or 2026 ► Complete...</a> - MF WORLD UPDATES</li>
+<li><a href="https://www.youtube.com/watch?v=uJny4Z4DJs8" target="_blank">【Manchester City】 Abduqodir Husanov😱🥶😮‍💨 #husanov #football #futb...</a> - Zikrillo Ibrohimov</li>
+<li><a href="https://www.youtube.com/watch?v=lBXstzhzt6w" target="_blank">【Nottingham Forest】 “Much, Much Better” Guardiola to Make Late Call...</a> - Football Unbound</li>
+<li><a href="https://www.youtube.com/watch?v=P-3M8wL3ONk" target="_blank">【Manchester City】 Cunha stunned by Shea Lacey skills in training ...</a> - The United Forge</li>
+<li><a href="https://www.youtube.com/watch?v=kRkiYFTG_i8" target="_blank">【Nottingham Forest】 Man City&#39;s Secret Weapon? The Nico O&#39;Re...</a> - Manchester City News Unofficial</li>
+<li><a href="https://www.youtube.com/watch?v=2W45RleoMUU" target="_blank">【Manchester City】 TACTICAL TURMOIL AT MANCHESTER UNITED: LISANDRO...</a> - UNITED VIBES</li>
+<li><a href="https://www.youtube.com/watch?v=DuvX2_-wnbA" target="_blank">【Nottingham Forest】 The 5 footballers who don’t have children</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=cGhdinhnre0" target="_blank">【Manchester City】 How Shea Lacey Changed</a> - Sports Arena 2025</li>
+<li><a href="https://www.youtube.com/watch?v=mI6fJbOK9B8" target="_blank">【Nottingham Forest】 #vecna</a> - HypEditz </li>
+<li><a href="https://www.youtube.com/watch?v=c_k0v-agWJw" target="_blank">【Nottingham Forest】 #vecna</a> - Ultra Footy</li>
+<li><a href="https://www.youtube.com/watch?v=RQaRLDvKURE" target="_blank">【Manchester City】 BREAKING🔴NO REST:CUNHA, LAMMENS &amp; MORE BACK...</a> - OLD TRAFFORD EXCLUSIVE ⚽⚽</li>
+<li><a href="https://www.youtube.com/watch?v=nkhxDAJPSqQ" target="_blank">【Nottingham Forest】 #crazily</a> - Richie Is The Name</li>
+<li><a href="https://www.youtube.com/watch?v=yKAUudlx9vs" target="_blank">【Nottingham Forest】 #crazilly</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=VTi8GEETBig" target="_blank">【Manchester City】 Eden Hazard made everything look too easy</a> - Don Sheve Talkfootball </li>
+<li><a href="https://www.youtube.com/watch?v=Yc0kwJ6XRoQ" target="_blank">【Nottingham Forest】 #crazily</a> - Richie Is The Name</li>
+<li><a href="https://www.youtube.com/watch?v=FRQNVW5J-0Q" target="_blank">【Manchester City】 He Was Ignored at Man City… Now He Rules Chelse...</a> - Kahani Ke Parinde</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (13件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">【Nottingham Forest】 Patrick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=jT4Sbi0tdJU" target="_blank">【Nottingham Forest】 A Narrow Defeat | Aston Villa v Man Utd | Highl...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2K47A4Vs4qA" target="_blank">【Nottingham Forest】 SHOOT-OUT WINNERS, THROUGH TO THE SEMIS | HIGHL...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0-aYx5PHPBM" target="_blank">【Nottingham Forest】 HIGHLIGHTS! City go top with assured victory ov...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=5B3m4IlH8NI" target="_blank">【Nottingham Forest】 Newcastle 2-2 Chelsea | HIGHLIGHTS | Premier le...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=4X6U8JU63IY" target="_blank">【Nottingham Forest】 Liverpool Completes First January Signing After...</a> - best football moments <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=q0sUINqKv_M" target="_blank">【Nottingham Forest】 Thomas Frank Feels Supported? Unbelievable Fran...</a> - ON PL <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8GENkl-HUOQ" target="_blank">【Nottingham Forest】 FATTY PLAYERS AFTER CHRISTMAS WILL STAY IN MANC...</a> - BeanymanSports <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0-aYx5PHPBM" target="_blank">【Manchester City】 HIGHLIGHTS! City go top with assured victory ov...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=571yolVgYQw" target="_blank">【Manchester City】 EXTENDED HIGHLIGHTS | Man City 3 - 0 West Ham |...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0j1wDZsWN_M" target="_blank">【Manchester City】 The Goals That Earned De Bruyne His Move to Man...</a> - SKM61 <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=31WKBYUvsew" target="_blank">【Manchester City】 MATCHDAY LIVE! CITY HOST HAMMERS IN FINAL HOME ...</a> - Man City <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8GENkl-HUOQ" target="_blank">【Manchester City】 FATTY PLAYERS AFTER CHRISTMAS WILL STAY IN MANC...</a> - BeanymanSports <span style="color:#f44336">[press_conference]</span></li>
+</ul>
+</details>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>Arsenal vs Brighton （EPL）… Out of quota</li>
+<li>Chelsea vs Aston Villa （EPL）… Out of quota</li>
+<li>Liverpool vs Wolves （EPL）… Low rank</li>
+<li>Burnley vs Everton （EPL）… Low rank</li>
+<li>West Ham vs Fulham （EPL）… Low rank</li>
+<li>Brentford vs Bournemouth （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>実行回数</th>
+<th>残クォータ</th>
+<th>上限</th>
+<th>確認リンク</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API-Football</td>
+<td>53</td>
+<td>不明</td>
+<td>7,500/日</td>
+<td><a href="https://dashboard.api-football.com/">確認</a></td>
+</tr>
+<tr>
+<td>Google Custom Search</td>
+<td>5</td>
+<td>不明</td>
+<td>100/日 (無料枠)</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard">確認</a></td>
+</tr>
+<tr>
+<td>YouTube Data API</td>
+<td>0</td>
+<td>不明</td>
+<td>10,000/日</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard">確認</a></td>
+</tr>
+<tr>
+<td>Gemini API</td>
+<td>5</td>
+<td>不明</td>
+<td>~1,500/日</td>
+<td><a href="https://aistudio.google.com/app/apikey">確認</a></td>
+</tr>
+<tr>
+<td>Gmail API</td>
+<td>0</td>
+<td>不明</td>
+<td>500/日*</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>*Gmail API: OAuth認証済みアカウントの送信制限</p>
+        <div class="timestamp">
+            生成日時: 2025-12-31 17:36:38 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

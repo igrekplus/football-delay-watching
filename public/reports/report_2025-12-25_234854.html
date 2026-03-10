@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[DEBUG] サッカー観戦ガイド - 2025-12-25</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        <div style="background:#ff6b6b;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🔧 DEBUG MODE - このレポートはデバッグ用です</div>
+        <h1>本日の対象試合（1件）</h1>
+<ol>
+<li>Manchester City vs West Ham （EPL／S）</li>
+</ol>
+<h2>試合1：Manchester City vs West Ham （EPL／S）</h2>
+<h3>■ 基本情報（固定情報）</h3>
+<ul>
+<li>大会：EPL</li>
+<li>日時：2025/12/21 00:00 JST / 2025-12-20 15:00 Local</li>
+<li>会場：Etihad Stadium, Manchester</li>
+<li>スタメン（Manchester City）：<ul>
+<li>GK: #25 G. Donnarumma 🇮🇹</li>
+<li>DF: #27 M. Nunes 🇵🇹, #3 R. Dias 🇵🇹, #24 J. Gvardiol 🇭🇷, #33 N. O'Reilly 🏴󠁧󠁢󠁥󠁮󠁧󠁿</li>
+<li>MF: #4 T. Reijnders 🇳🇱, #14 Nico 🇪🇸, #20 B. Silva 🇵🇹</li>
+<li>FW: #10 R. Cherki 🇫🇷, #47 P. Foden 🏴󠁧󠁢󠁥󠁮󠁧󠁿</li>
+<li>FW: #9 E. Haaland 🇳🇴</li>
+</ul>
+</li>
+<li>スタメン（West Ham）：<ul>
+<li>GK: #23 A. Areola 🇫🇷</li>
+<li>DF: #2 K. Walker-Peters 🏴󠁧󠁢󠁥󠁮󠁧󠁿, #3 M. Kilman 🏴󠁧󠁢󠁥󠁮󠁧󠁿, #25 J. Todibo 🇫🇷, #30 O. Scarles 🏴󠁧󠁢󠁥󠁮󠁧󠁿</li>
+<li>MF: #27 S. Magassa 🇫🇷, #32 F. Potts 🏴󠁧󠁢󠁥󠁮󠁧󠁿, #18 M. Fernandes 🇵🇹</li>
+<li>FW: #10 Lucas Paqueta 🇧🇷</li>
+<li>FW: #20 J. Bowen 🏴󠁧󠁢󠁥󠁮󠁧󠁿, #7 C. Summerville 🇳🇱</li>
+</ul>
+</li>
+<li>ベンチ（Home）：J. Trafford, N. Ake, Savinho, A. Khusanov, C. Gray, D. Mukasa, R. Lewis, S. Mfuni, R. Heskey</li>
+<li>ベンチ（Away）：M. Hermansen, Igor, C. Wilson, K. Mavropanos, G. Rodriguez, T. Soucek, A. Irving, M. Kante, E. Mayers</li>
+<li>フォーメーション：Home 4-3-2-1 / Away 4-3-1-2</li>
+<li>出場停止・負傷者情報：R. Ait Nouri(Manchester City): International duty, O. Bobb(Manchester City): Hamstring Injury, J. Doku(Manchester City): Leg Injury, M. Kovacic(Manchester City): Heel Injury, O. Marmoush(Manchester City): International duty</li>
+<li>直近フォーム：Home WWWWW (✅✅✅✅✅) / Away LDDLL (❌➖➖❌❌)</li>
+<li>過去の対戦成績：過去5試合: Manchester City 5勝, 引分 0, West Ham 0勝</li>
+<li>主審：Paul Tierney, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Manchester City" src="/reports/images/1379135_home.png" /><br />
+<img alt="West Ham" src="/reports/images/1379135_away.png" /></p>
+<h3>■ 選手画像</h3>
+<p><strong>Manchester City</strong><br />
+<img alt="G. Donnarumma #25" src="https://media.api-sports.io/football/players/1622.png" /> <img alt="M. Nunes #27" src="https://media.api-sports.io/football/players/41621.png" /> <img alt="R. Dias #3" src="https://media.api-sports.io/football/players/567.png" /> <img alt="J. Gvardiol #24" src="https://media.api-sports.io/football/players/129033.png" /> <img alt="N. O'Reilly #33" src="https://media.api-sports.io/football/players/307123.png" /> <img alt="T. Reijnders #4" src="https://media.api-sports.io/football/players/36902.png" /> <img alt="Nico #14" src="https://media.api-sports.io/football/players/161933.png" /> <img alt="B. Silva #20" src="https://media.api-sports.io/football/players/636.png" /> <img alt="R. Cherki #10" src="https://media.api-sports.io/football/players/156477.png" /> <img alt="P. Foden #47" src="https://media.api-sports.io/football/players/631.png" /> <img alt="E. Haaland #9" src="https://media.api-sports.io/football/players/1100.png" /><br />
+<strong>West Ham</strong><br />
+<img alt="A. Areola #23" src="https://media.api-sports.io/football/players/253.png" /> <img alt="K. Walker-Peters #2" src="https://media.api-sports.io/football/players/171.png" /> <img alt="M. Kilman #3" src="https://media.api-sports.io/football/players/18744.png" /> <img alt="J. Todibo #25" src="https://media.api-sports.io/football/players/138.png" /> <img alt="O. Scarles #30" src="https://media.api-sports.io/football/players/327730.png" /> <img alt="S. Magassa #27" src="https://media.api-sports.io/football/players/326176.png" /> <img alt="F. Potts #32" src="https://media.api-sports.io/football/players/284446.png" /> <img alt="M. Fernandes #18" src="https://media.api-sports.io/football/players/336585.png" /> <img alt="Lucas Paqueta #10" src="https://media.api-sports.io/football/players/1646.png" /> <img alt="J. Bowen #20" src="https://media.api-sports.io/football/players/19428.png" /> <img alt="C. Summerville #7" src="https://media.api-sports.io/football/players/37724.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグの注目カード、マンチェスター・シティ対ウェストハムの一戦。昨シーズンの絶対王者として圧倒的な強さを見せつけるシティに対し、ウェストハムがどう立ち向かうのか、多くのファンの視線が注がれている。</li>
+</ul>
+<p>特に大きな焦点となっているのが、ウェストハムの中盤を牽引する司令塔、ルーカス・パケタの存在だ。彼の去就を巡っては移籍市場で様々な憶測が飛び交っており、チームはピッチ外での雑音の中でこの重要な一戦に臨むことになる。精神的にも難しい状況で、パケタ自身がどのようなパフォーマンスを見せるのか。彼のプレー一つひとつがチームの士気、そして試合の流れを大きく左右する可能性を秘めている。</p>
+<p>一方、ホームのマンチェスター・シティは盤石の体制で勝利を狙う。リーグ屈指の選手層と戦術的な柔軟性を誇り、ウェストハムのキーマンであるパケタをどう封じ込めるかが一つの見どころとなるだろう。個々のクオリティだけでなく、チームとしての完成度でも相手を上回るシティが、順当に勝ち点を積み上げるのか。</p>
+<p>王者シティの牙城を崩すべく、ウェストハムはパケタを中心に一丸となって戦うことができるか。それともシティがその実力を見せつけ、挑戦者を退けるのか。様々な思惑が交錯する、見逃せない一戦となる。</p>
+<p><strong>Sources:</strong><br />
+- www.bbc.com: West Ham United vs Fulham: Premier League preview, team news ...<br />
+- x.com: KUMB.com: West Ham United FC Online (@kumbdotcom) / Posts / X<br />
+- podcasts.apple.com: Men In Blazers - Podcast - Apple Podcasts</p>
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>マンチェスター・シティは、ロドリをアンカーに据えた4-2-3-1、あるいはポゼッション時にはDFが一人中盤に上がる3-2-4-1の可変システムを採用する可能性が高い。圧倒的なボール支配から、ハーランドを頂点に両翼の選手が積極的に仕掛け、ウェストハムの守備ブロックに揺さぶりをかけるだろう。</li>
+</ul>
+<p>対するウェストハムは、守備時に4-5-1のコンパクトなブロックを形成し、自陣深くに引いてスペースを消す戦術が予想される。ボールを奪取後は、ボーウェンのスピードとパケタの創造性を活かした鋭いカウンターが最大の武器となる。また、ウォード＝プラウズの正確なキックから生まれるセットプレーは、試合の流れを左右する重要な要素となるだろう。</p>
+<p>勝敗の鍵を握るマッチアップは、シティの心臓部であるロドリに対して、ウェストハムの前線がどれだけ効果的なプレッシャーをかけられるかという点にある。ロドリの自由を奪い、シティのビルドアップを寸断できれば、ウェストハムのカウンター戦術が機能する時間が増える。逆にシティが中盤を完全に支配した場合、ウェストハムは防戦一方の苦しい展開を強いられることになる。</p>
+<h3>■ 監督・選手コメント</h3>
+<ul>
+<li>【Manchester City】<br />
+ウェストハムとのリーグ戦を前に、ペップ・グアルディオラ監督が記者会見に臨んだ。自身の将来に関する質問に対し、監督は「ここにいられて幸せだし、ここにいたい」と述べ、クラブへの強い思いを表明。また、対戦相手についてはそのクオリティをリスペクトしていると語り、「我々はよく準備ができている」と自信を示した。チームのメンタリティとコミットメントにも満足している様子で、重要な一戦に向けてチームが万全の状態であることを強調した。</li>
+<li>ご指定いただいたニュース記事の断片には、マンチェスター・シティのペップ・グアルディオラ監督の去就に関する発言が中心となっており、West Hamの監督や選手の試合前コメントに関する情報は含まれておりませんでした。</li>
+</ul>
+<p>そのため、ご依頼のタスクを遂行することができません。</p>
+<h3>■ 📹 試合前の見どころ動画</h3>
+<h4>🎤 記者会見 (11件)</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">サムネイル</th>
+<th style="text-align: left;">動画情報</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=FYuyWxcX604"><img alt="thumb" src="https://i.ytimg.com/vi/FYuyWxcX604/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=FYuyWxcX604">Manager&#39;s Preview ｜ Pep Guardiola...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 6日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=qmsEeXaoBu8"><img alt="thumb" src="https://i.ytimg.com/vi/qmsEeXaoBu8/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=qmsEeXaoBu8">Pep Guardiola Speaks On His Future At...</a></strong><br/>📺 <strong>✅ DAZN Football</strong> ・ 🕐 5日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=as9J6tAnP3Q"><img alt="thumb" src="https://i.ytimg.com/vi/as9J6tAnP3Q/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=as9J6tAnP3Q">Enzo Maresca to swap Chelsea for Manc...</a></strong><br/>📺 <strong>✅ Sky Sports News</strong> ・ 🕐 6日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=rW4sGjbEc8w"><img alt="thumb" src="https://i.ytimg.com/vi/rW4sGjbEc8w/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=rW4sGjbEc8w">manchester city vs west ham hear what...</a></strong><br/>📺 <strong>⚠️ Football vibes</strong> ・ 🕐 6日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=rIIdBCcvp_U"><img alt="thumb" src="https://i.ytimg.com/vi/rIIdBCcvp_U/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=rIIdBCcvp_U">WHEN I’M 75 OR 76 I WILL QUIT MANCHES...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 6日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=hEbXA69L6KM"><img alt="thumb" src="https://i.ytimg.com/vi/hEbXA69L6KM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=hEbXA69L6KM">&quot;LEAVING MAN CITY? &quot;END OF ...</a></strong><br/>📺 <strong>⚠️ City Xtra</strong> ・ 🕐 6日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=pl1Yg8a9tX0"><img alt="thumb" src="https://i.ytimg.com/vi/pl1Yg8a9tX0/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=pl1Yg8a9tX0">I’M HAPPY HERE AND I WANT TO STAY HER...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 5日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=-UHqaUy74Cg"><img alt="thumb" src="https://i.ytimg.com/vi/-UHqaUy74Cg/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=-UHqaUy74Cg">GO TO BED EARLIER! 😴 ｜ Pep Guardiola</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 5日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=JBIZ7io5h8U"><img alt="thumb" src="https://i.ytimg.com/vi/JBIZ7io5h8U/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=JBIZ7io5h8U">🔴 LIVE ｜ Pep Guardiola pre-match pres...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 6日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=CQNihtNULR0"><img alt="thumb" src="https://i.ytimg.com/vi/CQNihtNULR0/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=CQNihtNULR0">Pep Guardiola Pre-Match Press Confere...</a></strong><br/>📺 <strong>⚠️ Sports Spotlight</strong> ・ 🕐 5日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=t5sdMoLWHjM"><img alt="thumb" src="https://i.ytimg.com/vi/t5sdMoLWHjM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=t5sdMoLWHjM">&quot;I&#39;M LEAVING! CIAO, CIAO!&amp;qu...</a></strong><br/>📺 <strong>⚠️ City Xtra</strong> ・ 🕐 5日前</td>
+</tr>
+</tbody>
+</table>
+<h4>⚔️ 因縁 (10件)</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">サムネイル</th>
+<th style="text-align: left;">動画情報</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=sAewmh-Lu8U"><img alt="thumb" src="https://i.ytimg.com/vi/sAewmh-Lu8U/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=sAewmh-Lu8U">EXTENDED HIGHLIGHTS ｜ 4-IN-A-ROW ｜ Ma...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/05/20</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=rPmUSbkSl34"><img alt="thumb" src="https://i.ytimg.com/vi/rPmUSbkSl34/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=rPmUSbkSl34">Man City Win The Premier League! ｜ Ma...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 9ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=9oJu2OBV62w"><img alt="thumb" src="https://i.ytimg.com/vi/9oJu2OBV62w/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=9oJu2OBV62w">HIGHLIGHTS! PREMIER LEAGUE WINNERS ｜ ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/05/19</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=-dKNtSCwJX4"><img alt="thumb" src="https://i.ytimg.com/vi/-dKNtSCwJX4/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=-dKNtSCwJX4">EXTENDED HIGHLIGHTS ｜ Man City 4-1 We...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 11ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=yoMifTqsK8Y"><img alt="thumb" src="https://i.ytimg.com/vi/yoMifTqsK8Y/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=yoMifTqsK8Y">HIGHLIGHTS ｜ MAN CITY 4 - 1 WEST HAM ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 11ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=rgf_Ej7tewI"><img alt="thumb" src="https://i.ytimg.com/vi/rgf_Ej7tewI/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=rgf_Ej7tewI">EXTENDED HIGHLIGHTS ｜ Man City 3-2 Le...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 3週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=MzFrT3YDPCM"><img alt="thumb" src="https://i.ytimg.com/vi/MzFrT3YDPCM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=MzFrT3YDPCM">HIGHLIGHTS! City 5-1 Burnley ｜ Haalan...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=akt90mteHgs"><img alt="thumb" src="https://i.ytimg.com/vi/akt90mteHgs/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=akt90mteHgs">HIGHLIGHTS! City 2-0 Everton ｜ Haalan...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=qIZfCatUE9U"><img alt="thumb" src="https://i.ytimg.com/vi/qIZfCatUE9U/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=qIZfCatUE9U">Manchester City 4-1 West Ham ｜ Premie...</a></strong><br/>📺 <strong>⚠️ West Ham United FC</strong> ・ 🕐 11ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=HjGugRlBhnA"><img alt="thumb" src="https://i.ytimg.com/vi/HjGugRlBhnA/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=HjGugRlBhnA">Extended Highlights ｜ West Ham 1-3 Ma...</a></strong><br/>📺 <strong>⚠️ West Ham United FC</strong> ・ 🕐 2024/09/01</td>
+</tr>
+</tbody>
+</table>
+<h4>📊 戦術分析 (20件)</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">サムネイル</th>
+<th style="text-align: left;">動画情報</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=B6RgCAiLg44"><img alt="thumb" src="https://i.ytimg.com/vi/B6RgCAiLg44/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=B6RgCAiLg44">【試合総括】マンチェスターCvsナポリを解説！ナポリの守備を攻略したペップ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U"><img alt="thumb" src="https://i.ytimg.com/vi/a_VNw2C7Y6U/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U">【プレミアリーグ】アーセナル vs マンチェスター・シティ 戦術的攻防を徹...</a></strong><br/>📺 <strong>✅ スポルティーバ</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=3gI3005pYKo"><img alt="thumb" src="https://i.ytimg.com/vi/3gI3005pYKo/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=3gI3005pYKo">【三笘躍動！】ブライトンvsマンチェスターシティを戦術的観点から解説｜ブラ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw"><img alt="thumb" src="https://i.ytimg.com/vi/5_Z5xUa9kiw/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw">【戦術の進化】マンチェスターシティvsトッテナムを戦術的観点から解説｜シテ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=vAO1BPQStBg"><img alt="thumb" src="https://i.ytimg.com/vi/vAO1BPQStBg/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=vAO1BPQStBg">【プレミアリーグ展望】お金持ちのプレス回避術／ペップの新戦術／トッテナム優...</a></strong><br/>📺 <strong>✅ PIVOT 公式チャンネル</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=gsmh0GLPV-I"><img alt="thumb" src="https://i.ytimg.com/vi/gsmh0GLPV-I/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=gsmh0GLPV-I">ペップシティの何が変わった！？守備復活とクサノフ覚醒の要因を徹底分析【レオ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=J66oZ-dOWWU"><img alt="thumb" src="https://i.ytimg.com/vi/J66oZ-dOWWU/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=J66oZ-dOWWU">リバプール完敗の真相。グアルディオラが“監督1000試合目”で見せた究極の...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=G2dUIdRYh8s"><img alt="thumb" src="https://i.ytimg.com/vi/G2dUIdRYh8s/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=G2dUIdRYh8s">Manchester United vs West Ham - Analy...</a></strong><br/>📺 <strong>⚠️ Dan Boyd</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=ZKKoZ5f9CRc"><img alt="thumb" src="https://i.ytimg.com/vi/ZKKoZ5f9CRc/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=ZKKoZ5f9CRc">How Chelsea DESTROYED West Ham United.</a></strong><br/>📺 <strong>⚠️ Zekko Football</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=vn-siitfPoA"><img alt="thumb" src="https://i.ytimg.com/vi/vn-siitfPoA/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=vn-siitfPoA">How West Ham Setup Under Nuno Espirit...</a></strong><br/>📺 <strong>⚠️ Zekko Football</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=mmXhMpg1Y9c"><img alt="thumb" src="https://i.ytimg.com/vi/mmXhMpg1Y9c/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=mmXhMpg1Y9c">【30秒戦術】サンダーランド3-0発進　“対応力”で主導！#30秒戦術 #...</a></strong><br/>📺 <strong>⚠️ タクサカ. ch</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=G59ANBCZYsU"><img alt="thumb" src="https://i.ytimg.com/vi/G59ANBCZYsU/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=G59ANBCZYsU">Westham vs Chelsea Tactical analysis</a></strong><br/>📺 <strong>⚠️ Tactical Analysis</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=liaHXrdKopw"><img alt="thumb" src="https://i.ytimg.com/vi/liaHXrdKopw/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=liaHXrdKopw">保持するか売却するか：ウェストハムをどう立て直すか！</a></strong><br/>📺 <strong>⚠️ MoreJamesAllcott</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=BAbflxMeQnY"><img alt="thumb" src="https://i.ytimg.com/vi/BAbflxMeQnY/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=BAbflxMeQnY">ペップが今シーズン使用する3つの新しい戦術システム。</a></strong><br/>📺 <strong>⚠️ James Lawrence Allcott</strong> ・ 🕐 5ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=bUPhSO3kFW8"><img alt="thumb" src="https://i.ytimg.com/vi/bUPhSO3kFW8/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=bUPhSO3kFW8">チェルシーがウェストハムを圧倒した方法（戦術分析）</a></strong><br/>📺 <strong>⚠️ Mono FC</strong> ・ 🕐 4ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=qEM1fDG5wDQ"><img alt="thumb" src="https://i.ytimg.com/vi/qEM1fDG5wDQ/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=qEM1fDG5wDQ">【分析】アルヒラルがマンチェスターシティを撃破した戦術がこちら</a></strong><br/>📺 <strong>⚠️ エラシコTV〜ディープなサッカー裏話〜</strong> ・ 🕐 5ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=jwxNG13-K9U"><img alt="thumb" src="https://i.ytimg.com/vi/jwxNG13-K9U/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=jwxNG13-K9U">ヌーノの新たな物語 ｜ ウェストハムの分析</a></strong><br/>📺 <strong>⚠️ Analytics United</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=H4D7LdVgH1Q"><img alt="thumb" src="https://i.ytimg.com/vi/H4D7LdVgH1Q/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=H4D7LdVgH1Q">パスと動きがドンピシャ過ぎるオライリー×ハーランド #サッカー</a></strong><br/>📺 <strong>⚠️ BALLISTAR365</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=4RItt3jzwgE"><img alt="thumb" src="https://i.ytimg.com/vi/4RItt3jzwgE/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=4RItt3jzwgE">火の洗礼 ｜ ウェストハムの分析</a></strong><br/>📺 <strong>⚠️ Analytics United</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=yN57m8RDWsQ"><img alt="thumb" src="https://i.ytimg.com/vi/yN57m8RDWsQ/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=yN57m8RDWsQ">マンチェスター・シティ対ウェストハム プレビュー ｜ 戦術分析</a></strong><br/>📺 <strong>⚠️ Babbling Irons</strong> ・ 🕐 6日前</td>
+</tr>
+</tbody>
+</table>
+<h4>⭐ 選手紹介 (19件)</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">サムネイル</th>
+<th style="text-align: left;">動画情報</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI"><img alt="thumb" src="https://i.ytimg.com/vi/VPgwGN9kGpI/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI">Erling Haaland&#39;s First 100 Premie...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 3週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=vbYZJuOWnvc"><img alt="thumb" src="https://i.ytimg.com/vi/vbYZJuOWnvc/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=vbYZJuOWnvc">Ultimate West Ham player?! 👀 Summervi...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=hsafo4l2oI8"><img alt="thumb" src="https://i.ytimg.com/vi/hsafo4l2oI8/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=hsafo4l2oI8">All 16 Haaland Goals From The Europea...</a></strong><br/>📺 <strong>✅ UEFA</strong> ・ 🕐 1ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=1l5O8Shk6GY"><img alt="thumb" src="https://i.ytimg.com/vi/1l5O8Shk6GY/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=1l5O8Shk6GY">【ノルウェー代表｜ハーランド｜ゴール集】全8試合で16得点！世界最強のゴー...</a></strong><br/>📺 <strong>✅ DAZN Japan</strong> ・ 🕐 1ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=CIHqHxA4fYM"><img alt="thumb" src="https://i.ytimg.com/vi/CIHqHxA4fYM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=CIHqHxA4fYM">EVERY GOAL OF 2025/26 SEASON SO FAR ｜...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=-2GQ47BGoHI"><img alt="thumb" src="https://i.ytimg.com/vi/-2GQ47BGoHI/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=-2GQ47BGoHI">【得点ランク独走👑】アーリング・ハーランド（マンチェスター・シティ）プレミ...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=s4H5UWxeuDM"><img alt="thumb" src="https://i.ytimg.com/vi/s4H5UWxeuDM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=s4H5UWxeuDM">RICE AND SAKA GOALS SECURE THE WIN! ｜...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=8fsP2yLkFB8"><img alt="thumb" src="https://i.ytimg.com/vi/8fsP2yLkFB8/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=8fsP2yLkFB8">怪物がプレミア史上最速での100ゴール｜全ゴール｜ハーランド(マンチェスタ...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=zH-x0C1yBMA"><img alt="thumb" src="https://i.ytimg.com/vi/zH-x0C1yBMA/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=zH-x0C1yBMA">【ノルウェー×イスラエル｜ハイライト】FIFAワールドカップ2026 欧州...</a></strong><br/>📺 <strong>✅ DAZN Japan</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=Y9i6vyN3Bg0"><img alt="thumb" src="https://i.ytimg.com/vi/Y9i6vyN3Bg0/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=Y9i6vyN3Bg0">Erling Haaland&#39;s 50 Champions Lea...</a></strong><br/>📺 <strong>✅ UEFA</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=KDfsDQuR9xM"><img alt="thumb" src="https://i.ytimg.com/vi/KDfsDQuR9xM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=KDfsDQuR9xM">HIGHLIGHTS! Arsenal 1-1 Man City ｜ Ha...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=icH3vggUa_Y"><img alt="thumb" src="https://i.ytimg.com/vi/icH3vggUa_Y/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=icH3vggUa_Y">Summerville so good ✨ #football #foot...</a></strong><br/>📺 <strong>⚠️ KICKTAPE</strong> ・ 🕐 5ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=qUOpO1OSp6k"><img alt="thumb" src="https://i.ytimg.com/vi/qUOpO1OSp6k/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=qUOpO1OSp6k">Summerville Leeds Edit ⚡ Insane Dribb...</a></strong><br/>📺 **⚠️ Playmaker Areeb ** ・ 🕐 3週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=zHerRffvwXQ"><img alt="thumb" src="https://i.ytimg.com/vi/zHerRffvwXQ/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=zHerRffvwXQ">Does Cry Summerville have the best ha...</a></strong><br/>📺 <strong>⚠️ HD CUTZ LONDON</strong> ・ 🕐 1ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=YRH65ueSgNk"><img alt="thumb" src="https://i.ytimg.com/vi/YRH65ueSgNk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=YRH65ueSgNk">West Ham 1-2 Crystal Palace ｜ Premier...</a></strong><br/>📺 <strong>⚠️ West Ham United FC</strong> ・ 🕐 3ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=VeAUvbAWdY8"><img alt="thumb" src="https://i.ytimg.com/vi/VeAUvbAWdY8/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=VeAUvbAWdY8">Kudus Skill Show in Tottenham Debut! 😮‍💨</a></strong><br/>📺 <strong>⚠️ HugoFilmz</strong> ・ 🕐 5ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=6zhP44ydHwM"><img alt="thumb" src="https://i.ytimg.com/vi/6zhP44ydHwM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=6zhP44ydHwM">that one CrysencioSummerville Edit☠️</a></strong><br/>📺 <strong>⚠️ VibeFooty</strong> ・ 🕐 1ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=_foME9j774o"><img alt="thumb" src="https://i.ytimg.com/vi/_foME9j774o/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=_foME9j774o">Desire Doue ► Airplane Mode x Nemzzz ...</a></strong><br/>📺 <strong>⚠️ zoe</strong> ・ 🕐 5ヶ月前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=F-Xaay45ie8"><img alt="thumb" src="https://i.ytimg.com/vi/F-Xaay45ie8/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=F-Xaay45ie8">Arsenal 2-0 West Ham ｜ Premier League...</a></strong><br/>📺 <strong>⚠️ West Ham United FC</strong> ・ 🕐 2ヶ月前</td>
+</tr>
+</tbody>
+</table>
+<h4>🏃 練習風景 (19件)</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">サムネイル</th>
+<th style="text-align: left;">動画情報</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=Hv2IXyyAgBQ"><img alt="thumb" src="https://i.ytimg.com/vi/Hv2IXyyAgBQ/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=Hv2IXyyAgBQ">HIGHLIGHTS! Haaland and Foden help po...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=Gg9RS5YNEAs"><img alt="thumb" src="https://i.ytimg.com/vi/Gg9RS5YNEAs/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=Gg9RS5YNEAs">Building Towards Bournemouth! 🧱 ｜ INS...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=tiaL3iRyGnk"><img alt="thumb" src="https://i.ytimg.com/vi/tiaL3iRyGnk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=tiaL3iRyGnk">Spreading some festive cheer! 🎄🩵</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=TYu6Jsll2Hk"><img alt="thumb" src="https://i.ytimg.com/vi/TYu6Jsll2Hk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=TYu6Jsll2Hk">What weak foot? #cherki #football #ma...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=pAKFsuS0-Po"><img alt="thumb" src="https://i.ytimg.com/vi/pAKFsuS0-Po/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=pAKFsuS0-Po">💯👍LAST TRAINING AGAINST 🔥👍Manchester ...</a></strong><br/>📺 **⚠️ ETIHAD FOCUS ** ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=MAxZpXq2HJw"><img alt="thumb" src="https://i.ytimg.com/vi/MAxZpXq2HJw/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=MAxZpXq2HJw">🌟⚽ウェストハム・ユナイテッドFCにインスパイアされた強烈なワンタッチパス...</a></strong><br/>📺 <strong>⚠️ Coach Konstantinos Foundas</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=1uZFHxqBwOk"><img alt="thumb" src="https://i.ytimg.com/vi/1uZFHxqBwOk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=1uZFHxqBwOk">Watch Erling Haaland In Man City SUPE...</a></strong><br/>📺 <strong>⚠️ UTOPIA SPORTS</strong> ・ 🕐 5日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=Mqlm25SHiyo"><img alt="thumb" src="https://i.ytimg.com/vi/Mqlm25SHiyo/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=Mqlm25SHiyo">ウェストハム - ボールを使ったサックドリル</a></strong><br/>📺 <strong>⚠️ Train Like a Pro - By The Best Football Coaches</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=kIplypsgcmw"><img alt="thumb" src="https://i.ytimg.com/vi/kIplypsgcmw/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=kIplypsgcmw">⚽✨【奇跡の一瞬】ゴールにもたれて微笑む長谷川唯😍マンチェスター・シティ公...</a></strong><br/>📺 **⚠️ JPOP TV ** ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=0Bu8Y6FKgsY"><img alt="thumb" src="https://i.ytimg.com/vi/0Bu8Y6FKgsY/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=0Bu8Y6FKgsY">みんなに笑われた謎トレーニングがサッカー史を変えた瞬間　#サッカー#フット...</a></strong><br/>📺 <strong>⚠️ Kick-Off Lab</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=JGemDJIIaPs"><img alt="thumb" src="https://i.ytimg.com/vi/JGemDJIIaPs/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=JGemDJIIaPs">このタンクトップはアリ？【世界の筋肉】</a></strong><br/>📺 <strong>⚠️ 世界の筋肉</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=ZkjICzi8KO0"><img alt="thumb" src="https://i.ytimg.com/vi/ZkjICzi8KO0/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=ZkjICzi8KO0">【海外サッカー】年の瀬を迎えて、マンチェスターシティウィメンは飛躍への優位...</a></strong><br/>📺 <strong>⚠️ Player Statistics</strong> ・ 🕐 5日前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=6M3m15hA9Qw"><img alt="thumb" src="https://i.ytimg.com/vi/6M3m15hA9Qw/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=6M3m15hA9Qw">短期間で最も効果的なタイピングトレーニング</a></strong><br/>📺 <strong>⚠️ Smile Tube</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=3S23HcGV-fk"><img alt="thumb" src="https://i.ytimg.com/vi/3S23HcGV-fk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=3S23HcGV-fk">Manchester City Star • Chloe Kelly • ...</a></strong><br/>📺 <strong>⚠️ NEW USA SHORTS</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=ANlspUvFiRs"><img alt="thumb" src="https://i.ytimg.com/vi/ANlspUvFiRs/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=ANlspUvFiRs">背中の厚みを作るトレーニングメニュー※エゴイスト</a></strong><br/>📺 <strong>⚠️ 願BAL【パパトレーニー】</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=QNRFqieKJXk"><img alt="thumb" src="https://i.ytimg.com/vi/QNRFqieKJXk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=QNRFqieKJXk">ハムストリングスに恐怖を与えるトレーニング</a></strong><br/>📺 <strong>⚠️ 【陸上】A-1クラブ〜福井から世界へ〜</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=NCihtvBh4uk"><img alt="thumb" src="https://i.ytimg.com/vi/NCihtvBh4uk/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=NCihtvBh4uk">West ham baller🤩😍 #realmadridshorts #...</a></strong><br/>📺 <strong>⚠️ Foot Mood4M</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=K-0xkWa4ItM"><img alt="thumb" src="https://i.ytimg.com/vi/K-0xkWa4ItM/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=K-0xkWa4ItM">Defeat to Manchester City ｜ Crystal P...</a></strong><br/>📺 <strong>⚠️ Crystal Palace FC</strong> ・ 🕐 1週間前</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://www.youtube.com/watch?v=M9uvarO_Yt4"><img alt="thumb" src="https://i.ytimg.com/vi/M9uvarO_Yt4/mqdefault.jpg" /></a></td>
+<td style="text-align: left;"><strong><a href="https://www.youtube.com/watch?v=M9uvarO_Yt4">Halftime training West Ham and Liverpool</a></strong><br/>📺 <strong>⚠️ Aiden28</strong> ・ 🕐 5日前</td>
+</tr>
+</tbody>
+</table>
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<h2>選外試合リスト</h2>
+<ul>
+<li>Newcastle vs Chelsea （EPL）… Out of quota</li>
+<li>Everton vs Arsenal （EPL）… Out of quota</li>
+<li>Oviedo vs Celta Vigo （LALIGA）… Low rank</li>
+<li>Levante vs Real Sociedad （LALIGA）… Low rank</li>
+<li>Osasuna vs Alaves （LALIGA）… Low rank</li>
+<li>Real Madrid vs Sevilla （LALIGA）… Low rank</li>
+<li>Bournemouth vs Burnley （EPL）… Low rank</li>
+<li>Wolves vs Brentford （EPL）… Low rank</li>
+<li>Brighton vs Sunderland （EPL）… Low rank</li>
+<li>Tottenham vs Liverpool （EPL）… Low rank</li>
+<li>Leeds vs Crystal Palace （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: Remaining: 7491 / Limit: 7500 (requests/day)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+</ul>
+<hr />
+<p><em>レポート生成日時: 2025-12-25 23:48:54 JST</em></p>
+        <div class="timestamp">
+            生成日時: 2025-12-25 23:48:54 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

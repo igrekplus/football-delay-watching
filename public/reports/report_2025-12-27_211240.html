@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[DEBUG] サッカー観戦ガイド - 2025-12-27</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        /* Player Card Styles */
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Injury Card Styles */
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        <div style="background:#ff6b6b;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🔧 DEBUG MODE - このレポートはデバッグ用です</div>
+        <h1>本日の対象試合（1件）</h1>
+<ol>
+<li>Nottingham Forest vs Manchester City （EPL／S）</li>
+</ol>
+<h2>試合1：Nottingham Forest vs Manchester City （EPL／S）</h2>
+<h3>■ 基本情報（固定情報）</h3>
+<ul>
+<li>大会：EPL</li>
+<li>日時：2025/12/27 21:30 JST / 2025-12-27 12:30 Local</li>
+<li>会場：City Ground, Nottingham</li>
+</ul>
+<h3>スタメン（Nottingham Forest）フォーメーション: 4-2-3-1</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>GK #13</span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/70366.png" alt="John Victor" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">John Victor</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">29歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #37</span><span>🇮🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/181806.png" alt="Nicolò Savona" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nicolò Savona</div>
+<div class="player-card-nationality">Italy</div>
+<div class="player-card-age">22歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #31</span><span>🇷🇸</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2817.png" alt="Nikola Milenković" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nikola Milenković</div>
+<div class="player-card-nationality">Serbia</div>
+<div class="player-card-age">28歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #5</span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/363695.png" alt="Murillo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Murillo</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #3</span><span>🏴󠁧󠁢󠁷󠁬󠁳󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138780.png" alt="Neco Williams" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Neco Williams</div>
+<div class="player-card-nationality">Wales</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #8</span><span>🏴󠁧󠁢󠁳󠁣󠁴󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138908.png" alt="Elliot Anderson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Elliot Anderson</div>
+<div class="player-card-nationality">Scotland</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #16</span><span>🇦🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/6056.png" alt="Nicolás Domínguez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nicolás Domínguez</div>
+<div class="player-card-nationality">Argentina</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #21</span><span>🇯🇲</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284428.png" alt="Omari Hutchinson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Omari Hutchinson</div>
+<div class="player-card-nationality">Jamaica</div>
+<div class="player-card-age">22歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #10</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18746.png" alt="Morgan Gibbs-White" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Morgan Gibbs-White</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">25歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #7</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2298.png" alt="Callum Hudson-Odoi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Callum Hudson-Odoi</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">25歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #19</span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/9366.png" alt="Igor Jesus" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Igor Jesus</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+</div>
+<h3>スタメン（Manchester City）フォーメーション: 4-3-2-1</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>GK #25</span><span>🇮🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1622.png" alt="Gianluigi Donnarumma" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Gianluigi Donnarumma</div>
+<div class="player-card-nationality">Italy</div>
+<div class="player-card-age">26歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #27</span><span>🇵🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/41621.png" alt="Matheus Nunes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Matheus Nunes</div>
+<div class="player-card-nationality">Portugal</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #3</span><span>🇵🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/567.png" alt="Rúben Dias" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Rúben Dias</div>
+<div class="player-card-nationality">Portugal</div>
+<div class="player-card-age">28歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #24</span><span>🇭🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129033.png" alt="Joško Gvardiol" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Joško Gvardiol</div>
+<div class="player-card-nationality">Croatia</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #33</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/307123.png" alt="Nico O'Reilly" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nico O'Reilly</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">20歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #20</span><span>🇵🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/636.png" alt="Bernardo Silva" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Bernardo Silva</div>
+<div class="player-card-nationality">Portugal</div>
+<div class="player-card-age">31歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #14</span><span>🇪🇸</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/161933.png" alt="Nico González" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nico González</div>
+<div class="player-card-nationality">Spain</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #4</span><span>🇳🇱</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/36902.png" alt="Tijjani Reijnders" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Tijjani Reijnders</div>
+<div class="player-card-nationality">Netherlands</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #10</span><span>🇫🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/156477.png" alt="Rayan Cherki" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Rayan Cherki</div>
+<div class="player-card-nationality">France</div>
+<div class="player-card-age">22歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #47</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/631.png" alt="Phil Foden" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Phil Foden</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">25歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #9</span><span>🇳🇴</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1100.png" alt="Erling Haaland" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Erling Haaland</div>
+<div class="player-card-nationality">Norway</div>
+<div class="player-card-age">25歳</div>
+</div>
+</div>
+</div>
+</div>
+<h3>ベンチ（Nottingham Forest）</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇧🇪</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2919.png" alt="Matz Sels" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Matz Sels</div>
+<div class="player-card-nationality">Belgium</div>
+<div class="player-card-age">33歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/67943.png" alt="Morato" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Morato</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇺🇦</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/641.png" alt="Oleksandr Zinchenko" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Oleksandr Zinchenko</div>
+<div class="player-card-nationality">Ukraine</div>
+<div class="player-card-age">29歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/329357.png" alt="Zach Abbott" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Zach Abbott</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">19歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47522.png" alt="Douglas Luiz" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Douglas Luiz</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/158697.png" alt="James McAtee" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">James McAtee</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇫🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129695.png" alt="Dilane Bakwa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Dilane Bakwa</div>
+<div class="player-card-nationality">France</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇳🇬</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/8598.png" alt="Taiwo Awoniyi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Taiwo Awoniyi</div>
+<div class="player-card-nationality">Nigeria</div>
+<div class="player-card-age">28歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇫🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/147831.png" alt="Arnaud Kalimuendo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Arnaud Kalimuendo</div>
+<div class="player-card-nationality">France</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+</div>
+<h3>ベンチ（Manchester City）</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162489.png" alt="James Trafford" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">James Trafford</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇳🇱</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18861.png" alt="Nathan Aké" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nathan Aké</div>
+<div class="player-card-nationality">Netherlands</div>
+<div class="player-card-age">30歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/360114.png" alt="Abdukodir Khusanov" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Abdukodir Khusanov</div>
+<div class="player-card-nationality">Uzbekistan</div>
+<div class="player-card-age">21歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284230.png" alt="Rico Lewis" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Rico Lewis</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">21歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇪🇸</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/44.png" alt="Rodri" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Rodri</div>
+<div class="player-card-nationality">Spain</div>
+<div class="player-card-age">29歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/266657.png" alt="Savinho" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Savinho</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">21歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/380681.png" alt="Divine Mukasa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Divine Mukasa</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">18歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/442048.png" alt="Ryan McAidoo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Ryan McAidoo</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">17歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/448969.png" alt="Reigan Heskey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Reigan Heskey</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">17歳</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>フォーメーション：Home 4-2-3-1 / Away 4-3-2-1</li>
+</ul>
+<h3>出場停止・負傷者情報</h3>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2771.png" alt="O. Aina" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">O. Aina</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18739.png" alt="W. Boly" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">W. Boly</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/48648.png" alt="D. Ndoye" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">D. Ndoye</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22149.png" alt="I. Sangare" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">I. Sangare</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18931.png" alt="C. Wood" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">C. Wood</div>
+<div class="player-card-nationality">Nottingham Forest</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>直近フォーム：Home LWLWL (❌✅❌✅❌) / Away WWWWW (✅✅✅✅✅)</li>
+<li>過去の対戦成績：過去5試合: Nottingham Forest 1勝, 引分 0, Manchester City 4勝</li>
+<li>主審：Robert Jones, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Nottingham Forest" src="/reports/images/1379146_home.png" /><br />
+<img alt="Manchester City" src="/reports/images/1379146_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグ終盤戦、ノッティンガム・フォレストが本拠地シティ・グラウンドに、優勝争いの渦中にいるマンチェスター・シティを迎える。</li>
+</ul>
+<p>アウェイのマンチェスター・シティは、現在「絶好調」と評されるほどの勢いで勝ち点を積み重ねており、ペップ・グアルディオラ監督の下でリーグ首位の座を虎視眈々と狙っている。タイトルレースが激化する中、このイースト・ミッドランズへの遠征も絶対に落とせない一戦だ。チームの注目点としては、中盤の要であるロドリがサプライズで復帰する可能性が浮上していること。彼の戦列復帰が実現すれば、攻守両面でチームに絶大な安定感をもたらすだろう。盤石の体制で勝利を目指す。</p>
+<p>一方、ホームで絶対王者を迎え撃つノッティンガム・フォレスト。厳しい戦いが予想される中、ファンからは「希望を持って応援する」という熱い声が上がっている。攻撃のキーマンとして、若手FWバクワの先発起用を待望する声もあり、彼の抜擢がチームに新たな勢いをもたらすか、采配にも注目が集まる。ホームの大声援を背に、強敵から貴重な勝ち点を奪うことができるか。</p>
+<p>悲願のリーグ連覇へ突き進むシティと、ホームで意地を見せたいフォレスト。それぞれの思惑が交錯する、見逃せない一戦となる。</p>
+<p><strong>Sources:</strong><br />
+- www.youtube.com: <a href="https://www.youtube.com/watch?v=7PMllgDeSpI">Nothing But Hope! Bakwa's Time To Start? Nottingham Forest vs ...</a><br />
+- www.si.com: <a href="https://www.si.com/soccer/nottingham-forest-vs-man-city-preview-predictions-and-lineups-12-27-25">Nottingham Forest vs. Man City: Preview, Predictions and Lineups</a><br />
+- www.youtube.com: <a href="https://www.youtube.com/watch?v=rOqPqMcCGZs">SURPRISE RODRI RETURN? | MATCH PREVIEW</a></p>
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>ノッティンガム・フォレストは、守備を固めてカウンターを狙う[4-2-3-1]もしくは[5-4-1]の布陣を採用する可能性が高い。守備時には低い位置でコンパクトなブロックを形成し、マンチェスター・シティに中央のスペースを与えないことが最優先課題となる。特に、中盤のイェーツやダニーロの運動量とボール奪取能力が、シティの攻撃を遅らせる上で鍵を握る。攻撃に転じた際は、司令塔のギブス＝ホワイトを起点としたロングカウンターが主な武器となるだろう。前線のウッドやエランガ、あるいは抜擢が噂されるバクワといった快足アタッカーのスピードを活かし、シティのハイラインの裏を狙う形が想定される。</li>
+</ul>
+<p>一方のマンチェスター・シティは、ボールポゼッションを支配する[4-3-3]を基本とし、ビルドアップ時にはCBやSBが中盤に上がる可変システムを用いるだろう。アンカーのロドリが復帰すれば、中盤の安定感と配給能力が格段に向上し、フォレストの守備ブロックをこじ開けるための起点となる。デ・ブライネやフォーデンがハーフスペースでボールを受け、怪物ハーランドへのラストパスを供給する形が攻撃の基本線となる。ボールロスト時には即座にゲーゲンプレスを敢行し、フォレストのカウンターの芽を摘みにかかるだろう。</p>
+<p>この試合の焦点は、「フォレストの堅守速攻 vs シティのポゼッションサッカー」という明確な構図になる。特に注目すべきは、世界最高峰のストライカーであるハーランドと、フォレストのCBムリーリョとのフィジカルバトル。また、フォレストのカウンターの起点となるギブス＝ホワイトに対し、シティのアンカー（特にロドリ）がいかに自由を与えないかも、試合の行方を大きく左右するマッチアップとなるだろう。</p>
+<h3>■ 監督・選手コメント</h3>
+<ul>
+<li>【Nottingham Forest】<br />
+次戦に向けた記者会見で、ショーン・ダイク監督がコメントしました。監督はまず長期的な野望として「降格圏を脱出した後、ノッティンガム・フォレストでプレミアリーグを制覇することが私の目標だ」と力強く宣言。また、対戦相手のグアルディオラ監督についても敬意を示しました。さらに、クリスマス期間中の選手の管理については、過度に厳しくする「スクルージ（けちん坊）」にはならないと述べ、柔軟な姿勢を見せています。</li>
+<li>ご提示いただいたニュース記事の断片には、残念ながらManchester Cityの監督や選手の具体的な試合前コメントが含まれておりませんでした。</li>
+</ul>
+<p>記載されている情報は、主に対戦相手の監督（ショーン・ダイク氏やアンドニ・イラオラ氏）のコメントや、グアルディオラ監督の試合とは直接関係のない発言に関する話題が中心です。</p>
+<p>そのため、ご依頼の要件を満たす要約を作成することができません。お手数ですが、監督や選手の試合前コメントが記載されている記事をご提供いただけますでしょうか。</p>
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details>
+<summary><strong>🎤 記者会見 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=nrEHMpLSduI" target="_blank"><img src="https://i.ytimg.com/vi/nrEHMpLSduI/mqdefault_live.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=nrEHMpLSduI" target="_blank">NOTTINGHAM FOREST v MAN CITY | WATCH ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2時間前<br/><em>Pep Guardiola's side travel to the Midlands for our Premier ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=rOqPqMcCGZs" target="_blank"><img src="https://i.ytimg.com/vi/rOqPqMcCGZs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=rOqPqMcCGZs" target="_blank">SURPRISE RODRI RETURN? | NOTTINGHAM F...</a></strong><br/>📺 <strong>⚠️ Esteemed Kompany - Man City Fan Channel </strong> ・ 🕐 14時間前<br/><em>Pep Guardiola's Manchester City take on Sean Dyche's Notting...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=flGOpN-4_84" target="_blank"><img src="https://i.ytimg.com/vi/flGOpN-4_84/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=flGOpN-4_84" target="_blank">🚨 MASSIVE Man City Transfer News As S...</a></strong><br/>📺 <strong>⚠️ ETIHAD FOCUS </strong> ・ 🕐 1日前<br/><em>Welcome to etihad focus– Your Daily Dose of Manchester City ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=-cv25dMOkPc" target="_blank"><img src="https://i.ytimg.com/vi/-cv25dMOkPc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=-cv25dMOkPc" target="_blank">Haaland Fasts from Meat on Christmas ...</a></strong><br/>📺 <strong>⚠️ Wilder Sport</strong> ・ 🕐 1日前<br/><em>Guys, Haaland won't be eating meat on Christmas Eve because ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=eBhjYrZ4MvA" target="_blank"><img src="https://i.ytimg.com/vi/eBhjYrZ4MvA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=eBhjYrZ4MvA" target="_blank">Shirka jaraa&#39;id Pep Guardiola iyo...</a></strong><br/>📺 <strong>⚠️ Zakariye Cabdi</strong> ・ 🕐 18時間前<br/><em>Fadlan subscribe, like, share, comment #football #ciyaar #pr...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=AaSzMDaHgVw" target="_blank"><img src="https://i.ytimg.com/vi/AaSzMDaHgVw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=AaSzMDaHgVw" target="_blank">আমি অনন্তকাল ম্যানসিটিতে থাকবো না – প...</a></strong><br/>📺 <strong>⚠️ Time24 TV NEWS</strong> ・ 🕐 1日前<br/><em>পেপ গার্দিওলা ম্যানচেস্টার সিটিতে নিজের ভবিষ্যৎ নিয়ে বড় .....</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=P3lJbPNNZvQ" target="_blank"><img src="https://i.ytimg.com/vi/P3lJbPNNZvQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=P3lJbPNNZvQ" target="_blank">CHOC! PEP GUARDIOLA Pierde Todo: 5 DE...</a></strong><br/>📺 <strong>⚠️  Dossier España</strong> ・ 🕐 14時間前<br/><em>En noviembre de 2024, algo imposible sucedió: Pep Guardiola ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=7JTHKJhWf6E" target="_blank"><img src="https://i.ytimg.com/vi/7JTHKJhWf6E/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=7JTHKJhWf6E" target="_blank">🗣️ Maresca : aku suka Cole Palmer 🥶💙 ...</a></strong><br/>📺 <strong>⚠️ R.</strong> ・ 🕐 1日前<br/><em>YANG DUKUNG GW, ORANG HEBAT DAN SIGMA     SUPPORT ADMIN SATU...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=AXkaWKAZ8C8" target="_blank"><img src="https://i.ytimg.com/vi/AXkaWKAZ8C8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=AXkaWKAZ8C8" target="_blank">Rodri&#39;s BACK! Can He Save Man Cit...</a></strong><br/>📺 <strong>⚠️ Manchester City News Unofficial</strong> ・ 🕐 4時間前<br/><em>CAN CITY WIN THE LEAGUE WITHOUT RODRI?! They're SURGING desp...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=hu8_Z3XJDQA" target="_blank"><img src="https://i.ytimg.com/vi/hu8_Z3XJDQA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=hu8_Z3XJDQA" target="_blank">(Ex DR Sports)Arsenal Hawkes EXCLUSIV...</a></strong><br/>📺 <strong>⚠️ HYBR1D</strong> ・ 🕐 1日前<br/><em>https://rss.com/podcasts/mikel-arteta-s-arsenal-press-confer...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>⚔️ 因縁 (9件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=nI70CU8lxDM" target="_blank"><img src="https://i.ytimg.com/vi/nI70CU8lxDM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=nI70CU8lxDM" target="_blank">EXTENDED HIGHLIGHTS | Man City 3-0 No...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/12/06<br/><em>Relive the best of the action from City's 3-0 victory over N...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=uAbSGH10wGA" target="_blank"><img src="https://i.ytimg.com/vi/uAbSGH10wGA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=uAbSGH10wGA" target="_blank">EXTENDED HIGHLIGHTS | Nottingham Fore...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 9ヶ月前<br/><em>City lost out on a chance to leapfrog fellow Champions Leagu...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ir6u02Y5a7Q" target="_blank"><img src="https://i.ytimg.com/vi/ir6u02Y5a7Q/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ir6u02Y5a7Q" target="_blank">EXTENDED HIGHLIGHTS | Nott&#39;m Fore...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 8ヶ月前<br/><em>Manchester City are through to a third successive FA Cup fin...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank"><img src="https://i.ytimg.com/vi/_GgtxJkbG_U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">Patrick Dorgu Rocket! 🚀 | Man Utd v N...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 12時間前<br/><em>Watch the key moments as Manchester United defeated Newcastl...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kokTCu00ZOQ" target="_blank"><img src="https://i.ytimg.com/vi/kokTCu00ZOQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kokTCu00ZOQ" target="_blank">HIGHLIGHTS | Man City 3-0 Nottingham ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/12/05<br/><em>Kevin De Bruyne impressed on his return to the starting line...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=gElreCwmpJI" target="_blank"><img src="https://i.ytimg.com/vi/gElreCwmpJI/mqdefault_live.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=gElreCwmpJI" target="_blank">🔴LIVE : Nottingham Forest vs Manchest...</a></strong><br/>📺 <strong>⚠️ Football Gamer Rony</strong> ・ 🕐 数分前<br/><em>LIVE : Nottingham Forest vs Manchester City | Premier League...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=GY-MHq2sFkU" target="_blank"><img src="https://i.ytimg.com/vi/GY-MHq2sFkU/mqdefault_live.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=GY-MHq2sFkU" target="_blank">Nottingham Forest vs Man City Live St...</a></strong><br/>📺 <strong>⚠️ Sammy Sk Football</strong> ・ 🕐 4時間前<br/><em>Nottingham Forest vs Man City Live Stream Premier League Eng...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DAoqncu7XZw" target="_blank"><img src="https://i.ytimg.com/vi/DAoqncu7XZw/mqdefault_live.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DAoqncu7XZw" target="_blank">🔴LIVE: NOTTINGHAM FOREST VS MANCHESTE...</a></strong><br/>📺 <strong>⚠️ KickOff TV</strong> ・ 🕐 数分前<br/><em>Welcome to NOTTINGHAM FOREST VS MANCHESTER CITY in the Premi...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=fo4rv5b3U_c" target="_blank"><img src="https://i.ytimg.com/vi/fo4rv5b3U_c/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=fo4rv5b3U_c" target="_blank">Manchester City vs Nottingham 3-2 - A...</a></strong><br/>📺 <strong>⚠️ اخو العرب - A5o El Arab</strong> ・ 🕐 14時間前<br/><em>manchestercity #nottinghamforest #haland....</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>📊 戦術分析 (20件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=B6RgCAiLg44" target="_blank"><img src="https://i.ytimg.com/vi/B6RgCAiLg44/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=B6RgCAiLg44" target="_blank">【試合総括】マンチェスターCvsナポリを解説！ナポリの守備を攻略したペップ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前<br/><em>チャンピオンズリーグ リーグフェーズ第1節 マンチェスターシティvsナポリの試合を戦術的観点から解説。前半で起きた現象や...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U" target="_blank"><img src="https://i.ytimg.com/vi/a_VNw2C7Y6U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U" target="_blank">【プレミアリーグ】アーセナル vs マンチェスター・シティ 戦術的攻防を徹...</a></strong><br/>📺 <strong>✅ スポルティーバ</strong> ・ 🕐 3ヶ月前<br/><em>林陵平 #林陵平のフットボールゼミ 訂正：ルイス・ディアス→ルベン・ディアス 「林陵平のフットボールゼミ」では、林陵平さ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=3gI3005pYKo" target="_blank"><img src="https://i.ytimg.com/vi/3gI3005pYKo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=3gI3005pYKo" target="_blank">【三笘躍動！】ブライトンvsマンチェスターシティを戦術的観点から解説｜ブラ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前<br/><em>プレミアリーグ第3節 ブライトンvsマンチェスターシティの試合を戦術的観点から解説。前半で起きた現象や後半の変化を言語 ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw" target="_blank"><img src="https://i.ytimg.com/vi/5_Z5xUa9kiw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw" target="_blank">【戦術の進化】マンチェスターシティvsトッテナムを戦術的観点から解説｜シテ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前<br/><em>プレミアリーグ第2節 マンチェスターシティvsトッテナムホットスパーの試合を戦術的観点から解説。前半で起きた現象や後半の...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank"><img src="https://i.ytimg.com/vi/vAO1BPQStBg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank">【プレミアリーグ展望】お金持ちのプレス回避術／ペップの新戦術／トッテナム優...</a></strong><br/>📺 <strong>✅ PIVOT 公式チャンネル</strong> ・ 🕐 4ヶ月前<br/><em>この動画の前後編はこちらから 前編：（この動画）https://youtu.be/vAO1BPQStBg 後編：http...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=u25qXq0ipr8" target="_blank"><img src="https://i.ytimg.com/vi/u25qXq0ipr8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=u25qXq0ipr8" target="_blank">リヴァプール 0-3 ノッティンガム・フォレスト 試合後分析 | 戦術分析...</a></strong><br/>📺 <strong>⚠️ Context Football </strong> ・ 🕐 1ヶ月前<br/><em>プレミアリーグ、アンフィールドで行われたノッティンガム・フォレスト戦で、リヴァプールは衝撃的な0-3の敗北を喫した。試合...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=c3xfQDMenx4" target="_blank"><img src="https://i.ytimg.com/vi/c3xfQDMenx4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=c3xfQDMenx4" target="_blank">選手目線マニアック分析、CL レアル・マドリー vs マンチェスター・C。...</a></strong><br/>📺 <strong>⚠️ 小澤一郎 Periodista</strong> ・ 🕐 3時間前<br/><em>取材日：25年12月16日 【目次】 0:36 STRATIQ BOARDの紹介 3:27 CL マドリー（1-2）マン...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=T9Mf2n9Rl2A" target="_blank"><img src="https://i.ytimg.com/vi/T9Mf2n9Rl2A/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=T9Mf2n9Rl2A" target="_blank">How Chelsea CRUSHED Nottingham Forest.</a></strong><br/>📺 <strong>⚠️ Zekko Football</strong> ・ 🕐 2ヶ月前<br/><em>Zekko breaks down Chelsea's massive 3-0 victory over Notting...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vYGurPMqq_c" target="_blank"><img src="https://i.ytimg.com/vi/vYGurPMqq_c/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vYGurPMqq_c" target="_blank">Arsenal vs Nottingham Forest | Tactic...</a></strong><br/>📺 <strong>⚠️ Tactical Analysis</strong> ・ 🕐 3ヶ月前<br/><em>Arsenal bounced back in style with a dominant performance ag...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4S8tabi2yWc" target="_blank"><img src="https://i.ytimg.com/vi/4S8tabi2yWc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4S8tabi2yWc" target="_blank">How Nottingham Forest Completely OUTP...</a></strong><br/>📺 <strong>⚠️ Zekko Football</strong> ・ 🕐 1ヶ月前<br/><em>Zekko breaks down Nottingham Forest's historic 3-0 victory o...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=tSQopDhNeqk" target="_blank"><img src="https://i.ytimg.com/vi/tSQopDhNeqk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=tSQopDhNeqk" target="_blank">Nottingham Forest vs Manchester Unite...</a></strong><br/>📺 <strong>⚠️ Football stories and tips </strong> ・ 🕐 1ヶ月前<br/><em>Manchester United fans — this is the one we must win. ❤⚔ Not...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BOx5Cn1GoP8" target="_blank"><img src="https://i.ytimg.com/vi/BOx5Cn1GoP8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BOx5Cn1GoP8" target="_blank">ノッティンガム・フォレストを倒す方法… #footballtactics ...</a></strong><br/>📺 <strong>⚠️ Ryan Hurst</strong> ・ 🕐 3ヶ月前<br/><em>波乱万丈の移籍市場は、新シーズンのスタートこそ凡庸な​​ものに終わった。ヌーノ率いるレッズは、25/26シーズン開幕戦で...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_vSdzo3qbqM" target="_blank"><img src="https://i.ytimg.com/vi/_vSdzo3qbqM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_vSdzo3qbqM" target="_blank">グラーフェンベルフが重要な役割を担う！｜リヴァプールがフォレストに勝利した方法</a></strong><br/>📺 <strong>⚠️ David Lynch - Liverpool FC</strong> ・ 🕐 1ヶ月前<br/><em>グラーフェンベルフが重要な役割を担う！ | リヴァプールがフォレストを破る方法  リヴァプールは土曜日の午後、アンフィー...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BAbflxMeQnY" target="_blank"><img src="https://i.ytimg.com/vi/BAbflxMeQnY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BAbflxMeQnY" target="_blank">ペップが今シーズン使用する3つの新しい戦術システム。</a></strong><br/>📺 <strong>⚠️ James Lawrence Allcott</strong> ・ 🕐 5ヶ月前<br/><em>JLAタクティクスボード 👉 https://jlatacticsboard.com/  ジェームズ・オルコットがペップ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=SyvZx4hrYoA" target="_blank"><img src="https://i.ytimg.com/vi/SyvZx4hrYoA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=SyvZx4hrYoA" target="_blank">アーセナル vs ノッティンガム・フォレスト | 試合分析と注目ポイント</a></strong><br/>📺 <strong>⚠️ Antonio Silva Stocks</strong> ・ 🕐 3ヶ月前<br/><em>アーセナル対ノッティンガム・フォレスト プレミアリーグ2025 – 試合内容と戦術分析。 エミレーツ・スタジアムで行われ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=hVZqMP9GIRM" target="_blank"><img src="https://i.ytimg.com/vi/hVZqMP9GIRM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=hVZqMP9GIRM" target="_blank">【大復活】マンチェスター・シティの全選手を紹介します！ペップの下に集いし天...</a></strong><br/>📺 <strong>⚠️ クラックフットボール</strong> ・ 🕐 1週間前<br/><em>お待たせしました！ 今回はマンチェスター・シティの全選手を語りつくします！ このまま優勝争いを盛り上げてほしい… ※この...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=C98zMpiuWOQ" target="_blank"><img src="https://i.ytimg.com/vi/C98zMpiuWOQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=C98zMpiuWOQ" target="_blank">How Sean Dyche INSTANTLY Improved Not...</a></strong><br/>📺 <strong>⚠️ Cameron Schultz</strong> ・ 🕐 2ヶ月前<br/><em>Ange is gone, Dyche is in. From one extreme to the other, in...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=H4D7LdVgH1Q" target="_blank"><img src="https://i.ytimg.com/vi/H4D7LdVgH1Q/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=H4D7LdVgH1Q" target="_blank">パスと動きがドンピシャ過ぎるオライリー×ハーランド #サッカー</a></strong><br/>📺 <strong>⚠️ BALLISTAR365</strong> ・ 🕐 2ヶ月前<br/><em>haaland #oreilly #manchestercity #football #戦術分析....</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Yga_1GIHAZc" target="_blank"><img src="https://i.ytimg.com/vi/Yga_1GIHAZc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Yga_1GIHAZc" target="_blank">スパーズがフォレスト戦で惨めに見えた理由 | ノッティンガム・フォレスト ...</a></strong><br/>📺 <strong>⚠️ Hollie's Hotspurs</strong> ・ 🕐 1週間前<br/><em>正直言って、久しぶりに見た最悪のパフォーマンスの一つです。本当にひどい。  パスもシュートもできず、何もできなかった。 ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=D6aG0SveUno" target="_blank"><img src="https://i.ytimg.com/vi/D6aG0SveUno/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=D6aG0SveUno" target="_blank">デブライネだけの技術低速CK戦術の秘密</a></strong><br/>📺 <strong>⚠️ ボランチ </strong> ・ 🕐 1日前<br/><em>デブライネのコーナーキックは決して単純ではありません！⚽ ペナルティボックス内でマンチェスターシティの選手5人が計画的 ...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=akt90mteHgs" target="_blank"><img src="https://i.ytimg.com/vi/akt90mteHgs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=akt90mteHgs" target="_blank">HIGHLIGHTS! City 2-0 Everton | Haalan...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前<br/><em>Erling Haaland's brilliant second half brace powered City to...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=07WqS-ccIrw" target="_blank"><img src="https://i.ytimg.com/vi/07WqS-ccIrw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=07WqS-ccIrw" target="_blank">Monaco 2-2 Man City Champions League ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2ヶ月前<br/><em>Erling Haaland's brace was not quite enough to earn all thre...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI" target="_blank"><img src="https://i.ytimg.com/vi/VPgwGN9kGpI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI" target="_blank">Erling Haaland&#39;s First 100 Premie...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 3週間前<br/><em>Love this video? We've got even more for you to enjoy on the...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Pc0uIsvWV50" target="_blank"><img src="https://i.ytimg.com/vi/Pc0uIsvWV50/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Pc0uIsvWV50" target="_blank">大変な努力と醜い面を乗り越えなければならなかった！🧱 | ショーン・ダイチ...</a></strong><br/>📺 <strong>⚠️ BeanymanSports2</strong> ・ 🕐 1ヶ月前<br/><em>プレミアリーグ、アンフィールドで行われたリヴァプール戦でノッティンガム・フォレストが3-0で勝利した後、ショーン・ダイチ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wFSej8xO_64" target="_blank"><img src="https://i.ytimg.com/vi/wFSej8xO_64/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wFSej8xO_64" target="_blank">ノッティンガム・フォレストのワイルドな成長を解説！</a></strong><br/>📺 <strong>⚠️ Betting Education</strong> ・ 🕐 4ヶ月前<br/><em>プレミアリーグ史上最も驚異的な変貌を遂げたノッティンガム・フォレストは、90年代以来初めてヨーロッパに復帰した。ヌーノ・...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jEmlWPbFDPE" target="_blank"><img src="https://i.ytimg.com/vi/jEmlWPbFDPE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jEmlWPbFDPE" target="_blank">十分ではない…メンタリティが欠けている！| ロブ・エドワーズ | ウルブズ...</a></strong><br/>📺 <strong>⚠️ SPORTS SHOW</strong> ・ 🕐 3週間前<br/><em>ロブ・エドワーズ監督は、ウルブズがノッティンガム・フォレストにホームで終盤に0-1で敗れたことへの不満を吐露した。モリニ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0-IaW4VMUOs" target="_blank"><img src="https://i.ytimg.com/vi/0-IaW4VMUOs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0-IaW4VMUOs" target="_blank">リバプール 0 対 ノッティンガム・フォレスト 3 試合結果 | まさに信...</a></strong><br/>📺 <strong>⚠️ Forest Focus</strong> ・ 🕐 1ヶ月前<br/><em>ノッティンガム・フォレストは土曜日の午後、アンフィールドで行われたプレミアリーグで、信じられないほど素晴らしいパフォーマ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Zpw8t6CFxgA" target="_blank"><img src="https://i.ytimg.com/vi/Zpw8t6CFxgA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Zpw8t6CFxgA" target="_blank">😱PES EFOOTBALL 2025-26 PPSSPP ヨーロッパ 1...</a></strong><br/>📺 <strong>⚠️ VL Gus 2</strong> ・ 🕐 4週間前<br/><em>開けてみろよ！  ⏺️ @vlgus  ⏺️ VL Gus 2 https://youtube.com/channel/...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=OsgRabQU5FU" target="_blank"><img src="https://i.ytimg.com/vi/OsgRabQU5FU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=OsgRabQU5FU" target="_blank">フォレストの屈辱は続く！バカヨコがライプツィヒへ！ノッティンガム・フォレス...</a></strong><br/>📺 <strong>⚠️ Forest Fan TV</strong> ・ 🕐 5ヶ月前<br/><em>フォレストは再び移籍市場で落選。バカヨコがライプツィヒに移籍！  FFTV Discordサーバーに無料で参加 - ht...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Lf9ARd4EbiA" target="_blank"><img src="https://i.ytimg.com/vi/Lf9ARd4EbiA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Lf9ARd4EbiA" target="_blank">キース・スーター博士の遺産を偲んで</a></strong><br/>📺 <strong>⚠️ Mirror7 News | Breaking News</strong> ・ 🕐 2週間前<br/><em>このニュース動画は「キース・スーター博士の功績を偲んで」です。最新情報、洞察、そして知っておくべき情報をお伝えします。今...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>🏃 練習風景 (19件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=CpE_j_9jyxI" target="_blank"><img src="https://i.ytimg.com/vi/CpE_j_9jyxI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=CpE_j_9jyxI" target="_blank">ASMR training edition 🔉</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 17時間前<br/><em>SUBSCRIBE! http://www.youtube.com/subscription_center?add_us...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=schbk04mipw" target="_blank"><img src="https://i.ytimg.com/vi/schbk04mipw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=schbk04mipw" target="_blank">Reijnders has it in his locker 🪄 #ski...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 6日前<br/><em>SUBSCRIBE! http://www.youtube.com/subscription_center?add_us...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0-aYx5PHPBM" target="_blank"><img src="https://i.ytimg.com/vi/0-aYx5PHPBM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0-aYx5PHPBM" target="_blank">HIGHLIGHTS! City go top with assured ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 6日前<br/><em>City moved to the top of the Premier League - at least for a...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=UiWAlJdnX2I" target="_blank"><img src="https://i.ytimg.com/vi/UiWAlJdnX2I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=UiWAlJdnX2I" target="_blank">The BEST Podcast Moments in 2025 | Th...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1日前<br/><em>SUBSCRIBE! http://www.youtube.com/subscription_center?add_us...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kPR7H3yMHI4" target="_blank"><img src="https://i.ytimg.com/vi/kPR7H3yMHI4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kPR7H3yMHI4" target="_blank">Reijnders is WAY too smooth with this...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 5日前<br/><em>SUBSCRIBE! http://www.youtube.com/subscription_center?add_us...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=571yolVgYQw" target="_blank"><img src="https://i.ytimg.com/vi/571yolVgYQw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=571yolVgYQw" target="_blank">EXTENDED HIGHLIGHTS | Man City 3 - 0 ...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 5日前<br/><em>Re-live the best of the action from Saturday's 3-0 victory o...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=pNUdLp1LoYA" target="_blank"><img src="https://i.ytimg.com/vi/pNUdLp1LoYA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=pNUdLp1LoYA" target="_blank">Watch Nottingham Forest Intense Train...</a></strong><br/>📺 <strong>⚠️ UTOPIA SPORTS</strong> ・ 🕐 5日前<br/><em>Nottingham Forest squad under manager Sean Dyche went throug...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=u0qT6CHgUyY" target="_blank"><img src="https://i.ytimg.com/vi/u0qT6CHgUyY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=u0qT6CHgUyY" target="_blank">PEP&#39;S BEST FORMATION FOR TITLE RA...</a></strong><br/>📺 <strong>⚠️ Cityzens Lineup Hub</strong> ・ 🕐 5日前<br/><em>PEP'S BEST FORMATION FOR TITLE RACE! MAN CITY vs NOTTINGHAM ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BaUXHt63ZTQ" target="_blank"><img src="https://i.ytimg.com/vi/BaUXHt63ZTQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BaUXHt63ZTQ" target="_blank">INSIDE MANCHESTER CITY TRAINING:Pep G...</a></strong><br/>📺 <strong>⚠️ Meinertzhagen's Haversack</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=VRCGSWOnTj4" target="_blank"><img src="https://i.ytimg.com/vi/VRCGSWOnTj4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=VRCGSWOnTj4" target="_blank">142 Nathan Cantrill Foundation Phase ...</a></strong><br/>📺 <strong>⚠️ Inside The Academy</strong> ・ 🕐 数分前<br/><em>Get 20% off MyPersonalFootballCoach 121 Coaching Training Co...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cQCup9Q3xr4" target="_blank"><img src="https://i.ytimg.com/vi/cQCup9Q3xr4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cQCup9Q3xr4" target="_blank">🔥✅Pep Guardiola Intensifies Mancheste...</a></strong><br/>📺 <strong>⚠️ ETIHAD view</strong> ・ 🕐 3日前<br/><em>Manchester City fans, this is your home! For the latest brea...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=rPK0Udcgf_Y" target="_blank"><img src="https://i.ytimg.com/vi/rPK0Udcgf_Y/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=rPK0Udcgf_Y" target="_blank">Rayan Cherki régale à l&#39;entrainem...</a></strong><br/>📺 <strong>⚠️ Foot01</strong> ・ 🕐 5日前<br/><em>Rayan Cherki s'éclate avec des passes longues avec Abdukodir...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=YlUatXDCElY" target="_blank"><img src="https://i.ytimg.com/vi/YlUatXDCElY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=YlUatXDCElY" target="_blank">Man City to weigh players before Fore...</a></strong><br/>📺 <strong>⚠️ TL-NEW</strong> ・ 🕐 5日前<br/><em>Pep Guardiola said he is heading to Barcelona to spend Chris...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=xolcWQYU5Ds" target="_blank"><img src="https://i.ytimg.com/vi/xolcWQYU5Ds/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=xolcWQYU5Ds" target="_blank">MANCHESTER CIT&#39;S CHRISTMAS SHOCK:...</a></strong><br/>📺 <strong>⚠️ Match IQ Shorts</strong> ・ 🕐 17時間前<br/><em>One photo. One scale. And a moment that stunned Manchester C...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ABrU-nbLleE" target="_blank"><img src="https://i.ytimg.com/vi/ABrU-nbLleE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ABrU-nbLleE" target="_blank">Origi Lepas dari Belenggu AC Milan</a></strong><br/>📺 <strong>⚠️ Blessing Soccer</strong> ・ 🕐 3日前<br/><em>Origi lepas dari belenggu AC Milan. Divock Origi akhirnya be...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=V7dATrplYUc" target="_blank"><img src="https://i.ytimg.com/vi/V7dATrplYUc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=V7dATrplYUc" target="_blank">144p footballers pt. 4 😂💀</a></strong><br/>📺 <strong>⚠️ FootEdits</strong> ・ 🕐 4日前<br/><em>Football​ #Soccer​ #Futbol​ #ChampionsLeague​ #UCL​ #UEL​ #U...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=8GENkl-HUOQ" target="_blank"><img src="https://i.ytimg.com/vi/8GENkl-HUOQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=8GENkl-HUOQ" target="_blank">FATTY PLAYERS AFTER CHRISTMAS WILL ST...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 5日前<br/><em>Post-match press conference with Pep Guardiola after Man Cit...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=5B3m4IlH8NI" target="_blank"><img src="https://i.ytimg.com/vi/5B3m4IlH8NI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=5B3m4IlH8NI" target="_blank">Newcastle 2-2 Chelsea | HIGHLIGHTS | ...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 6日前<br/><em>PL Matchday 17 - Highlights from Chelsea's 2-2 Premier Leagu...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DZ__vgksnIY" target="_blank"><img src="https://i.ytimg.com/vi/DZ__vgksnIY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DZ__vgksnIY" target="_blank">Manchester Cityplayers leaving traini...</a></strong><br/>📺 <strong>⚠️ GoalMaxTv</strong> ・ 🕐 5日前<br/><em>Luxury cars, stars, and vibes as Manchester City players lea...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<h2>選外試合リスト</h2>
+<ul>
+<li>Arsenal vs Brighton （EPL）… Out of quota</li>
+<li>Chelsea vs Aston Villa （EPL）… Out of quota</li>
+<li>Liverpool vs Wolves （EPL）… Low rank</li>
+<li>Burnley vs Everton （EPL）… Low rank</li>
+<li>West Ham vs Fulham （EPL）… Low rank</li>
+<li>Brentford vs Bournemouth （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: Remaining: 7494 / Limit: 7500 (requests/day)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 9回呼び出し (キャッシュ: 0件, 合計リクエスト: 9件)</li>
+</ul>
+<hr />
+<p><em>レポート生成日時: 2025-12-27 21:12:39 JST</em></p>
+        <div class="timestamp">
+            生成日時: 2025-12-27 21:12:40 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[DEBUG] Port Vale vs Sunderland - FA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/report_styles.css">
+    <link rel="stylesheet" href="../assets/nav_menu.css">
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
+<div class="mode-banner mode-banner-debug">🔧 DEBUG MODE - このレポートはデバッグ用です</div>
+<div class="match-header-container">
+    <img src="https://media.api-sports.io/football/leagues/45.png" class="competition-logo-header" alt="FA">
+    <div class="match-header-info">
+        <h1>
+<img src="https://media.api-sports.io/football/teams/1351.png" class="header-team-logo-left"
+                alt="Port Vale">            Port Vale vs Sunderland
+<img src="https://media.api-sports.io/football/teams/746.png" class="header-team-logo-right"
+                alt="Sunderland">        </h1>
+        <div class="match-metadata">
+            <span class="match-datetime">2026/03/08（日） 22:30 JST / 2026-03-08 13:30 Local @ Vale Park, Stoke on Trent</span>
+        </div>
+    </div>
+</div>
+
+<div class="news-summary-top">
+    <p>FAカップ5回戦、ポート・ベイル対サンダーランドの一戦が迫る。</p>
+<p>リーグ1で苦戦を強いられているポート・ベイルだが、FAカップでは快進撃を見せている。直近では、チャンピオンシップのブリストル・シティを延長戦の末に下し、勢いに乗る。特にベン・ウェインの活躍が光り、ブリストル・シティ戦でも決勝点を挙げている。チームは直近4試合負けなしと調子を上げている。ジョン・ブレイディ監督は、チームのゲームプランが機能し、選手たちがハードワークを厭わない姿勢を強調。守備面では、直近3試合で2つのクリーンシートを達成するなど、安定感が増している。</p>
+<p>対するサンダーランドは、プレミアリーグに所属し、戦力ではポート・ベイルを大きく上回る。直近のリーズ・ユナイテッド戦では、1-0で勝利を収め、FAカップに臨む。サンダーランドは、過去の対戦でポート・ベイルに3戦全勝しており、相性の良さを見せている。アウェイ戦でも、直近3試合で2勝1分と安定した戦績を残している。レジス・ル・ブリス監督率いるサンダーランドは、FAカップで2013-14シーズン以来となる準々決勝進出を目指す。</p>
+<p>試合は、ポート・ベイルがホームのベイル・パークで迎える。ベイル・パークでは、直近3試合負けなし。しかし、ポート・ベイルはリーグ戦では苦戦しており、得点力不足が課題。対照的に、サンダーランドは攻撃力に自信を持ち、過去の対戦ではポート・ベイル相手に毎回2得点以上を挙げている。</p>
+<p>両チームのサポーターも、この一戦に大きな期待を寄せている。ポート・ベイルのサポーターにとっては、下位リーグからのジャイアントキリング、そしてFAカップ準々決勝進出という歴史的瞬間を目撃するチャンス。一方、サンダーランドのサポーターにとっては、FAカップでの上位進出、そして1973年以来となるFAカップ制覇への道のりを期待する。</p>
+<p>運命のキックオフは間もなく。</p>
+</div>
+
+<!-- Win Prediction Section (Issue #199 Repositioned) -->
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ 勝敗予想</h3>
+        <div class="prediction-card win-probability">
+            <div class="prob-row">
+                <img src="https://media.api-sports.io/football/teams/1351.png" alt="Port Vale" class="prob-team-logo">
+
+                <div class="prob-bar-container">
+                    <div class="prob-bar home"
+                        style="width: 45%; background-color: #CCCCCC">
+                        <span class="prob-label">45%</span>
+                    </div>
+                    <div class="prob-bar draw" style="width: 45%; background-color: #95a5a6">
+                        <span class="prob-label">45%</span>
+                    </div>
+                    <div class="prob-bar away"
+                        style="width: 10%; background-color: #CCCCCC">
+                        <span class="prob-label">10%</span>
+                    </div>
+                </div>
+
+                <img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland" class="prob-team-logo">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="two-column-section">
+    <div class="team-column">
+        <h3 class="lineup-header">
+<img src="https://media.api-sports.io/football/teams/1351.png" alt="Port Vale"
+                class="team-logo">            Port Vale
+        </h3>
+        <div class="section-label">Starting XI <span class="formation-badge">()</span>
+        </div>
+        <div class="player-cards"><p>選手情報なし</p></div>
+        <div class="section-label">Substitutes</div>
+        <div class="player-cards-scroll"><p>選手情報なし</p></div>
+        <div class="section-label">Injuries / Suspended</div>
+        <div class="player-cards-scroll"><p>なし</p></div>
+    </div>
+    <div class="team-column">
+        <h3 class="lineup-header">
+<img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland"
+                class="team-logo">            Sunderland
+        </h3>
+        <div class="section-label">Starting XI <span class="formation-badge">()</span>
+        </div>
+        <div class="player-cards"><p>選手情報なし</p></div>
+        <div class="section-label">Substitutes</div>
+        <div class="player-cards-scroll"><p>選手情報なし</p></div>
+        <div class="section-label">Injuries / Suspended</div>
+        <div class="player-cards-scroll"><p>なし</p></div>
+    </div>
+</div>
+
+<p>- 主審：A. Taylor</p>
+
+<h3>■ 直近5試合</h3>
+<div class="two-column-section">
+    <div class="form-column">
+        <h4>
+<img src="https://media.api-sports.io/football/teams/1351.png" class="form-team-logo-small" alt="">            Port Vale
+<span class="form-summary-text">(2勝2分1負)</span>        </h4>
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th colspan="2">対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2026-03-03</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/56.png" class="form-team-logo" alt="Bristol City">
+            </td>
+            <td>Bristol City</td>
+            <td>FA</td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2026-02-28</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/1359.png" class="form-team-logo" alt="Luton">
+            </td>
+            <td>Luton</td>
+            <td>League One</td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-24</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/1337.png" class="form-team-logo" alt="Northampton">
+            </td>
+            <td>Northampton</td>
+            <td>League One</td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2026-02-21</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/53.png" class="form-team-logo" alt="Reading">
+            </td>
+            <td>Reading</td>
+            <td>League One</td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-17</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/1368.png" class="form-team-logo" alt="Stevenage">
+            </td>
+            <td>Stevenage</td>
+            <td>League One</td>
+            <td>1-2</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+    </tbody>
+</table>    </div>
+    <div class="form-column">
+        <h4>
+<img src="https://media.api-sports.io/football/teams/746.png" class="form-team-logo-small" alt="">            Sunderland
+<span class="form-summary-text">(2勝1分2負)</span>        </h4>
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th colspan="2">対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2026-03-03</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/63.png" class="form-team-logo" alt="Leeds">
+            </td>
+            <td>Leeds</td>
+            <td>EPL</td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2026-02-28</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/35.png" class="form-team-logo" alt="Bournemouth">
+            </td>
+            <td>Bournemouth</td>
+            <td>EPL</td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-22</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/36.png" class="form-team-logo" alt="Fulham">
+            </td>
+            <td>Fulham</td>
+            <td>EPL</td>
+            <td>1-3</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-15</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/1338.png" class="form-team-logo" alt="Oxford United">
+            </td>
+            <td>Oxford United</td>
+            <td>FA</td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2026-02-11</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/40.png" class="form-team-logo" alt="Liverpool">
+            </td>
+            <td>Liverpool</td>
+            <td>EPL</td>
+            <td>0-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+    </tbody>
+</table>    </div>
+</div>
+
+<h3>■ 過去の対戦成績</h3>
+<p class="h2h-summary">過去5年間 1試合: Port Vale 0勝, 引分 0, Sunderland 1勝</p>
+<table class="h2h-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>大会</th>
+            <th>対戦</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2021-08-10</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/48.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>League Cup</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/1351.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Port Vale</span>
+                <img src="https://media.api-sports.io/football/teams/746.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Sunderland</strong></span>
+            </td>
+            <td>1-2</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+    </tbody>
+</table>
+<h3>■ フォーメーション図</h3>
+<div class="formation-container">
+    <div class="formation-pitch-side" style="--team-color: #CCCCCC;">
+        <div class="formation-header">
+<img src="https://media.api-sports.io/football/teams/1351.png" class="formation-header-logo" alt="">            <span class="formation-team-name">Port Vale</span>
+            <span class="formation-style-label">()</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="formation-pitch-side" style="--team-color: #CCCCCC;">
+        <div class="formation-header">
+<img src="https://media.api-sports.io/football/teams/746.png" class="formation-header-logo" alt="">            <span class="formation-team-name">Sunderland</span>
+            <span class="formation-style-label">()</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scorer Prediction Section (Issue #199 Repositioned) -->
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ スコア予想</h3>
+        <div class="prediction-card scorer-markets">
+            <div class="market-list">
+                <div class="market-item">
+                    <div class="market-name">Anytime Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">ブライアン・ブロビー</span>
+                            <span class="odd-value">2.30</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">ウィルソン・イシドール</span>
+                            <span class="odd-value">2.30</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">エリエゼル・マエンダ</span>
+                            <span class="odd-value">2.62</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">シェムスディン・タルビ</span>
+                            <span class="odd-value">3.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">ベルトラン・トラオレ</span>
+                            <span class="odd-value">3.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">First Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">ブライアン・ブロビー</span>
+                            <span class="odd-value">5.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">ウィルソン・イシドール</span>
+                            <span class="odd-value">5.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">エリエゼル・マエンダ</span>
+                            <span class="odd-value">6.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">シェムスディン・タルビ</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">ベルトラン・トラオレ</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">Last Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">ブライアン・ブロビー</span>
+                            <span class="odd-value">5.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">ウィルソン・イシドール</span>
+                            <span class="odd-value">5.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">エリエゼル・マエンダ</span>
+                            <span class="odd-value">6.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">シェムスディン・タルビ</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">ベルトラン・トラオレ</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<details class="collapsible-section" open>
+    <summary>📊 戦術プレビュー</summary>
+    <div class="section-content">
+        <div class="matchup-section key-player-section">
+<h3 class="section-title">⚽ キープレイヤー</h3>
+<div class="matchup-container">
+
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <div class="matchup-photo-placeholder"></div>
+                <img src="https://media.api-sports.io/football/teams/1351.png" alt="Port Vale" class="matchup-badge" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">コナー・ホール</div>
+                <div class="matchup-team-name">Port Vale</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        ポート・ベールのディフェンダー、ホールはチームの守備の要。今シーズンはリーグ戦で安定したパフォーマンスを披露し、FotMobのレーティングではチームトップの7.06を記録。空中戦の強さ、的確なクリアランス、そしてリーダーシップでチームを支える。直近のFAカップ、ブリストル・シティ戦でもクリーンシートに貢献し、チームを勝利に導いた。
+        
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    ホールはポート・ベールのディフェンスラインに不可欠な存在であり、その安定したパフォーマンスはチームの守備を支えています。空中戦での強さだけでなく、的確なポジショニングと冷静な判断で相手の攻撃を封じ込めます。また、チームメイトからの信頼も厚く、彼のリーダーシップはピッチ内外でチームを鼓舞しています。ブリストル・シティとのFAカップでは、相手の攻撃をしのぎ切り、無失点での勝利に大きく貢献しました。
+                </div>
+            </details>
+            
+    </div>
+</div>
+
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <div class="matchup-photo-placeholder"></div>
+                <img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland" class="matchup-badge" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">グラニト・ジャカ</div>
+                <div class="matchup-team-name">Sunderland</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        サンダーランドのMF、ジャカはアーセナルからの移籍後、チームの司令塔として活躍。豊富な経験と戦術眼で中盤をコントロールし、攻撃の起点となるパスを供給する。セットプレーのキッカーとしても能力を発揮し、直接FKやCKからチャンスを演出する。守備面でも貢献し、チームに安定をもたらす.
+        
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    ジャカはサンダーランドの中盤に欠かせない存在であり、その豊富な経験と高い戦術理解度はチームに安定感をもたらしています。正確なパスと広い視野で攻撃を組み立て、ゲームの流れをコントロールします。また、セットプレーのキッカーとしても優れており、彼のプレースキックはサンダーランドの大きな武器となっています。アーセナル時代からその献身的なプレースタイルは変わらず、サンダーランドでも攻守にわたってチームに貢献しています.
+                </div>
+            </details>
+            
+    </div>
+</div>
+</div>
+</div><div class="matchup-section tactical-style-section">
+<h3 class="section-title">🎯 戦術スタイル</h3>
+<div class="matchup-container">
+
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/teams/1351.png" alt="Port Vale" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">Port Vale</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        ポート・ベールは、直近の試合で5-2-3のフォーメーションを採用し、中盤をコンパクトに保ち、相手の攻撃を制限することを目指しています。ディフェンスを固め、カウンターアタックやセットプレーから得点を狙う戦術を得意としています。特にFAカップでは、格上の相手に対しても粘り強い守備で対抗し、チャンスを伺うスタイルを見せています。
+    </div>
+</div>
+
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">Sunderland</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        サンダーランドは、レジス・ル・ブリス監督の下、組織的なビルドアップと効率的なワイドエリアの活用を特徴とする戦術を採用。状況に応じてハイプレスとリトリートを使い分け、相手を混乱させる。攻撃では、中盤のグラニト・ジャカを中心に、ポゼッションとダイレクトな攻撃を組み合わせ、相手の守備を崩すことを目指す.
+    </div>
+</div>
+</div>
+</div><div class="matchup-section">
+<h3 class="section-title">🔥 キーマッチアップ</h3>
+<div class="matchup-container">
+
+<div class="matchup-country">
+    <div class="matchup-header-row">
+        
+        <div class="matchup-players">
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <div class="matchup-photo-placeholder"></div>
+                    <img src="https://media.api-sports.io/football/teams/1351.png" alt="Port Vale" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">コナー・ホール</div>
+                    <div class="matchup-team-name">Port Vale</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <div class="matchup-photo-placeholder"></div>
+                    <img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ウィルソン・イシドール</div>
+                    <div class="matchup-team-name">Sunderland</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="matchup-description">
+        ポート・ベールの守備の要であるホールが、サンダーランドの攻撃を牽引するウィルソン・イシドールをどう抑えるかが試合の鍵。ホールの空中戦の強さと的確なポジショニングは、ウィルソン・イシドールのスピードとドリブルを封じる上で重要となる。ウィルソン・イシドールがホールの守備を突破し、チャンスを演出できるかが、サンダーランドの得点に直結する.
+    </div>
+</div>
+</div>
+</div>
+    </div>
+</details>
+
+<details class="collapsible-section" open>
+    <summary>🎙️ 監督プレビュー</summary>
+    <div class="section-content">
+        <div class="manager-section">
+    <div class="manager-card">
+        <div class="manager-identity">
+            <img src="https://media.api-sports.io/football/teams/1351.png" alt="Port Vale" class="manager-team-logo">
+            <img src="https://media.api-sports.io/football/coachs/25924.png" alt="ジョン・ブレイディ" class="manager-photo">
+            <div class="manager-text-info">
+                <div class="manager-team">Port Vale</div>
+                <div class="manager-name">ジョン・ブレイディ</div>
+            </div>
+        </div>
+        <div class="manager-comment"><p>FAカップ5回戦、ポート・ヴェイル対サンダーランド戦に向けて、ポート・ヴェイルの監督ジョン・ブレイディは、この試合を「究極の試練」と位置づけている。</p>
+<h3>チームの現状と士気</h3>
+<p>ブレイディ監督は、チームがチャンピオンシップのブリストル・シティを破り、FAカップ5回戦に進出したことを受け、現在のチームを「今までで最高のグループの一つ」と評した。彼はBBCラジオ・ストークに対し、「私が監督として500試合以上を指揮してきた中で、今シーズンがどうなろうとも、このチームは最高だ」と語った。さらに、「信じられないほどだ。彼らは互いのために懸命に働き、互いに繋がり合っている」「彼らは人生の旅を通して互いの物語を見つけ出し、それが本当に彼らを結びつけている。それは非常に特別なことだ」と述べ、チームの結束力の高さを強調した。</p>
+<p>チームは現在、リーグ1で最下位に沈み、残留圏まで10ポイント差と苦戦している。しかし、FAカップでは30年ぶりに5回戦に進出し、勢いに乗っている。直近のリーグ戦でも、過去7試合で2敗と調子を上げており、奇跡的な残留への希望をつないでいる。</p>
+<h3>対戦相手サンダーランドへの警戒感</h3>
+<p>ブレイディ監督は、プレミアリーグのサンダーランドとの対戦を「究極の試練」と表現し、警戒感を示している。サンダーランドは現在、プレミアリーグに所属しており、ポート・ヴェイルにとっては格上の相手となる。</p>
+<h3>ヴェイル・パークのピッチ状況</h3>
+<p>ブレイディ監督は、ヴェイル・パークのピッチ状況が、サンダーランドとの戦いにおいてギャップを狭める可能性があると示唆している。彼は「我々のピッチはプレーするのが難しい。それは我々にとっても同様だ」と述べている。</p>
+<h3>ベン・ウェインの活躍</h3>
+<p>ブレイディ監督は、ブリストル・シティ戦で決勝点を挙げたベン・ウェインについて、「彼は本当に重要なゴールを挙げている。彼はチャンスをものにし、適切なタイミングで現れる選手だ」と評価している。ウェインのゴールにより、ポート・ヴェイルは30年ぶりにFAカップ5回戦に進出した。</p>
+<h3>試合展開</h3>
+<p>ブレイディ監督は、ブリストル・シティ戦について、「終盤に勝利を挙げたことで、より劇的な展開になった。もっと早くに先制できた可能性もあったが、我々が挙げたゴールは、ゆっくりとラインを越えたように見えた」と振り返った。彼はまた、「振り返ってみると、彼ら（ブリストル・シティ）はほとんど枠内シュートを打てていなかった。我々の組織は良く、選手たちはそれをうまく実行した」と述べ、チームの戦術が機能したことを強調した。</p>
+<h3>クラブへの想い</h3>
+<p>ブレイディ監督は、「我々にはキャロル・シャナハンという素晴らしいオーナーがいる。彼女はサッカーを蛇とはしごのゲームのようだと言い、上がったり下がったりすることがあると言う。彼女はただ、我々はボード上にとどまらなければならないと言い、それは本当に良い例えだと思う」と語った。彼はまた、「選手たちは自分自身を証明しており、リーグ戦で我々の調子を好転させられることを願っている」と述べ、リーグ戦での巻き返しに意欲を示した。</p></div>
+    </div>
+    <div class="manager-card">
+        <div class="manager-identity">
+            <img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland" class="manager-team-logo">
+            <img src="https://media.api-sports.io/football/coachs/6279.png" alt="レジス・ル・ブリス" class="manager-photo">
+            <div class="manager-text-info">
+                <div class="manager-team">Sunderland</div>
+                <div class="manager-name">レジス・ル・ブリス</div>
+            </div>
+        </div>
+        <div class="manager-comment"><h3>FAカップ ポート・ベイル戦に向けたレジス・ル・ブリス監督のコメント</h3>
+<p>サンダーランドのレジス・ル・ブリス監督は、FAカップ5回戦でリーグ1の最下位に沈むポート・ベイルと対戦するにあたり、警戒感を示しました。ル・ブリス監督はFAカップについて「サプライズに満ちた異なる大会」と表現し、チームが油断することなく試合に臨む重要性を強調しました。</p>
+<h3>相手チームへの評価</h3>
+<p>ル・ブリス監督は、ポート・ベイルがハングリー精神、激しさ、野心を持ってプレーすると予想しています。また、ピッチの状態が試合展開に影響を与える可能性があることにも言及し、チームがその状況に適応する必要があると述べました。</p>
+<h3>試合後のコメント</h3>
+<p>ポート・ベイルに0-1で敗れた試合後、ル・ブリス監督は対戦相手を称賛し、彼らのハングリー精神、忍耐力、激しさを評価しました。また、サンダーランドがポート・ベイルのレベルに達していなかったことを認め、「セカンドボールの争奪戦が多く、十分に力を発揮できなかった」と語りました。さらに、ファンへの申し訳なさを述べ、「ファンは応援のために駆けつけてくれたのに、違いを生み出すエネルギーを与えることができなかった」と述べています。</p>
+<h3>怪我人・出場停止選手について</h3>
+<p>ル・ブリス監督は、ベルトラン・トラオレが長期離脱となる可能性があることを明かしました。ノルディ・ムキエレとブライアン・ブロビーも、この試合には間に合わないとのことです。また、トライ・ヒュームとノア・サディキが出場停止となることも明らかにしました。特にサディキの欠場は、チームにとって痛手となることが予想されます。</p>
+<h3>その他のコメント</h3>
+<p>ル・ブリス監督は、チームがリーズ・ユナイテッドに勝利した後、ドレッシングルームの雰囲気は前向きであると述べています。</p></div>
+    </div>
+</div>
+    </div>
+</details>
+
+
+
+
+<div class="player-profile-modal" id="player-profile-modal" hidden>
+    <div class="player-profile-modal-backdrop" data-player-profile-close></div>
+    <div class="player-profile-modal-dialog" role="dialog" aria-modal="true"
+        aria-labelledby="player-profile-modal-title">
+        <button type="button" class="player-profile-modal-close" data-player-profile-close aria-label="閉じる">×</button>
+        <div class="player-profile-modal-header">
+            <div class="player-profile-modal-identity">
+                <div class="player-profile-modal-photo-frame" id="player-profile-modal-photo-frame" hidden>
+                    <img id="player-profile-modal-photo" class="player-profile-modal-photo" alt="">
+                </div>
+                <div class="player-profile-modal-heading">
+                    <p class="player-profile-modal-eyebrow">PLAYER PROFILE</p>
+                    <div class="player-profile-modal-title-row">
+                        <h3 id="player-profile-modal-title" class="player-profile-modal-title"></h3>
+                        <div class="player-profile-modal-meta" id="player-profile-modal-meta" hidden>
+                            <img id="player-profile-modal-flag" class="player-profile-modal-flag" alt="" hidden>
+                            <img id="player-profile-modal-team-logo" class="player-profile-modal-team-logo" alt="" hidden>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="player-profile-modal-content"></div>
+    </div>
+</div>
+
+<hr>
+<details class="collapsible-section">
+<summary>🛠️ デバッグ情報</summary>
+<div class="section-content">
+<p><strong>Fixture ID:</strong> 1529058</p>
+<div class="debug-info">
+<h4>選外試合リスト</h4>
+<p>なし</p>
+<h4>API使用状況</h4>
+<table class="api-stats-table">
+<thead><tr>
+<th>API</th>
+<th>実行回数</th>
+<th>残クォータ</th>
+<th>上限</th>
+<th>確認リンク</th>
+</tr>
+</thead>
+<tr>
+<td>API-Football</td>
+<td>1 (キャッシュ: 8)</td>
+<td>7,496</td>
+<td>7,500/日</td>
+<td><a href="https://dashboard.api-football.com/" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>YouTube Data API</td>
+<td>0</td>
+<td>不明</td>
+<td>10,000/日</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gemini API</td>
+<td>1</td>
+<td>不明</td>
+<td>~1,500/日</td>
+<td><a href="https://aistudio.google.com/app/u/1/api-keys?pli=1&project=gen-lang-client-0394252790" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gemini Grounding</td>
+<td>2 (キャッシュ: 3)</td>
+<td>不明</td>
+<td>課金制</td>
+<td><a href="https://console.cloud.google.com/billing?authuser=1" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gmail API</td>
+<td>0</td>
+<td>不明</td>
+<td>500/日*</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><small>*Gmail API: OAuth認証済みアカウントの送信制限</small></p>
+</div>
+</div>
+</details>
+
+<script>
+    (() => {
+        const modal = document.getElementById("player-profile-modal");
+        if (!modal) return;
+
+        const title = modal.querySelector(".player-profile-modal-title");
+        const content = modal.querySelector(".player-profile-modal-content");
+        const photoFrame = modal.querySelector("#player-profile-modal-photo-frame");
+        const photo = modal.querySelector("#player-profile-modal-photo");
+        const meta = modal.querySelector("#player-profile-modal-meta");
+        const flag = modal.querySelector("#player-profile-modal-flag");
+        const teamLogo = modal.querySelector("#player-profile-modal-team-logo");
+        const preloadedProfiles = new Map();
+
+        const closeModal = () => {
+            if (modal.hidden) return;
+            modal.hidden = true;
+            document.body.classList.remove("player-profile-open");
+        };
+
+        const openModal = (trigger) => {
+            const url = trigger.getAttribute("data-player-profile-url");
+            if (!url || !preloadedProfiles.has(url)) return;
+
+            title.textContent = trigger.getAttribute("data-player-name") || "";
+            const playerName = title.textContent;
+            const photoUrl = trigger.getAttribute("data-player-photo") || "";
+            if (photoUrl) {
+                photo.src = photoUrl;
+                photo.alt = playerName;
+                photoFrame.hidden = false;
+            } else {
+                photo.removeAttribute("src");
+                photo.alt = "";
+                photoFrame.hidden = true;
+            }
+
+            const flagUrl = trigger.getAttribute("data-player-flag-url") || "";
+            const nationality = trigger.getAttribute("data-player-nationality") || "";
+            if (flagUrl) {
+                flag.src = flagUrl;
+                flag.alt = nationality ? `${nationality}の国旗` : "";
+                flag.hidden = false;
+            } else {
+                flag.removeAttribute("src");
+                flag.alt = "";
+                flag.hidden = true;
+            }
+
+            const teamLogoUrl = trigger.getAttribute("data-player-team-logo") || "";
+            const teamName = trigger.getAttribute("data-player-team-name") || "";
+            if (teamLogoUrl) {
+                teamLogo.src = teamLogoUrl;
+                teamLogo.alt = teamName ? `${teamName}のロゴ` : "";
+                teamLogo.hidden = false;
+            } else {
+                teamLogo.removeAttribute("src");
+                teamLogo.alt = "";
+                teamLogo.hidden = true;
+            }
+            meta.hidden = !flagUrl && !teamLogoUrl;
+
+            content.innerHTML = preloadedProfiles.get(url);
+            modal.hidden = false;
+            document.body.classList.add("player-profile-open");
+        };
+
+        // Preload profiles asynchronously
+        const triggers = document.querySelectorAll("[data-player-profile-url]");
+        triggers.forEach(async (trigger) => {
+            const url = trigger.getAttribute("data-player-profile-url");
+            if (!url) return;
+
+            try {
+                // Use no-cache for frequent profile updates as requested
+                const response = await fetch(url, { cache: 'no-cache' });
+                if (response.ok) {
+                    const html = await response.text();
+                    if (!html.trim()) return;
+
+                    preloadedProfiles.set(url, html);
+
+                    // Enable UI interaction only after successful preload
+                    trigger.classList.add("player-card-profile-available");
+                    if (trigger.classList.contains("player-card-horizontal")) {
+                        trigger.classList.add("player-card-horizontal-profile-available");
+                    }
+                    trigger.setAttribute("role", "button");
+                    trigger.setAttribute("tabindex", "0");
+                    trigger.setAttribute("aria-haspopup", "dialog");
+
+                    // Add informational i-badge dynamically
+                    const actions = trigger.querySelector(".player-card-actions");
+                    if (actions) {
+                        const badge = document.createElement("span");
+                        badge.className = "player-profile-badge";
+                        badge.setAttribute("aria-hidden", "true");
+                        badge.innerHTML = `
+                        <svg class="player-profile-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a10 10 0 1 0 10 10A10.012 10.012 0 0 0 12 2zm0 3.2a1.4 1.4 0 1 1-1.4 1.4A1.4 1.4 0 0 1 12 5.2zm1.8 13h-3.6v-1.8h.9V11h-.9V9.2h2.7v7.2h.9z" />
+                        </svg>
+                    `;
+                        actions.appendChild(badge);
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to preload player profile:", url, e);
+            }
+        });
+
+        document.addEventListener("click", (event) => {
+            const trigger = event.target.closest("[data-player-profile-url]");
+            if (trigger && preloadedProfiles.has(trigger.getAttribute("data-player-profile-url"))) {
+                if (event.target.closest(".player-instagram-link")) return;
+                openModal(trigger);
+            }
+            if (event.target.closest("[data-player-profile-close]")) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeModal();
+            if (event.key === "Enter" || event.key === " ") {
+                const trigger = event.target.closest("[data-player-profile-url]");
+                if (trigger && preloadedProfiles.has(trigger.getAttribute("data-player-profile-url"))) {
+                    event.preventDefault();
+                    openModal(trigger);
+                }
+            }
+        });
+    })();
+</script>
+
+        <div class="timestamp">
+            生成日時: 2026-03-09 19:55:45 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

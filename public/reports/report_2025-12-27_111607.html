@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サッカー観戦ガイド - 2025-12-27</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        /* Player Card Styles */
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Injury Card Styles */
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        
+        <h1>本日の対象試合（1件）</h1>
+<ol>
+<li>Manchester United vs Newcastle （EPL／None）</li>
+</ol>
+<h2>試合1：Manchester United vs Newcastle （EPL／None）</h2>
+<h3>■ 基本情報（固定情報）</h3>
+<ul>
+<li>大会：EPL</li>
+<li>日時：2025/12/27 05:00 JST / 2025-12-26 20:00 Local</li>
+<li>会場：Old Trafford, Manchester</li>
+</ul>
+<h3>スタメン（Manchester United）フォーメーション: 4-2-3-1</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>GK #31</span><span>🇧🇪</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162511.png" alt="Senne Lammens" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Senne Lammens</div>
+<div class="player-card-nationality">Belgium</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #2</span><span>🇵🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/886.png" alt="Diogo Dalot" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Diogo Dalot</div>
+<div class="player-card-nationality">Portugal</div>
+<div class="player-card-age">26歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #26</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/402329.png" alt="Ayden Heaven" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Ayden Heaven</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">19歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #6</span><span>🇦🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2467.png" alt="Lisandro Martínez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Lisandro Martínez</div>
+<div class="player-card-nationality">Argentina</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #23</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/891.png" alt="Luke Shaw" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Luke Shaw</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">30歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #18</span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/747.png" alt="Casemiro" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Casemiro</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">33歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #25</span><span>🇺🇾</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/51494.png" alt="Manuel Ugarte" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Manuel Ugarte</div>
+<div class="player-card-nationality">Uruguay</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #13</span><span>🇩🇰</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/382452.png" alt="Patrick Dorgu" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Patrick Dorgu</div>
+<div class="player-card-nationality">Denmark</div>
+<div class="player-card-age">21歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #7</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19220.png" alt="Mason Mount" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Mason Mount</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">26歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #10</span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1165.png" alt="Matheus Cunha" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Matheus Cunha</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">26歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #30</span><span>🇸🇮</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/115589.png" alt="Benjamin Šeško" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Benjamin Šeško</div>
+<div class="player-card-nationality">Slovenia</div>
+<div class="player-card-age">22歳</div>
+</div>
+</div>
+</div>
+</div>
+<h3>スタメン（Newcastle）フォーメーション: 4-3-3</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>GK #32</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20355.png" alt="Aaron Ramsdale" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Aaron Ramsdale</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #67</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/328105.png" alt="Lewis Miley" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Lewis Miley</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">19歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #12</span><span>🇩🇪</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/163189.png" alt="Malick Thiaw" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Malick Thiaw</div>
+<div class="player-card-nationality">Germany</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #5</span><span>🇨🇭</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2806.png" alt="Fabian Schär" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Fabian Schär</div>
+<div class="player-card-nationality">Switzerland</div>
+<div class="player-card-age">34歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>DF #3</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284492.png" alt="Lewis Hall" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Lewis Hall</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">21歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #8</span><span>🇮🇹</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/31146.png" alt="Sandro Tonali" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Sandro Tonali</div>
+<div class="player-card-nationality">Italy</div>
+<div class="player-card-age">25歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #39</span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/10135.png" alt="Bruno Guimarães" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Bruno Guimarães</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">28歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>MF #41</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19192.png" alt="Jacob Ramsey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Jacob Ramsey</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #23</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19163.png" alt="Jacob Murphy" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Jacob Murphy</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">30歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #27</span><span>🇩🇪</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/158054.png" alt="Nick Woltemade" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nick Woltemade</div>
+<div class="player-card-nationality">Germany</div>
+<div class="player-card-age">23歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>FW #10</span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138787.png" alt="Anthony Gordon" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Anthony Gordon</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+</div>
+<h3>ベンチ（Manchester United）</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/383770.png" alt="Jack Fletcher" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Jack Fletcher</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">18歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇳🇱</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/70100.png" alt="Joshua Zirkzee" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Joshua Zirkzee</div>
+<div class="player-card-nationality">Netherlands</div>
+<div class="player-card-age">24歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇫🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/342970.png" alt="Leny Yoro" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Leny Yoro</div>
+<div class="player-card-nationality">France</div>
+<div class="player-card-age">20歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/50132.png" alt="Altay Bayındır" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Altay Bayındır</div>
+<div class="player-card-nationality">Türkiye</div>
+<div class="player-card-age">27歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇳🇱</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/37145.png" alt="Tyrell Malacia" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Tyrell Malacia</div>
+<div class="player-card-nationality">Netherlands</div>
+<div class="player-card-age">26歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/328101.png" alt="Tyler Fredricson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Tyler Fredricson</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">20歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/557462.png" alt="Shea Lacey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Shea Lacey</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/404769.png" alt="Bendito Mantato" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Bendito Mantato</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">17歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/557460.png" alt="Tyler Fletcher" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Tyler Fletcher</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+</div>
+<h3>ベンチ（Newcastle）</h3>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇧🇷</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/723.png" alt="Joelinton" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Joelinton</div>
+<div class="player-card-nationality">Brazil</div>
+<div class="player-card-age">29歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇨🇩</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20649.png" alt="Yoane Wissa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Yoane Wissa</div>
+<div class="player-card-nationality">Congo DR</div>
+<div class="player-card-age">29歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18778.png" alt="Harvey Barnes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Harvey Barnes</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">28歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18911.png" alt="Nick Pope" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Nick Pope</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">33歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🇮🇪</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/318056.png" alt="Alex Murphy" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Alex Murphy</div>
+<div class="player-card-nationality">Republic of Ireland</div>
+<div class="player-card-age">21歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/337934.png" alt="Leo Shahar" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Leo Shahar</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">18歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1463.png" alt="Joe Willock" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Joe Willock</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">26歳</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/567998.png" alt="Adedamola Samuel Alabi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Adedamola Samuel Alabi</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>SUB </span><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/394165.png" alt="Sean Neave" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">Sean Neave</div>
+<div class="player-card-nationality">England</div>
+<div class="player-card-age">18歳</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>フォーメーション：Home 4-2-3-1 / Away 4-3-3</li>
+</ul>
+<h3>出場停止・負傷者情報</h3>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/157997.png" alt="A. Diallo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">A. Diallo</div>
+<div class="player-card-nationality">Manchester United</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1485.png" alt="B. Fernandes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">B. Fernandes</div>
+<div class="player-card-nationality">Manchester United</div>
+<div class="player-card-age injury-reason">⚠️ Thigh Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2935.png" alt="H. Maguire" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">H. Maguire</div>
+<div class="player-card-nationality">Manchester United</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284322.png" alt="K. Mainoo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">K. Mainoo</div>
+<div class="player-card-nationality">Manchester United</div>
+<div class="player-card-age injury-reason">⚠️ Calf Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>🏥 OUT</span><span></span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/545.png" alt="N. Mazraoui" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-name">N. Mazraoui</div>
+<div class="player-card-nationality">Manchester United</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>直近フォーム：Home WDWDL (✅➖✅➖❌) / Away WDWLD (✅➖✅❌➖)</li>
+<li>過去の対戦成績：過去5試合: Manchester United 1勝, 引分 0, Newcastle 4勝</li>
+<li>主審：Anthony Taylor, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Manchester United" src="/reports/images/1379145_home.png" /><br />
+<img alt="Newcastle" src="/reports/images/1379145_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>欧州の主要リーグがウィンターブレイクに入る中、イングランド・プレミアリーグは伝統の「ボクシング・デー」開催を迎える。今節の注目カードは、マンチェスター・ユナイテッドが本拠地オールド・トラッフォードにニューカッスル・ユナイテッドを迎える一戦だ。</li>
+</ul>
+<p>ホームのマンチェスター・ユナイテッドは、年末年始の過密日程を乗り切り、シーズンを安定させるためにも勝利が欲しいところ。本拠地の大声援を背に、勝ち点3を掴むことができるか注目が集まる。</p>
+<p>一方、アウェイのニューカッスルは、昨シーズンのリーグ戦でユナイテッド相手に2戦2勝の「ダブル」を達成しており、自信を持って敵地に乗り込む。彼らもまた、この重要な一戦を制して、今後の戦いに弾みをつけたいと考えている。</p>
+<p>昨季の対戦成績で優位に立つニューカッスルか、それとも「夢の劇場」でリベンジを期すマンチェスター・ユナイテッドか。共にシーズンを安定させたい両チームの思惑が交錯する、激しく見ごたえのある試合展開が予想される。今後のリーグ戦の行方を占う上でも重要なビッグマッチとなるだろう。</p>
+<p><strong>Sources:</strong><br />
+- thebusbybabe.sbnation.com: <a href="https://thebusbybabe.sbnation.com/general/33307/match-preview-manchester-united-vs-newcastle">Match Preview: Manchester United vs. Newcastle | The Busby Babe</a><br />
+- www.facebook.com: <a href="https://www.facebook.com/groups/426566666796166/posts/865653732887455/">Manchester United vs Newcastle match preview</a><br />
+- ca.sports.yahoo.com: <a href="https://ca.sports.yahoo.com/news/man-united-vs-newcastle-match-093500608.html">Man United vs Newcastle: Match Preview, Latest Team News and ...</a><br />
+- www.facebook.com: <a href="https://www.facebook.com/fotmob/posts/heres-our-match-preview-for-the-one-remaining-boxing-day-fixture-in-the-premier-/1469243381874667/">Here's our match preview for the one remaining Boxing Day fixture ...</a><br />
+- www.connecthearing.com: <a href="https://www.connecthearing.com/getmedia/8351bd06-fb75-4c4c-b285-32a208f8ee9d/vcderwsda">Manchester United vs Newcastle United – Match Preview ...</a><br />
+- www.threads.com: <a href="https://www.threads.com/@fotmobapp/post/DSuOKC5CIQs/heres-our-match-preview-for-the-one-remaining-boxing-day-fixture-in-the-premier-">Here's our match preview for the one remaining Boxing Day fixture ...</a><br />
+- www.premierleague.com: <a href="https://www.premierleague.com/en/match/2562071/manchester-united-vs-newcastle-united">Manchester United v Newcastle United | 2025/2026 | Premier ...</a><br />
+- x.com: <a href="https://x.com/FotMob/status/2004489879938371643">Here's our match preview for the one remaining Boxing Day fixture ...</a><br />
+- www.emec.org.uk: <a href="https://www.emec.org.uk/?s-news-23476605-2025-12-26-man-united-vs-newcastle-premier-league-preview-2025">Manchester United vs Newcastle: Key Insights and Match Preview ...</a><br />
+- cominghomenewcastle.sbnation.com: <a href="https://cominghomenewcastle.sbnation.com/newcastle-united-team-news/19858/man-utd-vs-newcastle-eddie-howe-match-preview">Man Utd vs. Newcastle — Eddie Howe: Match Preview | Coming ...</a></p>
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>マンチェスター・ユナイテッドは、ボール保持を重視する4-2-3-1のフォーメーションで臨む可能性が高い。中盤の底にカゼミーロやスコット・マクトミネイを配置し、トップ下のブルーノ・フェルナンデスを起点とした攻撃で試合の主導権を握ろうと試みるだろう。両翼のマーカス・ラッシュフォードやアレハンドロ・ガルナチョのスピードを活かしたサイド攻撃が、主要な得点源となる。</li>
+</ul>
+<p>一方、ニューカッスルはエディ・ハウ監督が採用する、ハイプレスと縦に速い攻撃を特徴とする4-3-3で対抗すると予想される。ブルーノ・ギマランイスを中心とした中盤は、高いインテンシティでユナイテッドのビルドアップを妨害し、ボールを奪ってからのショートカウンターを狙う。</p>
+<p>この試合の鍵を握るマッチアップは、ユナイテッドのビルドアップに対するニューカッスルの前線からのプレッシングだ。ユナイテッドのディフェンスラインと守備的MFがこのプレスを回避し、攻撃の起点となれるかが最初の焦点となる。また、中盤では創造性を担うブルーノ・フェルナンデスと、攻守の要であるブルーノ・ギマランイスのマッチアップがゲームの流れを大きく左右するだろう。サイドでは、ユナイテッドの快足ウィンガーと、攻撃参加を得意とするニューカッスルのサイドバック（特にキーラン・トリッピアー）との攻防も見どころとなる。ユナイテッドがポゼッションで優位に立つか、ニューカッスルがトランジションで勝機を見出すか、戦術的な駆け引きが注目される。</p>
+<h3>■ 監督・選手コメント</h3>
+<ul>
+<li>【Manchester United】<br />
+ニューカッスル戦を前に、ルベン・アモリム監督が記者会見でチームの状況について語った。監督は選手たちに挑戦を促すとともに、特定の選手が起用できない可能性について問われると、「我々には（代わりとなる）他の選手たちがいる」と述べ、チーム全体の層の厚さに対する信頼を強調した。また、クラブのレジェンドであるギグスがかつて語った「マンチェスター・ユナイテッドの選手であるために必要な3つのこと」という言葉を引き合いに出し、選手たちにクラブを代表するにふさわしいプレーと姿勢を求めた。</li>
+<li>ご提示いただいたニュース記事の断片を確認しましたが、これらの内容にはNewcastleの監督や選手の試合前コメントが含まれておりませんでした。</li>
+</ul>
+<p>記事で言及されている人物は、他チームの監督や選手、あるいは移籍情報を伝えるジャーナリストであり、ご依頼の要件である「Newcastleの監督や選手の試合前コメント」を要約するための情報がございません。</p>
+<p>そのため、指定されたタスクを遂行することができません。お手数ですが、該当するコメントが含まれる記事をご提供いただけますでしょうか。</p>
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details>
+<summary><strong>🎤 記者会見 (15件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_8Qs0dxQO2A" target="_blank"><img src="https://i.ytimg.com/vi/_8Qs0dxQO2A/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_8Qs0dxQO2A" target="_blank">&quot;I Can Help Them Play Better&quo...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 1日前<br/><em>Watch part two of Ruben Amorim's press conference as he take...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DZoQVNkoEOc" target="_blank"><img src="https://i.ytimg.com/vi/DZoQVNkoEOc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DZoQVNkoEOc" target="_blank">Ruben Amorim: &quot;Kobbie Mainoo is ...</a></strong><br/>📺 <strong>✅ Sky Sports News</strong> ・ 🕐 16時間前<br/><em>Subscribe to Sky Sports News: http://bit.ly/SkySportsNewsSub...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QgUiVZdr11s" target="_blank"><img src="https://i.ytimg.com/vi/QgUiVZdr11s/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QgUiVZdr11s" target="_blank">Man Utd v Newcastle United - Eddie Ho...</a></strong><br/>📺 <strong>⚠️ Inside The Toon</strong> ・ 🕐 1日前<br/><em>Man Utd v Newcastle United - Eddie Howe's Press Conference R...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=OKcbtCWkzgc" target="_blank"><img src="https://i.ytimg.com/vi/OKcbtCWkzgc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=OKcbtCWkzgc" target="_blank">&#39;We cannot make same mistakes&#39;...</a></strong><br/>📺 <strong>⚠️ Sky Sports Premier League</strong> ・ 🕐 15時間前<br/><em>Subscribe to Sky Sports Premier League: https://bit.ly/Subsc...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0RQgL23FO3I" target="_blank"><img src="https://i.ytimg.com/vi/0RQgL23FO3I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0RQgL23FO3I" target="_blank">&quot;IMPOSSIBLE TO REPLACE!&quot; 😡 ...</a></strong><br/>📺 <strong>⚠️ MUFC Quintessence</strong> ・ 🕐 1日前<br/><em>"IMPOSSIBLE TO REPLACE!" Amorim's SHOCK Bruno Admission | Ed...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=GM8pli0iMyI" target="_blank"><img src="https://i.ytimg.com/vi/GM8pli0iMyI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=GM8pli0iMyI" target="_blank">Newcastle United injury BOOST ahead o...</a></strong><br/>📺 <strong>⚠️ Geordie Journos</strong> ・ 🕐 1日前<br/><em>In the last episode of the Geordie Journos, the lads discuss...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=awbkf4D3LCE" target="_blank"><img src="https://i.ytimg.com/vi/awbkf4D3LCE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=awbkf4D3LCE" target="_blank">✅Wow!! Scary lineup🔥Ruben Amorim Firs...</a></strong><br/>📺 <strong>⚠️ UTD BUZZ Official</strong> ・ 🕐 14時間前<br/><em>Contact us: drictv03@gmail.com Join this channel to get acce...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Gj80f8bV0_E" target="_blank"><img src="https://i.ytimg.com/vi/Gj80f8bV0_E/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Gj80f8bV0_E" target="_blank">NO Bruno! Who Starts In Midfield?! Ma...</a></strong><br/>📺 <strong>⚠️ Stephen Howson</strong> ・ 🕐 1日前<br/><em>Go to https://tryfum.com/STEPHENHOWSON or scan the QR code a...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HdnKlXkt7sw" target="_blank"><img src="https://i.ytimg.com/vi/HdnKlXkt7sw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HdnKlXkt7sw" target="_blank">✅Wow!! Scary lineup🔥Ruben Amorim Firs...</a></strong><br/>📺 <strong>⚠️ UTD focus </strong> ・ 🕐 11時間前<br/><em>Subscribe for more updates #unitedHQ #Subscribe for more upd...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wArY36GKcJY" target="_blank"><img src="https://i.ytimg.com/vi/wArY36GKcJY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wArY36GKcJY" target="_blank">NUFC simply CAN&#39;T lose this &#39;...</a></strong><br/>📺 <strong>⚠️ Geordie Journos</strong> ・ 🕐 2日前<br/><em>In the last episode of the Geordie Journos, the lads talk ab...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JPJX2Vz0INQ" target="_blank"><img src="https://i.ytimg.com/vi/JPJX2Vz0INQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JPJX2Vz0INQ" target="_blank">⛔JUST NOW✅ 99% CONFIRMED✅! Man Utd to...</a></strong><br/>📺 <strong>⚠️ UTD BUZZ Official</strong> ・ 🕐 11時間前<br/><em>Contact us: drictv03@gmail.com Join this channel to get acce...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cDQaf3En8L0" target="_blank"><img src="https://i.ytimg.com/vi/cDQaf3En8L0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cDQaf3En8L0" target="_blank">EXCLUSIVE INSIGHT: Fergie&#39;s bans,...</a></strong><br/>📺 <strong>⚠️ United! United! United!</strong> ・ 🕐 1日前<br/><em>In the second part of his interview, veteran BBC Sport journ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=z5Ie8C_UrW4" target="_blank"><img src="https://i.ytimg.com/vi/z5Ie8C_UrW4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=z5Ie8C_UrW4" target="_blank">✅FINALLY! FABRIZIO ROMANO ANNOUNCE TO...</a></strong><br/>📺 <strong>⚠️ UTD BUZZ Official</strong> ・ 🕐 18時間前<br/><em>Contact us: drictv03@gmail.com Join this channel to get acce...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=LqMrdIQoSZw" target="_blank"><img src="https://i.ytimg.com/vi/LqMrdIQoSZw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=LqMrdIQoSZw" target="_blank">AMORIM DOUBLES DOWN ON UNITED 😳🔥 #sho...</a></strong><br/>📺 <strong>⚠️ Mr. Football Toons</strong> ・ 🕐 11時間前<br/><em>Manchester United manager Ruben Amorim continues his press c...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=K1PHXH2eq5E" target="_blank"><img src="https://i.ytimg.com/vi/K1PHXH2eq5E/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=K1PHXH2eq5E" target="_blank">🎤EVERY WORD OF RUBEN AMORIM&#39;S NEW...</a></strong><br/>📺 <strong>⚠️ UNITED DAILY UPDATES</strong> ・ 🕐 1日前<br/><em>EVERY WORD OF RUBEN AMORIM'S NEW CASTLE UNITED PRE-MATCH PRE...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ptZ9drVJR2E" target="_blank"><img src="https://i.ytimg.com/vi/ptZ9drVJR2E/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ptZ9drVJR2E" target="_blank">A Boxing Day Special! | Man Utd 4-3 N...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 1日前<br/><em>Watch a Christmas classic from 2012/13 where Manchester Unit...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=MRgJ-SyiLb0" target="_blank"><img src="https://i.ytimg.com/vi/MRgJ-SyiLb0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=MRgJ-SyiLb0" target="_blank">Boxing Day Drama | Man Utd 4-3 Newcas...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2日前<br/><em>Love this video? We've got even more for you to enjoy on the...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=9qWDheTkvrk" target="_blank"><img src="https://i.ytimg.com/vi/9qWDheTkvrk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=9qWDheTkvrk" target="_blank">Mainoo, Amad &amp; Hojlund Fire Home ...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 2024/05/15<br/><em>United ran out victorious in a five-goal thriller against Ne...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cBBAVnXZ9QQ" target="_blank"><img src="https://i.ytimg.com/vi/cBBAVnXZ9QQ/mqdefault_live.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cBBAVnXZ9QQ" target="_blank">LIVE NOW: Man United vs Newcastle 🔴| ...</a></strong><br/>📺 <strong>⚠️ moneycontrol</strong> ・ 🕐 10時間前<br/><em>Watch Manchester United vs Newcastle United LIVE with real-t...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=-BXaROnt-X8" target="_blank"><img src="https://i.ytimg.com/vi/-BXaROnt-X8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=-BXaROnt-X8" target="_blank">Manchester United vs Newcastle - Prem...</a></strong><br/>📺 <strong>⚠️ Football Live</strong> ・ 🕐 1日前<br/><em>Manchester United vs Newcastle - Premier League 25/26 | Full...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=pR9bxht_Fm0" target="_blank"><img src="https://i.ytimg.com/vi/pR9bxht_Fm0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=pR9bxht_Fm0" target="_blank">Newcastle United v. Manchester United...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 8ヶ月前<br/><em>Relive full-match highlights from Manchester United's visit ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QqF5Bdfa16Q" target="_blank"><img src="https://i.ytimg.com/vi/QqF5Bdfa16Q/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QqF5Bdfa16Q" target="_blank">Manchester United v. Newcastle United...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 12ヶ月前<br/><em>Watch full-match highlights from Manchester United's Matchwe...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=19nOXc38xgY" target="_blank"><img src="https://i.ytimg.com/vi/19nOXc38xgY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=19nOXc38xgY" target="_blank">Newcastle United 4 Manchester United ...</a></strong><br/>📺 <strong>⚠️ Newcastle United</strong> ・ 🕐 8ヶ月前<br/><em>The best of the action from our big win over Manchester Unit...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=H5mVkoM54Ec" target="_blank"><img src="https://i.ytimg.com/vi/H5mVkoM54Ec/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=H5mVkoM54Ec" target="_blank">Newcastle United v. Manchester City |...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 1ヶ月前<br/><em>Relive full-match highlights from Manchester City's trip up ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=EJpXL6Mmngc" target="_blank"><img src="https://i.ytimg.com/vi/EJpXL6Mmngc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=EJpXL6Mmngc" target="_blank">Aston Villa v. Manchester United | PR...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 5日前<br/><em>Relive full-match highlights from Manchester United's trip t...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>📊 戦術分析 (20件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_uJ9ZLcDldA" target="_blank"><img src="https://i.ytimg.com/vi/_uJ9ZLcDldA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_uJ9ZLcDldA" target="_blank">マンチェスターユナイテッドが復調した要因とは？ブライトンに4-2勝利した理...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 2ヶ月前<br/><em>【内容紹介】 プレミアリーグ第9節、マンチェスター・ユナイテッドがブライトンに4-2で勝利。アモリム体制3連勝を達成しま...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mj-fOW4fJOg" target="_blank"><img src="https://i.ytimg.com/vi/mj-fOW4fJOg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mj-fOW4fJOg" target="_blank">マンUが再び王者に返り咲く日は近い？アモリム体制の真価とプレミア優勝への課...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前<br/><em>【内容紹介】 マンチェスター・ユナイテッドがアモリム監督のもとで3連勝。ルーク・ショーの「優勝を目指す」発言が再び注目 ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FKZUy7KtGXM" target="_blank"><img src="https://i.ytimg.com/vi/FKZUy7KtGXM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FKZUy7KtGXM" target="_blank">【30秒戦術】CL ニューカッスル×バルセロナ｜ハイプレスの綱引き　#UC...</a></strong><br/>📺 <strong>⚠️ タクサカ. ch</strong> ・ 🕐 3ヶ月前<br/><em>30秒でわかる！チャンピオンズリーグ戦術 （#約30秒サッカー戦術分析 シリーズ） ......</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=7ro8jodONYc" target="_blank"><img src="https://i.ytimg.com/vi/7ro8jodONYc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=7ro8jodONYc" target="_blank">Amorim MUST FIX This STRUCTURAL Probl...</a></strong><br/>📺 <strong>⚠️ Scarlet Report</strong> ・ 🕐 4ヶ月前<br/><em>In this video, I break down Manchester United's 1-1 draw aga...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=CvY6UuqC6Zo" target="_blank"><img src="https://i.ytimg.com/vi/CvY6UuqC6Zo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=CvY6UuqC6Zo" target="_blank">これは芸術！ニューカッスルの完璧すぎるコーナーキック</a></strong><br/>📺 <strong>⚠️ Kick-Off Lab</strong> ・ 🕐 1ヶ月前<br/><em>Kick-Off Labへようこそ！ ⚽ サッカーがもっと面白くなる！「Kick-Off Lab」では 国内外の試合解説...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=IwnEmCr5HUc" target="_blank"><img src="https://i.ytimg.com/vi/IwnEmCr5HUc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=IwnEmCr5HUc" target="_blank">「アモリム、覚悟はあるか？」 #サッカー戦術分析 #サッカー #プレミアリ...</a></strong><br/>📺 <strong>⚠️ サッカーワールド</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kIsZ1gMaylE" target="_blank"><img src="https://i.ytimg.com/vi/kIsZ1gMaylE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kIsZ1gMaylE" target="_blank">【戦術分析】なぜバルサはハイプレス集団に勝てたのか？ペドリ＆フレンキーの異...</a></strong><br/>📺 <strong>⚠️ Equaliser【バルサ応援・解説チャンネル】</strong> ・ 🕐 3ヶ月前<br/><em>バルセロナがニューカッスルに2-1で勝利！ ラッシュフォードの素晴らしい2ゴールもありましたが、 この試合の勝因はプレミ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=sixW351bu0s" target="_blank"><img src="https://i.ytimg.com/vi/sixW351bu0s/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=sixW351bu0s" target="_blank">Roy Keane React on Ruben Amorim Tacti...</a></strong><br/>📺 <strong>⚠️ AI Sports News</strong> ・ 🕐 5日前<br/><em>Man Utd Transfer News Today Sky Sports News Fabrizio Romano....</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0WYqYlTVXF8" target="_blank"><img src="https://i.ytimg.com/vi/0WYqYlTVXF8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0WYqYlTVXF8" target="_blank">【30秒戦術】ニューカッスル開幕の鍵　#30秒戦術 #サッカー戦術 #タク...</a></strong><br/>📺 <strong>⚠️ タクサカ. ch</strong> ・ 🕐 4ヶ月前<br/><em>30秒でわかる！アーセナル優勝への鍵！ （#約30秒サッカー戦術分析 シリーズ） ......</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=XS5Oyt2WrtM" target="_blank"><img src="https://i.ytimg.com/vi/XS5Oyt2WrtM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=XS5Oyt2WrtM" target="_blank">【魂の勝利】アーセナルvsニューカッスルがっつり解説！ニューカッスルを制圧...</a></strong><br/>📺 <strong>⚠️ やいしフットボールチャンネル</strong> ・ 🕐 2ヶ月前<br/><em>日曜の夜リアタイした甲斐があったぜよ 後トイレのスプレーとかスプレー系百発百中で手に最初にかけちゃう ＃football...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JJbjxpndlsw" target="_blank"><img src="https://i.ytimg.com/vi/JJbjxpndlsw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JJbjxpndlsw" target="_blank">Inside Amorim’s Man United System Cha...</a></strong><br/>📺 <strong>⚠️ Sport Lab</strong> ・ 🕐 4日前<br/><em>Rúben Amorim made subtle but crucial tactical adjustments as...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=uI31GanNTck" target="_blank"><img src="https://i.ytimg.com/vi/uI31GanNTck/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=uI31GanNTck" target="_blank">Why Malick Thiaw’s £35M Move To Newca...</a></strong><br/>📺 <strong>⚠️ A Game Of Two Halves</strong> ・ 🕐 4ヶ月前<br/><em>Have Newcastle just signed the Premier League's next elite C...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=xFtrF12x8Lw" target="_blank"><img src="https://i.ytimg.com/vi/xFtrF12x8Lw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=xFtrF12x8Lw" target="_blank">How would Iraola Set-up Man United? (...</a></strong><br/>📺 <strong>⚠️ Atlantis Football</strong> ・ 🕐 3ヶ月前<br/><em>FOOTBALL JERSEYS (Discount Code "ATLANTIS"): https://jerseyf...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=AGHKaaGWUKo" target="_blank"><img src="https://i.ytimg.com/vi/AGHKaaGWUKo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=AGHKaaGWUKo" target="_blank">Why Newcastle Keep Dropping Points Fr...</a></strong><br/>📺 <strong>⚠️ A Game Of Two Halves</strong> ・ 🕐 4日前<br/><em>Why do Newcastle keep dropping points from winning positions...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zXm7v3IOeFQ" target="_blank"><img src="https://i.ytimg.com/vi/zXm7v3IOeFQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zXm7v3IOeFQ" target="_blank">What Manchester United MUST IMPROVE D...</a></strong><br/>📺 <strong>⚠️ Scarlet Report</strong> ・ 🕐 3ヶ月前<br/><em>Manchester United may have secured a narrow 3-2 win over Bur...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=1QJY7XICiYs" target="_blank"><img src="https://i.ytimg.com/vi/1QJY7XICiYs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=1QJY7XICiYs" target="_blank">Newcastle vs Chelsea PREVIEW 🔥| Tacti...</a></strong><br/>📺 <strong>⚠️ António Mango</strong> ・ 🕐 1週間前<br/><em>Newcastle vs Chelsea Preview | Tactical Breakdown, Key Battl...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=NSnYY3lx_is" target="_blank"><img src="https://i.ytimg.com/vi/NSnYY3lx_is/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=NSnYY3lx_is" target="_blank">MOTD Aston Villa vs Manchester United...</a></strong><br/>📺 <strong>⚠️ The Pundit Panel</strong> ・ 🕐 5日前<br/><em>MOTD Aston Villa vs Man Utd 2-1 Wayne Rooney & Dion Dublin a...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HkxWYaECJtE" target="_blank"><img src="https://i.ytimg.com/vi/HkxWYaECJtE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HkxWYaECJtE" target="_blank">Newcastle Tactical Analysis | Defensi...</a></strong><br/>📺 <strong>⚠️ HALF-SPACE THEORY</strong> ・ 🕐 1ヶ月前<br/><em>In this video, we take a deep dive into Newcastle United's t...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=G2dUIdRYh8s" target="_blank"><img src="https://i.ytimg.com/vi/G2dUIdRYh8s/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=G2dUIdRYh8s" target="_blank">Manchester United vs West Ham - Analy...</a></strong><br/>📺 <strong>⚠️ Dan Boyd</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=AB7qONdaqeo" target="_blank"><img src="https://i.ytimg.com/vi/AB7qONdaqeo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=AB7qONdaqeo" target="_blank">NEWCASTLE 2-2 CHELSEA: Chaos at St Ja...</a></strong><br/>📺 <strong>⚠️ António Mango</strong> ・ 🕐 6日前<br/><em>What. A. Game. ⚡️ St James' Park delivered another chaotic P...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=M2OrbddLG3U" target="_blank"><img src="https://i.ytimg.com/vi/M2OrbddLG3U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=M2OrbddLG3U" target="_blank">Sesko Scores At Home! 🏠🇸🇮 | Man Utd 2...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 2ヶ月前<br/><em>Watch the key moments from Manchester United's 2-0 victory o...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=eUisWz0meCI" target="_blank"><img src="https://i.ytimg.com/vi/eUisWz0meCI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=eUisWz0meCI" target="_blank">Big Goal, HUGE Leap From Sesko! 🙌</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=YfcsWP87qIM" target="_blank"><img src="https://i.ytimg.com/vi/YfcsWP87qIM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=YfcsWP87qIM" target="_blank">Benjamin Sesko is a Powerhouse | Best...</a></strong><br/>📺 <strong>⚠️ mr bundesteam</strong> ・ 🕐 5ヶ月前<br/><em>Content in partnership with WSC Sports - https://tinyurl.com...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DUYjiwfCk1s" target="_blank"><img src="https://i.ytimg.com/vi/DUYjiwfCk1s/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DUYjiwfCk1s" target="_blank">Benjamin Šeško Debut for Manchester U...</a></strong><br/>📺 <strong>⚠️ OblakGK</strong> ・ 🕐 4ヶ月前<br/><em>Benjamin Šeško Debut for Manchester United Join Discord ○ ht...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=iKDZNzgGCig" target="_blank"><img src="https://i.ytimg.com/vi/iKDZNzgGCig/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=iKDZNzgGCig" target="_blank">Here&#39;s Why Man Utd Signed Benjami...</a></strong><br/>📺 <strong>⚠️ ScoutNation</strong> ・ 🕐 4ヶ月前<br/><em>Benjamin Šeško Reviews for YOU, chosen by YOU. ✔️ Subscribe,...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=IsmT_YMXUH0" target="_blank"><img src="https://i.ytimg.com/vi/IsmT_YMXUH0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=IsmT_YMXUH0" target="_blank">Benjamin Šeško vs Brighton (25/10/2025)</a></strong><br/>📺 <strong>⚠️ OblakGK</strong> ・ 🕐 2ヶ月前<br/><em>Benjamin Šeško vs Brighton Join Discord ○ https://discord.gg...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mCkvcdmswgE" target="_blank"><img src="https://i.ytimg.com/vi/mCkvcdmswgE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mCkvcdmswgE" target="_blank">Benjamin Sesko All 27 Goals &amp; Ass...</a></strong><br/>📺 <strong>⚠️ Manie HD</strong> ・ 🕐 4ヶ月前<br/><em>Benjamin Sesko Goals, Dribbles, Assists Turn on notification...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=NByPZFLS3wM" target="_blank"><img src="https://i.ytimg.com/vi/NByPZFLS3wM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=NByPZFLS3wM" target="_blank">Benjamin Šeško vs Sunderland | Second...</a></strong><br/>📺 <strong>⚠️ OblakGK</strong> ・ 🕐 2ヶ月前<br/><em>Benjamin Šeško vs Sunderland Join Discord ○ https://discord....</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=6hUgfcykvIA" target="_blank"><img src="https://i.ytimg.com/vi/6hUgfcykvIA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=6hUgfcykvIA" target="_blank">Benjamin Sesko is Just Getting Starte...</a></strong><br/>📺 <strong>⚠️ KaiiZoFilms</strong> ・ 🕐 2ヶ月前<br/><em>Turn on notifications to stay updated with new uploads! Benj...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JpUvyE5Cn14" target="_blank"><img src="https://i.ytimg.com/vi/JpUvyE5Cn14/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JpUvyE5Cn14" target="_blank">Benjamin Šeško Debut #BenjaminŠeško #...</a></strong><br/>📺 <strong>⚠️ Man Utd clips</strong> ・ 🕐 4ヶ月前</td></tr>
+</tbody>
+</table>
+</details>
+
+<details>
+<summary><strong>🏃 練習風景 (20件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=dTEyvHjV30Q" target="_blank"><img src="https://i.ytimg.com/vi/dTEyvHjV30Q/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=dTEyvHjV30Q" target="_blank">Putting In Work Before Villa Away 😤👊</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=fatzW0PUfkM" target="_blank"><img src="https://i.ytimg.com/vi/fatzW0PUfkM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=fatzW0PUfkM" target="_blank">Lisandro Martinez advises Jack Fletch...</a></strong><br/>📺 <strong>⚠️ FOTBOLERA</strong> ・ 🕐 16時間前<br/><em>Lisandro Martinez advises Jack Fletcher during a light train...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FXtGy2ucEoI" target="_blank"><img src="https://i.ytimg.com/vi/FXtGy2ucEoI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FXtGy2ucEoI" target="_blank">Watch Newcastle United Players SUPER ...</a></strong><br/>📺 <strong>⚠️ UTOPIA SPORTS</strong> ・ 🕐 6日前<br/><em>Newcastle United are pushing hard in training ahead of their...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zoSKDgsDtiY" target="_blank"><img src="https://i.ytimg.com/vi/zoSKDgsDtiY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zoSKDgsDtiY" target="_blank">JJ Gabriel doing extra individual tra...</a></strong><br/>📺 <strong>⚠️ SELEVEN REPORT</strong> ・ 🕐 19時間前<br/><em>JJ Gabriel doing extra individual training in Christmas Day ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=43MZx-I1e-A" target="_blank"><img src="https://i.ytimg.com/vi/43MZx-I1e-A/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=43MZx-I1e-A" target="_blank">Man Utd&#39;s SHOCKING Predicted XI v...</a></strong><br/>📺 <strong>⚠️ United HQ View </strong> ・ 🕐 20時間前<br/><em>MUFC #ManUtd #RedDevils #OldTrafford #UnitedFamily #MasonMou...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cyV8kw034ZE" target="_blank"><img src="https://i.ytimg.com/vi/cyV8kw034ZE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cyV8kw034ZE" target="_blank">Eddie Howe: ‘99.9% I Won’t Be Here’ 🔥...</a></strong><br/>📺 <strong>⚠️ António Mango</strong> ・ 🕐 9時間前<br/><em>Newcastle are entering a crucial phase: infrastructure decis...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=uQ77xIdrM5s" target="_blank"><img src="https://i.ytimg.com/vi/uQ77xIdrM5s/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=uQ77xIdrM5s" target="_blank">Carlos Baleba’s CRAZY linkup play wit...</a></strong><br/>📺 <strong>⚠️ FOTBOLERA</strong> ・ 🕐 1日前<br/><em>Carlos Baleba's CRAZY linkup play with Mbeumo as Cameroon wi...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=b1KN_-umnEI" target="_blank"><img src="https://i.ytimg.com/vi/b1KN_-umnEI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=b1KN_-umnEI" target="_blank">Training ahead of Newcastle | galley ...</a></strong><br/>📺 <strong>⚠️ Chelsea Fc Updates </strong> ・ 🕐 6日前<br/><em>Join the men's first team behind-the-scenes as they prepare ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=PBk5i4gHS7U" target="_blank"><img src="https://i.ytimg.com/vi/PBk5i4gHS7U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=PBk5i4gHS7U" target="_blank">Manchester United Players’ Cars After...</a></strong><br/>📺 <strong>⚠️ GoalX</strong> ・ 🕐 10時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=w7VAPiQk9cY" target="_blank"><img src="https://i.ytimg.com/vi/w7VAPiQk9cY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=w7VAPiQk9cY" target="_blank">‘LIMBO’ Eddie Howe BOMBSHELL On His F...</a></strong><br/>📺 <strong>⚠️ The Magpie Channel TV</strong> ・ 🕐 13時間前<br/><em>Local Heroes Bundle - https://farmyardfortune.co.uk/competit...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=fwSf8J5aMl4" target="_blank"><img src="https://i.ytimg.com/vi/fwSf8J5aMl4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=fwSf8J5aMl4" target="_blank">Bruno Fernandes, Cunha, Sesko &amp; M...</a></strong><br/>📺 <strong>⚠️ Mush Jungle</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ryfFBoL_ndc" target="_blank"><img src="https://i.ytimg.com/vi/ryfFBoL_ndc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ryfFBoL_ndc" target="_blank">Training Ahead of Newcastle 🔥 | Chels...</a></strong><br/>📺 <strong>⚠️ Sport Lab</strong> ・ 🕐 1週間前<br/><em>Chelsea step up preparations ahead of their vital Premier Le...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=n2zDK1epDWI" target="_blank"><img src="https://i.ytimg.com/vi/n2zDK1epDWI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=n2zDK1epDWI" target="_blank">Day 442 of not cutting my hair until ...</a></strong><br/>📺 <strong>⚠️ The United Strand</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=leD7eb9VQFA" target="_blank"><img src="https://i.ytimg.com/vi/leD7eb9VQFA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=leD7eb9VQFA" target="_blank">เอ็ดดี้ ฮาว ยอมรับว่าแผนสนามใหม่และสน...</a></strong><br/>📺 <strong>⚠️ บอลทรู ที่นี่มีแต่ฟุตบอล</strong> ・ 🕐 14時間前<br/><em>เอ็ดดี้ ฮาว พูดอย่างตรงไปตรงมา ว่าแผนการสร้างสนามใหม่และศูนย...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DJifBCXDuw0" target="_blank"><img src="https://i.ytimg.com/vi/DJifBCXDuw0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DJifBCXDuw0" target="_blank">Cunha salutes Shea Lacey skills in tr...</a></strong><br/>📺 <strong>⚠️ SELEVEN REPORT</strong> ・ 🕐 5日前<br/><em>Cunha salutes Shea Lacey skills in training to replace Amad ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=m3jOGw8g4IM" target="_blank"><img src="https://i.ytimg.com/vi/m3jOGw8g4IM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=m3jOGw8g4IM" target="_blank">Big Nick bags another against Chelsea...</a></strong><br/>📺 <strong>⚠️ Newcastle United</strong> ・ 🕐 6日前<br/><em>For more from Newcastle United, check out our Linktree! ➡️ h...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=CSrJ0cCdbXQ" target="_blank"><img src="https://i.ytimg.com/vi/CSrJ0cCdbXQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=CSrJ0cCdbXQ" target="_blank">Cunha salutes Shea Lacey skills in tr...</a></strong><br/>📺 <strong>⚠️ KJ News</strong> ・ 🕐 5日前<br/><em>Cunha salutes Shea Lacey skills in training to replace Amad ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qxPl1bgGKsc" target="_blank"><img src="https://i.ytimg.com/vi/qxPl1bgGKsc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qxPl1bgGKsc" target="_blank">MARESCA &amp; JOAO PEDRO react post-N...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 6日前<br/><em>Watch as Enzo Maresca and Joao Pedro react to Chelsea's 2-2 ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=xy2msKF5sJQ" target="_blank"><img src="https://i.ytimg.com/vi/xy2msKF5sJQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=xy2msKF5sJQ" target="_blank">🚨Happening NoW 🔥 CUNHA, YORO...😍MAN U...</a></strong><br/>📺 <strong>⚠️ Reds View </strong> ・ 🕐 18時間前<br/><em>Redsview Welcome to Red's View — your daily destination for ...</em></td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=6C7P3ilLidA" target="_blank"><img src="https://i.ytimg.com/vi/6C7P3ilLidA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=6C7P3ilLidA" target="_blank">LIVE NOW🛑SESKO,ZERKZEE &amp;MORE IN C...</a></strong><br/>📺 <strong>⚠️ OLD TRAFFORD EXCLUSIVE ⚽⚽</strong> ・ 🕐 1日前<br/><em>Welcome to OLD TRAFFORD EXCLUSIVE, the proper home for every...</em></td></tr>
+</tbody>
+</table>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<h2>選外試合リスト</h2>
+<ul>
+<li>なし</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: (キャッシュから取得のため情報なし)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 13回呼び出し (キャッシュ: 0件, 合計リクエスト: 13件)</li>
+</ul>
+<hr />
+<p><em>レポート生成日時: 2025-12-27 11:16:00 JST</em></p>
+        <div class="timestamp">
+            生成日時: 2025-12-27 11:16:07 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

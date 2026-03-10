@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[MOCK] Manchester City vs West Ham - EPL (17:52:15)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .player-instagram-link:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .player-instagram-icon {
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        <div style="background:#9b59b6;color:#fff;padding:10px 15px;border-radius:8px;margin-bottom:20px;font-weight:bold;">🧪 MOCK MODE - このレポートはモックデータです</div>
+        <h1>Manchester City vs West Ham</h1>
+<p><strong>EPL</strong> / S</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/21 00:00 JST<br><span class="match-info-subtext">2025-12-20 15:00 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">Etihad Stadium, Manchester</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"> Manchester City（4-3-2-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>G. Donnarumma</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1622.png" alt="G. Donnarumma" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #25</div>
+<div class="player-card-nationality">🇮🇹 Italy</div>
+<div class="player-card-age">26歳 (1999/02/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>M. Nunes</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/41621.png" alt="M. Nunes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #27</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">27歳 (1998/08/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Rúben Dias</span><a href="https://www.instagram.com/rubendias/" target="_blank" rel="noopener noreferrer" class="player-instagram-link" title="Instagram"><svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/567.png" alt="Rúben Dias" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">28歳 (1997/05/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>J. Gvardiol</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129033.png" alt="J. Gvardiol" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #24</div>
+<div class="player-card-nationality">🇭🇷 Croatia</div>
+<div class="player-card-age">23歳 (2002/01/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>N. O'Reilly</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/307123.png" alt="N. O'Reilly" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #33</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">22歳 (2003/07/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>T. Reijnders</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/36902.png" alt="T. Reijnders" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #4</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">27歳 (1998/07/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nico</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/161933.png" alt="Nico" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #14</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">22歳 (2003/09/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>B. Silva</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/636.png" alt="B. Silva" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #20</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">31歳 (1994/08/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>R. Cherki</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/156477.png" alt="R. Cherki" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">22歳 (2003/08/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>P. Foden</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/631.png" alt="P. Foden" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #47</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/05/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>E. Haaland</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1100.png" alt="E. Haaland" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇳🇴 Norway</div>
+<div class="player-card-age">25歳 (2000/07/21)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>J. Trafford</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162489.png" alt="J. Trafford" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/10/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>N. Ake</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18861.png" alt="N. Ake" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">30歳 (1995/02/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Savinho</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/266657.png" alt="Savinho" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">21歳 (2004/04/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>A. Khusanov</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/360114.png" alt="A. Khusanov" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality"> Uzbekistan</div>
+<div class="player-card-age">21歳 (2004/04/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>C. Gray</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/389034.png" alt="C. Gray" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇯🇲 Jamaica</div>
+<div class="player-card-age">25歳 (2000/09/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>D. Mukasa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/380681.png" alt="D. Mukasa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/01/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>R. Lewis</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284230.png" alt="R. Lewis" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/09/21)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>S. Mfuni</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/382358.png" alt="S. Mfuni" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>R. Heskey</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/448969.png" alt="R. Heskey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>R. Ait Nouri</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/21138.png" alt="R. Ait Nouri" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Manchester City</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>O. Bobb</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/278133.png" alt="O. Bobb" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Manchester City</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>J. Doku</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1422.png" alt="J. Doku" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Manchester City</div>
+<div class="player-card-age injury-reason">⚠️ Leg Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>M. Kovacic</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2291.png" alt="M. Kovacic" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Manchester City</div>
+<div class="player-card-age injury-reason">⚠️ Heel Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>O. Marmoush</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/81573.png" alt="O. Marmoush" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Manchester City</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"> West Ham（4-3-1-2）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>A. Areola</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/253.png" alt="A. Areola" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #23</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">32歳 (1993/02/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>K. Walker-Peters</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/171.png" alt="K. Walker-Peters" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #2</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/04/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>M. Kilman</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18744.png" alt="M. Kilman" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/05/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>J. Todibo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138.png" alt="J. Todibo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #25</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">26歳 (1999/12/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>O. Scarles</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/327730.png" alt="O. Scarles" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #30</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/03/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>S. Magassa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/326176.png" alt="S. Magassa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #27</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">21歳 (2004/06/12)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>F. Potts</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284446.png" alt="F. Potts" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #32</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/09/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>M. Fernandes</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/336585.png" alt="M. Fernandes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #18</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">26歳 (1999/09/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lucas Paqueta</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1646.png" alt="Lucas Paqueta" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">28歳 (1997/08/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>J. Bowen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19428.png" alt="J. Bowen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #20</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">29歳 (1996/11/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>C. Summerville</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/37724.png" alt="C. Summerville" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #7</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">24歳 (2001/10/02)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>M. Hermansen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/15870.png" alt="M. Hermansen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇩🇰 Denmark</div>
+<div class="player-card-age">25歳 (2000/07/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Igor</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/7600.png" alt="Igor" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">27歳 (1998/02/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>C. Wilson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2939.png" alt="C. Wilson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">33歳 (1992/11/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>K. Mavropanos</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1445.png" alt="K. Mavropanos" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇬🇷 Greece</div>
+<div class="player-card-age">28歳 (1997/12/11)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>G. Rodriguez</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2476.png" alt="G. Rodriguez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇺🇾 Uruguay</div>
+<div class="player-card-age">22歳 (2003/11/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>T. Soucek</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1243.png" alt="T. Soucek" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🇨🇿 Czech Republic</div>
+<div class="player-card-age">30歳 (1995/02/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>A. Irving</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/68466.png" alt="A. Irving" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">22歳 (2003/04/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>M. Kante</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/401278.png" alt="M. Kante" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>E. Mayers</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/553065.png" alt="E. Mayers" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">SUB </div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home WWWWW (✅✅✅✅✅) / Away LDDLL (❌➖➖❌❌)</li>
+<li>過去の対戦成績：過去5試合: Manchester City 5勝, 引分 0, West Ham 0勝</li>
+<li>主審：Paul Tierney, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Manchester City" src="/reports/images/1379135_home.png" /><br />
+<img alt="West Ham" src="/reports/images/1379135_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグの注目カード、Manchester City対West Hamの一戦が間近に迫り、多くのサッカーメディアやファンが試合のプレビューを発信し、期待感を高めている。</li>
+</ul>
+<p>昨シーズンの王者であるManchester Cityは、今季もその圧倒的な攻撃力と組織的な守備でリーグを席巻している。ホームで迎えるこの一戦でも、盤石の試合運びで確実に勝ち点を狙ってくるだろう。</p>
+<p>対するWest Hamは、強敵シティにアウェイで挑む形となる。チームの創造性の中心を担うのは、ブラジル代表のルーカス・パケタだ。彼の卓越したテクニックとパスセンスが、シティの堅固な守備陣をこじ開ける鍵となることは間違いない。</p>
+<p>試合の焦点は、シティが誇るボール支配に対し、West Hamがいかにして効果的なカウンターを仕掛けられるかという点にある。王者シティがその強さを見せつけるのか、それともWest Hamがキーマン・パケタを中心に一矢報いるのか。</p>
+<details>
+<summary><strong>📚 Sources (3件)</strong></summary>
+<ul>
+<li><a href="https://www.bbc.com/sport" target="_blank">Manchester City vs West Ham: Premier League Preview</a> (www.bbc.com)</li>
+<li><a href="https://www.skysports.com" target="_blank">Paqueta's role vital for West Ham</a> (www.skysports.com)</li>
+<li><a href="https://www.goal.com" target="_blank">Haaland's scoring streak continues</a> (www.goal.com)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>
+<h3>Manchester City vs West Ham：戦術分析プレビュー</h3>
+</li>
+</ul>
+<p>プレミアリーグ屈指の戦術的な対決となるこの一戦は、対照的なスタイルを持つ両チームの激突が予想される。</p>
+<p><strong>Manchester Cityの予想フォーメーション: 4-2-3-1</strong><br />
+- グアルディオラ監督のチームは、圧倒的なボールポゼッションで試合を支配することを目指す<br />
+- 最前線のハーランドをターゲットに、両翼のウインガーがハーフスペースを利用</p>
+<p><strong>West Hamの予想フォーメーション: 4-5-1</strong><br />
+- 自陣でコンパクトな守備ブロックを形成し、シティの攻撃スペースを消す<br />
+- ボーウェンのスピードとパケタの創造性がカウンターの起点</p>
+<p><strong>注目のマッチアップ:</strong><br />
+1. ハーランド vs ウェストハムのCB - フィジカルとポジショニングの攻防<br />
+2. ロドリ vs パケタ - 中盤の主導権争い<br />
+3. シティのウインガー vs サイドバック - 1対1の勝負</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<div class="manager-photo manager-photo-placeholder">👤</div>
+<div class="manager-info">
+<div class="manager-team">Manchester City</div>
+<div class="manager-name">Pep Guardiola</div>
+<div class="manager-comment">【Manchester City】インタビュー記事が見つかりませんでした</div>
+</div>
+</div>
+<div class="manager-card">
+<div class="manager-photo manager-photo-placeholder">👤</div>
+<div class="manager-info">
+<div class="manager-team">West Ham</div>
+<div class="manager-name">Nuno Espirito Santo</div>
+<div class="manager-comment">【West Ham】インタビュー記事が見つかりませんでした</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (2件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FYuyWxcX604" target="_blank"><img src="https://i.ytimg.com/vi/FYuyWxcX604/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FYuyWxcX604" target="_blank">Manager's Preview | Pep Guardiola pre...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qmsEeXaoBu8" target="_blank"><img src="https://i.ytimg.com/vi/qmsEeXaoBu8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qmsEeXaoBu8" target="_blank">Pep Guardiola Speaks On His Future At...</a></strong><br/>📺 <strong>✅ DAZN Football</strong> ・ 🕐 1週間前</td></tr>
+</tbody>
+</table>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (2件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=sAewmh-Lu8U" target="_blank"><img src="https://i.ytimg.com/vi/sAewmh-Lu8U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=sAewmh-Lu8U" target="_blank">EXTENDED HIGHLIGHTS | 4-IN-A-ROW | Ma...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2024/05/19</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=rPmUSbkSl34" target="_blank"><img src="https://i.ytimg.com/vi/rPmUSbkSl34/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=rPmUSbkSl34" target="_blank">Man City Win The Premier League! | Ma...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2024/05/19</td></tr>
+</tbody>
+</table>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (1件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=B6RgCAiLg44" target="_blank"><img src="https://i.ytimg.com/vi/B6RgCAiLg44/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=B6RgCAiLg44" target="_blank">【試合総括】マンチェスターCvsナポリを解説！</a></strong><br/>📺 <strong>⚠️ GOAT理論【切り抜き】</strong> ・ 🕐 2週間前</td></tr>
+</tbody>
+</table>
+</details>
+
+<details open>
+<summary><strong>⭐ 選手紹介 (1件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI" target="_blank"><img src="https://i.ytimg.com/vi/VPgwGN9kGpI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=VPgwGN9kGpI" target="_blank">Erling Haaland's First 100 Premier Le...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 1ヶ月前</td></tr>
+</tbody>
+</table>
+</details>
+
+<details open>
+<summary><strong>🏃 練習風景 (1件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Hv2IXyyAgBQ" target="_blank"><img src="https://i.ytimg.com/vi/Hv2IXyyAgBQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Hv2IXyyAgBQ" target="_blank">HIGHLIGHTS! Haaland and Foden help po...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 2週間前</td></tr>
+</tbody>
+</table>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>Newcastle vs Chelsea （EPL）… Out of quota</li>
+<li>Everton vs Arsenal （EPL）… Out of quota</li>
+<li>Brighton vs Sunderland （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>実行回数</th>
+<th>残クォータ</th>
+<th>上限</th>
+<th>確認リンク</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API-Football</td>
+<td>0</td>
+<td>不明</td>
+<td>7,500/日</td>
+<td><a href="https://dashboard.api-football.com/">確認</a></td>
+</tr>
+<tr>
+<td>Google Custom Search</td>
+<td>0</td>
+<td>不明</td>
+<td>100/日 (無料枠)</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard">確認</a></td>
+</tr>
+<tr>
+<td>YouTube Data API</td>
+<td>0</td>
+<td>不明</td>
+<td>10,000/日</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard">確認</a></td>
+</tr>
+<tr>
+<td>Gemini API</td>
+<td>0</td>
+<td>不明</td>
+<td>~1,500/日</td>
+<td><a href="https://aistudio.google.com/app/apikey">確認</a></td>
+</tr>
+<tr>
+<td>Gmail API</td>
+<td>0</td>
+<td>不明</td>
+<td>500/日*</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>*Gmail API: OAuth認証済みアカウントの送信制限</p>
+        <div class="timestamp">
+            生成日時: 2025-12-31 17:52:15 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

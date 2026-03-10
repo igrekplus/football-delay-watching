@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[DEBUG] Wolves vs Aston Villa - EPL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/report_styles.css">
+    <link rel="stylesheet" href="../assets/nav_menu.css">
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
+<div class="mode-banner mode-banner-debug">🔧 DEBUG MODE - このレポートはデバッグ用です</div>
+<div class="match-header-container">
+    <img src="https://media.api-sports.io/football/leagues/39.png" class="competition-logo-header" alt="EPL">
+    <div class="match-header-info">
+        <h1>
+<img src="https://media.api-sports.io/football/teams/39.png" class="header-team-logo-left"
+                alt="Wolves">            Wolves vs Aston Villa
+<img src="https://media.api-sports.io/football/teams/66.png" class="header-team-logo-right"
+                alt="Aston Villa">        </h1>
+        <div class="match-metadata">
+            <span class="match-datetime">2026/02/28（土） 05:00 JST / 2026-02-27 20:00 Local @ Molineux Stadium, Wolverhampton</span>
+        </div>
+    </div>
+</div>
+
+<div class="news-summary-top">
+    <p>宿敵アストン・ヴィラをホームに迎える一戦。ウルブズは最下位に沈み、降格はほぼ確定的。しかし、直近のホームゲームではアーセナル相手に2点のビハインドを跳ね返し、引き分けに持ち込む粘りを見せた。一方、アストン・ヴィラは現在3位と好調を維持するものの、直近のリーグ戦ではリーズ相手に引き分け、FAカップではニューカッスルに敗れるなど、やや調子を落としている。チャンピオンズリーグ出場権獲得のためには、是が非でも勝ち点3が欲しいところだ。</p>
+<p>ウルブズは、前節クリスタル・パレス戦で退場処分となったラディスラフ・クレイチが出場停止となる。しかし、サンティアゴ・ブエノやウーゴ・ブエノといった若手が台頭し、光明を見出している。特にウーゴ・ブエノは、アーセナル戦で圧巻のゴールを決めており、今節も期待がかかる。攻撃陣では、アンヘル・ゴメスが先発の座を狙う。</p>
+<p>アストン・ヴィラは、ジョン・マギン、ユーリ・ティーレマンス、ブバカル・カマラといった中盤の主力が引き続き負傷離脱中。しかし、アリソンが怪我から復帰し、メンバー入りする見込みだ。マギンの復帰も近づいており、手術からの回復は予定よりも早いとのこと。</p>
+<p>ウルブズは、今シーズンを無駄に終わらせないためにも、宿敵相手に意地を見せたい。対するアストン・ヴィラは、チャンピオンズリーグ出場権を確実にするため、是が非でも勝利が欲しい。両チームの思惑が交錯する、激しいダービーマッチとなるだろう。</p>
+<p>Molineuxには、激しい雨が予想される。セットプレーが勝敗を分けるかもしれない。アストン・ヴィラは直近5試合で36本のコーナーキックを獲得しているのに対し、ウルブズはわずか。アストン・ヴィラのポゼッション率が高くなることが予想される。</p>
+<p>ウルブズが下位に低迷しているとはいえ、侮ることはできない。過去6回のホームゲームでは、アストン・ヴィラに対し4勝1分1敗と好成績を収めている。アストン・ヴィラが最後にウルブズのホームで勝利したのは6年前。昨シーズンは、ウルブズが2-0で勝利している。今シーズン前半戦は、アストン・ヴィラが1-0で辛勝している。</p>
+</div>
+
+<!-- Win Prediction Section (Issue #199 Repositioned) -->
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ 勝敗予想</h3>
+        <div class="prediction-card win-probability">
+            <div class="prob-row">
+                <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="prob-team-logo">
+
+                <div class="prob-bar-container">
+                    <div class="prob-bar home"
+                        style="width: 0%; background-color: #FDB913">
+                        <span class="prob-label">0%</span>
+                    </div>
+                    <div class="prob-bar draw" style="width: 50%; background-color: #95a5a6">
+                        <span class="prob-label">50%</span>
+                    </div>
+                    <div class="prob-bar away"
+                        style="width: 50%; background-color: #95BBE5">
+                        <span class="prob-label">50%</span>
+                    </div>
+                </div>
+
+                <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="prob-team-logo">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<details class="collapsible-section">
+    <summary>📊 順位表 (Regular Season - 28)</summary>
+    <div class="section-content">
+        <div class="standings-container">
+    <table class="standings-table">
+        <thead>
+            <tr>
+                <th class="rank">順位</th>
+                <th class="team">チーム</th>
+                <th class="played">試合</th>
+                <th class="won">勝</th>
+                <th class="draw">分</th>
+                <th class="lost">負</th>
+                <th class="goals">得失</th>
+                <th class="points">勝点</th>
+                <th class="form desktop-only">直近</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        1
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/42.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Arsenal</span>
+                    </div>
+                </td>
+                <td class="played">28</td>
+                <td class="won">18</td>
+                <td class="draw">7</td>
+                <td class="lost">3</td>
+                <td class="goals">35</td>
+                <td class="points"><strong>61</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        2
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/50.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Manchester City</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">17</td>
+                <td class="draw">5</td>
+                <td class="lost">5</td>
+                <td class="goals">31</td>
+                <td class="points"><strong>56</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="highlight-away">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        3
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/66.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Aston Villa</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">15</td>
+                <td class="draw">6</td>
+                <td class="lost">6</td>
+                <td class="goals">10</td>
+                <td class="points"><strong>51</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        4
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/49.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Chelsea</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">12</td>
+                <td class="draw">9</td>
+                <td class="lost">6</td>
+                <td class="goals">17</td>
+                <td class="points"><strong>45</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge el">
+                        5
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/33.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Manchester United</span>
+                    </div>
+                </td>
+                <td class="played">26</td>
+                <td class="won">12</td>
+                <td class="draw">9</td>
+                <td class="lost">5</td>
+                <td class="goals">10</td>
+                <td class="points"><strong>45</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        6
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/40.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Liverpool</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">13</td>
+                <td class="draw">6</td>
+                <td class="lost">8</td>
+                <td class="goals">7</td>
+                <td class="points"><strong>45</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        7
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/55.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Brentford</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">12</td>
+                <td class="draw">4</td>
+                <td class="lost">11</td>
+                <td class="goals">3</td>
+                <td class="points"><strong>40</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        8
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/35.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Bournemouth</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">9</td>
+                <td class="draw">11</td>
+                <td class="lost">7</td>
+                <td class="goals">-2</td>
+                <td class="points"><strong>38</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        9
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/45.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Everton</span>
+                    </div>
+                </td>
+                <td class="played">26</td>
+                <td class="won">10</td>
+                <td class="draw">7</td>
+                <td class="lost">9</td>
+                <td class="goals">-1</td>
+                <td class="points"><strong>37</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        10
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/36.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Fulham</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">11</td>
+                <td class="draw">4</td>
+                <td class="lost">12</td>
+                <td class="goals">-3</td>
+                <td class="points"><strong>37</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        11
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/34.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Newcastle</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">10</td>
+                <td class="draw">6</td>
+                <td class="lost">11</td>
+                <td class="goals">-1</td>
+                <td class="points"><strong>36</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        12
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/746.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Sunderland</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">9</td>
+                <td class="draw">9</td>
+                <td class="lost">9</td>
+                <td class="goals">-5</td>
+                <td class="points"><strong>36</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        13
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/52.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Crystal Palace</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">9</td>
+                <td class="draw">8</td>
+                <td class="lost">10</td>
+                <td class="goals">-3</td>
+                <td class="points"><strong>35</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        14
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/51.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Brighton</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">8</td>
+                <td class="draw">10</td>
+                <td class="lost">9</td>
+                <td class="goals">2</td>
+                <td class="points"><strong>34</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        15
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/63.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Leeds</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">7</td>
+                <td class="draw">10</td>
+                <td class="lost">10</td>
+                <td class="goals">-9</td>
+                <td class="points"><strong>31</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        16
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/47.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Tottenham</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">7</td>
+                <td class="draw">8</td>
+                <td class="lost">12</td>
+                <td class="goals">-4</td>
+                <td class="points"><strong>29</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        17
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/65.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Nottingham Forest</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">7</td>
+                <td class="draw">6</td>
+                <td class="lost">14</td>
+                <td class="goals">-14</td>
+                <td class="points"><strong>27</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge rel">
+                        18
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/48.png" class="standings-team-logo" alt="">
+                        <span class="team-name">West Ham</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">6</td>
+                <td class="draw">7</td>
+                <td class="lost">14</td>
+                <td class="goals">-17</td>
+                <td class="points"><strong>25</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge rel">
+                        19
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/44.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Burnley</span>
+                    </div>
+                </td>
+                <td class="played">27</td>
+                <td class="won">4</td>
+                <td class="draw">7</td>
+                <td class="lost">16</td>
+                <td class="goals">-23</td>
+                <td class="points"><strong>19</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="highlight-home">
+                <td class="rank">
+                    <span
+                        class="rank-badge rel">
+                        20
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/39.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Wolves</span>
+                    </div>
+                </td>
+                <td class="played">28</td>
+                <td class="won">1</td>
+                <td class="draw">7</td>
+                <td class="lost">20</td>
+                <td class="goals">-33</td>
+                <td class="points"><strong>10</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="standings-legend">
+        <span class="legend-item"><span class="rank-badge cl"></span> CL圏</span>
+        <span class="legend-item"><span class="rank-badge el"></span> EL圏</span>
+        <span class="legend-item"><span class="rank-badge rel"></span> 降格圏</span>
+    </div>
+</div>
+    </div>
+</details>
+
+
+
+<div class="two-column-section">
+    <div class="team-column">
+        <h3 class="lineup-header">
+<img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves"
+                class="team-logo">            Wolves
+        </h3>
+        <div class="section-label">Starting XI <span class="formation-badge">(3-4-2-1)</span>
+        </div>
+        <div class="player-cards">
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-jos-s"
+        data-player-name="ジョゼ・サ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ジョゼ・サ</span>
+            <a href="https://www.instagram.com/josesaoficial/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/1590.png" alt="ジョゼ・サ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #1</div>
+                <div class="player-card-nationality">🇵🇹 Portugal</div>
+                <div class="player-card-age">33歳 (1993/01/17)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-yerson-mosquera"
+        data-player-name="イェルソン・モスケラ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>イェルソン・モスケラ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/195717.png" alt="イェルソン・モスケラ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #15</div>
+                <div class="player-card-nationality">🇨🇴 Colombia</div>
+                <div class="player-card-age">24歳 (2001/05/02)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-santiago-bueno"
+        data-player-name="サンティアゴ・ブエノ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>サンティアゴ・ブエノ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/135334.png" alt="サンティアゴ・ブエノ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #4</div>
+                <div class="player-card-nationality">🇺🇾 Uruguay</div>
+                <div class="player-card-age">27歳 (1998/11/09)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-toti-gomes"
+        data-player-name="トティ・ゴメス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>トティ・ゴメス</span>
+            <a href="https://www.instagram.com/toti_gomes23/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/41606.png" alt="トティ・ゴメス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #24</div>
+                <div class="player-card-nationality">🇵🇹 Portugal</div>
+                <div class="player-card-age">27歳 (1999/01/16)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-jackson-tchatchoua"
+        data-player-name="ジャクソン・チャチョウア" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ジャクソン・チャチョウア</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/296560.png" alt="ジャクソン・チャチョウア" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #38</div>
+                <div class="player-card-nationality">🇨🇲 Cameroon</div>
+                <div class="player-card-age">24歳 (2001/09/14)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-andr"
+        data-player-name="アンドレ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>アンドレ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/265784.png" alt="アンドレ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #7</div>
+                <div class="player-card-nationality">🇧🇷 Brazil</div>
+                <div class="player-card-age">24歳 (2001/07/16)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-jo-o-gomes"
+        data-player-name="ジョアン・ゴメス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ジョアン・ゴメス</span>
+            <a href="https://www.instagram.com/joaogomes.01/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/195103.png" alt="ジョアン・ゴメス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #8</div>
+                <div class="player-card-nationality">🇧🇷 Brazil</div>
+                <div class="player-card-age">25歳 (2001/02/12)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-hugo-bueno"
+        data-player-name="ウーゴ・ブエノ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ウーゴ・ブエノ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/280687.png" alt="ウーゴ・ブエノ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #3</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">23歳 (2002/09/18)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-jean-ricner-bellegarde"
+        data-player-name="ジャン＝リクネール・ベルガルド" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ジャン＝リクネール・ベルガルド</span>
+            <a href="https://www.instagram.com/bellegardejr/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/20665.png" alt="ジャン＝リクネール・ベルガルド" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #27</div>
+                <div class="player-card-nationality">🇫🇷 France</div>
+                <div class="player-card-age">27歳 (1998/06/27)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-mateus-man"
+        data-player-name="マテウス・マネ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>マテウス・マネ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/456206.png" alt="マテウス・マネ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #36</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">18歳 (2007/09/16)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-adam-armstrong"
+        data-player-name="アダム・アームストロング" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>アダム・アームストロング</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19484.png" alt="アダム・アームストロング" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #9</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">29歳 (1997/02/10)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Substitutes</div>
+        <div class="player-cards-scroll">
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-sam-johnstone"
+        data-player-name="サム・ジョンストン" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>サム・ジョンストン</span>
+            <a href="https://www.instagram.com/samjohnstone32/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19143.png" alt="サム・ジョンストン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #31</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">32歳 (1993/03/25)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-matt-doherty"
+        data-player-name="マット・ドハーティ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>マット・ドハーティ</span>
+            <a href="https://www.instagram.com/mattdoherty20/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/18742.png" alt="マット・ドハーティ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #2</div>
+                <div class="player-card-nationality">🇮🇪 Republic of Ireland</div>
+                <div class="player-card-age">34歳 (1992/01/16)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-david-m-ller-wolfe"
+        data-player-name="ダビド・モラー・ヴォルフェ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ダビド・モラー・ヴォルフェ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/265782.png" alt="ダビド・モラー・ヴォルフェ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #6</div>
+                <div class="player-card-nationality">🇳🇴 Norway</div>
+                <div class="player-card-age">23歳 (2002/04/23)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-pedro-lima"
+        data-player-name="ペドロ・リマ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ペドロ・リマ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/449245.png" alt="ペドロ・リマ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #17</div>
+                <div class="player-card-nationality">🇧🇷 Brazil</div>
+                <div class="player-card-age">19歳 (2006/07/01)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-saheed-olagunju"
+        data-player-name="サヒード・オラグンジュ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>サヒード・オラグンジュ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/397999.png" alt="サヒード・オラグンジュ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #59</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">19歳 (2007/01/07)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-rodrigo-gomes"
+        data-player-name="ロドリゴ・ゴメス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ロドリゴ・ゴメス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/282770.png" alt="ロドリゴ・ゴメス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #21</div>
+                <div class="player-card-nationality">🇵🇹 Portugal</div>
+                <div class="player-card-age">22歳 (2003/07/07)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-angel-gomes"
+        data-player-name="アンヘル・ゴメス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>アンヘル・ゴメス</span>
+        </div>
+        <div class="player-card-body">
+            <div class="player-card-photo player-card-photo-placeholder"></div>
+            <div class="player-card-info">
+                <div class="player-card-position">MF #47</div>
+                <div class="player-card-nationality"></div>
+                <div class="player-card-age"></div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-tom-edozie"
+        data-player-name="トム・エドジー" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>トム・エドジー</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/389302.png" alt="トム・エドジー" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #74</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">19歳 (2006/05/18)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-tolu-arokodare"
+        data-player-name="トル・アロコダレ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>トル・アロコダレ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/110153.png" alt="トル・アロコダレ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #14</div>
+                <div class="player-card-nationality">🇳🇬 Nigeria</div>
+                <div class="player-card-age">25歳 (2000/11/23)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Injuries / Suspended</div>
+        <div class="player-cards-scroll">
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>L. Chiwome</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/380653.png" alt="L. Chiwome" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Wolves</div>
+                <div class="player-card-age injury-reason">⚠️ Lacking Match Fitness</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>L. Krejci</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/66407.png" alt="L. Krejci" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Wolves</div>
+                <div class="player-card-age injury-reason">⚠️ Red Card</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>Hwang Hee-Chan</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/24888.png" alt="Hwang Hee-Chan" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Wolves</div>
+                <div class="player-card-age injury-reason">⚠️ Injury</div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+    <div class="team-column">
+        <h3 class="lineup-header">
+<img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa"
+                class="team-logo">            Aston Villa
+        </h3>
+        <div class="section-label">Starting XI <span class="formation-badge">(4-2-3-1)</span>
+        </div>
+        <div class="player-cards">
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-emiliano-mart-nez"
+        data-player-name="エミリアーノ・マルティネス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>エミリアーノ・マルティネス</span>
+            <a href="https://www.instagram.com/emi_martinez26/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19599.png" alt="エミリアーノ・マルティネス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #23</div>
+                <div class="player-card-nationality">🇦🇷 Argentina</div>
+                <div class="player-card-age">33歳 (1992/09/02)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-matty-cash"
+        data-player-name="マティ・キャッシュ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>マティ・キャッシュ</span>
+            <a href="https://www.instagram.com/mattycash622/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19298.png" alt="マティ・キャッシュ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #2</div>
+                <div class="player-card-nationality">🇵🇱 Poland</div>
+                <div class="player-card-age">28歳 (1997/08/07)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-ezri-konsa"
+        data-player-name="エズリ・コンサ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>エズリ・コンサ</span>
+            <a href="https://www.instagram.com/ezrikonsa/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19354.png" alt="エズリ・コンサ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #4</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">28歳 (1997/10/23)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-pau-torres"
+        data-player-name="パウ・トーレス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>パウ・トーレス</span>
+            <a href="https://www.instagram.com/pauttorres/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/46815.png" alt="パウ・トーレス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #14</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">29歳 (1997/01/16)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-lucas-digne"
+        data-player-name="リュカ・ディーニュ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>リュカ・ディーニュ</span>
+            <a href="https://www.instagram.com/lucasdigne/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/2724.png" alt="リュカ・ディーニュ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #12</div>
+                <div class="player-card-nationality">🇫🇷 France</div>
+                <div class="player-card-age">32歳 (1993/07/20)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-amadou-onana"
+        data-player-name="アマドゥ・オナナ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>アマドゥ・オナナ</span>
+            <a href="https://www.instagram.com/its_onana/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/162714.png" alt="アマドゥ・オナナ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #24</div>
+                <div class="player-card-nationality">🇧🇪 Belgium</div>
+                <div class="player-card-age">24歳 (2001/08/16)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-douglas-luiz"
+        data-player-name="ドウグラス・ルイス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ドウグラス・ルイス</span>
+            <a href="https://www.instagram.com/dgoficial/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/47522.png" alt="ドウグラス・ルイス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #21</div>
+                <div class="player-card-nationality">🇧🇷 Brazil</div>
+                <div class="player-card-age">27歳 (1998/05/09)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-jadon-sancho"
+        data-player-name="ジェイドン・サンチョ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ジェイドン・サンチョ</span>
+            <a href="https://www.instagram.com/sanchooo10/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/18.png" alt="ジェイドン・サンチョ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #19</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">25歳 (2000/03/25)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-morgan-rogers"
+        data-player-name="モーガン・ロジャーズ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>モーガン・ロジャーズ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19170.png" alt="モーガン・ロジャーズ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #27</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">23歳 (2002/07/26)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-emiliano-buend-a"
+        data-player-name="エミリアーノ・ブエンディア" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>エミリアーノ・ブエンディア</span>
+            <a href="https://www.instagram.com/em10buendia/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19071.png" alt="エミリアーノ・ブエンディア" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #10</div>
+                <div class="player-card-nationality">🇦🇷 Argentina</div>
+                <div class="player-card-age">29歳 (1996/12/25)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-ollie-watkins"
+        data-player-name="オリー・ワトキンス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>オリー・ワトキンス</span>
+            <a href="https://www.instagram.com/olliewatkins/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19366.png" alt="オリー・ワトキンス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #11</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">30歳 (1995/12/30)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Substitutes</div>
+        <div class="player-cards-scroll">
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-marco-bizot"
+        data-player-name="マルコ・ビゾット" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>マルコ・ビゾット</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/36878.png" alt="マルコ・ビゾット" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #40</div>
+                <div class="player-card-nationality">🇳🇱 Netherlands</div>
+                <div class="player-card-age">34歳 (1991/03/10)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-victor-lindel-f"
+        data-player-name="ヴィクトル・リンデロフ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ヴィクトル・リンデロフ</span>
+            <a href="https://www.instagram.com/vlindelof/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/889.png" alt="ヴィクトル・リンデロフ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #3</div>
+                <div class="player-card-nationality">🇸🇪 Sweden</div>
+                <div class="player-card-age">31歳 (1994/07/17)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-ian-maatsen"
+        data-player-name="イアン・マートセン" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>イアン・マートセン</span>
+            <a href="https://www.instagram.com/maatsen_/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/138816.png" alt="イアン・マートセン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #22</div>
+                <div class="player-card-nationality">🇳🇱 Netherlands</div>
+                <div class="player-card-age">23歳 (2002/03/10)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-tyrone-mings"
+        data-player-name="タイロン・ミングス" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>タイロン・ミングス</span>
+            <a href="https://www.instagram.com/tyronemings/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19179.png" alt="タイロン・ミングス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #5</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">32歳 (1993/03/13)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-lamare-bogarde"
+        data-player-name="ラマレ・ボガルデ" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ラマレ・ボガルデ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/284457.png" alt="ラマレ・ボガルデ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #26</div>
+                <div class="player-card-nationality">🇳🇱 Netherlands</div>
+                <div class="player-card-age">22歳 (2004/01/05)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-ross-barkley"
+        data-player-name="ロス・バークリー" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>ロス・バークリー</span>
+            <a href="https://www.instagram.com/rossbarkley/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/2287.png" alt="ロス・バークリー" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #6</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">32歳 (1993/12/05)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-leon-bailey"
+        data-player-name="レオン・ベイリー" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>レオン・ベイリー</span>
+            <a href="https://www.instagram.com/leonbailey/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/983.png" alt="レオン・ベイリー" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #31</div>
+                <div class="player-card-nationality">🇯🇲 Jamaica</div>
+                <div class="player-card-age">28歳 (1997/08/09)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-alysson"
+        data-player-name="アリソン" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>アリソン</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/464004.png" alt="アリソン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #47</div>
+                <div class="player-card-nationality">🇧🇷 Brazil</div>
+                <div class="player-card-age">19歳 (2006/05/05)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card player-card-clickable" data-player-profile-id="player-profile-tammy-abraham"
+        data-player-name="タミー・エイブラハム" role="button" tabindex="0" aria-haspopup="dialog">
+        <div class="player-card-header">
+            <span>タミー・エイブラハム</span>
+            <a href="https://www.instagram.com/tammyabraham/" target="_blank" rel="noopener noreferrer" class="player-instagram-link"
+                title="Instagram">
+                <svg class="player-instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+            </a>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19194.png" alt="タミー・エイブラハム" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #18</div>
+                <div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+                <div class="player-card-age">28歳 (1997/10/02)</div>
+                <div class="player-card-hint">タップで詳細</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Injuries / Suspended</div>
+        <div class="player-cards-scroll">
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>B. Kamara</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/1904.png" alt="B. Kamara" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Aston Villa</div>
+                <div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>J. McGinn</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/19191.png" alt="J. McGinn" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Aston Villa</div>
+                <div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<p>- 主審：Craig Pawson, England</p>
+
+<h3>■ 直近5試合</h3>
+<div class="two-column-section">
+    <div class="form-column">
+        <h4>
+<img src="https://media.api-sports.io/football/teams/39.png" class="form-team-logo-small" alt="">            Wolves
+<span class="form-summary-text">(1勝2分2負)</span>        </h4>
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th colspan="2">対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2026-02-22</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/52.png" class="form-team-logo" alt="Crystal Palace">
+            </td>
+            <td>Crystal Palace</td>
+            <td>EPL</td>
+            <td>0-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-18</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/42.png" class="form-team-logo" alt="Arsenal">
+            </td>
+            <td>Arsenal</td>
+            <td>EPL</td>
+            <td>2-2</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-15</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/1365.png" class="form-team-logo" alt="Grimsby">
+            </td>
+            <td>Grimsby</td>
+            <td>FA</td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2026-02-11</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/65.png" class="form-team-logo" alt="Nottingham Forest">
+            </td>
+            <td>Nottingham Forest</td>
+            <td>EPL</td>
+            <td>0-0</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-07</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/49.png" class="form-team-logo" alt="Chelsea">
+            </td>
+            <td>Chelsea</td>
+            <td>EPL</td>
+            <td>1-3</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+    </tbody>
+</table>    </div>
+    <div class="form-column">
+        <h4>
+<img src="https://media.api-sports.io/football/teams/66.png" class="form-team-logo-small" alt="">            Aston Villa
+<span class="form-summary-text">(1勝2分2負)</span>        </h4>
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th colspan="2">対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2026-02-21</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/63.png" class="form-team-logo" alt="Leeds">
+            </td>
+            <td>Leeds</td>
+            <td>EPL</td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-14</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/34.png" class="form-team-logo" alt="Newcastle">
+            </td>
+            <td>Newcastle</td>
+            <td>FA</td>
+            <td>1-3</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-11</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/51.png" class="form-team-logo" alt="Brighton">
+            </td>
+            <td>Brighton</td>
+            <td>EPL</td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2026-02-07</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/35.png" class="form-team-logo" alt="Bournemouth">
+            </td>
+            <td>Bournemouth</td>
+            <td>EPL</td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-01</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/55.png" class="form-team-logo" alt="Brentford">
+            </td>
+            <td>Brentford</td>
+            <td>EPL</td>
+            <td>0-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+    </tbody>
+</table>    </div>
+</div>
+
+<h3>■ 過去の対戦成績</h3>
+<p class="h2h-summary">過去5年間 10試合: Wolves 4勝, 引分 3, Aston Villa 3勝</p>
+<table class="h2h-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>大会</th>
+            <th>対戦</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2025-11-30</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Aston Villa</strong></span>
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Wolves</span>
+            </td>
+            <td>1-0</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2025-02-01</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Wolves</strong></span>
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Aston Villa</span>
+            </td>
+            <td>2-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2024-09-21</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Aston Villa</strong></span>
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Wolves</span>
+            </td>
+            <td>3-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2024-03-30</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Aston Villa</strong></span>
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Wolves</span>
+            </td>
+            <td>2-0</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2023-10-08</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Wolves</span>
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Aston Villa</span>
+            </td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2023-05-06</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Wolves</strong></span>
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Aston Villa</span>
+            </td>
+            <td>1-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2023-01-04</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Aston Villa</span>
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Wolves</span>
+            </td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2022-04-02</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/39.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>PL</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/39.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Wolves</strong></span>
+                <img src="https://media.api-sports.io/football/teams/66.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Aston Villa</span>
+            </td>
+            <td>2-1</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+    </tbody>
+</table>
+<h3>■ フォーメーション図</h3>
+<div class="formation-container">
+    <div class="formation-pitch-side" style="--team-color: #FDB913;">
+        <div class="formation-header">
+<img src="https://media.api-sports.io/football/teams/39.png" class="formation-header-logo" alt="">            <span class="formation-team-name">Wolves</span>
+            <span class="formation-style-label">(3-4-2-1)</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-jos-s" data-player-name="ジョゼ・サ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 10.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/1590.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/pt.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#1</span>
+                </div>
+                <span class="player-name-text">J・サ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-yerson-mosquera" data-player-name="イェルソン・モスケラ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/195717.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/co.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#15</span>
+                </div>
+                <span class="player-name-text">Y・モスケラ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-santiago-bueno" data-player-name="サンティアゴ・ブエノ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/135334.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/uy.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#4</span>
+                </div>
+                <span class="player-name-text">S・ブエノ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-toti-gomes" data-player-name="トティ・ゴメス" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/41606.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/pt.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#24</span>
+                </div>
+                <span class="player-name-text">T・ゴメス</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-jackson-tchatchoua" data-player-name="ジャクソン・チャチョウア" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 50.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/296560.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/cm.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#38</span>
+                </div>
+                <span class="player-name-text">J・チャチョウア</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-andr" data-player-name="アンドレ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 50.0%; left: 37.3%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/265784.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/br.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#7</span>
+                </div>
+                <span class="player-name-text">A・アンドレ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-jo-o-gomes" data-player-name="ジョアン・ゴメス" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 50.0%; left: 62.7%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/195103.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/br.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#8</span>
+                </div>
+                <span class="player-name-text">J・ゴメス</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-hugo-bueno" data-player-name="ウーゴ・ブエノ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 50.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/280687.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#3</span>
+                </div>
+                <span class="player-name-text">H・ブエノ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-jean-ricner-bellegarde" data-player-name="ジャン＝リクネール・ベルガルド" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 70.0%; left: 35.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/20665.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/fr.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#27</span>
+                </div>
+                <span class="player-name-text">J・ベルガルド</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-mateus-man" data-player-name="マテウス・マネ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 70.0%; left: 65.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/456206.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/gb-eng.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#36</span>
+                </div>
+                <span class="player-name-text">M・マネ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-adam-armstrong" data-player-name="アダム・アームストロング" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 90.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19484.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/gb-eng.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#9</span>
+                </div>
+                <span class="player-name-text">A・アームストロング</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="formation-pitch-side" style="--team-color: #95BBE5;">
+        <div class="formation-header">
+<img src="https://media.api-sports.io/football/teams/66.png" class="formation-header-logo" alt="">            <span class="formation-team-name">Aston Villa</span>
+            <span class="formation-style-label">(4-2-3-1)</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-emiliano-mart-nez" data-player-name="エミリアーノ・マルティネス" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 10.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19599.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/ar.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#23</span>
+                </div>
+                <span class="player-name-text">E・マルティネス</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-matty-cash" data-player-name="マティ・キャッシュ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19298.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/pl.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#2</span>
+                </div>
+                <span class="player-name-text">M・キャッシュ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-ezri-konsa" data-player-name="エズリ・コンサ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 37.3%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19354.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/gb-eng.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#4</span>
+                </div>
+                <span class="player-name-text">E・コンサ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-pau-torres" data-player-name="パウ・トーレス" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 62.7%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/46815.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#14</span>
+                </div>
+                <span class="player-name-text">P・トーレス</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-lucas-digne" data-player-name="リュカ・ディーニュ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 30.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/2724.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/fr.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#12</span>
+                </div>
+                <span class="player-name-text">L・ディーニュ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-amadou-onana" data-player-name="アマドゥ・オナナ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 50.0%; left: 35.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/162714.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/be.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#24</span>
+                </div>
+                <span class="player-name-text">A・オナナ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-douglas-luiz" data-player-name="ドウグラス・ルイス" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 50.0%; left: 65.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/47522.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/br.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#21</span>
+                </div>
+                <span class="player-name-text">D・ルイス</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-jadon-sancho" data-player-name="ジェイドン・サンチョ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 70.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/18.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/gb-eng.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#19</span>
+                </div>
+                <span class="player-name-text">J・サンチョ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-morgan-rogers" data-player-name="モーガン・ロジャーズ" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 70.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19170.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/gb-eng.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#27</span>
+                </div>
+                <span class="player-name-text">M・ロジャーズ</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-emiliano-buend-a" data-player-name="エミリアーノ・ブエンディア" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 70.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19071.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/ar.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#10</span>
+                </div>
+                <span class="player-name-text">E・ブエンディア</span>
+            </div>
+            <div class="player-card-horizontal player-card-horizontal-clickable"
+                data-player-profile-id="player-profile-ollie-watkins" data-player-name="オリー・ワトキンス" role="button" tabindex="0" aria-haspopup="dialog"
+                style="top: 90.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/19366.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/gb-eng.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#11</span>
+                </div>
+                <span class="player-name-text">O・ワトキンス</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scorer Prediction Section (Issue #199 Repositioned) -->
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ スコア予想</h3>
+        <div class="prediction-card scorer-markets">
+            <div class="market-list">
+                <div class="market-item">
+                    <div class="market-name">Anytime Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">オリー・ワトキンス</span>
+                            <span class="odd-value">2.38</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">タミー・エイブラハム</span>
+                            <span class="odd-value">2.38</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">モーガン・ロジャーズ</span>
+                            <span class="odd-value">2.75</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アダム・アームストロング</span>
+                            <span class="odd-value">3.40</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">トルワラセ・アロコダレ</span>
+                            <span class="odd-value">3.60</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">First Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">オリー・ワトキンス</span>
+                            <span class="odd-value">5.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">タミー・エイブラハム</span>
+                            <span class="odd-value">5.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">モーガン・ロジャーズ</span>
+                            <span class="odd-value">6.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アダム・アームストロング</span>
+                            <span class="odd-value">8.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">トルワラセ・アロコダレ</span>
+                            <span class="odd-value">9.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">Last Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">オリー・ワトキンス</span>
+                            <span class="odd-value">5.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">タミー・エイブラハム</span>
+                            <span class="odd-value">5.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">モーガン・ロジャーズ</span>
+                            <span class="odd-value">6.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アダム・アームストロング</span>
+                            <span class="odd-value">8.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">トルワラセ・アロコダレ</span>
+                            <span class="odd-value">9.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="matchup-section">
+<h3 class="section-title">■ 同国対決</h3>
+<div class="matchup-container">
+
+<div class="matchup-country">
+    <div class="matchup-header-row">
+        <div class="matchup-country-header">🇧🇷 Brazil</div>
+        <div class="matchup-players">
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/265784.png" alt="アンドレ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">アンドレ</div>
+                    <div class="matchup-team-name">Wolves</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/47522.png" alt="ドウグラス・ルイス" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ドウグラス・ルイス</div>
+                    <div class="matchup-team-name">Aston Villa</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/195103.png" alt="ジョアン・ゴメス" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ジョアン・ゴメス</div>
+                    <div class="matchup-team-name">Wolves</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/464004.png" alt="アリソン" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">アリソン</div>
+                    <div class="matchup-team-name">Aston Villa</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="matchup-description">
+        この対戦のハイライトは、リオデジャネイロのライバル関係がプレミアリーグのピッチに持ち込まれる点にある。 はフラメンゴ、 はフルミネンセのユース出身であり、ブラジル国内では「フラ・フル（Fla-Flu）」と呼ばれる伝統のダービーマッチで中盤の覇権を争った宿敵同士だ。共に2001年生まれの彼らが、現在は同じチームで共闘している点は非常に感慨深い。
+
+対する  は、同じくリオの名門ヴァスコ・ダ・ガマの出身。これにより、リオの三大勢力（フラメンゴ、フルミネンセ、ヴァスコ）のDNAを持つMFが一堂に会することになる。彼らは全員 Brazil 代表（セレソン）招集歴があり、代表のボランチ枠を争う直接的なライバル関係にある。 は彼らより若い世代のスポルチ・レシフェ出身であり、偉大な先輩たちの前で欧州での飛躍を誓う。
+    </div>
+</div>
+</div>
+</div>
+
+
+
+<details class="collapsible-section" open>
+    <summary>📊 戦術プレビュー</summary>
+    <div class="section-content">
+        <div class="matchup-section key-player-section">
+<h3 class="section-title">⚽ キープレイヤー</h3>
+<div class="matchup-container">
+
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/players/135334.png" alt="サンティアゴ・ブエノ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="matchup-badge" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">サンティアゴ・ブエノ</div>
+                <div class="matchup-team-name">Wolves</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        27歳のウルグアイ代表DF。空中戦の強さと対人守備に定評があり、今シーズンはプレミアリーグで2ゴールを記録。直近の試合では最終ラインで奮闘し、チームを支える。寡黙な性格だが、ピッチ上では闘志をむき出し、サポーターからの信頼も厚い。セットプレーからの得点能力も魅力で、攻撃面でも貢献が期待される。
+        
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    ウルグアイ出身のサンティアゴ・ブエノは、2025-26シーズンにウォルバーハンプトンに所属し、プレミアリーグで19試合に出場し2ゴールを記録している。 1998年11月8日生まれの27歳で、右利き。直近の試合では、2月22日のクリスタル・パレス戦でフル出場し、チームは0-1で敗れたものの、FotMobのレーティングは6.8だった。 2月15日のグリムズビー・タウン戦ではゴールを挙げ、8.1という高い評価を受けている。 以前は、ジローナでもプレーし、スペインの2部リーグでの経験も持つ。
+                </div>
+            </details>
+            
+    </div>
+</div>
+
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/players/19170.png" alt="モーガン・ロジャーズ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="matchup-badge" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">モーガン・ロジャーズ</div>
+                <div class="matchup-team-name">Aston Villa</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        23歳のイングランド人アタッカー。複数のポジションをこなせるユーティリティ性と、創造性豊かなプレーが魅力。今シーズンはプレミアリーグで8ゴール5アシストを記録し、チームの攻撃を牽引。 2024年11月にはイングランド代表デビューも果たし、今後の活躍が期待される。 試合中での冷静な判断力と、観客を魅了するドリブルテクニックに注目。
+        
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    モーガン・ロジャースは、2002年7月26日生まれの23歳で、アストン・ヴィラに所属するフォワード/ミッドフィールダー。 2024年2月にミドルズブラから加入。 2024-25シーズンには、アストン・ヴィラのトップチームでブレイクし、ダイナミックな攻撃で創造性と冷静さを見せ、3000分以上プレー。 2024/25シーズンは54試合に出場し、16ゴール14アシストを記録し、セルティックとのUEFAチャンピオンズリーグではハットトリックも達成。 2025-26シーズンのプレミアリーグでは、27試合に出場し、8ゴール5アシストを記録。
+                </div>
+            </details>
+            
+    </div>
+</div>
+</div>
+</div><div class="matchup-section tactical-style-section">
+<h3 class="section-title">🎯 戦術スタイル</h3>
+<div class="matchup-container">
+
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">Wolves</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        ウルブスは、近年3-4-3または3-5-2のフォーメーションを好んで使用し、守備の安定とカウンターアタックを重視する戦術を採用。 守備時にはコンパクトな陣形を敷き、中央を閉じて相手をサイドに誘導する。攻撃時には、ウイングバックが高い位置を取り、ワイドに展開してクロスを供給する。 センターバックがボールを運び上がり、パスの角度を作って攻撃を組み立てることもある。 監督は対戦相手に応じて戦術を柔軟に変更し、守備的なチームには攻撃的なアプローチ、攻撃的なチームには守備的なフォーメーションを選択する。
+    </div>
+</div>
+
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">Aston Villa</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        アストン・ヴィラは、ウナイ・エメリ監督のもと、4-2-3-1または4-4-2のフォーメーションを基本とし、組織的な守備と中央でのコンビネーションを重視。 守備時には4-4-2の陣形を敷き、中盤の選手が相手の攻撃選手へのパスを遮断。 前線からのプレッシングでボールを奪い、素早くカウンターを仕掛ける。 攻撃時には、両サイドバックが高い位置を取り、ワイドに展開。 パウ・トーレスのようなボールを運べるDFや、ダグラス・ルイスのようなゲームをコントロールできるMFを活用し、前線のオリー・ワトキンスへの効果的なパスを狙う。
+    </div>
+</div>
+</div>
+</div><div class="matchup-section">
+<h3 class="section-title">🔥 キーマッチアップ</h3>
+<div class="matchup-container">
+
+<div class="matchup-country">
+    <div class="matchup-header-row">
+        
+        <div class="matchup-players">
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/195103.png" alt="ジョアン・ゴメス" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ジョアン・ゴメス</div>
+                    <div class="matchup-team-name">Wolves</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/47522.png" alt="ドウグラス・ルイス" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ドウグラス・ルイス</div>
+                    <div class="matchup-team-name">Aston Villa</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="matchup-description">
+        ウルブスのジョアン・ゴメスとアストン・ヴィラのダグラス・ルイスのブラジル人セントラルMF対決。 両者ともチームの心臓部であり、ボール奪取能力と展開力を兼ね備えている。 ゴメスは豊富な運動量で中盤を奔走し、ルイスは正確なパスで攻撃の起点となる。 この試合では、中盤の支配権を巡る激しい争いが予想され、このマッチアップが勝敗を大きく左右するだろう。
+    </div>
+</div>
+</div>
+</div>
+    </div>
+</details>
+
+<details class="collapsible-section" open>
+    <summary>🎙️ 監督プレビュー</summary>
+    <div class="section-content">
+        <div class="manager-section">
+    <div class="manager-card">
+        <div class="manager-identity">
+            <img src="https://media.api-sports.io/football/teams/39.png" alt="Wolves" class="manager-team-logo">
+            <img src="https://media.api-sports.io/football/coachs/25765.png" alt="ロブ・エドワーズ" class="manager-photo">
+            <div class="manager-text-info">
+                <div class="manager-team">Wolves</div>
+                <div class="manager-name">ロブ・エドワーズ</div>
+            </div>
+        </div>
+        <div class="manager-comment"><h3>ウルブズ、アストン・ヴィラ戦に向けエドワーズ監督が意気込みを語る</h3>
+<p>ウルブズのロブ・エドワーズ監督は、アストン・ヴィラとの対戦に向けて、相手を「素晴らしいチームであり、素晴らしい監督がいる」と評価し、警戒感を示しました. エドワーズ監督は、特にヴィラのカウンターアタックの鋭さを警戒し、試合に向けてチームに必要な要素として、重要な局面での判断力と規律、そしてダービーマッチにふさわしい情熱を挙げました.</p>
+<p>「ヴィラは本当に素晴らしいチームであり、素晴らしい監督が率いている。彼らは明確なプレースタイルを持っている」とエドワーズ監督は語り、対戦に向けて周到な準備が必要であることを強調しました.</p>
+<h3>チームニュース：怪我人の状況と出場停止</h3>
+<p>エドワーズ監督は、チームの怪我人の状況について、新たな負傷者の心配はないと明言しました. アンヘル・ゴメスとジョアン・ゴメスは共に体調が良く、出場可能な状態であると述べています. しかし、ファン・ヒチャンはトレーニングで ভালো調子を見せているものの、アストン・ヴィラ戦への出場は時期尚早であり、次週の試合での復帰を目指すとのことです. ラディスラフ・クレイチは前節のクリスタル・パレス戦で退場処分を受けたため、出場停止となります.</p>
+<h3>人種差別問題への対応</h3>
+<p>直近のクリスタル・パレス戦後、トル・アロコダレ選手が人種差別的な中傷を受けたことについて、エドワーズ監督は選手へのサポートを強調しました. 「彼にとっては本当に困難な一週間だった。彼は動揺し、怒りを感じていた。それは当然のことだ」と述べ、クラブ全体で選手を支えていることを明かしました. また、プレミアリーグもこの問題に関与しており、警察による捜査も行われる予定です.</p>
+<h3>ダービーマッチへの意気込み</h3>
+<p>エドワーズ監督は、アストン・ヴィラとの対戦がミッドlandsダービーであることを強く意識し、選手たちに情熱を持ってプレーすることを求めました. 「ロボットのようにプレーするのではなく、この試合にかける思いを見せる必要がある」と語り、ホームでのアーセナル戦の後半のような、熱い雰囲気を作り出すことを期待しています.</p>
+<h3>クリスタル・パレス戦からの学び</h3>
+<p>前節のクリスタル・パレス戦では0-1で敗れたものの、エドワーズ監督はその試合内容には満足している点もあったと述べています. しかし、結果には失望しており、「あの試合から何かを得るべきだった」と語りました. 試合後、選手たちはフラストレーションを感じていましたが、その後のトレーニングでは前向きな反応が見られたとのことです.</p>
+<h3>過去の対戦と警戒心</h3>
+<p>エドワーズ監督は、アストン・ヴィラとの過去の対戦を振り返り、良いパフォーマンスを見せることができたものの、結果には繋がらなかったと語りました. 今回の試合に向けては、「試合のあらゆる瞬間に全力を尽くす必要がある」と述べ、油断することなく戦う姿勢を示しました.</p></div>
+    </div>
+    <div class="manager-card">
+        <div class="manager-identity">
+            <img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="manager-team-logo">
+            <img src="https://media.api-sports.io/football/coachs/18.png" alt="ウナイ・エメリ" class="manager-photo">
+            <div class="manager-text-info">
+                <div class="manager-team">Aston Villa</div>
+                <div class="manager-name">ウナイ・エメリ</div>
+            </div>
+        </div>
+        <div class="manager-comment"><p>アストン・ヴィラのウナイ・エメリ監督は、ウルヴァーハンプトン・ワンダラーズ（以下、ウルブス）との試合に向けて、相手への最大限の敬意を示し、警戒を強めています。</p>
+<h3>ウルブス戦への警戒感</h3>
+<p>エメリ監督は、ウルブスとの対戦が常に困難であると強調しています。過去の対戦を振り返り、勝利した試合でさえ苦戦したことを指摘し、ウルブスのパフォーマンスの高さを評価しました。特に、ウルブスが最下位に位置している状況であっても、油断はできないと語っています。エメリ監督は「プレミアリーグではどの試合も難しい。私はお気に入りだとは思っていません」と述べ、気を引き締めました。</p>
+<p>エメリ監督はウルブスについて、「彼らは多くの試合で負けるに値しなかった」と語り、不運な結果に終わった試合が多かったことを指摘しました。具体的には、アストン・ヴィラ戦、ボーンマス戦、チェルシー戦、クリスタル・パレス戦を挙げ、特にアーセナルとの試合でのウルブスの粘り強い戦いぶりを評価しました。</p>
+<h3>新監督の手腕への評価</h3>
+<p>ウルブスの新監督、ロブ・エドワーズについても言及し、「彼はルートンで素晴らしい仕事をした。彼は私たちのことをよく知っている」と述べ、その能力を高く評価しています。エメリ監督は、エドワーズ監督がウルブスを立て直し、競争力を高めてくるだろうと予想しています。</p>
+<h3>ホームでの戦い</h3>
+<p>アストン・ヴィラはホーム、ヴィラ・パークでの試合に自信を持って臨みます。エメリ監督は、サポーターの応援がチームを強くすると語り、ホームを「要塞」と表現しました。しかし、その一方で、ホームであるからといって安易に考えることなく、常に高い水準を維持し、勝利を目指すと強調しました。</p>
+<h3>選手の状況</h3>
+<p>選手の状況について、エメリ監督は、MFジョン・マギンが1月から膝の負傷で離脱しており、3月まで復帰の見込みがないことを明らかにしました。また、MFユーリ・ティーレマンスもニューカッスル戦で足首を負傷して以来欠場しており、次の代表戦期間まで復帰は難しい見込みです。さらに、DFアンドレス・ガルシアが新たにハムストリングを負傷し、戦列を離れることになったと報じられています。ブバカル・カマラは1月に行われたFAカップのトッテナム戦で膝を負傷し、今シーズン絶望となっています。</p>
+<h3>チャンピオンズリーグ出場権争い</h3>
+<p>エメリ監督は、チャンピオンズリーグ出場権争いが非常に厳しいものであると認識しています。現在、アストン・ヴィラは3位につけていますが、下位にはマンチェスター・ユナイテッド、チェルシー、リヴァプールといった強豪が控えており、彼らにとってアストン・ヴィラの順位を奪うことが目標だと語りました。その上で、アストン・ヴィラは自分たちが持っているアドバンテージを維持し、前を見て戦うことを目指すと述べました。</p>
+<h3>試合への意気込み</h3>
+<p>エメリ監督は、ウルブス戦に向けて、「楽しんで、集中する」ことをチームに求めました。過去の対戦結果を振り返り、ウルブスとの対戦が常に困難であったことを強調し、明日の試合も簡単な試合にはならないだろうと語りました。</p></div>
+    </div>
+</div>
+    </div>
+</details>
+
+
+
+
+<div class="player-profile-modal" id="player-profile-modal" hidden>
+    <div class="player-profile-modal-backdrop" data-player-profile-close></div>
+    <div class="player-profile-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="player-profile-modal-title">
+        <button type="button" class="player-profile-modal-close" data-player-profile-close aria-label="閉じる">×</button>
+        <div class="player-profile-modal-header">
+            <p class="player-profile-modal-eyebrow">PLAYER PROFILE</p>
+            <h3 id="player-profile-modal-title" class="player-profile-modal-title"></h3>
+        </div>
+        <div class="player-profile-modal-content"></div>
+    </div>
+</div>
+
+<hr>
+<details class="collapsible-section">
+<summary>🛠️ デバッグ情報</summary>
+<div class="section-content">
+<p><strong>Fixture ID:</strong> 1379248</p>
+<p><strong>Importance:</strong> None</p>
+<div class="debug-info">
+<h4>選外試合リスト</h4>
+<p>なし</p>
+<h4>API使用状況</h4>
+<table class="api-stats-table">
+<thead><tr>
+<th>API</th>
+<th>実行回数</th>
+<th>残クォータ</th>
+<th>上限</th>
+<th>確認リンク</th>
+</tr>
+</thead>
+<tr>
+<td>API-Football</td>
+<td>3 (キャッシュ: 46)</td>
+<td>7,483</td>
+<td>7,500/日</td>
+<td><a href="https://dashboard.api-football.com/" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>YouTube Data API</td>
+<td>0</td>
+<td>不明</td>
+<td>10,000/日</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gemini API</td>
+<td>3</td>
+<td>不明</td>
+<td>~1,500/日</td>
+<td><a href="https://aistudio.google.com/app/u/1/api-keys?pli=1&project=gen-lang-client-0394252790" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gemini Grounding</td>
+<td>2 (キャッシュ: 3)</td>
+<td>不明</td>
+<td>課金制</td>
+<td><a href="https://console.cloud.google.com/billing?authuser=1" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gmail API</td>
+<td>0</td>
+<td>不明</td>
+<td>500/日*</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><small>*Gmail API: OAuth認証済みアカウントの送信制限</small></p>
+</div>
+</div>
+</details>
+
+<script>
+(() => {
+    const modal = document.getElementById("player-profile-modal");
+    if (!modal) {
+        return;
+    }
+
+    const title = modal.querySelector(".player-profile-modal-title");
+    const content = modal.querySelector(".player-profile-modal-content");
+    const closeTargets = modal.querySelectorAll("[data-player-profile-close]");
+    let lastTrigger = null;
+
+    const closeModal = () => {
+        if (modal.hidden) {
+            return;
+        }
+        modal.hidden = true;
+        document.body.classList.remove("player-profile-open");
+        if (lastTrigger) {
+            lastTrigger.focus();
+            lastTrigger = null;
+        }
+    };
+
+    const openModal = (trigger) => {
+        const profileId = trigger.getAttribute("data-player-profile-id");
+        if (!profileId) {
+            return;
+        }
+
+        const template = document.getElementById(profileId);
+        title.textContent = trigger.getAttribute("data-player-name") || "";
+        if (template) {
+            content.innerHTML = template.innerHTML;
+        } else {
+            content.innerHTML = `
+                <section class="player-profile-section">
+                    <h4>詳細</h4>
+                    <p>この選手の詳細プロフィールは準備中です。</p>
+                </section>
+            `;
+        }
+        lastTrigger = trigger;
+        modal.hidden = false;
+        document.body.classList.add("player-profile-open");
+    };
+
+    document.addEventListener("click", (event) => {
+        if (event.target.closest(".player-instagram-link")) {
+            return;
+        }
+
+        const closeTrigger = event.target.closest("[data-player-profile-close]");
+        if (closeTrigger) {
+            closeModal();
+            return;
+        }
+
+        const trigger = event.target.closest("[data-player-profile-id]");
+        if (trigger) {
+            openModal(trigger);
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeModal();
+            return;
+        }
+
+        if (event.key !== "Enter" && event.key !== " ") {
+            return;
+        }
+
+        const trigger = event.target.closest("[data-player-profile-id]");
+        if (!trigger) {
+            return;
+        }
+
+        event.preventDefault();
+        openModal(trigger);
+    });
+
+    closeTargets.forEach((button) => {
+        button.addEventListener("click", closeModal);
+    });
+})();
+</script>
+
+        <div class="timestamp">
+            生成日時: 2026-03-01 22:04:19 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

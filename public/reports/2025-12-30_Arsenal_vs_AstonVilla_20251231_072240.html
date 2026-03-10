@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arsenal vs Aston Villa - EPL (07:22:41)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .player-instagram-link:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .player-instagram-icon {
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        
+        <h1>Arsenal vs Aston Villa</h1>
+<p><strong>EPL</strong> / A</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/31(水) 05:15 JST<br><span class="match-info-subtext">2025-12-30 20:15 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">Emirates Stadium, London</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/42.png" alt="Arsenal" class="team-logo"> Arsenal（4-3-3）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>David Raya</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19465.png" alt="David Raya" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">30歳 (1995/09/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jurriën Timber</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/38746.png" alt="Jurriën Timber" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #12</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">24歳 (2001/06/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>William Saliba</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22090.png" alt="William Saliba" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #2</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">24歳 (2001/03/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Gabriel Magalhães</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22224.png" alt="Gabriel Magalhães" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #6</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">28歳 (1997/12/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Piero Hincapié</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/127817.png" alt="Piero Hincapié" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇪🇨 Ecuador</div>
+<div class="player-card-age">23歳 (2002/01/09)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Martin Ødegaard</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/37127.png" alt="Martin Ødegaard" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🇳🇴 Norway</div>
+<div class="player-card-age">27歳 (1998/12/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Martín Zubimendi</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47315.png" alt="Martín Zubimendi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #36</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">26歳 (1999/02/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Mikel Merino</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47311.png" alt="Mikel Merino" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #23</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">29歳 (1996/06/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Bukayo Saka</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1460.png" alt="Bukayo Saka" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #7</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">24歳 (2001/09/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Viktor Gyökeres</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18979.png" alt="Viktor Gyökeres" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #14</div>
+<div class="player-card-nationality">🇸🇪 Sweden</div>
+<div class="player-card-age">27歳 (1998/06/04)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Leandro Trossard</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1946.png" alt="Leandro Trossard" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #19</div>
+<div class="player-card-nationality">🇧🇪 Belgium</div>
+<div class="player-card-age">31歳 (1994/12/04)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Christian Nørgaard</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/30407.png" alt="Christian Nørgaard" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #16</div>
+<div class="player-card-nationality">🇩🇰 Denmark</div>
+<div class="player-card-age">31歳 (1994/03/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Myles Lewis-Skelly</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/313245.png" alt="Myles Lewis-Skelly" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #49</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/09/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Gabriel Jesus</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/643.png" alt="Gabriel Jesus" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">28歳 (1997/04/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ben White</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19959.png" alt="Ben White" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #4</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/10/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Noni Madueke</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/136723.png" alt="Noni Madueke" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #20</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/03/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Kepa Arrizabalaga</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2273.png" alt="Kepa Arrizabalaga" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #13</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">31歳 (1994/10/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Eberechi Eze</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19586.png" alt="Eberechi Eze" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #10</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">27歳 (1998/06/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Gabriel Martinelli</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/127769.png" alt="Gabriel Martinelli" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">24歳 (2001/06/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Kai Havertz</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/978.png" alt="Kai Havertz" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #29</div>
+<div class="player-card-nationality">🇩🇪 Germany</div>
+<div class="player-card-age">26歳 (1999/06/11)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>M. Dowman</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/442044.png" alt="M. Dowman" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Arsenal</div>
+<div class="player-card-age injury-reason">⚠️ Ankle Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>K. Havertz</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/978.png" alt="K. Havertz" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Arsenal</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>C. Mosquera</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/333682.png" alt="C. Mosquera" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Arsenal</div>
+<div class="player-card-age injury-reason">⚠️ Ankle Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>D. Rice</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2937.png" alt="D. Rice" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Arsenal</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>B. White</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19959.png" alt="B. White" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Arsenal</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/66.png" alt="Aston Villa" class="team-logo"> Aston Villa（4-2-3-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Emiliano Martínez</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19599.png" alt="Emiliano Martínez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #23</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">33歳 (1992/09/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lamare Bogarde</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284457.png" alt="Lamare Bogarde" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #26</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">21歳 (2004/01/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ezri Konsa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19354.png" alt="Ezri Konsa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #4</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/10/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Victor Lindelöf</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/889.png" alt="Victor Lindelöf" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🇸🇪 Sweden</div>
+<div class="player-card-age">31歳 (1994/07/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lucas Digne</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2724.png" alt="Lucas Digne" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #12</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">32歳 (1993/07/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Amadou Onana</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162714.png" alt="Amadou Onana" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #24</div>
+<div class="player-card-nationality">🇧🇪 Belgium</div>
+<div class="player-card-age">24歳 (2001/08/16)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Youri Tielemans</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2926.png" alt="Youri Tielemans" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🇧🇪 Belgium</div>
+<div class="player-card-age">28歳 (1997/05/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jadon Sancho</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18.png" alt="Jadon Sancho" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #19</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/03/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Morgan Rogers</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19170.png" alt="Morgan Rogers" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #27</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/07/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Emiliano Buendía</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19071.png" alt="Emiliano Buendía" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">29歳 (1996/12/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ollie Watkins</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19366.png" alt="Ollie Watkins" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">30歳 (1995/12/30)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>John McGinn</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19191.png" alt="John McGinn" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #7</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</div>
+<div class="player-card-age">31歳 (1994/10/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Andrés García</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/388013.png" alt="Andrés García" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #16</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">22歳 (2003/02/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Donyell Malen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/249.png" alt="Donyell Malen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #17</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">26歳 (1999/01/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>George Hemmings</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/364566.png" alt="George Hemmings" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #53</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/03/04)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jamaldeen Jimoh</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/360268.png" alt="Jamaldeen Jimoh" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #20</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/10/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Marco Bizot</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/36878.png" alt="Marco Bizot" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #40</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">34歳 (1991/03/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>James Wright</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284390.png" alt="James Wright" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #64</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/12/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ian Maatsen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138816.png" alt="Ian Maatsen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #22</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">23歳 (2002/03/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Leon Routh</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/482915.png" alt="Leon Routh" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #56</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/11/30)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home DLDWW (➖❌➖✅✅) / Away LWWWL (❌✅✅✅❌)</li>
+<li>過去の対戦成績：過去28試合: Arsenal 18勝, 引分 2, Aston Villa 8勝</li>
+<li>主審：Darren England, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Arsenal" src="/reports/images/1379149_home.png" /><br />
+<img alt="Aston Villa" src="/reports/images/1379149_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグのタイトルレースを大きく左右する大一番、首位アーセナルと3位アストン・ヴィラの一戦が、アーセナルの本拠地エミレーツ・スタジアムで開催される。</li>
+</ul>
+<p>1位と3位による直接対決は、多くの海外メディアが「巨大な一戦（a huge match）」と位置づける今節最大の注目カードだ。この試合の結果は、今後の優勝争いの行方に計り知れない影響を与えることは必至であり、両チームにとって絶対に落とせない重要なゲームとなる。</p>
+<p>ホームのアーセナルは、首位の座を盤石にするためにも勝ち点3が絶対に必要な状況。しかし、専門家からは「プレッシャーはアーセナルにかかっている」との声も上がっており、追われる立場の重圧をはねのけ、ホームで王者の実力を示せるか、アルテタ監督の采配と共に真価が問われる一戦となる。</p>
+<p>一方、挑戦者のアストン・ヴィラは、現在公式戦で驚異の11連勝中と破竹の勢いを誇る。もしこの大一番に勝利すれば、アーセナルと勝ち点で並ぶことになり、一気に優勝争いの主役へと躍り出る。好調のエース、オリー・ワトキンスを筆頭とした強力な攻撃陣が、アーセナル守備陣を脅かすことは必至であり、一瞬たりとも気の抜けない展開が予想される。</p>
+<p>首位の意地を見せたいアーセナルか、絶好調の勢いで下剋上を狙うアストン・ヴィラか。どちらが勝利の雄叫びをあげるのか、世界中のサッカーファンが固唾を飲んで見守っている。</p>
+<details>
+<summary><strong>📚 Sources (10件)</strong></summary>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=vXfxypiBJc8" target="_blank">Arsenal vs. Aston Villa PREVIEW Big matchup for Premier League ...</a> (www.youtube.com)</li>
+<li><a href="https://www.aljazeera.com/sports/2025/12/29/arsenal-vs-aston-villa-premier-league-preview-team-news-start-lineups" target="_blank">Arsenal vs Aston Villa: Premier League preview – team news, start ...</a> (www.aljazeera.com)</li>
+<li><a href="https://www.youtube.com/watch?v=eHGVrXJrfIo" target="_blank">'THIS FEELS HUGE!' - ARSENAL VS ASTON VILLA - YouTube</a> (www.youtube.com)</li>
+<li><a href="https://www.si.com/soccer/arsenal-vs-aston-villa-preview-predictions-and-lineups-12-30-25" target="_blank">Arsenal vs. Aston Villa: Preview, Predictions and Lineups</a> (www.si.com)</li>
+<li><a href="https://www.youtube.com/watch?v=dvY3FVGkM28" target="_blank">'PRESSURE ON ARSENAL!' Arsenal vs. Aston Villa preview ...</a> (www.youtube.com)</li>
+<li><a href="https://www.premierleague.com/en/news/4521104/arsenal-v-aston-villa-who-will-win-huge-match-in-title-race" target="_blank">Arsenal v Aston Villa: Who will win huge match in title race?</a> (www.premierleague.com)</li>
+<li><a href="https://www.youtube.com/watch?v=U5MdGATFta4" target="_blank">"LUCK IS GOING TO RUN OUT!" Alex Crook ARGUES Arsenal is a ...</a> (www.youtube.com)</li>
+<li><a href="https://www.threads.com/@fanfrenzyhub_/post/DS29p-3jlb1/video-arsenal-vs-aston-villa-match-preview-arsenalfc-goldbridge-astonvilla-arteta" target="_blank">Arsenal vs Aston Villa Match Preview #arsenalfc #goldbridge ...</a> (www.threads.com)</li>
+<li><a href="https://www.facebook.com/DublinArsenal/posts/arssenal-vs-villa-previewhttpsyoutubexwi25enr610/1480809964052452/" target="_blank">ARSSENAL VS VILLA PREVIEW https://youtu.be/xWI25EnR610</a> (www.facebook.com)</li>
+<li><a href="https://podcasts.apple.com/ua/podcast/the-chronicles-of-a-gooner-the-arsenal-podcast/id1334407316" target="_blank">The Chronicles of a Gooner | The Arsenal Podcast - Podcast - Apple ...</a> (podcasts.apple.com)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>アーセナルとアストン・ヴィラによる首位攻防戦は、対照的な戦術思想のぶつかり合いとなる可能性が高い。アーセナルは伝統の4-3-3を基本フォーメーションとし、ボール保持時にはサイドバックが中盤に入る可変システムで数的優位を作り、試合を支配しようと試みるだろう。中盤のデクラン・ライスとマルティン・ウーデゴールを軸に、両翼のブカヨ・サカやガブリエウ・マルティネッリが相手守備網を切り崩す形が予想される。</li>
+</ul>
+<p>対するアストン・ヴィラは、ウナイ・エメリ監督の下で整備された組織的な4-4-2の守備ブロックが特徴だ。特に、勇気を持って設定される高いディフェンスラインと、統率されたオフサイドトラップは特筆に値する。中盤ではダグラス・ルイスやジョン・マッギンが激しいプレッシャーをかけ、ボールを奪ってからの鋭いカウンターで絶好調のFWオリー・ワトキンスのスピードを活かす攻撃を狙う。</p>
+<p>この試合の最大の戦術的注目点は、アーセナルの攻撃陣がヴィラのハイラインを攻略できるかという点にある。ウーデゴールの創造的なパスと快足ウイングの裏への飛び出しで、ヴィラのオフサイドトラップを無力化できるかが鍵となる。逆にヴィラとしては、アーセナルのビルドアップを中盤で寸断し、素早く前線のワトキンスやレオン・ベイリーにボールを届けられるかが、勝機を見出すためのポイントとなるだろう。個々のマッチアップでは、アーセナルのCBコンビであるガブリエウとサリバが、プレミアリーグ屈指のストライカーであるワトキンスをいかに封じ込めるかが勝敗を大きく左右する。</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/7248.png" alt="Mikel Arteta" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Arsenal</div>
+<div class="manager-name">Mikel Arteta</div>
+<div class="manager-comment">【Arsenal】
+アーセナルのミケル・アルテタ監督は、今後のホームゲームに向けた強い決意を表明しました。最近のチームの得点力に触れ、本拠地エミレーツ・スタジアムを難攻不落の要塞にしたいという考えを強調。「我々はここ（エミレーツ）に来るすべての相手に苦しんでほしい」と述べ、対戦相手に最大限のプレッシャーをかけることを目指しています。一方、チームのコンディションについては、センターバックのガブリエウが「まだトレーニングに参加していない」と明かし、起用が不透明であることを示唆しました。</div>
+</div>
+</div>
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/18.png" alt="Unai Emery" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Aston Villa</div>
+<div class="manager-name">Unai Emery</div>
+<div class="manager-comment">【Aston Villa】
+試合を控えた記者会見で、アストン・ヴィラのウナイ・エメリ監督がチームを取り巻く特定の課題について言及しました。監督は不満を抱いている様子で、その問題について「それは…」と語り、自身の見解を表明しました。提供された記事の断片からは発言の詳細は不明ですが、重要な一戦を前にしても、直面している問題に対して率直に意見を述べたことがうかがえます。対戦相手や選手の状態に関する具体的なコメントは見られませんでしたが、チームを率いる指揮官として、課題に向き合う姿勢を示しました。</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qaP2BzuPTZI" target="_blank"><img src="https://i.ytimg.com/vi/qaP2BzuPTZI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qaP2BzuPTZI" target="_blank">【Mikel Arteta】 Arsenal ACTIVE in January transfer wi...</a></strong><br/>📺 <strong>⚠️ HaytersTV</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=RKZNIfTy9DE" target="_blank"><img src="https://i.ytimg.com/vi/RKZNIfTy9DE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=RKZNIfTy9DE" target="_blank">【Unai Emery】 ARSENAL WANT REVENGE...AFTER WE BEAT ...</a></strong><br/>📺 <strong>⚠️ THYNK REACTS </strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=XbSB7twFKhw" target="_blank"><img src="https://i.ytimg.com/vi/XbSB7twFKhw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=XbSB7twFKhw" target="_blank">【Mikel Arteta】 WE WANT EVERY OPPONENT THAT COMES HER...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=rkTNl5jiKFQ" target="_blank"><img src="https://i.ytimg.com/vi/rkTNl5jiKFQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=rkTNl5jiKFQ" target="_blank">【Mikel Arteta】 Kai Havertz Returns, Mikel Arteta Dis...</a></strong><br/>📺 <strong>⚠️ The Gooner Talk</strong> ・ 🕐 13時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=PgGRtKTzE1Y" target="_blank"><img src="https://i.ytimg.com/vi/PgGRtKTzE1Y/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=PgGRtKTzE1Y" target="_blank">【Mikel Arteta】 BAD BREAKING NEWS FOR ARSENAL AHEAD O...</a></strong><br/>📺 <strong>⚠️ Arsenal Time Today</strong> ・ 🕐 12時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=pMlawKe038c" target="_blank"><img src="https://i.ytimg.com/vi/pMlawKe038c/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=pMlawKe038c" target="_blank">【Unai Emery】 ARSENAL vs ASTON VILLA | UNAI EMERY P...</a></strong><br/>📺 <strong>⚠️ DOD Sports</strong> ・ 🕐 23時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jBd73-yhNHU" target="_blank"><img src="https://i.ytimg.com/vi/jBd73-yhNHU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jBd73-yhNHU" target="_blank">【Mikel Arteta】 Arsenal vs Aston villa match preview ...</a></strong><br/>📺 <strong>⚠️ MOM Sport Tv</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=OYVIux1tdkk" target="_blank"><img src="https://i.ytimg.com/vi/OYVIux1tdkk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=OYVIux1tdkk" target="_blank">【Unai Emery】 Unai emery| Arsenal vs Aston Villa Pr...</a></strong><br/>📺 <strong>⚠️ MBTV</strong> ・ 🕐 5時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=MnbBF5Un3xg" target="_blank"><img src="https://i.ytimg.com/vi/MnbBF5Un3xg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=MnbBF5Un3xg" target="_blank">【Mikel Arteta】 Mikel Arteta Pre-Match Press Conferen...</a></strong><br/>📺 <strong>⚠️ Arsenal News & Updates</strong> ・ 🕐 5時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=v9lJNSQ1tLY" target="_blank"><img src="https://i.ytimg.com/vi/v9lJNSQ1tLY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=v9lJNSQ1tLY" target="_blank">【Unai Emery】 Estevao and Delap fit to face Villa c...</a></strong><br/>📺 <strong>⚠️ AP Archive</strong> ・ 🕐 1日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (19件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=tl_te4XvmYA" target="_blank">【Mikel Arteta】 Arsenal vs Aston Villa | Mikel Arteta Pre-Match...</a> - DOD Sports</li>
+<li><a href="https://www.youtube.com/watch?v=muZgMxzFz7c" target="_blank">【Unai Emery】 UNAI EMERY Pre-Match Press Conference | Arsenal...</a> - Arsenal News & Updates</li>
+<li><a href="https://www.youtube.com/watch?v=YiPr7CZnHds" target="_blank">【Mikel Arteta】 Arteta Opens Door to January Signings as Arsena...</a> - The Sun Sport</li>
+<li><a href="https://www.youtube.com/watch?v=R_gYlwFGL74" target="_blank">【Unai Emery】 “They Want Revenge” – Emery on Arsenal Before H...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=NUR6Eqhn2Lk" target="_blank">【Mikel Arteta】 Mikel Arteta Pre-Match Press Conference | Arsen...</a> - Sports Spotlight</li>
+<li><a href="https://www.youtube.com/watch?v=KdJ7NfCO000" target="_blank">【Unai Emery】 I was worried. Now I’m confident 😎 #AstonVilla ...</a> - MaxinAFC</li>
+<li><a href="https://www.youtube.com/watch?v=jfy5TB2TUTA" target="_blank">【Mikel Arteta】 Asenal To Sign New Players In January?😳 | Mikel...</a> - Arsenal In The News</li>
+<li><a href="https://www.youtube.com/watch?v=lm4X7qfV0Jk" target="_blank">【Mikel Arteta】 Arsenal Title Tension At Breaking Point, Aston ...</a> - Seeing Red - The Unofficial Arsenal Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=Pc2rXM5XDew" target="_blank">【Unai Emery】 &quot;IT WAS CRUEL!&quot; 😤 | Mikel Arteta on A...</a> - PURE ARSENAL</li>
+<li><a href="https://www.youtube.com/watch?v=5DNdNbqR7lc" target="_blank">【Mikel Arteta】 Mikel Arteta pre-match press conference | Arsen...</a> - GoonersLatest</li>
+<li><a href="https://www.youtube.com/watch?v=98p1xmWiO3E" target="_blank">【Mikel Arteta】 🔥FINAL TRAINING: Arteta CONFIRMS Calfiori, Timb...</a> - Football Fans Hour</li>
+<li><a href="https://www.youtube.com/watch?v=5EbhXfcSGhs" target="_blank">【Mikel Arteta】 Mikel Arteta Press Conference | Full Breakdown,...</a> - Premier Talks</li>
+<li><a href="https://www.youtube.com/watch?v=ZtmBpYdANys" target="_blank">【Mikel Arteta】 🚨Happening NoW 🔥 SAKA,RAYA, EZE...😍 ARSENAL FUL...</a> - Gunners View </li>
+<li><a href="https://www.youtube.com/watch?v=Lbsj57WNSvI" target="_blank">【Mikel Arteta】 ARSENAL VS ASTON VILLA, KAI BACK IN SQUAD,  ART...</a> - ARSENAL YESINGA</li>
+<li><a href="https://www.youtube.com/watch?v=WoIV5t9kDqI" target="_blank">【Mikel Arteta】 Anthony Joshua &amp; “Latz” Ayodele playing Tab...</a> - HYBR1D</li>
+<li><a href="https://www.youtube.com/watch?v=d6wfhKXVbUk" target="_blank">【Mikel Arteta】 CONFIRMED✅  Arsenal ACTIVE in January Transfer ...</a> - Arsenal News </li>
+<li><a href="https://www.youtube.com/watch?v=Zlm2TlApqAQ" target="_blank">【Mikel Arteta】 BIG TRANSFER UPDATE: “We’re Arsenal, Actively L...</a> - AFC daily </li>
+<li><a href="https://www.youtube.com/watch?v=YT4xTnL78eo" target="_blank">【Mikel Arteta】 🔥TRAINING INSIDER: Timber, Calafiori, Havertz &...</a> - Football Fans Hour</li>
+<li><a href="https://www.youtube.com/watch?v=Z6eKaERhTjA" target="_blank">【Mikel Arteta】 Pro Boxer RAKEEM NOBLE PREVIEWS Arsenal V Aston...</a> - HYBR1D</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (5件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=KOwbiZOA_Z4" target="_blank">【Mikel Arteta】 Arteta Teases January Transfers as Arsenal Prep...</a> - Winners Circle Sports Highlights <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=uCsgJ3wJUoQ" target="_blank">【Mikel Arteta】 Arsenal transfer news round up: Kenan Yildiz, B...</a> - Arsenal News <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=pP4runoYlGI" target="_blank">【Mikel Arteta】 In The North Bank Newsroom: Arsenal’s Villa Tes...</a> - gunner richy1971 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-b5ovNfrJqI" target="_blank">【Mikel Arteta】 Mikel Arteta: &quot;We want every opponent that...</a> - 1hrsport TV <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=KOwbiZOA_Z4" target="_blank">【Unai Emery】 Arteta Teases January Transfers as Arsenal Prep...</a> - Winners Circle Sports Highlights <span style="color:#f44336">[highlights]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=iqB_gWpgYmc" target="_blank"><img src="https://i.ytimg.com/vi/iqB_gWpgYmc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=iqB_gWpgYmc" target="_blank">HIGHLIGHTS | Aston Villa vs Arsenal (...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cPKmuYDX2f4" target="_blank"><img src="https://i.ytimg.com/vi/cPKmuYDX2f4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cPKmuYDX2f4" target="_blank">EXTRA-TIME DRAMA! Aston Villa vs Arse...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2024/04/12</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=O4oQ-Qyv0PM" target="_blank"><img src="https://i.ytimg.com/vi/O4oQ-Qyv0PM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=O4oQ-Qyv0PM" target="_blank">INJURY-TIME WINNER GIVES US ALL THREE...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4tuEAhUOMJ8" target="_blank"><img src="https://i.ytimg.com/vi/4tuEAhUOMJ8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4tuEAhUOMJ8" target="_blank">Aston Villa vs. Arsenal | Highlights ...</a></strong><br/>📺 <strong>⚠️ Telemundo Deportes</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Nh4AFWO8npU" target="_blank"><img src="https://i.ytimg.com/vi/Nh4AFWO8npU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Nh4AFWO8npU" target="_blank">Emi Buendia&#39;s 95TH-MINUTE strike ...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=y7mxgksLeks" target="_blank"><img src="https://i.ytimg.com/vi/y7mxgksLeks/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=y7mxgksLeks" target="_blank">Buendía’s 95′ WINNER! 😱💥 | Aston Vill...</a></strong><br/>📺 <strong>⚠️ Aston Villa Football Club</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank"><img src="https://i.ytimg.com/vi/hayLeqAkX7I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">Chelsea 1-2 Aston Villa | HIGHLIGHTS ...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FjhS49diqp0" target="_blank"><img src="https://i.ytimg.com/vi/FjhS49diqp0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FjhS49diqp0" target="_blank">Arsenal v. Aston Villa | PREMIER LEAG...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 2024/04/14</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Knt0pExCkdI" target="_blank"><img src="https://i.ytimg.com/vi/Knt0pExCkdI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Knt0pExCkdI" target="_blank">Chelsea 1-2 Aston Villa | HIGHLIGHTS ...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=tP1iRQE38Bs" target="_blank"><img src="https://i.ytimg.com/vi/tP1iRQE38Bs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=tP1iRQE38Bs" target="_blank">THE UNBEATEN RUN CONTINUES 🔥⚽ | Watki...</a></strong><br/>📺 <strong>⚠️ Aston Villa Football Club</strong> ・ 🕐 3日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (7件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=hZRghIFBNuU" target="_blank">95th MINUTE LIMBS AT VILLA PARK | Aston Villa v...</a> - Aston Villa Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=WdGpYtFqGlI" target="_blank">Late Drama at the Emirates | Arsenal v Aston Vi...</a> - Barclays Women's Super League</li>
+<li><a href="https://www.youtube.com/watch?v=uVxSZibrwHA" target="_blank">&#39;CASH JACKPOT!&#39;: Matty Cash strikes Ast...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=amuQXixn974" target="_blank">RETRO HIGHLIGHTS: Arsenal v Aston Villa | 1984/...</a> - ITV Sport</li>
+<li><a href="https://www.youtube.com/watch?v=d63jLw2L2SM" target="_blank">Chelsea vs. Aston Villa | Highlights Premier Le...</a> - Telemundo Deportes</li>
+<li><a href="https://www.youtube.com/watch?v=fO07tEc6N3E" target="_blank">Leandro Trossard slots home Arsenal&#39;s equal...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=s7Ul-X9TBIs" target="_blank">EVERTON 0-1 ARSENAL | PREMIER LEAGUE HIGHLIGHTS</a> - Everton Football Club</li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U" target="_blank"><img src="https://i.ytimg.com/vi/a_VNw2C7Y6U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=a_VNw2C7Y6U" target="_blank">【Arsenal】 【プレミアリーグ】アーセナル vs マンチェスター・シティ 戦術的攻防を徹...</a></strong><br/>📺 <strong>✅ スポルティーバ</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=WNA8hU5bqAk" target="_blank"><img src="https://i.ytimg.com/vi/WNA8hU5bqAk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=WNA8hU5bqAk" target="_blank">【Arsenal】 【試合解説】アーセナルvsアトレティコを戦術的観点から解説！勝敗を分けた要...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=TSuKtJBOYWc" target="_blank"><img src="https://i.ytimg.com/vi/TSuKtJBOYWc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=TSuKtJBOYWc" target="_blank">【Arsenal】 アーセナルの守備が鉄壁な理由。アルテタ式ディフェンスの秘密を解説します。【...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=uCXDbrLZmHY" target="_blank"><img src="https://i.ytimg.com/vi/uCXDbrLZmHY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=uCXDbrLZmHY" target="_blank">【Arsenal】 セットピースFCと揶揄されるアーセナル。勝利を支える戦術と、隠された崩壊リ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=IpL6V-qtqno" target="_blank"><img src="https://i.ytimg.com/vi/IpL6V-qtqno/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=IpL6V-qtqno" target="_blank">【Arsenal】 【プレミアリーグ】アーセナル vs トッテナム・ホットスパー戦Q&amp;...</a></strong><br/>📺 <strong>✅ スポルティーバ</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank"><img src="https://i.ytimg.com/vi/vAO1BPQStBg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank">【Arsenal】 【プレミアリーグ展望】お金持ちのプレス回避術／ペップの新戦術／トッテナム優...</a></strong><br/>📺 <strong>✅ PIVOT 公式チャンネル</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=EGj-Qc5v83M" target="_blank"><img src="https://i.ytimg.com/vi/EGj-Qc5v83M/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=EGj-Qc5v83M" target="_blank">【Arsenal】 アーセナルは今季優勝できる？アルテタが築いた“負けないチーム”の真価【レオ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0owD3XpRBw4" target="_blank"><img src="https://i.ytimg.com/vi/0owD3XpRBw4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0owD3XpRBw4" target="_blank">【Arsenal】 【CL】アトレティコはなぜ崩壊した？アーセナルに0-4で敗戦した理由。/シ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=NKtSOjyUdE8" target="_blank"><img src="https://i.ytimg.com/vi/NKtSOjyUdE8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=NKtSOjyUdE8" target="_blank">【Arsenal】 アーセナルの左SBは誰にするべき？カラフィオーリとスケリーの適性を徹底分析...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=d_ZVsdh1Cs8" target="_blank"><img src="https://i.ytimg.com/vi/d_ZVsdh1Cs8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=d_ZVsdh1Cs8" target="_blank">【Arsenal】 アーセナル対チェルシー1−1。“勝てる試合”を逃した要因を解説【レオザ切り...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (81件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=YBdDmICwyOo" target="_blank">【Arsenal】 この選手がいるといないで全然違う…アーセナルがフルアムに1-0勝利した理由。【レオザ切り抜き】</a> - レオザマニア【Leothefootball】公認切り抜き</li>
+<li><a href="https://www.youtube.com/watch?v=YyPASZmW3JY" target="_blank">【Arsenal】 セットプレーで決まった運命の一点！マンU vs アーセナル徹底分析【レオザ切り抜き】</a> - レオザマニア【Leothefootball】公認切り抜き</li>
+<li><a href="https://www.youtube.com/watch?v=mxhW7R0sxX4" target="_blank">【Aston Villa】 Unai Emery&#39;s &quot;Tactical Genius&quot;! C...</a> - Greatest Sport</li>
+<li><a href="https://www.youtube.com/watch?v=OGB9fT0oVb8" target="_blank">【Aston Villa】 HOW ASTON VILLA BEAT MANCHESTER CITY | TACTICAL...</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=ZlE9Kww7ow0" target="_blank">【Arsenal】 【世界屈指の堅守のメカニズム】アルテタ・アーセナルの4-3-3戦術分析</a> - サッカー戦術分析 鳥の眼</li>
+<li><a href="https://www.youtube.com/watch?v=lHZxXZX-rSI" target="_blank">【Aston Villa】 Arsenal vs Aston Villa MATCH PREVIEW | English ...</a> - CBS Sports Golazo</li>
+<li><a href="https://www.youtube.com/watch?v=1yn5fJHebcc" target="_blank">【Arsenal】 アルテタはギェケレシュに希望を持てた。【レオザ切り抜き】 #アーセナル</a> - レオザの瞑想部屋</li>
+<li><a href="https://www.youtube.com/watch?v=jcsTzPwFgxQ" target="_blank">【Aston Villa】 How Aston Villa SHOCKED Man City.</a> - Zekko Football</li>
+<li><a href="https://www.youtube.com/watch?v=hKXzVIerFWk" target="_blank">【Aston Villa】 How Aston Villa STUNNED Tottenham Hotspur.</a> - Zekko Football</li>
+<li><a href="https://www.youtube.com/watch?v=Sj79keWu-S8" target="_blank">【Aston Villa】 A Moment in the Game: Villa&#39;s Clever Corner...</a> -  Football with Dave</li>
+<li><a href="https://www.youtube.com/watch?v=irkI8Fy6dJs" target="_blank">【Aston Villa】 Aston Villa CAN’T Be Ignored! Morgan Rogers &am...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=JJbjxpndlsw" target="_blank">【Aston Villa】 Inside Amorim’s Man United System Change vs Vil...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=VDj7gBLb58o" target="_blank">【Aston Villa】 How Tottenham&#39;s Tactics Cost Them vs Aston ...</a> - George Achillea</li>
+<li><a href="https://www.youtube.com/watch?v=VKGaZgWIJxA" target="_blank">【Arsenal】 【衝撃】アーセナルの攻撃を防いだ3枚のGK#サッカー解説 #戦術分析 #守備 #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=ghzu2qcn47U" target="_blank">【Aston Villa】 BREAKING DOWN Villa’s CONFUSING tactics</a> - 1874 : The Aston Villa Channel</li>
+<li><a href="https://www.youtube.com/watch?v=XS5Oyt2WrtM" target="_blank">【Arsenal】 【魂の勝利】アーセナルvsニューカッスルがっつり解説！ニューカッスルを制圧したテタ戦術</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=BiLF9aDeaqA" target="_blank">【Aston Villa】 THIS IS AN UNAI EMERY TACTIC NOBODY CAN STOP!</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=qbF5JsGeTDU" target="_blank">【Arsenal】 【痛み分け】アーセナルvsマンチェスター・シティがっつり解説とテタ采配に思うこと！！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=uk29tcjBW_g" target="_blank">【Aston Villa】 MORGAN ROGERS IS THE BEST PLAYER IN THE PREMIER...</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=X0uXydWiakg" target="_blank">【Aston Villa】 How Unai Emery Tactically OUTCLASSED Tottenham ...</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=Pa5p0iTeuSM" target="_blank">【Arsenal】 【完勝】魂のノーロン！アーセナルvsトッテナムがっつり解説！！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=4kSO-K0pP7U" target="_blank">【Aston Villa】 Aston Villa Tactical Analysis | Build-Up Patter...</a> - HALF-SPACE THEORY</li>
+<li><a href="https://www.youtube.com/watch?v=CLXkk6QdD-Q" target="_blank">【Aston Villa】 THIS UNAI EMERY TACTICAL TWEAK WON US THE GAME</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=jspzQ1hJsYM" target="_blank">【Arsenal】 【新戦力躍動】アーセナルvsノッティンガム・フォレストがっつり解説！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=NSnYY3lx_is" target="_blank">【Aston Villa】 MOTD Aston Villa vs Manchester United 2-1 🔴 Way...</a> - The Pundit Panel</li>
+<li><a href="https://www.youtube.com/watch?v=OX1VSqCC3SM" target="_blank">【Arsenal】 【CL】アーセナルvsアスレティック・ビルバオがっつり解説！！！！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=LNCHTSR8uOg" target="_blank">【Aston Villa】 Carragher: ‘Villa Can’t Win the Premier League’...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=i8AZww1M1kU" target="_blank">【Arsenal】 【戦力分析】プレミアリーグ全20チームの補強がっつり解説！！Part１</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=bWX79P6caSw" target="_blank">【Aston Villa】 FM 26 - ENG/ITA- ASTON VILLA UNAI EMERY 25/26 -...</a> - Magicomonta Football Manager e Analisi Tattiche</li>
+<li><a href="https://www.youtube.com/watch?v=vpviAUSgbfQ" target="_blank">【Arsenal】 【首位独走】アーセナルvsクリスタルパレスがっつり解説！首位で首位ません！！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=8ZMu2pwtUYs" target="_blank">【Aston Villa】 How Aston Villa BEAT Everton.</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=9M6j1TDg3RA" target="_blank">【Arsenal】 【首位帰還】アーセナルvsウエストハムがっつり解説！！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=68m4EZGIbZ4" target="_blank">【Aston Villa】 Aston Villa vs Arsenal Prediction | Can Emery S...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=kvz-FNFHDUU" target="_blank">【Aston Villa】 WHAT&#39;S HAPPEND TO UNAI EMERY? | TACTICAL DE...</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=TSNs_WlvNyA" target="_blank">【Aston Villa】 Aston Villa vs Man United! 😱 Are Villa SERIOUS ...</a> - Transfer News Today</li>
+<li><a href="https://www.youtube.com/watch?v=_ijIRZj1Jw4" target="_blank">【Arsenal】 【30秒戦術】アーセナル30秒で新エースとWアンカーの真価を速習！#30秒戦術 #サッカー戦術...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=07lWOO86Sr0" target="_blank">【Aston Villa】 What Has Happened To Aston Villa?</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=sGQrLRE6mSI" target="_blank">【Arsenal】 アーセナルのこの得点が戦術的にヤバすぎた#アーセナル #カラバオカップ #速報 #エゼ#サッカ...</a> - アナセカ【育成年代 試合分析】</li>
+<li><a href="https://www.youtube.com/watch?v=h5ptP_wzTRQ" target="_blank">【Aston Villa】 Return of the Treble System? | Aston Villa vs M...</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=MDe_MEM0ILo" target="_blank">【Arsenal】 【首位防衛】アーセナルvsフラムがっつり解説！！鉄壁の守備とCK</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=qOFnCoiC3o8" target="_blank">【Arsenal】 天才ドリブラーのゴールが異次元すぎる#サッカー解説 #戦術分析 #ドリブル #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=HvpGEt7SU2w" target="_blank">【Aston Villa】 Aston Villa vs Man City Analysis : City’s Press...</a> - On the Roof: 멀리서 보는 축구</li>
+<li><a href="https://www.youtube.com/watch?v=DX8sFqnpebc" target="_blank">【Arsenal】 【30秒戦術】CL完敗のフランクフルト｜起点消失と中盤の後手　#フランクフルト #CL #サッ...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=QIZpb5FCHIo" target="_blank">【Aston Villa】 Why Man United MUST Play a Back 4 to Beat Aston...</a> - MUFC Realist TV</li>
+<li><a href="https://www.youtube.com/watch?v=D2hfMUG1Fl4" target="_blank">【Arsenal】 Why ARSENAL Are So GOOD Off The Ball👏💥 #afc #fo...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=OCbUfyWgRDw" target="_blank">【Aston Villa】 UNAI EMERY WILL NOW TRUST THIS PLAYER | TACTICA...</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=V4kqfdQpf9c" target="_blank">【Aston Villa】 【other14企画】ガチのアストン・ヴィラサポーターに色々聞いてみた！3位なのは&quot;...</a> - やーさん【ハムランド】</li>
+<li><a href="https://www.youtube.com/watch?v=qn2TOttWIC8" target="_blank">【Arsenal】 ［プレミアリーグ第1節］マンチェスターユナイテッドvsアーセナル　戦術分析</a> - まいき</li>
+<li><a href="https://www.youtube.com/watch?v=NqdZTEQVo-g" target="_blank">【Arsenal】 Haaland &amp; Van Dijk: Ai thắng trong pha 1vs1...</a> - Chiến Thuật Trong 1P</li>
+<li><a href="https://www.youtube.com/watch?v=qoy6ZkqC2aY" target="_blank">【Aston Villa】 Aston Villa Are TITLE CONTENDERS!” 😱 | Steve Ni...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=QioVWs9NwoQ" target="_blank">【Arsenal】 Why Arsenal DOMINATE Set Pieces In The Premier ...</a> - Woklz Football</li>
+<li><a href="https://www.youtube.com/watch?v=8L-S3itwnEo" target="_blank">【Aston Villa】 Aston Villa vs Man United Match Preview | Darre...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=nnBs1qr9OvU" target="_blank">【Arsenal】 Riccardo Calafiori Is BETTER Than YOU Think🇮🇹🔑 ...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=tXzZYPFTcHQ" target="_blank">【Aston Villa】 👉INSIDE Chelsea 1–2 Villa: Emery’s Analysts, Ta...</a> - 1874 : The Aston Villa Channel</li>
+<li><a href="https://www.youtube.com/watch?v=KiDJ2y3Hp-0" target="_blank">【Arsenal】 【秒でサッカー解説動画】クリスタルパレスPressing vs リバプールBuildup  #...</a> - 元J1分析官のサッカー解説</li>
+<li><a href="https://www.youtube.com/watch?v=vIcWsHEvqkY" target="_blank">【Aston Villa】 Unai Emery OUTCLASSED Arteta! | Aston Villa 2-1...</a> - True Gooner</li>
+<li><a href="https://www.youtube.com/watch?v=-n9VhNPmH84" target="_blank">【Arsenal】 Was Arteta Actually Too Cautious vs Manchester ...</a> - Harvey Gration</li>
+<li><a href="https://www.youtube.com/watch?v=ZdkwyhV3tsQ" target="_blank">【Aston Villa】 CHELSEA PREVIEW WITH BROADCASTER AND CHELSEA FA...</a> - Justin Talks Villa </li>
+<li><a href="https://www.youtube.com/watch?v=TOkLctOIHd0" target="_blank">【Arsenal】 Dumb plays wide or cuts inside?#footballtactics...</a> - mohram</li>
+<li><a href="https://www.youtube.com/watch?v=4-dI1sn_RrU" target="_blank">【Arsenal】 Analisis gol del city al arsenal #shorts</a> - La pizarra del profe</li>
+<li><a href="https://www.youtube.com/watch?v=b8HuWzblei4" target="_blank">【Aston Villa】 ASTON VILLA v BOURNEMOUTH | MATCH PREVIEW</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=Bve9cjucQGc" target="_blank">【Arsenal】 Arsenal puncak. Analisis Statistik, Peluang Jua...</a> - Komen Olahraga</li>
+<li><a href="https://www.youtube.com/watch?v=u69T55C3GxQ" target="_blank">【Aston Villa】 Kamada&#39;s TACTICAL MASTERCLASS: How Crystal ...</a> - Football Tac Sensei</li>
+<li><a href="https://www.youtube.com/watch?v=a0nbHjEthqk" target="_blank">【Arsenal】 Why Gabriel Is WORLD CLASS👏 #footballtactics #f...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=whMyKaiFjAA" target="_blank">【Aston Villa】 Aston Villa vs Manchester United 2-1 | Post-Mat...</a> - Bossman DKD | Football & Gaming</li>
+<li><a href="https://www.youtube.com/watch?v=atCZJQA5IYc" target="_blank">【Arsenal】 【秒でサッカー解説動画】クリスタルパレスBuildup vs リバプールPressing  #...</a> - 元J1分析官のサッカー解説</li>
+<li><a href="https://www.youtube.com/watch?v=akaif6goqDY" target="_blank">【Aston Villa】 106 FULL 🔥Tottenham vs Aston Villa – INSANE EPL...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=2Wc7KJ6ogHI" target="_blank">【Aston Villa】 How Unai Emery Is Making Aston Villa SCARY!</a> - Eleven Guards XI</li>
+<li><a href="https://www.youtube.com/watch?v=Zxc9pf_Y2dQ" target="_blank">【Arsenal】 Analisis MU dan Taktik  Mengapa Perubahan Forma...</a> - Komen Olahraga</li>
+<li><a href="https://www.youtube.com/watch?v=0JF-vliNJjU" target="_blank">【Aston Villa】 ASTON VILLA v WOLVES | MATCH PREVIEW</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=ei58CuhIn0I" target="_blank">【Arsenal】 Technical director Ash Bahgozen breaks down the...</a> - Proline Coaching Academy</li>
+<li><a href="https://www.youtube.com/watch?v=l0hTgFaRayw" target="_blank">【Aston Villa】 Why Is Dominic Calvert-Lewin SCORING So Many GO...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=0r8_4KUISR4" target="_blank">【Arsenal】 Cutback Far‑Post: Dua Langkah, Sampai! goalkeep...</a> - Zona14</li>
+<li><a href="https://www.youtube.com/watch?v=drdrZZMe2Ns" target="_blank">【Aston Villa】 ¡MATTY CASH SILENCIA AL CITY! ASTON VILLA 1-0 M...</a> - awpitia</li>
+<li><a href="https://www.youtube.com/watch?v=YFrcpGNYcUQ" target="_blank">【Aston Villa】 ASTON VILLA 2–1 MANCHESTER UNITED  | One Weak L...</a> - Football Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=CequtdIvooM" target="_blank">【Arsenal】 マンチェスターユナイテッドvsアーセナルの戦術分析　ユナイテッドのビルドアップとそれに対するア...</a> - まいき</li>
+<li><a href="https://www.youtube.com/watch?v=cyTQFdQnDvo" target="_blank">【Aston Villa】 Can Aston Villa STOP The Newcastle United Midfi...</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=-g0AKQ9U80Y" target="_blank">【Arsenal】 GABRIEL Is A MONSTER Defensively🔥 #footballtact...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=wxdqKpeUWSk" target="_blank">【Aston Villa】 Leeds United vs Aston Villa, Job Killer?</a> - Inside Elland Road Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=ujEPpiVU30Y" target="_blank">【Arsenal】 Nuno Mendes có phải hậu vệ trái xuất sắc nhất t...</a> - Chiến Thuật Trong 1P</li>
+<li><a href="https://www.youtube.com/watch?v=CEDhKv_WqcI" target="_blank">【Aston Villa】 Manchester United vs Aston Villa Prophetic Prev...</a> - Prophet Pastor Ran</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (8件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=sn9h0EOwtMg" target="_blank">【Arsenal】 2人で崩す&quot;背後の意識&quot; #サッカー #戦術分析 #解説 #liverpool</a> - サッカー軍曹 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=iv3XFLKC2l0" target="_blank">【Arsenal】 Arne Slot Explains His Use of Inverted Full-Bac...</a> - Football Manager Insider <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hIS6a-RCjw8" target="_blank">【Arsenal】 ليفربول هيكون مرعب #liverpool #mosalah #footbal...</a> - mohram <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sixW351bu0s" target="_blank">【Aston Villa】 Roy Keane React on Ruben Amorim Tactics😡 Manche...</a> - AI Sports News <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=NG0S2eig7Oo" target="_blank">【Aston Villa】 English Premier League Thriller: Aston Villa vs...</a> - Intelligent Indian <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=99Nc_1XbfP8" target="_blank">【Aston Villa】 ARE ASTON VILLA FAVOURITES TO BEAT LIVERPOOL? V...</a> - Aston Villa From The Stands <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Lzqe5ZR3E6M" target="_blank">【Aston Villa】 🚨 ASTON VILLA STUN ARSENAL 2-1! 😱🔥 ARTETA “FURI...</a> - Emirate HQ Pulse <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=cbk2L-dEkYY" target="_blank">【Aston Villa】 MOTD Man City vs Tottenham vs Aston Villa Pep G...</a> - aesthetic girl  <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=q041-Abrpes" target="_blank"><img src="https://i.ytimg.com/vi/q041-Abrpes/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=q041-Abrpes" target="_blank">【Leandro Trossard】 TROSSARD SENDS US BACK TOP OF THE LEA...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qQTaYLew2bA" target="_blank"><img src="https://i.ytimg.com/vi/qQTaYLew2bA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qQTaYLew2bA" target="_blank">【Leandro Trossard】 LEANDRO TROSSARD GLIDING AGAINST MANC...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=8MeuSv0hSlw" target="_blank"><img src="https://i.ytimg.com/vi/8MeuSv0hSlw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=8MeuSv0hSlw" target="_blank">【Viktor Gyökeres】 Viktor Gyokeres&#39; FIRST Arsenal go...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2GvpsxO7MXU" target="_blank"><img src="https://i.ytimg.com/vi/2GvpsxO7MXU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2GvpsxO7MXU" target="_blank">【Viktor Gyökeres】 Gyokeres’ EVENTFUL Arsenal home debut 👀</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=s4H5UWxeuDM" target="_blank"><img src="https://i.ytimg.com/vi/s4H5UWxeuDM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=s4H5UWxeuDM" target="_blank">【Bukayo Saka】 RICE AND SAKA GOALS SECURE THE WIN! |...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ZVTX58dSIZY" target="_blank"><img src="https://i.ytimg.com/vi/ZVTX58dSIZY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ZVTX58dSIZY" target="_blank">【Leandro Trossard】 CLASSY COMPOSED TROSSARD &amp; ARSENA...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=umKC7ojn6TE" target="_blank"><img src="https://i.ytimg.com/vi/umKC7ojn6TE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=umKC7ojn6TE" target="_blank">【Bukayo Saka】 SAKA FORCES SUPER SAVE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=OuZ8SaayJ4o" target="_blank"><img src="https://i.ytimg.com/vi/OuZ8SaayJ4o/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=OuZ8SaayJ4o" target="_blank">【Bukayo Saka】 WHEN ODEGAARD &amp; SAKA LINK UP!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=o2iwK1BOKLo" target="_blank"><img src="https://i.ytimg.com/vi/o2iwK1BOKLo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=o2iwK1BOKLo" target="_blank">【Leandro Trossard】 AN EBERE EZE HAT-TRICK IN THE NORTH L...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=-zvwaJW0Qoc" target="_blank"><img src="https://i.ytimg.com/vi/-zvwaJW0Qoc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=-zvwaJW0Qoc" target="_blank">【Leandro Trossard】 MARTINELLI STRIKES AGAIN! | Arsenal v...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 3ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (169件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=rDcfp_5U-H0" target="_blank">【Viktor Gyökeres】 GREAT TO HAVE YOU WITH US, VIKTOR 🙌 #gyokeres #...</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=EFije4Ip04E" target="_blank">【Bukayo Saka】 Saka&#39;s ELECTRIC Performance v Fulham ⚡️</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=ylgbseN7Wto" target="_blank">【Emiliano Buendía】 The BEST Team Goal Of The Season??? 🥵</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=NzFVx5R0KkA" target="_blank">【Morgan Rogers】 10 Of The Best Premier League Knuckleball Goals</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=Ex5MSKrrfRE" target="_blank">【Leandro Trossard】 LEANDRO TROSSARD THUNDERBOLT!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=cS3mUr-yn90" target="_blank">【Emiliano Buendía】 Unai Emery celebrates Aston Villa&#39;s goals! 😆</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=8LbLcUrFG2M" target="_blank">【Leandro Trossard】 FULL PENALTY SHOOT-OUT | Arsenal vs Crystal Pal...</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=7XV6spe_veU" target="_blank">【Bukayo Saka】 THAT TIMBER RUN &amp; SAKA GOAL!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=IxBT4bsnq-k" target="_blank">【Bukayo Saka】 SAKA’S FIRST PL GOAL INVOLVEMENT!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=DXBOCB4SlnY" target="_blank">【Morgan Rogers】 Morgan Rogers KNUCKLEBALL Free-Kick 🤯</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=ztrFOZpSBuw" target="_blank">【Leandro Trossard】 TROSSARD &amp; CALAFIORI LINK-UP FT. GYÖKERES</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=217_V5OA0p0" target="_blank">【Viktor Gyökeres】 &quot;NOT SURE HE&#39;S THE GUY!&quot; Alex Cro...</a> - talkSPORT</li>
+<li><a href="https://www.youtube.com/watch?v=thknFP7n6yU" target="_blank">【Morgan Rogers】 STUNNING Rogers Brace Defeats Man Utd 😲</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=NfM1AcckXqs" target="_blank">【Viktor Gyökeres】 Welcome to The Arsenal, Viktor Gyökeres ✊</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=XEqTh2CgTjc" target="_blank">【Bukayo Saka】 BUKAYO SAKA SCORES SPECTACULAR GOALS!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=RrCbE69QdOo" target="_blank">【Morgan Rogers】 Donyell Malen, Morgan Rogers, Youri Tielemens &...</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=HYNhwffIxHA" target="_blank">【Leandro Trossard】 SENSATIONAL SAKA PASS &amp; TROSSARD GOAL!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=n5KUPfNR4oc" target="_blank">【Leandro Trossard】 HOW Did Arsenal Do THIS In The 94th Minute? 🥵</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=i8WyCA9vtOU" target="_blank">【Viktor Gyökeres】 VIKTOR ON FIRE 🔥 #arsenal #afc #gyokeres</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=HkXu3Y-SpZo" target="_blank">【Ollie Watkins】 Morgan Rogers v Chelsea 🥶</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=WfHCiCUBKIQ" target="_blank">【Emiliano Buendía】 How To Pronounce Our Reds’ Names 💬</a> - Manchester United</li>
+<li><a href="https://www.youtube.com/watch?v=gceALgjGWA8" target="_blank">【Bukayo Saka】 SAKA SCORES FOR ARSENAL VS NEWCASTLE</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=jnWWVrCajVI" target="_blank">【Bukayo Saka】 DECLAN RICE TACKLE. BUKAYO SAKA GOAL!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=yAyTsIwOlDs" target="_blank">【Bukayo Saka】 SUPER SAKA CHIP IN CHAMPIONS LEAGUE</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=jAai2w8TDIo" target="_blank">【Ollie Watkins】 Why do Manchester United prefer Benjamin Šeško ...</a> - Sky Sports News</li>
+<li><a href="https://www.youtube.com/watch?v=k5nzYS89YJA" target="_blank">【Bukayo Saka】 SPEEDY ARSENAL GOAL VS MAN CITY</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=6RPrsJUiz0Q" target="_blank">【Leandro Trossard】 BEAUTIFUL ARSENAL MOVE VS BAYERN MUNICH</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=t6tyDplrWgU" target="_blank">【Ollie Watkins】 &#39;NOT MANY KEEPERS WOULD SAVE IT!&#39; 😮‍💨 D...</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=5sJhiM2CrOg" target="_blank">【Bukayo Saka】 Best of Bukayo Saka in 2025 👑</a> - GunnerTV</li>
+<li><a href="https://www.youtube.com/watch?v=C7o8q3tSqho" target="_blank">【Bukayo Saka】 Ranking TOP Arsenal Footballers 2024 vs 2025 Na...</a> - Football Prime</li>
+<li><a href="https://www.youtube.com/watch?v=d6MyGc1DjpM" target="_blank">【Leandro Trossard】 Leandro Trossard is highly underrated</a> - ASNLProds</li>
+<li><a href="https://www.youtube.com/watch?v=gWC_4OeMMK4" target="_blank">【Morgan Rogers】 Morgan Rogers 2025 • Magic Skills, Control &amp...</a> - Mega Football</li>
+<li><a href="https://www.youtube.com/watch?v=wTEwv2NIUU0" target="_blank">【Viktor Gyökeres】 Viktor Gyokeres Debut Games For Arsenal! 🇸🇪🔴⚪️ </a> - ScoutNation</li>
+<li><a href="https://www.youtube.com/watch?v=4kg6f873zdE" target="_blank">【Leandro Trossard】 When Piero Hincapié Met Trossard&#39;s Tekky Sk...</a> - Midfender</li>
+<li><a href="https://www.youtube.com/watch?v=PvoM-ibuiU8" target="_blank">【Viktor Gyökeres】 Viktor Gyökeres All 97 Goals for Sporting - Wel...</a> - Trequartista TV 2</li>
+<li><a href="https://www.youtube.com/watch?v=nsbrcKh01h0" target="_blank">【Emiliano Buendía】 &#39;TOP-CLASS GOAL!&#39;: Emi Buendia complete...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=sm8Q1UVcYUk" target="_blank">【Ollie Watkins】 Aston Villa &#39;back to their best&#39; in rou...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=feqicE7GuYQ" target="_blank">【Ollie Watkins】 Mbeumo, Watkins &amp; Cunha PERFECT Trio</a> - Lamine Productions</li>
+<li><a href="https://www.youtube.com/watch?v=JUd4-zr6V5s" target="_blank">【Leandro Trossard】 Leandro Trossard | Best Moments for Arsenal Thi...</a> -  GunnersView</li>
+<li><a href="https://www.youtube.com/watch?v=iVyfSAXKGYE" target="_blank">【Viktor Gyökeres】 The Day Viktor Gyökeres Scored His First Goal f...</a> - Alsido Football</li>
+<li><a href="https://www.youtube.com/watch?v=dQhF6Mf27yg" target="_blank">【Bukayo Saka】 Bukayo Saka &#39;carried the fight&#39; for Ars...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=Np7zdWZxNds" target="_blank">【Morgan Rogers】 ⚠️🥶 ICE COLD CONDITIONS AT ELLAND ROAD | Leeds ...</a> - Aston Villa Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=GVm66gDOwhA" target="_blank">【Viktor Gyökeres】 Here&#39;s Why Arsenal Signed Viktor Gyokeres 🇸🇪🔴⚪</a> - ScoutNation</li>
+<li><a href="https://www.youtube.com/watch?v=9przohGDutE" target="_blank">【Bukayo Saka】 😲🤯😮ARSENAL&#39;S WHAT-IF XI: GNABRY, KANE &amp;...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=X6-EP2_NAno" target="_blank">【Emiliano Buendía】 チェリーズ、ヴィラパークで敗れる | アストン・ヴィラ 4-0 AFCボーンマス</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=YXmHlnwrvP4" target="_blank">【Morgan Rogers】 Morgan Rogers on his match-winning brace agains...</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=n_Dh7kWT5pI" target="_blank">【Viktor Gyökeres】 Gyokeres Redemption 😈</a> - FootyLibre</li>
+<li><a href="https://www.youtube.com/watch?v=eqg5nOHgViA" target="_blank">【Leandro Trossard】 Leandro Trossard breaks down his goal against S...</a> - Stadium Astro</li>
+<li><a href="https://www.youtube.com/watch?v=pG9N6RfdHFw" target="_blank">【Viktor Gyökeres】 Great angle to watch Viktor Gyökeres first goal...</a> - Arsenal News Channel</li>
+<li><a href="https://www.youtube.com/watch?v=nCT53GHPbqM" target="_blank">【Bukayo Saka】 Cole Palmer And Bukayo Saka Are Talisman For Th...</a> - Data Mission</li>
+<li><a href="https://www.youtube.com/watch?v=R-tAsS1EPps" target="_blank">【Ollie Watkins】 10 Wins in a Row! 🤩 Morgan Rogers&#39; Brace Si...</a> - Aston Villa Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=UPh6bgY93mg" target="_blank">【Viktor Gyökeres】 The moment Viktor Gyökeres made his Arsenal debut</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=jjZQqD16yeU" target="_blank">【Bukayo Saka】 ♫ Bukayo Saka | Arsenal Song ♫</a> - Singing Football</li>
+<li><a href="https://www.youtube.com/watch?v=hQjAGB2qN-Q" target="_blank">【Morgan Rogers】 Morgan Rogers Makes Football Look Easy 🔥</a> - Tenz HD</li>
+<li><a href="https://www.youtube.com/watch?v=N3QrRkYq_io" target="_blank">【Viktor Gyökeres】 Viktor Gyokeres strength 🔥  #arsenal #viktorgyö...</a> - Gunner Nation</li>
+<li><a href="https://www.youtube.com/watch?v=Zp9GE2MBE_M" target="_blank">【Morgan Rogers】 Kenny Allstar x Morgan Rogers 🔥 First UCL exper...</a> - TNT Sports Football</li>
+<li><a href="https://www.youtube.com/watch?v=KgGCH4A_XEM" target="_blank">【Viktor Gyökeres】 Viktor Gyökeres Arsenal DEBUT vs Tottenham Hots...</a> - SVMM</li>
+<li><a href="https://www.youtube.com/watch?v=XyMaBv0KOIg" target="_blank">【Bukayo Saka】 Bukayo Saka vs Everyone ⚔️🔥 The Standard of a G...</a> - Daily Football</li>
+<li><a href="https://www.youtube.com/watch?v=niI1er0wklQ" target="_blank">【Ollie Watkins】 Is the Name Oli Cursed? 👀 | Ollie Watkins Break...</a> - Sports Uncensored 4K</li>
+<li><a href="https://www.youtube.com/watch?v=WH-9warPQ-c" target="_blank">【Emiliano Buendía】 ANOTHER ONE IS BACK 💥</a> - Aston Villa Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=wEM7U1l3u70" target="_blank">【Morgan Rogers】 MORGAN ROGERS shows INSANE FOOTBALL KNOWLEDGE 🤯...</a> - GOAL's FanZone</li>
+<li><a href="https://www.youtube.com/watch?v=1w5gTpPDU-E" target="_blank">【Viktor Gyökeres】 NEW CHANT🎶 | “His name is Viktor, Viktor Gyöker...</a> - Arsenal Network</li>
+<li><a href="https://www.youtube.com/watch?v=E38UCDMHvb4" target="_blank">【Morgan Rogers】 Is Morgan Rogers England&#39;s World Cup number...</a> - BBC Sport</li>
+<li><a href="https://www.youtube.com/watch?v=1h4RTm-8E3I" target="_blank">【Leandro Trossard】 【ちんプレイ】世界最高峰の試合で金玉を潰し合う</a> - フットボール HERO'S</li>
+<li><a href="https://www.youtube.com/watch?v=nr25VP-8v0U" target="_blank">【Viktor Gyökeres】 Arsenal&#39;s New Chant For Viktor Gyökeres 😆</a> - Metro Sport</li>
+<li><a href="https://www.youtube.com/watch?v=9M1FIwdnS10" target="_blank">【Emiliano Buendía】 ラストプレーの劇的弾！アストン・ヴィラMFブエンディアがアーセナル戦で勝ち越しゴール！後半AT...</a> - baseballsportsjapanhd</li>
+<li><a href="https://www.youtube.com/watch?v=ZsORmmGCaNA" target="_blank">【Bukayo Saka】 Arsenal’s New Squad Numbers 2025 | Who Changed? 👀</a> - GOATIFY FC</li>
+<li><a href="https://www.youtube.com/watch?v=kuaKSTs8iqg" target="_blank">【Ollie Watkins】 オリー・ワトキンスの本当の問題</a> - UTV | Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=eC-czk0bGDY" target="_blank">【Emiliano Buendía】 Buendia Goal vs Tottenham remade in EAFC 26! #e...</a> - TheVirtualPitchFC</li>
+<li><a href="https://www.youtube.com/watch?v=48GoXeOYuHs" target="_blank">【Emiliano Buendía】 Unai Emery asked about Emi Martinez and simply ...</a> - Andrew Jones</li>
+<li><a href="https://www.youtube.com/watch?v=pydqF1i-YdI" target="_blank">【Leandro Trossard】 Leandro Trossard Arsenal HD Free Clips &amp; Sc...</a> - Clip Dc</li>
+<li><a href="https://www.youtube.com/watch?v=eXt53zlcWuk" target="_blank">【Viktor Gyökeres】 Gyökeres chooses Arsenal over his girlfriend 🤯☠️</a> - Video 4Football</li>
+<li><a href="https://www.youtube.com/watch?v=HnWzth5FjO8" target="_blank">【Ollie Watkins】 Ollie Watkins Reveals Key Change Ahead of Villa...</a> - Folin Sport</li>
+<li><a href="https://www.youtube.com/watch?v=Yt6Hh8mxpaM" target="_blank">【Leandro Trossard】 HE HAS A FAMILY TROSSARD 😱😱🔥🔥#arsenal #premierl...</a> - Mister Kaplin</li>
+<li><a href="https://www.youtube.com/watch?v=TligiZzTKk0" target="_blank">【Viktor Gyökeres】 Arsenal Fans Chant for Viktor Gyökeres | New Gu...</a> - Inside Football</li>
+<li><a href="https://www.youtube.com/watch?v=rcA0sdzxELk" target="_blank">【Bukayo Saka】 COLE PALMER STATS AT CHELSEA vs BUKAYO SAKA STA...</a> - FootLiga</li>
+<li><a href="https://www.youtube.com/watch?v=s7eBfCDG21w" target="_blank">【Ollie Watkins】 ウナイ・エメリとの会話とサリバの瞬間 | オリー・ワトキンス</a> - High Performance</li>
+<li><a href="https://www.youtube.com/watch?v=C9eLOtyiODk" target="_blank">【Morgan Rogers】 イシドールの得点で10人が反撃 | サンダーランドAFC 1 - 1 アストン・ヴィラ | プ...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=igkKQxQvZMU" target="_blank">【Viktor Gyökeres】 Arsenal Have Signed A MONSTER 👹😲. Viktor Gyoker...</a> - Data Mission</li>
+<li><a href="https://www.youtube.com/watch?v=TDOIGsRiUS4" target="_blank">【Bukayo Saka】 Arsenal 2025 XI 🔥 New Era of Champions Begins</a> - GOATIFY FC</li>
+<li><a href="https://www.youtube.com/watch?v=g-AGQJx4cYU" target="_blank">【Leandro Trossard】 Trossard beau but face Crystal Palace #fc26 #ar...</a> - FOOT FC PRO</li>
+<li><a href="https://www.youtube.com/watch?v=u5iQa2f85Ng" target="_blank">【Viktor Gyökeres】 Viktor Gyokeres Song 🎶 #arsenal #viktorgyökeres...</a> - GunnerTsiresy</li>
+<li><a href="https://www.youtube.com/watch?v=yRJSKOst4KY" target="_blank">【Bukayo Saka】 Bukayo Saka: Arsenal’s Golden Boy Who Carries t...</a> - Gunner Nation</li>
+<li><a href="https://www.youtube.com/watch?v=r7HyW05ujwg" target="_blank">【Ollie Watkins】 Ref Denied Watkins A Clear Penalty... 😳</a> - The Premier Moments Vault</li>
+<li><a href="https://www.youtube.com/watch?v=gxgHGqy2SMc" target="_blank">【Emiliano Buendía】 &#39;The Spurs attack is a problem right now&#3;...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=J_uUXQWt8-o" target="_blank">【Morgan Rogers】 &quot;MORGAN ROGERS COULD PLAY FOR REAL MADRID&...</a> - Blue Brother</li>
+<li><a href="https://www.youtube.com/watch?v=vyxZeS-S0kE" target="_blank">【Bukayo Saka】 Saka VS Bruno! WHO Wins The BATTLE? 🤯🫣</a> - Fengy United</li>
+<li><a href="https://www.youtube.com/watch?v=I_XRp6pVGDU" target="_blank">【Emiliano Buendía】 Why Man City Can’t Use This Tactic Anymore | #p...</a> - The Athletic FC</li>
+<li><a href="https://www.youtube.com/watch?v=4eKaH7mltrg" target="_blank">【Morgan Rogers】 This Is Why Arsenal Want Morgan Rogers 2025 - S...</a> - WIK7</li>
+<li><a href="https://www.youtube.com/watch?v=n35vlKfhX9g" target="_blank">【Bukayo Saka】 🔥 Bukayo Saka 2025 – Magic Moments &amp; Insane...</a> - The 442 Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=rj8Sj9LGwLw" target="_blank">【Ollie Watkins】 ザ・ウォームダウン | ヴィラ4 - ボーンマス0</a> - Justin Talks Villa </li>
+<li><a href="https://www.youtube.com/watch?v=95qkqjWHfFs" target="_blank">【Morgan Rogers】 モーガン・ロジャース、アストン・ヴィラ vs マンチェスター・ユナイテッド（1-1）全ゴール＆...</a> - VIVAL SPORTS </li>
+<li><a href="https://www.youtube.com/watch?v=FOpE-dawEY0" target="_blank">【Leandro Trossard】 Jamie Carragher vs Leandro Trossard | Player vs...</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=7rOEvpbZp3k" target="_blank">【Bukayo Saka】 Moses #aftv MOVE Bukayo Saka to the LEFT! Arsen...</a> - HYBR1D</li>
+<li><a href="https://www.youtube.com/watch?v=ItC6VLrMyU4" target="_blank">【Ollie Watkins】 Unai Emery&#39;s Aston Villa Squad vs Chelsea: ...</a> - Sports Bulletine</li>
+<li><a href="https://www.youtube.com/watch?v=kCi3qb7AopQ" target="_blank">【Morgan Rogers】 Morgan Rogers Is Cooking the League and United ...</a> - lifeisfootball</li>
+<li><a href="https://www.youtube.com/watch?v=yEKAw3BXnM0" target="_blank">【Bukayo Saka】 Bukayo Saka⚡ VS Diogo Costa🔥 Penalty Challenge⚽...</a> - Pitch Perfect Play</li>
+<li><a href="https://www.youtube.com/watch?v=pZWHbIXB9nU" target="_blank">【Emiliano Buendía】 エミリアーノ・ブエンディアのゴール、アストン・ヴィラ対アーセナル（2-1）全ゴールとハイライト...</a> - VIVAL SPORTS </li>
+<li><a href="https://www.youtube.com/watch?v=ybJS5Q54C7g" target="_blank">【Leandro Trossard】 Bukayo Saka vs. Leandro Trossard: Who Makes Ars...</a> - Gunner Nation</li>
+<li><a href="https://www.youtube.com/watch?v=X1-uAzCuZ1Y" target="_blank">【Ollie Watkins】 How Aston Villa have become SERIOUS title conte...</a> - The Sun Sport</li>
+<li><a href="https://www.youtube.com/watch?v=swCG4atNTrQ" target="_blank">【Emiliano Buendía】 好調アストン・ヴィラが首位アーセナルを撃破！　ラストプレーのブエンディア弾でリーグ戦5連勝を達成</a> - Nomi 2</li>
+<li><a href="https://www.youtube.com/watch?v=85XPMdNcqsY" target="_blank">【Leandro Trossard】 Leandro Trossard – Arsenal’s Creative Powerhouse</a> - MatchPulse</li>
+<li><a href="https://www.youtube.com/watch?v=t9eqhVdUwCM" target="_blank">【Ollie Watkins】 The Premier League Has An Aston Villa Problem</a> - PedTalksSports</li>
+<li><a href="https://www.youtube.com/watch?v=67xUq3OFctI" target="_blank">【Emiliano Buendía】 集中力が4-0の鍵…全員が競り合い、得点！ | ウナイ・エメリ、アストン・ヴィラ対ボーンマスの...</a> - THYNK REACTS </li>
+<li><a href="https://www.youtube.com/watch?v=Atrpw_yziN8" target="_blank">【Leandro Trossard】 Martinelli and Trossard saved Arsenal in their ...</a> - Dribbling</li>
+<li><a href="https://www.youtube.com/watch?v=ui7GI1CzEOs" target="_blank">【Bukayo Saka】 ブカヨ・サカはオフサイドだったのか？ アーセナル対ウルブズ戦の先制点を分析👀</a> - FOOTBALL FOR ALL</li>
+<li><a href="https://www.youtube.com/watch?v=XTh55TmObz8" target="_blank">【Ollie Watkins】 Top 5 Aston Villa name pronunciations #premierl...</a> - Steps in Football</li>
+<li><a href="https://www.youtube.com/watch?v=mzW_Ga-kjS8" target="_blank">【Emiliano Buendía】 Ranking best premier league players name pronun...</a> - ObiTop5</li>
+<li><a href="https://www.youtube.com/watch?v=JC3tl6HkbOo" target="_blank">【Bukayo Saka】 Arsenal’s Injury CRISIS! 😱 Saliba, Saka, Havert...</a> - Unite united news</li>
+<li><a href="https://www.youtube.com/watch?v=L3-S1tOPZU4" target="_blank">【Ollie Watkins】 Why Aston Villa’s Build-Up Play Is Impossible t...</a> - The Sun Sport</li>
+<li><a href="https://www.youtube.com/watch?v=6BI7jHgfS8M" target="_blank">【Morgan Rogers】 FULL HIGHLIGHT ASTON VILLA VS MANCHESTER UNITED...</a> - TIMNAS TV</li>
+<li><a href="https://www.youtube.com/watch?v=htYSYk9LvaY" target="_blank">【Leandro Trossard】 レアンドロ・トロサールがアーセナルの秘密兵器である理由</a> - Woklz Football</li>
+<li><a href="https://www.youtube.com/watch?v=34DzztPNm8k" target="_blank">【Ollie Watkins】 🔴 プレミアリーグ 2025-26 | リーズ・ユナイテッド vs アストン・ヴィラ</a> - timelord flight</li>
+<li><a href="https://www.youtube.com/watch?v=6WDpra4hs-4" target="_blank">【Morgan Rogers】 Big Season coming for Morgan Rogers 🔋</a> - Jack Grimse</li>
+<li><a href="https://www.youtube.com/watch?v=83KteV4nSqc" target="_blank">【Leandro Trossard】 Khusanov Pocketing Trossard || 33.5 KM/H PACE! ...</a> - MIX SHORTS</li>
+<li><a href="https://www.youtube.com/watch?v=iDAevLqSBC4" target="_blank">【Ollie Watkins】 Jonathan Wilson on the possibility of Mancheste...</a> - Off The Ball</li>
+<li><a href="https://www.youtube.com/watch?v=_tp4BZ4e_ik" target="_blank">【Morgan Rogers】 このマンチェスター・ユナイテッドの試合は、モーガン・ロジャーズの特殊性を証明した</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=diS8R_r_SQA" target="_blank">【Leandro Trossard】 Nice little link up between Trossard and Jesus ...</a> - mohamed mabrouk</li>
+<li><a href="https://www.youtube.com/watch?v=9q7TZtuXfQ8" target="_blank">【Emiliano Buendía】 Arsenal SUFFER Shock Defeat — Aston Villa Ends ...</a> - Buzz & Play</li>
+<li><a href="https://www.youtube.com/watch?v=8FdEf_9DO_4" target="_blank">【Morgan Rogers】 &quot;It&#39;s so enjoyable to play here&quot; ...</a> - Sports Spotlight</li>
+<li><a href="https://www.youtube.com/watch?v=kpLTqbbGW5A" target="_blank">【Leandro Trossard】 BESIKTAS SHOCK ARSENAL WITH €22M BID FOR LEANDR...</a> - Gunners Worldwide </li>
+<li><a href="https://www.youtube.com/watch?v=gWKzcHpyLTY" target="_blank">【Emiliano Buendía】 Aston Villa SHOCK Arsenal with last-second Wemb...</a> - Buzz & Play</li>
+<li><a href="https://www.youtube.com/watch?v=ugyfM6vH-kI" target="_blank">【Morgan Rogers】 &#39;The Morgan Rogers Show&#39; leads Aston Vi...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=IPB1ucu3nVI" target="_blank">【Leandro Trossard】 gabriel magalhães masterclass pass to trossard ...</a> - Chisco Analyst </li>
+<li><a href="https://www.youtube.com/watch?v=8dk_yNvaEWE" target="_blank">【Morgan Rogers】 🚀 Morgan Rogers FREE KICK vs  Leeds | Morgan Ro...</a> - FOOTBALL VIEW</li>
+<li><a href="https://www.youtube.com/watch?v=HEwRRs8Oq3E" target="_blank">【Leandro Trossard】 Don’t Sleep on This Clutch Player — Trossard Re...</a> - Tek E Pes Gaming </li>
+<li><a href="https://www.youtube.com/watch?v=2uvL_KuwL6s" target="_blank">【Bukayo Saka】 Bukayo Saka reacts after Arsenal snatch a thril...</a> - TNT Sports Football</li>
+<li><a href="https://www.youtube.com/watch?v=z0Z2T1g8k9A" target="_blank">【Emiliano Buendía】 スパーズ 1-2 アストン・ヴィラ!! | ブエンディアの見事なプレーでヴィラが勝利!! | ...</a> - The Villa Park Podcast | Aston Villa </li>
+<li><a href="https://www.youtube.com/watch?v=lqNhx25U8MI" target="_blank">【Morgan Rogers】 ワールドカップでイングランド代表の「10番」でプレーすべきモーガン・ロジャーズ #サッカー #...</a> - サッカーヒストリー</li>
+<li><a href="https://www.youtube.com/watch?v=rnhp9HdTQQk" target="_blank">【Leandro Trossard】 TROSSARD SCORES AS ARSENAL LEAD!!</a> - ASSIST Gaming</li>
+<li><a href="https://www.youtube.com/watch?v=QO1hL_z-xSk" target="_blank">【Bukayo Saka】 Squad Arsenal 2025 | Transfer Fee #football #edits</a> - Soccer HUB</li>
+<li><a href="https://www.youtube.com/watch?v=rElw9jpiIF8" target="_blank">【Ollie Watkins】 WINNER STAYS ON: MORGAN ROGERS picks PREMIER LE...</a> - GOAL's FanZone</li>
+<li><a href="https://www.youtube.com/watch?v=W7Y-QE8juUY" target="_blank">【Leandro Trossard】 私は不機嫌な人じゃない | レアンドロ・トロサールは人生を愛し、アーセナルとの新契約を望んでいる</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=ZqPc3u8YTLc" target="_blank">【Bukayo Saka】 SAKA EVOLUTION CARD ON FIFA 🔥#fifa #eafc25</a> - Thifut </li>
+<li><a href="https://www.youtube.com/watch?v=kOujtVAFcHE" target="_blank">【Ollie Watkins】 SANCHO SCORES OFF THE PITCH… No wonder he won’t...</a> - Joe ASTON VILLA</li>
+<li><a href="https://www.youtube.com/watch?v=cTHRdsXdx2E" target="_blank">【Emiliano Buendía】 Emi Buendia&#39;s Stunning Goal: A Moment of Br...</a> - For The Love of Paul McGrath Aston Villa Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=sCOwRoGcKA0" target="_blank">【Morgan Rogers】 「過剰反応するな！」 | モーガン・ロジャース 狂気 | アストン・ヴィラ 2-1 マンチェス...</a> - Dev FC</li>
+<li><a href="https://www.youtube.com/watch?v=LGNDV1JI3NI" target="_blank">【Leandro Trossard】 Trossard new style or role of play under Arteta...</a> - NastyJones AFC</li>
+<li><a href="https://www.youtube.com/watch?v=h7n0XQJUCV4" target="_blank">【Ollie Watkins】 Stop when you hear a striker you&#39;d replace ...</a> - B6 And Beyond</li>
+<li><a href="https://www.youtube.com/watch?v=WZ1TmeqCqeI" target="_blank">【Morgan Rogers】 プレミアリーグBIG6以外に所属する選手で市場価値が高いのは誰？ #サッカー</a> - 1分で世界のサッカー雑学</li>
+<li><a href="https://www.youtube.com/watch?v=pC41qu6JtJ8" target="_blank">【Leandro Trossard】 Is THIS How Arsenal Get the BEST out of Viktor ...</a> - Harvey Gration</li>
+<li><a href="https://www.youtube.com/watch?v=YvCmO_zIj08" target="_blank">【Bukayo Saka】 ⚔️🔥🛡️🗡️COLE PALMER VS SAKA: STATS BATTLE! #chel...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=ssFjeKgphnE" target="_blank">【Emiliano Buendía】 Buendía Magic Completes Resilient Villa Comebac...</a> - Football Unbound</li>
+<li><a href="https://www.youtube.com/watch?v=p2gpb9txFdw" target="_blank">【Morgan Rogers】 Morocco READY for World Cup &#39;26 | Morgan Ro...</a> - CBS Sports Golazo</li>
+<li><a href="https://www.youtube.com/watch?v=0Orbr5vPW10" target="_blank">【Leandro Trossard】 😳アーセナル 2-0 ビルバオ、マルティネッリとトロサールの見事なプレーでアーセナルがUCL初戦勝利</a> - ARSEY</li>
+<li><a href="https://www.youtube.com/watch?v=wu1QZ0y5Fc0" target="_blank">【Bukayo Saka】 Bukayo Saka #saka #arsenal</a> - Saka_editz</li>
+<li><a href="https://www.youtube.com/watch?v=d5JJeDkpZiM" target="_blank">【Ollie Watkins】 Name A Player With 5+ Goals for Aston Villa and...</a> - fcQuiz</li>
+<li><a href="https://www.youtube.com/watch?v=yIAfkq-C7t0" target="_blank">【Morgan Rogers】 プレミアリーグ延長ハイライト | サンダーランドAFC 1 - 1 アストン・ヴィラ</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=6ahqOdb9oDE" target="_blank">【Leandro Trossard】 Top of the League: Arsenal&#39;s Performance Re...</a> - GunnerFanTv </li>
+<li><a href="https://www.youtube.com/watch?v=LPbMpCkYh24" target="_blank">【Bukayo Saka】 Martinelli ➡️ Saka = GOAL! 🔥 | FC 25 PS5 Gamepl...</a> - PS5 Gameplay World 🎮</li>
+<li><a href="https://www.youtube.com/watch?v=xETYRnG7Yrs" target="_blank">【Emiliano Buendía】 Aston Villa Shocks Arsenal with Last-Minute Win...</a> - Buzz & Play</li>
+<li><a href="https://www.youtube.com/watch?v=U5UFkSjMxmU" target="_blank">【Morgan Rogers】 Aston Villa vs Man Utd-Why Morgan Rogers is UNS...</a> - Jenkis</li>
+<li><a href="https://www.youtube.com/watch?v=LkBeAMIpK2c" target="_blank">【Leandro Trossard】 When Ødegaard, Trossard &amp; Ben White Link Up...</a> - InfoSprint</li>
+<li><a href="https://www.youtube.com/watch?v=5MKEbxsOkM0" target="_blank">【Morgan Rogers】 モーガン・ロジャース、素晴らしいプレー…華麗なゴール！｜ウナイ・エメリの反応｜リーズ 1-2 ...</a> - THYNK REACTS </li>
+<li><a href="https://www.youtube.com/watch?v=-dN-X2Y3ZNs" target="_blank">【Leandro Trossard】 レアンドロ・トロサールがマンチェスター・シティ戦で得点</a> - Mallu Tusker Titan</li>
+<li><a href="https://www.youtube.com/watch?v=HM6IHVil0zg" target="_blank">【Bukayo Saka】 Bukayo Saka takes a volley shot. #arsenal #foot...</a> - YERRY ONE</li>
+<li><a href="https://www.youtube.com/watch?v=QsQj4NkMD9k" target="_blank">【Ollie Watkins】 How Tall is Ayden Heaven?! Rio describes meetin...</a> - Rio Ferdinand Presents</li>
+<li><a href="https://www.youtube.com/watch?v=lV61if12QRw" target="_blank">【Emiliano Buendía】 Funniest premier league pronunciations 25/26😭</a> - Football Nerd</li>
+<li><a href="https://www.youtube.com/watch?v=HCPjaUBbKHc" target="_blank">【Bukayo Saka】 How to play like saka</a> - Cris 10</li>
+<li><a href="https://www.youtube.com/watch?v=jfiu-JeV8dE" target="_blank">【Ollie Watkins】 サンチョの恋愛のせいでキャリアを失った😬💔⚽️</a> - FastplayHQ</li>
+<li><a href="https://www.youtube.com/watch?v=r2rMNucMZ-0" target="_blank">【Emiliano Buendía】 Could Aston Villa make a push for the top four ...</a> - Stefan Bienkowski</li>
+<li><a href="https://www.youtube.com/watch?v=7YmslfLmjZQ" target="_blank">【Morgan Rogers】 Roy Keane, Paul Merson &amp; Ashley Young on Mo...</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=cZl72im4e6c" target="_blank">【Leandro Trossard】 トロサール、魔法の瞬間を演出 | アルテタ | フラム 0-1 アーセナル</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=e748qqTUbO0" target="_blank">【Bukayo Saka】 bukayo Saka super moment 👏#facts #football #sak...</a> - Ftballaro </li>
+<li><a href="https://www.youtube.com/watch?v=OKUN-JyI9Po" target="_blank">【Ollie Watkins】 Brentford vs Aston Villa | efootball gameplay p...</a> - Dusktriggergaming</li>
+<li><a href="https://www.youtube.com/watch?v=u5ARXY2mAmw" target="_blank">【Emiliano Buendía】 in video ai 720 Villa’s Penalty Curse Strikes A...</a> - Trendx Ora</li>
+<li><a href="https://www.youtube.com/watch?v=CZKSrBuBlqE" target="_blank">【Leandro Trossard】 Viktor Gyökeres 💀</a> - Priyanka Voumik</li>
+<li><a href="https://www.youtube.com/watch?v=Rcx_L8sFlWk" target="_blank">【Emiliano Buendía】 トッテナム対アストン・ヴィラ戦（1-2）前半R.ベンタンクールとモーガン・ロジャース・ブエンデ...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=pkIk5xGph6Y" target="_blank">【Morgan Rogers】 MORGAN ROGERS LUAR BIASA🔥🔥</a> - Post Football</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (84件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=PJ4-XAJ8Xns" target="_blank">【Leandro Trossard】 Saka and Trossard extend unbeaten run! | EXTEND...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=qriPHKoaDpM" target="_blank">【Leandro Trossard】 HIGHLIGHTS | Athletic Club vs Arsenal (0-2) | M...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sRBQpghDdXs" target="_blank">【Leandro Trossard】 NORTH LONDON DERBY DELIGHT 🤩 | EXTENDED HIGHLIG...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=y2eLPSc0FRw" target="_blank">【Leandro Trossard】 TROSSARD GOAL &amp; ANOTHER CLEAN SHEET 🔥 | EXT...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=iqB_gWpgYmc" target="_blank">【Leandro Trossard】 HIGHLIGHTS | Aston Villa vs Arsenal (2-1) | Pre...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=SXHoDl2twPg" target="_blank">【Leandro Trossard】 A point apiece in the North East | HIGHLIGHTS |...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=28_eN017ajM" target="_blank">【Leandro Trossard】 HIGHLIGHTS | Fulham 0-1 Arsenal | Narrow defeat...</a> - Fulham Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8OMjx23xfYo" target="_blank">【Leandro Trossard】 LEANDRO TROSSARD SHINES WITH BRILLIANT PERFORMA...</a> - THE CLUB SPOT <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=jWhG1OnzrRg" target="_blank">【Leandro Trossard】 Trossard Brilliant Finishes #shorts #football</a> - PlayTimes <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=OqX0RaNr-y8" target="_blank">【Leandro Trossard】 Arsenal’s Resilient Comeback Earns 2-2 Draw Aga...</a> - Play Burst <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=uCuYHtLlgDk" target="_blank">【Leandro Trossard】 look players reaction after trossard score</a> - Play & Chill <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=80N1oBWjr1U" target="_blank">【Viktor Gyökeres】 HIGHLIGHTS | Arsenal vs Leeds United (5-0) | Gy...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JDVkXVlxPWE" target="_blank">【Viktor Gyökeres】 HIGHLIGHTS | Arsenal vs Nottingham Forest (3-0)...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IhXonaPsDAk" target="_blank">【Viktor Gyökeres】 HIGHLIGHTS | Arsenal vs Athletic Club (3-0) | G...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=A-ZLAjwxpPs" target="_blank">【Viktor Gyökeres】 VIKTOR GYÖKERES IS PART OF THE ARSENAL FAMILY N...</a> - Arsenal <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ujjqhFjOHYo" target="_blank">【Bukayo Saka】 HIGHLIGHTS | Arsenal vs Olympiacos (2-0) | Mart...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8zy6BE_oInk" target="_blank">【Bukayo Saka】 HIGHLIGHTS | Merino and Saka seal the win! | Ar...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=80N1oBWjr1U" target="_blank">【Bukayo Saka】 HIGHLIGHTS | Arsenal vs Leeds United (5-0) | Gy...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IhXonaPsDAk" target="_blank">【Bukayo Saka】 HIGHLIGHTS | Arsenal vs Athletic Club (3-0) | G...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=dWwVfEcPP24" target="_blank">【Bukayo Saka】 Newcastle United v. Arsenal | PREMIER LEAGUE HI...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=b2NakQDZG9k" target="_blank">【Bukayo Saka】 WE KNOW WHAT WE NEED TO DO 😤</a> - Arsenal <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=53ZSbvhCHGk" target="_blank">【Bukayo Saka】 “Bukayo Saka’s Best Goals 2025 🔥 | Arsenal Star...</a> - Sky Sports goals <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7onBC38jmas" target="_blank">【Bukayo Saka】 MARTINELLI&#39;S MAGIC TOUCH 🪄  #arsenal #afc #...</a> - Arsenal <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=L12sWcJ0zU4" target="_blank">【Bukayo Saka】 Could Bukayo Saka Feature Against Liverpool At ...</a> - CalumTalksAFC <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=k2Z6-b2bnX4" target="_blank">【Bukayo Saka】 Saka &amp; Rice WOULDN&#39;T START for LIVERPOO...</a> - GOAL's FanZone <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=z8m9JOHqdL8" target="_blank">【Bukayo Saka】 &quot;This is a STATEMENT WIN&quot; - Bukayo Sa...</a> - Stadium Astro <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=3EiiuNd54Dk" target="_blank">【Ollie Watkins】 HIGHLIGHTS | Sunderland 1-1 Aston Villa</a> - Aston Villa Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=KNHnG6AJml0" target="_blank">【Ollie Watkins】 HIGHLIGHTS | Liverpool vs Aston Villa</a> - Aston Villa Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=gKM9hWuWeGE" target="_blank">【Ollie Watkins】 Chelsea vs Aston Villa 1-2 Highlights | All Goa...</a> - MIX SPORTS <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=fkbfP-VSod4" target="_blank">【Ollie Watkins】 Highlights | Aston Villa vs Everton | Premier L...</a> - HT Soccer <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=pNjBtmf3sLo" target="_blank">【Ollie Watkins】 Aston Villa vs Fulham 3-1 EPL highlights 2025 |...</a> - VizBit Game Zone <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=nU_vMLn9XRA" target="_blank">【Ollie Watkins】 Ollie Watkins Goal | Aston Villa vs Fulham 3-1 ...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7WMz5Xi1Vpk" target="_blank">【Ollie Watkins】 Watkins &amp; Rogers On Target 🎯🇺🇸 | St. Louis ...</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xZeyE0PZ0yw" target="_blank">【Ollie Watkins】 Aston Villa v. Manchester City | PREMIER LEAGUE...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2marIs6FJEk" target="_blank">【Ollie Watkins】 Superb Villa COMEBACK at Brighton | Brighton 3-...</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wrLQVqJzMcs" target="_blank">【Ollie Watkins】 West Ham United v. Aston Villa | PREMIER LEAGUE...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=QIr0_9IDEuE" target="_blank">【Ollie Watkins】 🔥 NINE wins in a ROW | West Ham 2-3 Villa | Pre...</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=NCT2uf92FY4" target="_blank">【Ollie Watkins】 EXTENDED HIGHLIGHTS | Aston Villa 1-0 Man City ...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x-zSL1g-OQA" target="_blank">【Ollie Watkins】 Aston Villa v. Arsenal | PREMIER LEAGUE HIGHLIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8VdKvYuP7ys" target="_blank">【Ollie Watkins】 Aston Villa v. Bournemouth | PREMIER LEAGUE HIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=RXuu2CdPbwI" target="_blank">【Ollie Watkins】 Everton 0-0 Villa | HIGHLIGHTS</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=b9_Rk9Xlz2s" target="_blank">【Ollie Watkins】 Aston Villa 0 Newcastle United 0 | Premier Leag...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=gXyFe7jcufE" target="_blank">【Ollie Watkins】 Everton v. Aston Villa | PREMIER LEAGUE HIGHLIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=GDYzMFhlUmk" target="_blank">【Ollie Watkins】 Tottenham Hotspur 1-2 Aston Villa | Premier Lea...</a> - Tottenham Hotspur <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Zbf7bOz70WE" target="_blank">【Ollie Watkins】 Ollie watkins scores a late 82 minute to dentie...</a> - colbsterplayz  <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=fkSR3jpgeV0" target="_blank">【Ollie Watkins】 Leeds United VS Aston Villa - Premier League 20...</a> - Radio Sports Commentary <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=QbC7ilIfqE8" target="_blank">【Ollie Watkins】 Aston Villa vs Wolves | LIVE Fotboll FC 26 Simu...</a> - Keep Gaming <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=RuoQkMlD24I" target="_blank">【Ollie Watkins】 Aston Villa VS AFC Bournemouth - Premier League...</a> - Radio Sports Commentary <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=KNHnG6AJml0" target="_blank">【Emiliano Buendía】 HIGHLIGHTS | Liverpool vs Aston Villa</a> - Aston Villa Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=iqB_gWpgYmc" target="_blank">【Emiliano Buendía】 HIGHLIGHTS | Aston Villa vs Arsenal (2-1) | Pre...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=LIhgM8K_3kY" target="_blank">【Emiliano Buendía】 Aston Villa vs. Maccabi Tel-Aviv: Extended High...</a> - CBS Sports Golazo - Europe <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=5lHsB8GN0BA" target="_blank">【Emiliano Buendía】 Aston Villa vs Maccabi Tel Aviv 2-0 Highlights ...</a> - The Football Daily <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=py4gFw25gHc" target="_blank">【Emiliano Buendía】 Tottenham Hotspur vs Aston Villa 1-2 Highlights...</a> - The Football Daily <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=4UEak5eGtac" target="_blank">【Emiliano Buendía】 Emiliano Buendia Goal | Aston Villa vs Fulham 3...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=FD-JkiVJzz0" target="_blank">【Emiliano Buendía】 Emiliano Buendia Goal | Feyenoord vs Aston Vill...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=zfi0PUIEaAI" target="_blank">【Emiliano Buendía】 Aston Villa vs Man City 1-0 Live Premier League...</a> - Sammy Sk Football <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=GDYzMFhlUmk" target="_blank">【Emiliano Buendía】 Tottenham Hotspur 1-2 Aston Villa | Premier Lea...</a> - Tottenham Hotspur <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x-zSL1g-OQA" target="_blank">【Emiliano Buendía】 Aston Villa v. Arsenal | PREMIER LEAGUE HIGHLIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wrLQVqJzMcs" target="_blank">【Emiliano Buendía】 West Ham United v. Aston Villa | PREMIER LEAGUE...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8VdKvYuP7ys" target="_blank">【Emiliano Buendía】 Aston Villa v. Bournemouth | PREMIER LEAGUE HIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xZeyE0PZ0yw" target="_blank">【Emiliano Buendía】 Aston Villa v. Manchester City | PREMIER LEAGUE...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=RXuu2CdPbwI" target="_blank">【Emiliano Buendía】 Everton 0-0 Villa | HIGHLIGHTS</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=mPKQKEgv-QE" target="_blank">【Emiliano Buendía】 Buendía&#39;s Goal: Decoy Run and Perfect Finis...</a> - The Villa Pride Down Under Podcast <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=GaieM_Vc5To" target="_blank">【Emiliano Buendía】 BUENDIA BREAKS ARSENAL HEARTS! | Aston Villa vs...</a> - Tommy Oracle <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x6yB5PGeXvc" target="_blank">【Emiliano Buendía】 Emiliano Buendía 💪🔥</a> - Ta7Legend Goals <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9tjaBvzQHqE" target="_blank">【Emiliano Buendía】 Tottenham Hotspur v Aston Villa | THE WARM-UP LIVE</a> - Tottenham Hotspur <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0gu4FPV5khs" target="_blank">【Emiliano Buendía】 Aston Villa 2-1 Arsenal | Match Day LIVE | Prem...</a> - AFTV <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=k3sjMWLHYZg" target="_blank">【Emiliano Buendía】 POST-MATCH REACTION: Arteta, Emery and Gyokeres...</a> - TNT Sports Football <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hcMKvvMyxv4" target="_blank">【Emiliano Buendía】 GOALS ARE BACK 🔥 | Aston Villa 4-0 Bournemouth ...</a> - Jack Grimse <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=LIhgM8K_3kY" target="_blank">【Morgan Rogers】 Aston Villa vs. Maccabi Tel-Aviv: Extended High...</a> - CBS Sports Golazo - Europe <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=3EiiuNd54Dk" target="_blank">【Morgan Rogers】 HIGHLIGHTS | Sunderland 1-1 Aston Villa</a> - Aston Villa Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Kn0meFDEkTA" target="_blank">【Morgan Rogers】 Aston Villa v Crystal Palace | HIGHLIGHTS</a> - Aston Villa Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=jT4Sbi0tdJU" target="_blank">【Morgan Rogers】 A Narrow Defeat | Aston Villa v Man Utd | Highl...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7ERKUGehazM" target="_blank">【Morgan Rogers】 Morgan Rogers Goal | Leeds vs Aston Villa 1-2 |...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=py4gFw25gHc" target="_blank">【Morgan Rogers】 Tottenham Hotspur vs Aston Villa 1-2 Highlights...</a> - The Football Daily <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=QIr0_9IDEuE" target="_blank">【Morgan Rogers】 🔥 NINE wins in a ROW | West Ham 2-3 Villa | Pre...</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wrLQVqJzMcs" target="_blank">【Morgan Rogers】 West Ham United v. Aston Villa | PREMIER LEAGUE...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=EJpXL6Mmngc" target="_blank">【Morgan Rogers】 Aston Villa v. Manchester United | PREMIER LEAG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8VdKvYuP7ys" target="_blank">【Morgan Rogers】 Aston Villa v. Bournemouth | PREMIER LEAGUE HIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=GDYzMFhlUmk" target="_blank">【Morgan Rogers】 Tottenham Hotspur 1-2 Aston Villa | Premier Lea...</a> - Tottenham Hotspur <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2marIs6FJEk" target="_blank">【Morgan Rogers】 Superb Villa COMEBACK at Brighton | Brighton 3-...</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x-zSL1g-OQA" target="_blank">【Morgan Rogers】 Aston Villa v. Arsenal | PREMIER LEAGUE HIGHLIG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7WMz5Xi1Vpk" target="_blank">【Morgan Rogers】 Watkins &amp; Rogers On Target 🎯🇺🇸 | St. Louis ...</a> - Aston Villa Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xBs06ARqykA" target="_blank">【Morgan Rogers】 EXTENDED HIGHLIGHTS | Aston Villa 3-1 Fulham</a> - Fulham Football Club <span style="color:#f44336">[highlights]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>🏃 練習風景 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=SL2SaU0DM68" target="_blank"><img src="https://i.ytimg.com/vi/SL2SaU0DM68/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=SL2SaU0DM68" target="_blank">【Arsenal】 A WORK OF ART!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 12時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=p54y_-WZUAU" target="_blank"><img src="https://i.ytimg.com/vi/p54y_-WZUAU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=p54y_-WZUAU" target="_blank">【Arsenal】 EZE RUNNING RINGS!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=h5e5no6MWBM" target="_blank"><img src="https://i.ytimg.com/vi/h5e5no6MWBM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=h5e5no6MWBM" target="_blank">【Arsenal】 Behind the scenes, unseen angle of Od...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=GOfJ65fc3o4" target="_blank"><img src="https://i.ytimg.com/vi/GOfJ65fc3o4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=GOfJ65fc3o4" target="_blank">【Arsenal】 BEST Arsenal Moments Of 2025</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2YW_0g1jl_I" target="_blank"><img src="https://i.ytimg.com/vi/2YW_0g1jl_I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2YW_0g1jl_I" target="_blank">【Arsenal】 A GIFT FOR DECLAN RICE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=dflQYDVKkWM" target="_blank"><img src="https://i.ytimg.com/vi/dflQYDVKkWM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=dflQYDVKkWM" target="_blank">【Arsenal】 MARTINELLI’S DAZZLING DRIBBLE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=txjf3uYZ1dk" target="_blank"><img src="https://i.ytimg.com/vi/txjf3uYZ1dk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=txjf3uYZ1dk" target="_blank">【Arsenal】 POST-MATCH SCENES AFTER CRYSTAL PALAC...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=UF2qJSfahDo" target="_blank"><img src="https://i.ytimg.com/vi/UF2qJSfahDo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=UF2qJSfahDo" target="_blank">【Arsenal】 RELISH THE FIGHT!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BOSMtv-dQgI" target="_blank"><img src="https://i.ytimg.com/vi/BOSMtv-dQgI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BOSMtv-dQgI" target="_blank">【Arsenal】 RIDICULOUSLY GOOD DAVID RAYA SAVE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 2日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jn1Niek7wJk" target="_blank"><img src="https://i.ytimg.com/vi/jn1Niek7wJk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jn1Niek7wJk" target="_blank">【Arsenal】 92ND MIN &amp; DECLAN RICE GIVING EVE...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (58件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=-nqlfaPz9OE" target="_blank">【Arsenal】 Deadline day signings &amp; winning the Champio...</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=f9Ox3sxaEkY" target="_blank">【Arsenal】 FAKED THE DEFENDER THREE TIMES!</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=M2VeK-iMCVM" target="_blank">【Aston Villa】 &quot;MOMENTUM IS BEHIND THEM!&quot; Alex Crook...</a> - talkSPORT</li>
+<li><a href="https://www.youtube.com/watch?v=z69WemMeM9M" target="_blank">【Arsenal】 🔥Gabriel, Timber, Havertz &amp; Calafiori ALL R...</a> - Gunners TNC</li>
+<li><a href="https://www.youtube.com/watch?v=v-aYxHChtGM" target="_blank">【Arsenal】 Arsenal Players Inside Training Today ahead of ...</a> - Arsenal Insider</li>
+<li><a href="https://www.youtube.com/watch?v=4hr48DCjwxw" target="_blank">【Aston Villa】 TRAINING ahead of Aston Villa 🎄 | Chelsea Train...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=anFzujDHBSE" target="_blank">【Arsenal】 Arsenal Players Locked In During Training Befor...</a> - ARSENAL UPDATE NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=ywLt0ROPV5I" target="_blank">【Arsenal】 MASSIVE ARSENAL TRAINING BOOST! GABRIEL &amp; H...</a> - GUNNERS HUB </li>
+<li><a href="https://www.youtube.com/watch?v=BigdQwviVmA" target="_blank">【Aston Villa】 💙Chelsea Step Up Training Ahead of Aston Villa ...</a> - chelsea news hub</li>
+<li><a href="https://www.youtube.com/watch?v=y1ODzPLGrBY" target="_blank">【Arsenal】 🚨🚨 𝐁𝐑𝐄𝐀𝐊𝐈𝐍𝐆: Kai Havertz is finally BACK in tra...</a> - JAY JAY TV- Arsenal yt</li>
+<li><a href="https://www.youtube.com/watch?v=LWGof51VWLQ" target="_blank">【Aston Villa】 Chelsea Intensify Training Ahead of Aston Villa...</a> - chelsea news hub</li>
+<li><a href="https://www.youtube.com/watch?v=3mw5ShRqIsc" target="_blank">【Arsenal】 ARTETA TURNS ARSENAL TRAINING INTO A BRUTAL WAR...</a> - GUNNERSVISION </li>
+<li><a href="https://www.youtube.com/watch?v=EGB9iret-Hs" target="_blank">【Aston Villa】 DELAP &amp; ESTÊVÃO BACK! Chelsea Go Hard in Tr...</a> - Chelsea Radar</li>
+<li><a href="https://www.youtube.com/watch?v=5E2ZqBdmOiY" target="_blank">【Aston Villa】 Merry Christmas from Aston Villa! 🎄🎁</a> - Aston Villa Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=VdT8PgN4v4A" target="_blank">【Arsenal】 ARSENAL TRAINING TODAY :Timber BACK, Gyokeres, ...</a> - Arsenal News</li>
+<li><a href="https://www.youtube.com/watch?v=gHFDJmwVGDg" target="_blank">【Aston Villa】 Havertz back: Arsenal potential starting line u...</a> - Arsenal FC Adventures</li>
+<li><a href="https://www.youtube.com/watch?v=184O71kiitk" target="_blank">【Arsenal】 Rene Slegers vs Arsenal London | Rondo 6v3 + 6v3</a> - BEST SOCCER COACH</li>
+<li><a href="https://www.youtube.com/watch?v=mBeOQJU12LE" target="_blank">【Arsenal】 🔥TRAINING INSIDER: Hincapie, Havertz &amp; Gabr...</a> - Football Fans Hour</li>
+<li><a href="https://www.youtube.com/watch?v=PP1ceKBp3XY" target="_blank">【Arsenal】 ARSENAL TRAINING BOOST CONFIRMED! GABRIEL &amp;...</a> - GUNNERS HUB </li>
+<li><a href="https://www.youtube.com/watch?v=iCbZJOK2cxc" target="_blank">【Aston Villa】 🚨Inside Chelsea’s Intense Training Before Aston...</a> - Chelsea Daily Hub 💙</li>
+<li><a href="https://www.youtube.com/watch?v=svOZqflKSFk" target="_blank">【Arsenal】 ✅INSIDE TRAINING! CALAFIORI, GYKORES, SAKA!..🔥A...</a> - Gunners View </li>
+<li><a href="https://www.youtube.com/watch?v=xETzojDEm8I" target="_blank">【Aston Villa】 Chelsea Training Ahead of Aston Villa Clash as ...</a> - De CHELSEA BLUEPRINT</li>
+<li><a href="https://www.youtube.com/watch?v=JoCOhSFU-34" target="_blank">【Aston Villa】 ARTETA TURNS UP THE HEAT 🔥 ARE ARSENAL READY TO...</a> - GUNNERS FOREVER</li>
+<li><a href="https://www.youtube.com/watch?v=xfIiAo4VTBo" target="_blank">【Aston Villa】 INSIDE TRAINING for ahead of Premier League aga...</a> - Chelseafocuss</li>
+<li><a href="https://www.youtube.com/watch?v=ONl8v8CrxKA" target="_blank">【Aston Villa】 Chelsea Training Ahead of Aston Villa Clash: Ne...</a> - De CHELSEA BLUEPRINT</li>
+<li><a href="https://www.youtube.com/watch?v=ZljZHpRZzl8" target="_blank">【Arsenal】 Arsenal in a SEMI-FINAL! | Mikel Arteta | Arsen...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=lty6QxceGgw" target="_blank">【Aston Villa】 Estevao BACK, I LOVE Cole Palmer | Enzo Maresca...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=ld1mbg8LW4s" target="_blank">【Aston Villa】 Chelsea vs Aston Villa Player Battle XI ⚽️⚔️🚨</a> - Dr. Football Brain</li>
+<li><a href="https://www.youtube.com/watch?v=wY_qD70Rucc" target="_blank">【Aston Villa】 BREAKING: Declan Rice set to miss Aston Villa c...</a> - SIR CHUKS ARSENAL TV</li>
+<li><a href="https://www.youtube.com/watch?v=jZfyR7w0_Ok" target="_blank">【Arsenal】 Arsenal Training Updates: Gyokeres, Saka , Gabr...</a> - Arsenal News</li>
+<li><a href="https://www.youtube.com/watch?v=TbxP1OhU1Ik" target="_blank">【Arsenal】 ARSENAL’S NEW STRIKER SETS LONDON COLNEY ON FIR...</a> - GUNNERSVISION </li>
+<li><a href="https://www.youtube.com/watch?v=1IIRHrbFNiQ" target="_blank">【Arsenal】 🚨Yess Just NOW✅️Confirmed!! YILDIZ &#39;s agent...</a> - ARSENAL STAGE NEWS ⚽</li>
+<li><a href="https://www.youtube.com/watch?v=Nft-cI4I-lY" target="_blank">【Aston Villa】 Battle of the COLDEST! Estevao &amp; Delap RETU...</a> - Blue Lions TV - A Chelsea Channel</li>
+<li><a href="https://www.youtube.com/watch?v=SVdBmv1qdC0" target="_blank">【Arsenal】 Arsenal Training Updates: Havertz Back, Saka, R...</a> - Arsenal News</li>
+<li><a href="https://www.youtube.com/watch?v=zaBMKlB8ybY" target="_blank">【Aston Villa】 Calafiori, Gabriel, Timber and Kai havertz Read...</a> - ARSENAL FC NET</li>
+<li><a href="https://www.youtube.com/watch?v=uhD24lWfSBc" target="_blank">【Aston Villa】 ARSENAL STARS EXPLODE 🔥 SAKA, ØDEGAARD &amp; MA...</a> - GUNNERS FOREVER</li>
+<li><a href="https://www.youtube.com/watch?v=QwukoMuDuxQ" target="_blank">【Aston Villa】 Chelsea Training Intensifies Ahead Aston Villa ...</a> - chelsea news hub</li>
+<li><a href="https://www.youtube.com/watch?v=K2JThzVqfwY" target="_blank">【Arsenal】 ARSENAL TRAINING | Kai havertz, Gyokeres, Eze, ...</a> - Inside Arsenal NC</li>
+<li><a href="https://www.youtube.com/watch?v=liVP7frYkrg" target="_blank">【Aston Villa】 Villa prep! #cfc #chelsea #chelseafc #astonvill...</a> - 𝙀𝙓𝙏𝙍𝘼_𝙏𝙄𝙈𝙀</li>
+<li><a href="https://www.youtube.com/watch?v=mFgsX5kSrhs" target="_blank">【Aston Villa】 TRAINING ahead of Aston Villa 🎄 | Chelsea Train...</a> - Aylas Aouadene </li>
+<li><a href="https://www.youtube.com/watch?v=dKQs8UQNabM" target="_blank">【Aston Villa】 ENZO MARESCA CONFIRMS ESTÊVÃO AND LIAM DELAP BA...</a> - Chelsea Central
+</li>
+<li><a href="https://www.youtube.com/watch?v=HR9v_pQL8SQ" target="_blank">【Arsenal】 Arsenal just made the biggest mistake and self ...</a> - Sports Agent </li>
+<li><a href="https://www.youtube.com/watch?v=6v08Za24dOo" target="_blank">【Aston Villa】 Chelsea vs Aston Villa COMBINED XI #premierleag...</a> - The Blue Podcast Network</li>
+<li><a href="https://www.youtube.com/watch?v=7gAnaxfTy1s" target="_blank">【Arsenal】 🔥BACK IN TRAINING: Havertz, Saliba, Martinelli ...</a> - Football Fans Hour</li>
+<li><a href="https://www.youtube.com/watch?v=TvO20M51c0Y" target="_blank">【Aston Villa】 ESTEVAO IS BACK I LOVE COLE PALMERE  CHELSEA BO...</a> - NonsFC</li>
+<li><a href="https://www.youtube.com/watch?v=RwMY30HUXDo" target="_blank">【Arsenal】 Arsenal Players’ Heartwarming Christmas Message...</a> - ARSENAL UPDATE NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=mGfh8jk1CXs" target="_blank">【Aston Villa】 BREAKING ESTÊVÃO AND LIAM DELAP BACK IN TRAININ...</a> - Chelsea 247 news</li>
+<li><a href="https://www.youtube.com/watch?v=jp-0mNswFEE" target="_blank">【Arsenal】 Dres Arsenal Training - Kb1843</a> - Ferivi HR</li>
+<li><a href="https://www.youtube.com/watch?v=8BQFhZzohkY" target="_blank">【Arsenal】 😳Mikel Arteta &amp; Saka Convinces Marc Guehi t...</a> - GUNNERS 4L</li>
+<li><a href="https://www.youtube.com/watch?v=L3sfHmiqj6k" target="_blank">【Aston Villa】 Chelsea Locked In 🔵 | Training Ahead of Aston V...</a> - Cench </li>
+<li><a href="https://www.youtube.com/watch?v=kAJFMjG8G38" target="_blank">【Aston Villa】 🔥Arsenal Ready for Aston Villa | Inside Intense...</a> - UDOGOD Gunners TV</li>
+<li><a href="https://www.youtube.com/watch?v=jahmbxMVlLI" target="_blank">【Arsenal】 ARSENAL TRAINING TODAY✅Havertz RETURNS!🔥💯Odegaa...</a> - Arsenal News</li>
+<li><a href="https://www.youtube.com/watch?v=cv4eUkAWwMY" target="_blank">【Aston Villa】 CHELSEA BOOST AS ESTÊVÃO AND LIAM DELAP RETURN ...</a> - Chelsea Pride TV</li>
+<li><a href="https://www.youtube.com/watch?v=CD3W_gGB-Xs" target="_blank">【Aston Villa】  🛑 Now ‼️Estêvão, Liam Delap Return to Training...</a> - Chelsea daily news 🚨</li>
+<li><a href="https://www.youtube.com/watch?v=7dZRfKsp1gI" target="_blank">【Arsenal】 Arsenal’s Final Training Session Before Brighto...</a> - ARSENAL UPDATE NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=WtdBMoOlHro" target="_blank">【Aston Villa】 HUGE ARSENAL NEWS! HAVERTZ BACK, JESUS VS GYÖKE...</a> - Arsenal News Today</li>
+<li><a href="https://www.youtube.com/watch?v=omQjCKh6q3U" target="_blank">【Arsenal】 Kai Havertz Return | Arsenal Players Inside Tra...</a> - Arsenal Insider</li>
+<li><a href="https://www.youtube.com/watch?v=Nz22kBOyhIs" target="_blank">【Arsenal】 YES✅INSIDE TRAINING🤩K.HAVERTZ, Gabriel..BIG BOO...</a> - Gunners View </li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (17件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">【Arsenal】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=bXEedJpYlsY" target="_blank">【Arsenal】 OUR THIRD CONSECUTIVE PREMIER LEAGUE WIN 👊 | EX...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=3eg_t4sZ3Yc" target="_blank">【Arsenal】 ✅INSIDE TRAINING V.GYOKERES, G.JESUS, K.HAVERTZ...</a> - Arsenal Inside HQ <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=TyQkfewu5a0" target="_blank">【Arsenal】 ✅INSIDE TRAINING V.GYOKERES, G.JESUS, K.HAVERTZ...</a> - Arsenal Inside HQ <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=n7umdmiDbiE" target="_blank">【Arsenal】 🔴Live : Arsenal vs Aston Villa I Premier League...</a> - Munna <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x6NpLBIYKcU" target="_blank">【Arsenal】 ARSENAL TRAINING TODAY✅gabriel RETURNS!🔥Saka, E...</a> - Arsenal News <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=DZSYd3qz80o" target="_blank">【Aston Villa】 Maresca Press Conference | Chelsea vs Aston Vil...</a> - Chelsea Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XVr7J6D5I00" target="_blank">【Aston Villa】 I&#39;m SOOO Tired of this Man || Chelsea 1-2 A...</a> - Blue Lions TV - A Chelsea Channel <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">【Aston Villa】 Patrick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Knt0pExCkdI" target="_blank">【Aston Villa】 Chelsea 1-2 Aston Villa | HIGHLIGHTS - Extended...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">【Aston Villa】 Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=VPOszXczB6M" target="_blank">【Aston Villa】 MARESCA reacts post-Villa | Chelsea 1-2 Aston V...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=tXuNAf6Aj04" target="_blank">【Aston Villa】 ⏪️ Chelsea 8-0 Aston Villa | Highlights - REWIN...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=n7umdmiDbiE" target="_blank">【Aston Villa】 🔴Live : Arsenal vs Aston Villa I Premier League...</a> - Munna <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=y7FQ5f5PzLs" target="_blank">【Aston Villa】 KEY CLASH AT THE TOP! ⚔️   | Arsenal v Aston Vi...</a> - Arsenal <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ovpDnawIbDM" target="_blank">【Aston Villa】 How Unai Emery&#39;s Aston Villa Is Surprising ...</a> - Tactics from Behind <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=uuf5Q-5EisE" target="_blank">【Aston Villa】 Cucurella INJURY concern! | Enzo Maresca | Chel...</a> - HaytersTV <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>Nottingham Forest vs Everton （EPL）… Low rank</li>
+<li>West Ham vs Brighton （EPL）… Low rank</li>
+<li>Manchester United vs Wolves （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: (キャッシュから取得のため情報なし)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 39回呼び出し (キャッシュ: 0件, 合計リクエスト: 39件)</li>
+</ul>
+        <div class="timestamp">
+            生成日時: 2025-12-31 07:22:41 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

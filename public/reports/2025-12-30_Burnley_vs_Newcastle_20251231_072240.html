@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burnley vs Newcastle - EPL (07:22:41)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .player-instagram-link:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .player-instagram-icon {
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        
+        <h1>Burnley vs Newcastle</h1>
+<p><strong>EPL</strong> / None</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/31(水) 04:30 JST<br><span class="match-info-subtext">2025-12-30 19:30 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">Turf Moor, Burnley</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/44.png" alt="Burnley" class="team-logo"> Burnley（3-4-3）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Martin Dúbravka</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18886.png" alt="Martin Dúbravka" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🇸🇰 Slovakia</div>
+<div class="player-card-age">36歳 (1989/01/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Josh Laurent</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20303.png" alt="Josh Laurent" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #29</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">30歳 (1995/05/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Hjalmar Ekdal</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47903.png" alt="Hjalmar Ekdal" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #18</div>
+<div class="player-card-nationality">🇸🇪 Sweden</div>
+<div class="player-card-age">27歳 (1998/10/21)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Maxime Estève</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/179400.png" alt="Maxime Estève" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">23歳 (2002/05/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Kyle Walker</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/627.png" alt="Kyle Walker" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #2</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">35歳 (1990/05/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Florentino Luís</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/575.png" alt="Florentino Luís" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #16</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">26歳 (1999/08/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lesley Ugochukwu</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/270508.png" alt="Lesley Ugochukwu" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">21歳 (2004/03/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lucas Pires</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/330238.png" alt="Lucas Pires" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #23</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">24歳 (2001/03/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Marcus Edwards</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/37882.png" alt="Marcus Edwards" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">27歳 (1998/12/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Armando Broja</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138822.png" alt="Armando Broja" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #27</div>
+<div class="player-card-nationality">🇦🇱 Albania</div>
+<div class="player-card-age">24歳 (2001/09/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Loum Tchaouna</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/161621.png" alt="Loum Tchaouna" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #17</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">22歳 (2003/09/08)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Bashir Humphreys</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/181797.png" alt="Bashir Humphreys" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #12</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">22歳 (2003/03/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jacob Bruun Larsen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22.png" alt="Jacob Bruun Larsen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #7</div>
+<div class="player-card-nationality">🇩🇰 Denmark</div>
+<div class="player-card-age">27歳 (1998/09/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Mike Trésor</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/37381.png" alt="Mike Trésor" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #31</div>
+<div class="player-card-nationality">🇧🇪 Belgium</div>
+<div class="player-card-age">26歳 (1999/05/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ashley Barnes</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18927.png" alt="Ashley Barnes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #35</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">36歳 (1989/10/30)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Max Weiss</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/328273.png" alt="Max Weiss" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #13</div>
+<div class="player-card-nationality">🇩🇪 Germany</div>
+<div class="player-card-age">21歳 (2004/06/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Oliver Sonne</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/128895.png" alt="Oliver Sonne" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #22</div>
+<div class="player-card-nationality">🇩🇰 Denmark</div>
+<div class="player-card-age">25歳 (2000/11/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Oliver Pimlott</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/456637.png" alt="Oliver Pimlott" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #54</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/04/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jaidon Anthony</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/196855.png" alt="Jaidon Anthony" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/12/01)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jaydon Banel</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/336578.png" alt="Jaydon Banel" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #34</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">21歳 (2004/10/09)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>Z. Amdouni</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/123469.png" alt="Z. Amdouni" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Burnley</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>J. Beyer</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/25628.png" alt="J. Beyer" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Burnley</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>J. Cullen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19827.png" alt="J. Cullen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Burnley</div>
+<div class="player-card-age injury-reason">⚠️ Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>L. Foster</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/98936.png" alt="L. Foster" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Burnley</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>H. Mejbri</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/180560.png" alt="H. Mejbri" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Burnley</div>
+<div class="player-card-age injury-reason">⚠️ Suspended</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/34.png" alt="Newcastle" class="team-logo"> Newcastle（4-3-3）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Nick Pope</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18911.png" alt="Nick Pope" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">33歳 (1992/04/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lewis Miley</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/328105.png" alt="Lewis Miley" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #67</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/05/01)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Malick Thiaw</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/163189.png" alt="Malick Thiaw" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #12</div>
+<div class="player-card-nationality">🇩🇪 Germany</div>
+<div class="player-card-age">24歳 (2001/08/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Fabian Schär</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2806.png" alt="Fabian Schär" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇨🇭 Switzerland</div>
+<div class="player-card-age">34歳 (1991/12/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lewis Hall</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284492.png" alt="Lewis Hall" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/09/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Bruno Guimarães</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/10135.png" alt="Bruno Guimarães" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #39</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">28歳 (1997/11/16)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Sandro Tonali</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/31146.png" alt="Sandro Tonali" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🇮🇹 Italy</div>
+<div class="player-card-age">25歳 (2000/05/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Joelinton</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/723.png" alt="Joelinton" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #7</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">29歳 (1996/08/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Harvey Barnes</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18778.png" alt="Harvey Barnes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/12/09)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Yoane Wissa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20649.png" alt="Yoane Wissa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇨🇩 Congo DR</div>
+<div class="player-card-age">29歳 (1996/09/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Anthony Gordon</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/138787.png" alt="Anthony Gordon" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">24歳 (2001/02/24)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Jacob Murphy</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19163.png" alt="Jacob Murphy" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #23</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">30歳 (1995/02/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jacob Ramsey</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19192.png" alt="Jacob Ramsey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #41</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">24歳 (2001/05/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nick Woltemade</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/158054.png" alt="Nick Woltemade" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #27</div>
+<div class="player-card-nationality">🇩🇪 Germany</div>
+<div class="player-card-age">23歳 (2002/02/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Joe Willock</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1463.png" alt="Joe Willock" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #28</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/08/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Aaron Ramsdale</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20355.png" alt="Aaron Ramsdale" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #32</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">27歳 (1998/05/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Alex Murphy</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/318056.png" alt="Alex Murphy" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #37</div>
+<div class="player-card-nationality">🇮🇪 Republic of Ireland</div>
+<div class="player-card-age">21歳 (2004/06/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Leo Shahar</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/337934.png" alt="Leo Shahar" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #61</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/03/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Adedamola Samuel Alabi</span></div>
+<div class="player-card-body">
+<div class="player-card-photo player-card-photo-placeholder"></div>
+<div class="player-card-info">
+<div class="player-card-position">MF #85</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Sean Neave</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/394165.png" alt="Sean Neave" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #62</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/05/27)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home  / Away WDWLL (✅➖✅❌❌)</li>
+<li>過去の対戦成績：過去17試合: Burnley 2勝, 引分 5, Newcastle 10勝</li>
+<li>主審：Robert Jones, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Burnley" src="/reports/images/1379151_home.png" /><br />
+<img alt="Newcastle" src="/reports/images/1379151_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグ、バーンリー対ニューカッスル・ユナイテッドの一戦が、バーンリーの本拠地ターフ・ムーアで開催される。</li>
+</ul>
+<p>現在19位と降格圏に沈むホームのバーンリーは、1部残留に向けて後がない絶体絶命の状況だ。シーズンも終盤戦、ホームで迎えるこの試合は勝ち点3の獲得が絶対条件とも言える大一番。粘り強い守備とホームの大声援を武器に、残留への望みを繋ぐための勝利を目指す。</p>
+<p>一方、エディ・ハウ監督のもとで躍進を遂げたニューカッスルは、シーズンを通して上位を争う力を見せているが、深刻な課題も抱える。それは今季アウェイでわずか1勝という極度の成績不振だ。ホームでは圧倒的な強さを誇るだけに、この敵地での勝負弱さを克服できるかが、目標達成に向けた試金石となる。直近の敗戦から立ち直るためにも、結果が求められる重要な一戦だ。</p>
+<p>残留のために死に物狂いのバーンリーが、伝統あるスタジアムで意地を見せるか。それとも、地力で勝るニューカッスルが「内弁慶」の汚名を返上し、アウェイでの強さを証明するのか。それぞれの目標達成のために勝利が不可欠な両チームの思惑が激しく交錯する、緊迫感あふれる90分間が予想される。</p>
+<details>
+<summary><strong>📚 Sources (10件)</strong></summary>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=4MX_Zitfdeo" target="_blank">Burnley v Newcastle United MATCH PREVIEW! - YouTube</a> (www.youtube.com)</li>
+<li><a href="https://ca.sports.yahoo.com/news/burnley-vs-newcastle-united-match-110100945.html" target="_blank">Burnley vs Newcastle United – Match preview and team news ...</a> (ca.sports.yahoo.com)</li>
+<li><a href="https://www.youtube.com/watch?v=KLnKEH12XXg" target="_blank">NUFC PREMIER LEAGUE PREVIEW | Burnley v Newcastle United ...</a> (www.youtube.com)</li>
+<li><a href="https://www.bbc.co.uk/sport/football/live/c23edmxek94t" target="_blank">Burnley vs Newcastle United: Premier League preview, team news ...</a> (www.bbc.co.uk)</li>
+<li><a href="https://cominghomenewcastle.sbnation.com/newcastle-united-team-news/19922/burnley-vs-newcastle-eddie-howe-match-preview" target="_blank">Burnley vs. Newcastle — Eddie Howe: Match Preview | Coming ...</a> (cominghomenewcastle.sbnation.com)</li>
+<li><a href="https://x.com/ChronicleNUFC/status/2005773106946924906" target="_blank">The Match Preview - Burnley Please, play Wissa & Woltemade ...</a> (x.com)</li>
+<li><a href="https://www.sportsmole.co.uk/football/burnley/relegation-battle/preview/burnley-vs-newcastle-prediction-team-news-lineups_588660.html" target="_blank">Preview: Burnley vs Newcastle United - prediction, team news ...</a> (www.sportsmole.co.uk)</li>
+<li><a href="https://www.nufcblog.com/post/newcastle-united-vs-burnley-match-preview" target="_blank">Burnley v Newcastle United: Match Preview, Team News, and Key ...</a> (www.nufcblog.com)</li>
+<li><a href="https://tf1892.substack.com/" target="_blank">True Faith - Independent NUFC Fanzine | Substack</a> (tf1892.substack.com)</li>
+<li><a href="https://www.facebook.com/burnleyofficial/posts/everything-you-need-to-know-if-youre-joining-us-at-turf-moor-tomorrow-night-http/1422669055882422/" target="_blank">Everything you need to know if you're joining us at Turf Moor ...</a> (www.facebook.com)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>降格圏に沈むバーンリーがホームにニューカッスルを迎えるこの一戦は、対照的な戦術思想がぶつかり合う展開が予想される。</li>
+</ul>
+<p>バーンリーはヴァンサン・コンパニ監督の下、ポゼッションを重視した4-4-2または4-2-3-1のフォーメーションを採用する可能性が高い。後方からの丁寧なビルドアップを生命線とするが、ニューカッスルの強力なハイプレスに対して中盤のサンダー・ベルゲらがボールを失わずに前進できるかが最初の大きな焦点となる。</p>
+<p>一方、エディ・ハウ監督率いるニューカッスルは、運動量をベースとした4-3-3で臨むだろう。ブルーノ・ギマランイスを中心とした中盤がバーンリーのビルドアップの起点にプレッシャーをかけ、ボールを奪ってからの素早いショートカウンターが最大の武器。特に、スピードのあるアンソニー・ゴードンやアレクサンデル・イサクが、バーンリーの最終ラインの背後を突く形を繰り返し狙うと見られる。</p>
+<p>試合の鍵を握るのは、中盤の主導権争いだ。ニューカッスルが前線からのプレスで試合を支配するか、バーンリーがそのプレスをいなし、自分たちのポゼッションサッカーを展開できるか。また、セットプレーにおけるニューカッスルのキーラン・トリッピアーのキック精度も、試合の行方を左右する重要な要素となるだろう。</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/87.png" alt="Scott Parker" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Burnley</div>
+<div class="manager-name">Scott Parker</div>
+<div class="manager-comment">【Burnley】
+ご提示いただいたニュース記事の断片には、Burnleyの監督や選手による試合前のコメントが見当たりませんでした。
+
+記事の内容は、主に対戦相手であるニューカッスルのエディ・ハウ監督に関する情報や、過去の試合で対戦したボーンマスやエヴァートンの監督による試合後の発言が中心となっています。そのため、Burnley側の試合前の意気込みなどを引用形式で要約することはできません。</div>
+</div>
+</div>
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/5.png" alt="Eddie Howe" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Newcastle</div>
+<div class="manager-name">Eddie Howe</div>
+<div class="manager-comment">【Newcastle】
+提示されたニュース記事からは、Newcastle側の具体的な試合前コメントを抽出することは困難です。エディ・ハウ監督は通常の試合前記者会見を行わなかったと報じられており、選手の発言も含まれていません。記事にはハウ監督のものとされる「But I have...」という発言の断片が引用されていますが、前後の文脈が不明なため、試合への意気込みなどを読み取ることはできませんでした。</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=xlZqB2puiCo" target="_blank"><img src="https://i.ytimg.com/vi/xlZqB2puiCo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=xlZqB2puiCo" target="_blank">【Scott Parker】 TOUGH GAME AGAINST A REALLY AGGRESSIV...</a></strong><br/>📺 <strong>⚠️ BeanymanSports2</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=-t3tWOd5QBI" target="_blank"><img src="https://i.ytimg.com/vi/-t3tWOd5QBI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=-t3tWOd5QBI" target="_blank">【Eddie Howe】 FANS DESERVE BETTER! Eddie Howe wants...</a></strong><br/>📺 <strong>⚠️ SPORTS SHOW</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4MX_Zitfdeo" target="_blank"><img src="https://i.ytimg.com/vi/4MX_Zitfdeo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4MX_Zitfdeo" target="_blank">【Scott Parker】 Burnley v Newcastle United MATCH PREV...</a></strong><br/>📺 <strong>⚠️ The Toon Review</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=KLnKEH12XXg" target="_blank"><img src="https://i.ytimg.com/vi/KLnKEH12XXg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=KLnKEH12XXg" target="_blank">【Eddie Howe】 NUFC PREMIER LEAGUE PREVIEW | Burnley...</a></strong><br/>📺 <strong>⚠️ Ever More - NUFC</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=O8f0sT9nH3w" target="_blank"><img src="https://i.ytimg.com/vi/O8f0sT9nH3w/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=O8f0sT9nH3w" target="_blank">【Eddie Howe】 Jason Cundy ADMITS Eddie Howe Is UNDE...</a></strong><br/>📺 <strong>⚠️ talkSPORT Newcastle</strong> ・ 🕐 12時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=AzsP5EQdgyE" target="_blank"><img src="https://i.ytimg.com/vi/AzsP5EQdgyE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=AzsP5EQdgyE" target="_blank">【Eddie Howe】 Alex Crook URGES Eddie Howe To IMPROV...</a></strong><br/>📺 <strong>⚠️ talkSPORT Newcastle</strong> ・ 🕐 6時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=9727vxbmobU" target="_blank"><img src="https://i.ytimg.com/vi/9727vxbmobU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=9727vxbmobU" target="_blank">【Eddie Howe】 Sam Matterface CALLS Eddie Howe SACK ...</a></strong><br/>📺 <strong>⚠️ talkSPORT Newcastle</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2xZmf1ivUUc" target="_blank"><img src="https://i.ytimg.com/vi/2xZmf1ivUUc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2xZmf1ivUUc" target="_blank">【Eddie Howe】 Eddie Howe Press Conference vs Burnle...</a></strong><br/>📺 <strong>⚠️ Inside The Toon</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=XwneslO3LDQ" target="_blank"><img src="https://i.ytimg.com/vi/XwneslO3LDQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=XwneslO3LDQ" target="_blank">【Eddie Howe】 Eddie believes performances HAVE been...</a></strong><br/>📺 <strong>⚠️ The Toon Review</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cgTzeTbq7gA" target="_blank"><img src="https://i.ytimg.com/vi/cgTzeTbq7gA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cgTzeTbq7gA" target="_blank">【Eddie Howe】 Eddie Howe Salary, Age, Biography, Ne...</a></strong><br/>📺 <strong>⚠️ Starlite Reality</strong> ・ 🕐 3時間前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>🚫 除外された動画 (1件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=q7MXkykWz2Q" target="_blank">【Eddie Howe】 70,000 Seats! The Future of Newcastle Utd? #foo...</a> - Trending Bit 24 <span style="color:#f44336">[highlights]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank"><img src="https://i.ytimg.com/vi/_GgtxJkbG_U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">Patrick Dorgu Rocket! 🚀 | Man Utd v N...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=oCey0rY1Exo" target="_blank"><img src="https://i.ytimg.com/vi/oCey0rY1Exo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=oCey0rY1Exo" target="_blank">The STRANGEST one-two you&#39;ll ever...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=7Z91R1sCrdg" target="_blank"><img src="https://i.ytimg.com/vi/7Z91R1sCrdg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=7Z91R1sCrdg" target="_blank">Newcastle United 2-0 Tottenham Hotspu...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Vpr0Fu7sof0" target="_blank"><img src="https://i.ytimg.com/vi/Vpr0Fu7sof0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Vpr0Fu7sof0" target="_blank">Archie Gray scores FIRST senior goal!...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 2日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4oUy9ih5RTs" target="_blank"><img src="https://i.ytimg.com/vi/4oUy9ih5RTs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4oUy9ih5RTs" target="_blank">You can’t sit there mate 🤣</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2024/10/19</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=8i5BtmRgtzQ" target="_blank"><img src="https://i.ytimg.com/vi/8i5BtmRgtzQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=8i5BtmRgtzQ" target="_blank">Extended Highlights | Newcastle Unite...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Ahte335Pcao" target="_blank"><img src="https://i.ytimg.com/vi/Ahte335Pcao/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Ahte335Pcao" target="_blank">Cristian Romero’s last gasp overhead ...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=LDInly1paH4" target="_blank"><img src="https://i.ytimg.com/vi/LDInly1paH4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=LDInly1paH4" target="_blank">Newcastle United v. Burnley | PREMIER...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=1kDa0P5t9t4" target="_blank"><img src="https://i.ytimg.com/vi/1kDa0P5t9t4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=1kDa0P5t9t4" target="_blank">Newcastle United 2 Burnley 1 | EXTEND...</a></strong><br/>📺 <strong>⚠️ Newcastle United</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=W3cxLyYkeKo" target="_blank"><img src="https://i.ytimg.com/vi/W3cxLyYkeKo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=W3cxLyYkeKo" target="_blank">BRUNO OLIMPICO 🤯 Newcastle United 2 B...</a></strong><br/>📺 <strong>⚠️ Newcastle United</strong> ・ 🕐 3週間前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (32件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=2rmI8-xh5Z0" target="_blank">Burnley v. Newcastle | PREMIER LEAGUE HIGHLIGHT...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=uQoH45Lwiq4" target="_blank">Bruno Olimpico Stuns 10-Man Clarets As Newcastl...</a> - Burnley Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=10ety4n6iqY" target="_blank">Newcastle United vs. Burnley | Highlights Premi...</a> - Telemundo Deportes</li>
+<li><a href="https://www.youtube.com/watch?v=Z0KSP-7rFZI" target="_blank">Newcastle vs Burnley | 2-1 | Highlights | Premi...</a> - CLR Sports TV</li>
+<li><a href="https://www.youtube.com/watch?v=iWjdCZgrS_U" target="_blank">Newcastle United vs Burnley 2-1 Highlights | Br...</a> - Football Xtra</li>
+<li><a href="https://www.youtube.com/watch?v=S9Zy0hOXjRE" target="_blank">Newcastle v. Chelsea | PREMIER LEAGUE HIGHLIGHT...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=-8w9SmQH3II" target="_blank">Newcastle United 2 Nottingham Forest 0 | Premie...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=uwvBr2Hy2Ac" target="_blank">Thiago DOUBLE and Schade strike against Toon! |...</a> - Brentford Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=PVvcu6uxMhs" target="_blank">How Cole Palmer Became Pep&#39;s biggest Regret...</a> - FastplayHQ</li>
+<li><a href="https://www.youtube.com/watch?v=W6RrROiXEAs" target="_blank">Wear–Tyne Derby Delight | Sunderland AFC 1 - 0 ...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=vhXJ8zmAW0w" target="_blank">Newcastle United 2 Tottenham Hotspur 2 | Premie...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=1JnxFYdvE9s" target="_blank">Newcastle United 2 Fulham 1 | EXTENDED Carabao ...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=HUrgVWeB1bU" target="_blank">Yoane Wissa Newcastle United Debut vs Burnley</a> - EPIC FOOTBALL</li>
+<li><a href="https://www.youtube.com/watch?v=ONBI2nRBQuE" target="_blank">Everton 1 Newcastle United 4 | EXTENDED Premier...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=Xoq2Q1Ao8wA" target="_blank">West Ham United v. Burnley | PREMIER LEAGUE HIG...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=SVpNQGUg31s" target="_blank">Sandro Tonali, wor Geordie 🇮🇹🥹</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=PLAwdNt8Xg0" target="_blank">Newcastle vs Burnley 2-1 Highlights • Premier L...</a> - Nords</li>
+<li><a href="https://www.youtube.com/watch?v=BW_nDawaX-4" target="_blank">Newcastle 2-2 Chelsea | HIGHLIGHTS - Extended |...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=D7rBOd9nZRw" target="_blank">Newcastle United 1 Arsenal 2 | Premier League H...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=UUcHBwARa40" target="_blank">LAST MINUTE WINNER! Newcastle United 2 Fulham 1...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=_PyVO4msMho" target="_blank">HIGHLIGHTS | Brighton v Newcastle | Premier League</a> - Official Brighton & Hove Albion FC</li>
+<li><a href="https://www.youtube.com/watch?v=6MIHXJdQrGs" target="_blank">Bayer Leverkusen 2 Newcastle United 2 | UEFA Ch...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=bbM8teCsqMM" target="_blank">Burnley v. Fulham | PREMIER LEAGUE HIGHLIGHTS |...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=RZ89UHyZwQ4" target="_blank">BARNES STRIKES TWICE! 🏹 Newcastle United 2 Manc...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=0C-Q0K0iXGE" target="_blank">HUGE WIN IN THE UCL 😍 Newcastle United 3 Benfic...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=hPaiGoXCB1s" target="_blank">Newcastle United 4 Bradford City 1 | EXTENDED C...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=Rhoo0mDFcBQ" target="_blank">Newcastle United 2 Chelsea 2 | EXTENDED Premier...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=b9_Rk9Xlz2s" target="_blank">Aston Villa 0 Newcastle United 0 | Premier Leag...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=Viopoab7voE" target="_blank">Martin Dubravka becomes the first &#39;keeper p...</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=AooVIssXV5c" target="_blank">Ferran Torres VS Newcastle United 🦈🔥</a> - HD16</li>
+<li><a href="https://www.youtube.com/watch?v=Gid2mMI0S2U" target="_blank">Extended Premier League Highlights | Sunderland...</a> - Sunderland AFC</li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=oNNt9RQkvSA" target="_blank"><img src="https://i.ytimg.com/vi/oNNt9RQkvSA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=oNNt9RQkvSA" target="_blank">【Burnley】 How Doku Broke Burnley&#39;s Block | ...</a></strong><br/>📺 <strong>⚠️ LNobbins</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DKgwB1RI-B4" target="_blank"><img src="https://i.ytimg.com/vi/DKgwB1RI-B4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DKgwB1RI-B4" target="_blank">【Newcastle】 Ruben Amorim Change Tactics and WON! ...</a></strong><br/>📺 <strong>⚠️ Greatest Sport</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zXm7v3IOeFQ" target="_blank"><img src="https://i.ytimg.com/vi/zXm7v3IOeFQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zXm7v3IOeFQ" target="_blank">【Burnley】 What Manchester United MUST IMPROVE D...</a></strong><br/>📺 <strong>⚠️ Scarlet Report</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=kIsZ1gMaylE" target="_blank"><img src="https://i.ytimg.com/vi/kIsZ1gMaylE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=kIsZ1gMaylE" target="_blank">【Newcastle】 【戦術分析】なぜバルサはハイプレス集団に勝てたのか？ペドリ＆フレンキーの異...</a></strong><br/>📺 <strong>⚠️ Equaliser【バルサ応援・解説チャンネル】</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cUuiX4si3Ao" target="_blank"><img src="https://i.ytimg.com/vi/cUuiX4si3Ao/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cUuiX4si3Ao" target="_blank">【Burnley】 Manchester United vs Burnley | Tactical </a></strong><br/>📺 <strong>⚠️ motivational_large</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=6iM63R1uQI4" target="_blank"><img src="https://i.ytimg.com/vi/6iM63R1uQI4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=6iM63R1uQI4" target="_blank">【Newcastle】 Newcastle vs Chelsea | Chelsea Comeba...</a></strong><br/>📺 <strong>⚠️ Greatest Sport</strong> ・ 🕐 1週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=tRIWNUPjhvk" target="_blank"><img src="https://i.ytimg.com/vi/tRIWNUPjhvk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=tRIWNUPjhvk" target="_blank">【Burnley】 Manchester United VS Burnley TACTICAL...</a></strong><br/>📺 <strong>⚠️ Chosen Wizdom</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FKZUy7KtGXM" target="_blank"><img src="https://i.ytimg.com/vi/FKZUy7KtGXM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FKZUy7KtGXM" target="_blank">【Newcastle】 【30秒戦術】CL ニューカッスル×バルセロナ｜ハイプレスの綱引き　#UC...</a></strong><br/>📺 <strong>⚠️ タクサカ. ch</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=CvY6UuqC6Zo" target="_blank"><img src="https://i.ytimg.com/vi/CvY6UuqC6Zo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=CvY6UuqC6Zo" target="_blank">【Newcastle】 これは芸術！ニューカッスルの完璧すぎるコーナーキック</a></strong><br/>📺 <strong>⚠️ Kick-Off Lab</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=76IDCkRSt-M" target="_blank"><img src="https://i.ytimg.com/vi/76IDCkRSt-M/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=76IDCkRSt-M" target="_blank">【Burnley】 Manchester United Under Rúben Amorim ...</a></strong><br/>📺 <strong>⚠️ HALF-SPACE THEORY</strong> ・ 🕐 3ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (65件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=0WYqYlTVXF8" target="_blank">【Newcastle】 【30秒戦術】ニューカッスル開幕の鍵　#30秒戦術 #サッカー戦術 #タクサカ#ニューカッスル...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=fncQxazIWIM" target="_blank">【Burnley】 Newcastle v Burnley Preview: Why Pace Will Deci...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=uI31GanNTck" target="_blank">【Newcastle】 Why Malick Thiaw’s £35M Move To Newcastle Is Pu...</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=oEPcwIqZAC0" target="_blank">【Burnley】 BURNLEY v NEWCASTLE Preview 🔥 Why we MUST see T...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=HkxWYaECJtE" target="_blank">【Newcastle】 Newcastle Tactical Analysis | Defensive Errors ...</a> - HALF-SPACE THEORY</li>
+<li><a href="https://www.youtube.com/watch?v=AmugvdaG3Kg" target="_blank">【Burnley】 What We Learned From Tottenham 3-0 Burnley</a> - George Achillea</li>
+<li><a href="https://www.youtube.com/watch?v=PBnoLIMvhnw" target="_blank">【Newcastle】 Why Nick Woltemade Isn’t The Real Problem At Ne...</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=HoJ16KYhpYE" target="_blank">【Newcastle】 The Wissa Effect: Why Newcastle’s Season Isn’t ...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=AGHKaaGWUKo" target="_blank">【Newcastle】 Why Newcastle Keep Dropping Points From Winning...</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=N_QEZejnjhs" target="_blank">【Burnley】 BURNLEY 0-2 ARSENAL: Tactical Masterclass! Rice...</a> - The Sports Verdict</li>
+<li><a href="https://www.youtube.com/watch?v=jwgxEWe4wiM" target="_blank">【Burnley】 065 1 OF 6 Man United vs Burnley 2025 | Ultimat...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=mrzzpntT3LA" target="_blank">【Newcastle】 Newcastle vs Arsenal ⚽ Tactical Analysis &amp; ...</a> - SportBetX</li>
+<li><a href="https://www.youtube.com/watch?v=m_D0rNrjeOQ" target="_blank">【Burnley】 TACTICAL ANALYSIS OF BURNLEY VS CHELSEA - DE MA...</a> - Fakye tv</li>
+<li><a href="https://www.youtube.com/watch?v=1QJY7XICiYs" target="_blank">【Newcastle】 Newcastle vs Chelsea PREVIEW 🔥| Tactical WAR In...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=cvDdTR57rDI" target="_blank">【Newcastle】 Nick WOLTEMADE Is DIFFERENT🇩🇪🔥 #footballtactics...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=UaCdoK6xjUg" target="_blank">【Newcastle】 How Thomas Frank Can Tactically Outsmart Eddie ...</a> - Lilywhite Lane</li>
+<li><a href="https://www.youtube.com/watch?v=WTEr8O31zMw" target="_blank">【Burnley】 The Art of Control || A Tactical Analysis of Ar...</a> - The Arsenal Blueprint</li>
+<li><a href="https://www.youtube.com/watch?v=QUcF_xPYAsA" target="_blank">【Newcastle】 Sunderland 1–0 Newcastle | Jamie Carragher Brea...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=hOfQHvKhEnM" target="_blank">【Burnley】 How Arteta Exposed Burnley&#39;s 4-2-3-1</a> - 7thfootbol</li>
+<li><a href="https://www.youtube.com/watch?v=Pgh9gKUM0E0" target="_blank">【Newcastle】 バルセロナ対ニューカッスルの試合が戦術的に面白すぎた！#バルセロナ #ニューカッスル #cl ...</a> - アナセカ【育成年代 試合分析】</li>
+<li><a href="https://www.youtube.com/watch?v=FIE1hJ9rM7Q" target="_blank">【Burnley】 Can Burnley Stay Up This Season? 😱</a> - EPLXTRA</li>
+<li><a href="https://www.youtube.com/watch?v=ImobKMezzIY" target="_blank">【Newcastle】 Newcastle 2-2 Chelsea Explained 🔥Newcastle Drop...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=lKC1pY1JDFk" target="_blank">【Burnley】 Chelsea Tactical Preview vs Burnley | How The B...</a> - The Blues Feed</li>
+<li><a href="https://www.youtube.com/watch?v=tpIoMzHAOFo" target="_blank">【Newcastle】 How Newcastle thrashed Bradford City - William ...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=ugKjk9JPJMs" target="_blank">【Newcastle】 DERBY DAY DELIGHT! 🔥 Sunderland Beat Newcastle ...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=wX8_w7iYf6Q" target="_blank">【Burnley】 MOTD 🔥 Manchester United 3-2 Burnley | Danny Mu...</a> - Matchday Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=Oj7Ik1x4l00" target="_blank">【Newcastle】 Why Newcastle United Suddenly Look BROKEN</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=NiOGobRpvOw" target="_blank">【Burnley】 Burnley vs Leeds United | Premier League 2025 P...</a> - Visioner Predictions</li>
+<li><a href="https://www.youtube.com/watch?v=Oupx85Q3Yxo" target="_blank">【Newcastle】 難攻不落勝てる気がしない最恐の要塞3選 #アトレティコ #ニューカッスル #セントジェームズパ...</a> - フットボール GPT</li>
+<li><a href="https://www.youtube.com/watch?v=PyyIUY2BfYs" target="_blank">【Newcastle】 Why Wissa (Not Woltemade) Is Newcastle’s REAL I...</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=b0GdpYtXLv8" target="_blank">【Burnley】 【海外の反応】デ・ブライネが田中碧を絶賛！「彼は世界最高の選手になる」リーズ昇格の立役者に称賛...</a> - JP Football Insider</li>
+<li><a href="https://www.youtube.com/watch?v=Rp87VwyWoNw" target="_blank">【Burnley】 How Sunderland DEFEND So Well.🧠👏 #footballtacti...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=hbmhIhcS3po" target="_blank">【Newcastle】 What ACTUALLY Went Wrong For Newcastle At West ...</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=8rCHOu5usyA" target="_blank">【Burnley】 How Viktor Gyokeres SHOWED HIS CLASS Vs Burnley...</a> - TM</li>
+<li><a href="https://www.youtube.com/watch?v=jEYVlHYPo00" target="_blank">【Newcastle】 HASIL PERTANDINGAN | MAN UNITED VS EVERTON | TO...</a> - JadwalBolaViral</li>
+<li><a href="https://www.youtube.com/watch?v=CD78iN8kq7c" target="_blank">【Newcastle】 How Newcastle United SMASHED Benfica.</a> - Zekko Football</li>
+<li><a href="https://www.youtube.com/watch?v=4tWDG5mxACg" target="_blank">【Burnley】 Bruno 9/10, Bayindir 3.5/10 | All The Stats &am...</a> - Stephen Howson</li>
+<li><a href="https://www.youtube.com/watch?v=BSxHYGIc20o" target="_blank">【Burnley】 Why Brentford could be Burnley 2.0 for Man United</a> - Footy with an Edge</li>
+<li><a href="https://www.youtube.com/watch?v=pzUuaLcaUTA" target="_blank">【Newcastle】 Newcastle vs. Barcelona: Who Will Prevail in Th...</a> - MatchdayScript</li>
+<li><a href="https://www.youtube.com/watch?v=lvF1NHHiO1Y" target="_blank">【Burnley】 Break the Low Block | Man City vs Burnley Tacti...</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=wqw5ukjx3eo" target="_blank">【Burnley】 A 24-MINUTE performance! Analysis of how Arsena...</a> - Adrian Clarke</li>
+<li><a href="https://www.youtube.com/watch?v=KalJGUkheTQ" target="_blank">【Burnley】 092 1 OF 5 Man City vs Burnley Preview &amp; Pr...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=Uc9o3TFt8hU" target="_blank">【Newcastle】 考え尽くされたコーナーキックが美しすぎる#サッカー解説 #戦術分析 #ヘディング #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=IKrx2D6iK50" target="_blank">【Burnley】 Bruno &amp; Mbeumo Shine, Bayindir Blunders | 5...</a> - Stephen Howson</li>
+<li><a href="https://www.youtube.com/watch?v=QOrGEdiC4QM" target="_blank">【Newcastle】 Timber Dominates Newcastle Midfield 💪 | Arsenal...</a> - Football Talk Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=JcbdoENgX3o" target="_blank">【Burnley】 KESALAHAN BRUNO &amp; DALOT PADA GOL FULHAM !! ...</a> - UNITEDNAS</li>
+<li><a href="https://www.youtube.com/watch?v=ATD8tZzX4_4" target="_blank">【Newcastle】 Newcastle 1-2 Barça. Rashford Brilla | Champion...</a> - Pizarra Blaugrana</li>
+<li><a href="https://www.youtube.com/watch?v=K7J7HzxgJVg" target="_blank">【Burnley】 Burnley 2-0 Leeds | Ups N’ Downs: Big Problems ...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=WWXWr-FYo1U" target="_blank">【Newcastle】 JADWAL PERTANDINGAN | MAN UNITED VS EVERTON | T...</a> - JadwalBolaViral</li>
+<li><a href="https://www.youtube.com/watch?v=OZJm5us3PUQ" target="_blank">【Burnley】 092 5 OF 5 Man City vs Burnley | Premier League...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=AU8GvJVndao" target="_blank">【Newcastle】 Kinsky COST US Vs Newcastle!</a> - Durag Diaries</li>
+<li><a href="https://www.youtube.com/watch?v=wp87bWtX8WM" target="_blank">【Newcastle】 MAN UTD vs NEWCASTLE 🔥|🎅Boxing Day Battle: Can ...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=3zSf8_OnXiA" target="_blank">【Burnley】 LEEDS UNITED vs BURNLEY! Tactical PREVIEW!</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=nIoypT24qFI" target="_blank">【Newcastle】 Why Jacob Ramsey Is Newcastle’s £39m BARGAIN Ga...</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=JlqmTqZYw3g" target="_blank">【Burnley】 Burnley vs Arsenal | EPL - English Premier Leag...</a> - Gamer BR - M1l Grau</li>
+<li><a href="https://www.youtube.com/watch?v=h9gb_Z8nNUs" target="_blank">【Newcastle】 Leeds vs Newcastle EXPOSED! | Shocking Stats &a...</a> - Mystery Tales by Angel</li>
+<li><a href="https://www.youtube.com/watch?v=3nlCvfyp6W8" target="_blank">【Burnley】 Bradley NEEDS To Start Showing CONSISTENCY @FOO...</a> - GTV Football Channel</li>
+<li><a href="https://www.youtube.com/watch?v=aXCwN_Eo6YE" target="_blank">【Newcastle】 THIS is HOWE LEEDS UNITED can BEAT NEWCASTLE! T...</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=XoYzKIgFKJs" target="_blank">【Burnley】 Antoine Semenyo Is A BALLER🇬🇭🔥 #footballtactics...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=XS5Oyt2WrtM" target="_blank">【Newcastle】 【魂の勝利】アーセナルvsニューカッスルがっつり解説！ニューカッスルを制圧したテタ戦術</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=u_1Xtuh63iw" target="_blank">【Newcastle】 121 3 OF 4 Newcastle United vs Fulham – EPL 202...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=FPA9-cpKoLw" target="_blank">【Newcastle】 MARSEILLE vs NEWCASTLE | Champions League Previ...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=aYLf2cHSw8U" target="_blank">【Burnley】 092 3 OF 5 Man City vs Burnley Preview | Predic...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=Qju9fVlANPs" target="_blank">【Burnley】 Regis Le Bris Gets It Wrong, Farke Sacking? Bur...</a> - Conor McGilligan</li>
+<li><a href="https://www.youtube.com/watch?v=VNthpTW3RTI" target="_blank">【Newcastle】 093 1 OF 4 Arsenal vs Newcastle Preview &amp; P...</a> - Grip On Games</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (25件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=xvYPzKJx9KE" target="_blank">【Burnley】 Slot&#39;s Liverpool DOMINATE Burnley with THES...</a> - Liverpool Fan In Japan <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=fyFfSg6g-WU" target="_blank">【Burnley】 081 1 OF 4 Liverpool vs Burnley | EPL 2025 Tact...</a> - Grip On Games <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=nLyesjApmIE" target="_blank">【Burnley】 081 3 OF 4 Liverpool vs Burnley Preview &amp; P...</a> - Grip On Games <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ZOtIqmoSpd8" target="_blank">【Burnley】 Burnley SHOCKED! Rio&#39;s Impact &amp; Salah&#...DI VLOGS</li> - GTV Football Channel <span style="color:#f44336">[live_stream]k" target="_blank">et="_blank">
+<li><a href="https://www.youtube.com/watch?v=XULazgv0BCg" target="_blank">【Burnley】 Burnley 0 - 1 Liverpool - Tactical Analysis &am...</a> - The Golden Sky <span style="color:#f44336">[live_stream]outube.com/watch?v=5itJ94P7IG8" target="_blank">com/watch?v=5itJ94P7IG8" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=NPjXUVM-3qY" target="_blank">【Burnley】 Liverpool&#39;s SHOCKING Burnley Performancehor...</a> - GTV Football Channel <span style="color:#f44336">[live_stream]m/watch?v=WhxnDmZ7Kt0" target="_blank">?v=WhxnDmZ7Kt0" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=jzmJScI26yk" target="_blank">【Burnley】 🔥 TWO HUGE PREMIER LEAGUE SHOWDOWNS! ⚽ BURNLEY .....</a> - Anfield News Hotspot <span style="color:#f44336">[live_stream]GBaNDZDqiyQ" target="_blank">qiyQ" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=L7n8UjOfz8Q" target="_blank">【Burnley】 CON HAALAND IMPARABLE el CITY DESTROZA al BURNL...</a> - awpitia <span style="color:#f44336">[live_stream]ube.com/watch?v=Qg9-Z0CJO60" target="_blank">/watch?v=Qg9-Z0CJO60" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=qP25KXferMg" target="_blank">【Burnley】 Pós Jogo - Liverpool 1x0 Burnley: Sofrimento ou.....</a> - Caminhantes <span style="color:#f44336">[live_stream]be.com/watch?v=LUuKt1ON2uY" target="_blank">watch?v=LUuKt1ON2uY" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=9NlSpRmuwsA" target="_blank">【Burnley】 Premier League 2025 Matchday 3 CHAOS! My Bold P...</a> - Mystery Tales by Angel <span style="color:#f44336">[live_stream]cXRgoQ" target="_blank"> target="_blank">
+<li><a href="https://www.youtube.com/watch?v=OhWA9tsmhLE" target="_blank">【Burnley】 ARNE SLOT’S SAVAGE RESPONSE TO BURNLEY’S BUS! S.....</a> - THYNK REACTS  <span style="color:#f44336">[live_stream]watch?v=RzeY0BjdEEg" target="_blank">=RzeY0BjdEEg" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=7wljtTykUsg" target="_blank">【Burnley】 Carragher SLAMS Hannibal’s Costly Handball! Bur...</a> - Trending News <span style="color:#f44336">[live_stream]atch?v=cH877bkMrPM" target="_blank">cH877bkMrPM" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=LrY2wYi7n4I" target="_blank">【Burnley】 WORLD CLASS DECLAN RICE! ARSENAL&#39;S DEFENCE ...<a href="https://www.youtube.com/watch?v=VZgq4iVoa_Y" target="_blank"> - End The Stream Dave <span style="color:#f44336">[reaction]ank">urnley】 Scored the Penalty, Couldn&#39;t Celebrate 💔</a>
+<li><a href="https://www.youtube.com/watch?v=2sAJ3AMajFQ" target="_blank">【Burnley】 Chelsea Beat Burnley 2-0! 🔵 Maresca Fired Up as... SevenBall</li> - Sport Lab <span style="color:#f44336">[reaction]tch?v=XqsPCJTMAW4" target="_blank">qsPCJTMAW4" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=B_wU0VoUP8o" target="_blank">【Burnley】 051 3 OF 5 SPURS VS BURNLEY Spurs DESTROY Burnl...SA News Live</li> - Grip On Games <span style="color:#f44336">[reaction]h?v=p77WWppBLug" target="_blank">WWppBLug" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=skwa16TtPVk" target="_blank">【Newcastle】 Newcastle United vs Wolves | Highlights &amp; M...a> - Antonio Silva Stocks <span style="color:#f44336">[match_highlights]E" target="_blank">et="_blank">
+<li><a href="https://www.youtube.com/watch?v=V2tCrg7VBUo" target="_blank">【Newcastle】 Newcastle Run Riot 🔥 | Everton 1-4 Newcastle Un...Like a Pro - By The Best Football Coaches</li> - António Mango <span style="color:#f44336">[highlights]ttps://www.youtube.com/watch?v=g7cV-QI7eK8" target="_blank">www.youtube.com/watch?v=g7cV-QI7eK8" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=AB7qONdaqeo" target="_blank">【Newcastle】 NEWCASTLE 2-2 CHELSEA: Chaos at St James’ Park ...a> - António Mango <span style="color:#f44336">[live_stream]tch?v=JZu3PC3R3LQ" target="_blank">Zu3PC3R3LQ" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=sn9h0EOwtMg" target="_blank">【Newcastle】 2人で崩す&quot;背後の意識&quot; #サッカー #戦術分析 #解説 #liverpool.</a> - サッカー軍曹 <span style="color:#f44336">[live_stream].youtube.com/watch?v=xiSbhbDwb-c" target="_blank">e.com/watch?v=xiSbhbDwb-c" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=24tYqhSUh6I" target="_blank">【Newcastle】 Why Newcastle’s 10-Man Fight Against Liverpool ...a> - A Game Of Two Halves <span style="color:#f44336">[live_stream]mElu5OE0TaY" target="_blank">0TaY" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=y_MnjI-PvvU" target="_blank">【Newcastle】 Liverpool vs Newcastle Over Isak Is PURE CHAOS href="https://www.youtube.com/watch?v=g58KY-02gk0" target="_blank"> - JammsterZ <span style="color:#f44336">[live_stream]="_blank">k">
+<li><a href="https://www.youtube.com/watch?v=aBW8co9weo8" target="_blank">【Newcastle】 Liverpool vs Newcastle Tactics Battle! Who Wins... Lexi</li> - Liverpool Fan In Japan <span style="color:#f44336">[live_stream]rget="_blank">blank">
+<li><a href="https://www.youtube.com/watch?v=3HsZyZx3Q8k" target="_blank">【Newcastle】 The 3 AREAS that will DECIDE the Newcastle Vs L...- MoonHd30x</li> - The Football Storey <span style="color:#f44336">[live_stream]034ZE" target="_blank">target="_blank">
+<li><a href="https://www.youtube.com/watch?v=NG0S2eig7Oo" target="_blank">【Newcastle】 English Premier League Thriller: Aston Villa vs...</a> - Intelligent Indian <span style="color:#f44336">[live_stream]h?v=Kzy7UbUoQDA" target="_blank">7UbUoQDA" target="_blank">
+<li><a href="https://www.youtube.com/watch?v=nfLUTiTKmlg" target="_blank">【Newcastle】 Newcastle 2-3 Liverpool was &quot;not good foot...> - This Is Anfield <span style="color:#f44336">[live_stream]et="_blank">ank">
+<li>
+<li>
+<li>
+<details open>
+<summary><strong>⭐ 選手紹介 (10件)ube.com/watch?v=ZMgL4qu5NRE" target="_blank">atch?v=ZMgL4qu5NRE" target="_blank">
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイルjJuvTXi-ow" target="_blank"><th style="text-align:left">動画情報e】 Racehorse newcastle racecourse</a>cehorse newcastle racecourse</a>se newcastle racecourse</a>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ErsvbJPXDFs" target="_blank"><img src="https://i.ytimg.com/vi/ErsvbJPXDFs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">KzSrnRWTL8" target="_blank">nRWTL8" target="_blank"><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ErsvbJPXDFs" target="_blank">【Marcus Edwards】 FIVE PREMIER LEAGUE WINS IN A ROW ⭐️ ...d ...💔</a>.💔</a><br/>📺 <strong>✅ Arsenalhttps://www.youtube.com/watch?v=aA_-44vmkr0" target="_blank"> ・ 🕐 1ヶ月前e.com/watch?v=aA_-44vmkr0" target="_blank">/watch?v=aA_-44vmkr0" target="_blank">
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_8ahk92Nk8g" target="_blank"><img src="https://i.ytimg.com/vi/_8ahk92Nk8g/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">AL injured ...💔</a>njured ...💔</a><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_8ahk92Nk8g" target="_blank">【Yoane Wissa】 The BEST of Yoane Wissa(December 2025)</a>ember 2025)</a><br/>📺 <strong>✅ Premier Leagueball Club</li> ・ 🕐 4ヶ月前>ref="https://www.youtube.com/watch?v=lty6QxceGgw" target="_blank">
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qEtFpzEJV38" target="_blank"><img src="https://i.ytimg.com/vi/qEtFpzEJV38/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">ley】 Nathan Jones on Portsmouth loss 🗣️ (December 2025)</a> Nathan Jones on Portsmouth loss 🗣️ (December 2025)</a><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qEtFpzEJV38" target="_blank">【Yoane Wissa】 Yoane Wissa&#39;s CLINICAL Finishing 🥶lank">"><br/>📺 <strong>✅ Premier LeaguePalmer | Enzo Maresca...</a> ・ 🕐 4ヶ月前sca...</a>.</a>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zXqmbZFeSnA" target="_blank"><img src="https://i.ytimg.com/vi/zXqmbZFeSnA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">e.com/watch?v=lty6QxceGgw" target="_blank">m/watch?v=lty6QxceGgw" target="_blank"><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zXqmbZFeSnA" target="_blank">【Marcus Edwards】 &quot;YOU COULD HEAR A PIN DROP!&quot... (24件)</summary>件)</summary><br/>📺 <strong>✅ talkSPORT.85em;margin:0;padding-left:1.5em;"> ・ 🕐 3日前dding-left:1.5em;">-left:1.5em;">
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=i-58GyDW-NI" target="_blank"><img src="https://i.ytimg.com/vi/i-58GyDW-NI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></summary>mmary><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=i-58GyDW-NI" target="_blank">【Yoane Wissa】 ニューカッスル、ヨアン・ウィッサ獲得のためブレントフォードと5500万ポン...ocket! 🚀 | Man Utd v Newcastle |...</a>t! 🚀 | Man Utd v Newcastle |...</a><br/>📺 <strong>✅ Sky Sports Newschester United <span style="color:#f44336"> ・ 🕐 4ヶ月前an style="color:#f44336">yle="color:#f44336">
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qEo6TUnf5fY" target="_blank"><img src="https://i.ytimg.com/vi/qEo6TUnf5fY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">ick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a>Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qEo6TUnf5fY" target="_blank">【Harvey Barnes】 &quot;IT&#39;S NOT FAIR!&quot; Andy G...h?v=X6w_zL7QlwQ" target="_blank">X6w_zL7QlwQ" target="_blank"><br/>📺 <strong>✅ talkSPORTey】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> ・ 🕐 1ヶ月前ER &amp; OWN GOAL SECURE ALL THRE...</a>mp; OWN GOAL SECURE ALL THRE...</a>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=E537ua3Hueg" target="_blank"><img src="https://i.ytimg.com/vi/E537ua3Hueg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">rgu Rocket! 🚀 | Man Utd v Newcastle |...</a>Rocket! 🚀 | Man Utd v Newcastle |...</a><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=E537ua3Hueg" target="_blank">【Harvey Barnes】 EVERY ANGLE of THAT Reece James Free-...w_zL7QlwQ" target="_blank">7QlwQ" target="_blank"><br/>📺 <strong>✅ Premier LeagueD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> ・ 🕐 1週間前N GOAL SECURE ALL THRE...</a>L SECURE ALL THRE...</a>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=LwyRx_rOXa0" target="_blank"><img src="https://i.ytimg.com/vi/LwyRx_rOXa0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"> 🚀 | Man Utd v Newcastle |...</a> Man Utd v Newcastle |...</a><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=LwyRx_rOXa0" target="_blank">【Harvey Barnes】 MUST-SEE Pass Before Brentford SCORE ...target="_blank">et="_blank"><br/>📺 <strong>✅ Premier Leagueamp; OWN GOAL SECURE ALL THRE...</a> ・ 🕐 3ヶ月前RE ALL THRE...</a>L THRE...</a>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=7_fNjFbgIKE" target="_blank"><img src="https://i.ytimg.com/vi/7_fNjFbgIKE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">td v Newcastle |...</a> Newcastle |...</a><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=7_fNjFbgIKE" target="_blank">【Anthony Gordon】 Is Nick Woltemade The Most UNIQUE Str...ank">><br/>📺 <strong>✅ Premier LeagueAL SECURE ALL THRE...</a> ・ 🕐 2ヶ月前...</a>a>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mdvRNB2516o" target="_blank"><img src="https://i.ytimg.com/vi/mdvRNB2516o/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;">r United <span style="color:#f44336">ited <span style="color:#f44336"><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mdvRNB2516o" target="_blank">【Harvey Barnes】 &#39;FABULOUS STRIKE!&#39;: Harvey Ba...mp; OWN GOAL SECURE ALL THRE...</a>OWN GOAL SECURE ALL THRE...</a><br/>📺 <strong>⚠️ NBC Sportsenal <span style="color:#f44336"> ・ 🕐 1ヶ月前color:#f44336">:#f44336">
+<li>
+<li>
+<details>
+<summary>📋 ソートで落ちた動画 (120件)utube.com/watch?v=hayLeqAkX7I" target="_blank">
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=_feLPM3lR1k" target="_blank">【Yoane Wissa】 Yoane Wissa. #️⃣9️⃣ Trent? 🤔🔥⚽ #frimpong #t...</a> - Newcastle Unitedt...</a>
+<li><a href="https://www.youtube.com/watch?v=YkAj95kFrzo" target="_blank">【Harvey Barnes】 The flick by Nick, the finish by Barnes 😍. What... BeanymanSports <span style="color:#f44336"> - Newcastle Unitedtyle="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=cqVSoRzrbhs" target="_blank">【Loum Tchaouna】 FT: BURNLEY 0-2 CHELSEA⚽🏴󠁧󠁢󠁥󠁮󠁧󠁿👑⚽🏟🥅a win at Bur... BeanymanSports2 <span style="color:#f44336"> - TAYINIMENT<span style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=m3k8JJd4RPc" target="_blank">【Armando Broja】 アルマンド・ブロハのゴール、バーンリー対バウナーマス（1-1）ハイライト | ラリーガ EA ... BeanymanSports2 <span style="color:#f44336"> - VIVAL SPORTS an style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=T5L7QHXKkns" target="_blank">【Marcus Edwards】 ギョケレスとライスのゴールでアーセナルがターフ・ムーアで勝利 | ハイライト | バーンリー ...SPORTS SHOW <span style="color:#f44336"> - Burnley Football Clubor:#f44336">
+<li><a href="https://www.youtube.com/watch?v=L0xbKVBmJrw" target="_blank">【Yoane Wissa】 Big Dan Burn meets Wissa at the Newcastle train..."color:#f44336"> - Newcastle Unitedon]</span>
+<li><a href="https://www.youtube.com/watch?v=V9qaeb1wOH8" target="_blank">【Loum Tchaouna】 バーンリー 2-0 リーズ・ユナイテッド 試合の反応とハイライト分析 | リーズは苦境に⚠️😡/a> - One Leeds ORT <span style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=TkV4UdHnmR0" target="_blank">【Marcus Edwards】 Arsenal Streak Was Almost Broken By Burnley&#39;...- FOOTBALL THRILLS 😍 <span style="color:#f44336"> - MidfenderLS 😍 <span style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=8534cTBpmtQ" target="_blank">【Anthony Gordon】 Anthony Gordon frustrated after Newcastle conce...- Manchester United <span style="color:#f44336"> - TNT Sports Footballstyle="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=UAtit4wnWW0" target="_blank">【Yoane Wissa】 Yoane Wissa •Welcome to Newcastle United ? 2025...a> - Menino Xspan style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=mNYcyV_nU0I" target="_blank">【Armando Broja】 🇦🇱 Armando Broja Is A Claret | First Interview</a> - Burnley Football Clubspan style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=BOMyfRQYmD8" target="_blank">【Marcus Edwards】 Burnley 0-2 Arsenal . Episode 2CHRISTMAS T...</a> - Futbol Tva>
+<li><a href="https://www.youtube.com/watch?v=WwEwhYPUIJI" target="_blank">【Marcus Edwards】 Burnley v Norwich- Skybet Championship- 11/04/2...- HaytersTV <span style="color:#f44336"> - JB'S Classic Burnley FC games.6">
+<li><a href="https://www.youtube.com/watch?v=PyzeJ6KpbHA" target="_blank">【Yoane Wissa】 Yoane Wissa’s Newcastle Debut vs Burnley! ⚫⚪ 👀..</a> - Black And White Goalsspan style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=Jzcszj1tXNQ" target="_blank">【Yoane Wissa】 ヨアン・ウィッサがニューカッスル・ユナイテッドに移籍！ 絶対成功させよう！ #NUFC #ニュ...a> - Newcastle Fans TVspan style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=eNSnAmpLxWs" target="_blank">【Armando Broja】 アルマンド・ブロハのゴール、バーンリー対バウナーマス（1-1）ハイライト | ラリーガ EA ... - BeanymanSports <span style="color:#f44336"> - VIVAL SPORTS pan style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=2IR24DHAK7M" target="_blank">【Harvey Barnes】 ニューカッスル・ユナイテッド 2-1 マンチェスター・シティ | プレミアリーグ | ハーヴェ... - BeanymanSports <span style="color:#f44336"> - Context Football style="color:#f44336">
+<li><a href="https://www.youtube.com/watch?v=0P7kit_QCBc" target="_blank">【Armando Broja】 Armando Broja vs Jude Bellingham 🔥away joy ...</a> - FutKla/a>
+<li><a href="https://www.youtube.com/watch?v=iomG2zzSwZs" target="_blank">【Marcus Edwards】 Burnley v Sheffield Wednesday- Skybet Champions...- BeanymanSports2 <span style="color:#f44336"> - JB'S Classic Burnley FC games.#f44336">
+<li><a href="https://www.youtube.com/watch?v=ErPsMYXM2_Q" target="_blank">【Yoane Wissa】 Agent Osula with Yoane Wissa and Anthony Elanga...</a> - Magpie 24:7 - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=U-oDmDf6Zsk" target="_blank">【Armando Broja】 Armando Broja Completes £20m Transfer from Chel...</a> - Football Unbound</li>
+<li><a href="https://www.youtube.com/watch?v=Uu6GlesoZ-k" target="_blank">【Marcus Edwards】 ファンの反応 | ボーンマス 1-1 バーンリー | 🧐 ネイサン:「パーカーは今日、正しいセ...</a> - TurfCast | Burnley FC Fan Channel & Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=dl-xmtv2dC8" target="_blank">【Anthony Gordon】 アンソニー・ゴードンのベンフィカ戦ゴール | ニューカッスル対ベンフィカ戦ハイライト</a> - Antonio Silva Stocks</li>
+<li><a href="https://www.youtube.com/watch?v=VDV_z0NCL-U" target="_blank">【Armando Broja】 これはローンじゃない！ブロジャと契約したんだ！🤝 | スコット・パーカー | バーンリー対チェルシー</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=NiIacZLEYQc" target="_blank">【Anthony Gordon】 アンソニー・ゴードン、ファン・ダイクへの無謀なタックル | ゴードン、レッドカード</a> - BuzzSleuth</li>
+<li><a href="https://www.youtube.com/watch?v=qlSYDEKEl84" target="_blank">【Yoane Wissa】 「休みなし…待っただけの価値があるデビュー！」ヨアン・ウィッサ、バーンリー戦でのニューカッスル...</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=0gdeIT-YsSE" target="_blank">【Armando Broja】 Burnley Signs Armando Broja From Chelsea! 📝🤝</a> - Gatti Sports Reports SA</li>
+<li><a href="https://www.youtube.com/watch?v=dUSNwAuwx_M" target="_blank">【Yoane Wissa】 🚨 C&#39;EST FAIT ✅ YOANE WISSA À NEWCASTLE : HE...</a> - Chris Bantule</li>
+<li><a href="https://www.youtube.com/watch?v=_L_sUn8hwfc" target="_blank">【Armando Broja】 How to pronounce EVERY Fulham player&#39;s name 🗣</a> - Fulham Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=HrkrcDHL1rc" target="_blank">【Yoane Wissa】 YOANE WISSA THIS IS EMBARRASSING!! #nufc #newca...</a> - BinksNUFC</li>
+<li><a href="https://www.youtube.com/watch?v=DsJDNp1NUSA" target="_blank">【Armando Broja】 カイル・ウォーカーと一緒に完璧なサッカー選手を育てよう⚽️ #burnleyfc #football</a> - Burnley Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=LUt2EKDDJjY" target="_blank">【Marcus Edwards】 FC 25 トッテナム vs バーンリー – プレミアリーグ 2025 フルマッチハイライト ...</a> - Santos El Creador</li>
+<li><a href="https://www.youtube.com/watch?v=XbBsAxkNOds" target="_blank">【Anthony Gordon】 アンソニー・ゴードンの「プレー不可能」なパフォーマンスで、ニューカッスルはUEFAチャンピオン...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=6Fz3Kf9rGMs" target="_blank">【Yoane Wissa】 Yoane Wissa to Newcastle will ACCELERATE NOW! 🇨...</a> - Geordie Josh</li>
+<li><a href="https://www.youtube.com/watch?v=FHXNmE2DW6E" target="_blank">【Armando Broja】 Burnley sign Broja #transfernews #burnley #foot...</a> - JSY talks football  ⚽️</li>
+<li><a href="https://www.youtube.com/watch?v=HHIvriRdb6s" target="_blank">【Yoane Wissa】 🚨OFFICIAL: Yoane Wissa SIGNS for Newcastle Unit...</a> - 365FOOTY</li>
+<li><a href="https://www.youtube.com/watch?v=cZPpctzgvbw" target="_blank">【Yoane Wissa】 ニューカッスルがヨアネ・ウィッサ獲得を狙う！彼はチームにフィットするか？プレースタイル分析</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=cvUCZLReoco" target="_blank">【Armando Broja】 Krisje në Kombëtare? Çfarë ndodhi mes Armand Du...</a> - Sy Shqip</li>
+<li><a href="https://www.youtube.com/watch?v=89O5fSd7itU" target="_blank">【Marcus Edwards】 カーディフがバーンリーに衝撃！リーグ1のチームがプレミアリーグのクラブをカラバオカップから追い出す</a> - Every Moment Updates</li>
+<li><a href="https://www.youtube.com/watch?v=Q0xOCgQ4b7o" target="_blank">【Anthony Gordon】 アンソニー・ゴードン、レッドカードとバルサ戦敗北後、ニューカッスルファンに熱烈な誓い「もっと恩...</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=RDvQw5Ap6n0" target="_blank">【Yoane Wissa】 Wissa has a BIG ROLE to play for Newcastle 👊</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=pMENsI696RI" target="_blank">【Harvey Barnes】 Should Harvey Barnes Play for Scotland at the W...</a> - Tartan Geo</li>
+<li><a href="https://www.youtube.com/watch?v=15pKdYW0ScQ" target="_blank">【Anthony Gordon】 Look at this skill by Nick Woltemade 👀 #champio...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=_XCPyezz3qo" target="_blank">【Yoane Wissa】 Football : la RDC va à la CAN 2025 sans Yoane W...</a> - africanews (en français)</li>
+<li><a href="https://www.youtube.com/watch?v=OGH_NC95KU8" target="_blank">【Armando Broja】 BREAKING: Chelsea Finally Offloads Armando Broj...</a> - MR LINAH CFC</li>
+<li><a href="https://www.youtube.com/watch?v=VT6HFygLBPc" target="_blank">【Marcus Edwards】 The Statr Points System Explained + Burnley &am...</a> - StatrDraft</li>
+<li><a href="https://www.youtube.com/watch?v=9oeMIYk5TC8" target="_blank">【Anthony Gordon】 🔥 Gordon’s Unselfish Play Leads to AMAZING Goal...</a> - PlayZone X</li>
+<li><a href="https://www.youtube.com/watch?v=GCUGC20qVuk" target="_blank">【Yoane Wissa】 🚨BREAKING: Yoane Wissa set to join Newcastle fo...</a> - talkSPORT Newcastle</li>
+<li><a href="https://www.youtube.com/watch?v=PA4lnzjm6ZM" target="_blank">【Armando Broja】 The Premier League is back and Burnley head to ...</a> - No Nay Never • Burnley FC Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=TrVmv4Dtsb8" target="_blank">【Anthony Gordon】 Injury blow for Newcastle! Anthony Gordon hobbl...</a> - Stadium Astro</li>
+<li><a href="https://www.youtube.com/watch?v=8mjYFXh9LeA" target="_blank">【Yoane Wissa】 Newcastle United New Signings Yoane Wissa and N...</a> - The United Geordie</li>
+<li><a href="https://www.youtube.com/watch?v=FAutqNH_ZDI" target="_blank">【Armando Broja】 Pas ndeshjes, Armando Duka trondit Brojën pasi ...</a> - Vjen Arome</li>
+<li><a href="https://www.youtube.com/watch?v=sgjYJnP2uUQ" target="_blank">【Anthony Gordon】 &quot;I do that face&quot; 🤣😆</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=D6CNiGunm44" target="_blank">【Yoane Wissa】 Getting to know Wiss 🤝</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=p8610MkjhZA" target="_blank">【Armando Broja】 ROTASI JADI KUNCI DI MATCH DAY 12! PREVIEW MATC...</a> - Bridge Of Blue</li>
+<li><a href="https://www.youtube.com/watch?v=CnqaSa_52Co" target="_blank">【Anthony Gordon】 The Newcastle Duo That Will Shut Down The Premi...</a> - GOATV</li>
+<li><a href="https://www.youtube.com/watch?v=tw14Ptjue2s" target="_blank">【Yoane Wissa】 ウィッサの復帰でニューカッスルが再び危険なチームになる理由</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=c7NJDWdf-QI" target="_blank">【Harvey Barnes】 「忙しい時期の素晴らしいスタート」ハーヴェイ・バーンズ、ニューカッスルがマンチェスター・シティ...</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=WZ1TmeqCqeI" target="_blank">【Anthony Gordon】 プレミアリーグBIG6以外に所属する選手で市場価値が高いのは誰？ #サッカー</a> - 1分で世界のサッカー雑学</li>
+<li><a href="https://www.youtube.com/watch?v=5wdpvNtVo6A" target="_blank">【Yoane Wissa】 ヨアン・ウィッサがブレントフォードをソーシャルメディアから削除、ブレントフォードは彼に6000...</a> - Newcastle Fans TV</li>
+<li><a href="https://www.youtube.com/watch?v=gUssZ_DbgiI" target="_blank">【Armando Broja】 バーンリーはチェルシーからブロジャを獲得することに合意した。</a> - Actress gossip</li>
+<li><a href="https://www.youtube.com/watch?v=ixZ2-LGiDFk" target="_blank">【Marcus Edwards】 バーンリー対チェルシー：ブルーズはタイトル獲得の望みをつなぐために勝利が必要</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=B85ePQBDkLQ" target="_blank">【Anthony Gordon】 アンソニー・ゴードンのニューカッスルでの2年間の衰退：詳細な統計</a> - The Noise</li>
+<li><a href="https://www.youtube.com/watch?v=80_lZs23JMI" target="_blank">【Armando Broja】 Shtypi polak entuziast: “Shqipëria? Nuk mund të...</a> - Flash Zone 360°</li>
+<li><a href="https://www.youtube.com/watch?v=ERFqhvemTw8" target="_blank">【Yoane Wissa】 YOANE WISSA TO NEWCASTLE UNITED?! #nufc #newcas...</a> - BinksNUFC</li>
+<li><a href="https://www.youtube.com/watch?v=BT0-ad6XJ50" target="_blank">【Armando Broja】 Today’s Top Transfers: Heung min Son, Darwin Nu...</a> - E96 Play</li>
+<li><a href="https://www.youtube.com/watch?v=OaSnhSY2idQ" target="_blank">【Marcus Edwards】 The Debrief - Spurs Away: Squad Clear-Out on th...</a> - From The Bee Hole End - The Burnley Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=DeEbv7DCZas" target="_blank">【Yoane Wissa】 Newcastle United newly signed player Yoane Wissa</a> - The United Geordie</li>
+<li><a href="https://www.youtube.com/watch?v=axJUTzwzazQ" target="_blank">【Armando Broja】 Audio: Broja arrival and VR headsets | From The...</a> - From The Bee Hole End - The Burnley Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=1gu_hM8Wke8" target="_blank">【Yoane Wissa】 Why Yoane Wissa To Newcastle Is Worth EVERY Penny</a> - Woklz Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=X1FTNPQ1lLA" target="_blank">【Armando Broja】 Where will Isak play next season? | Son leaves ...</a> - EPLNews</li>
+<li><a href="https://www.youtube.com/watch?v=X2nhI7Ioi_8" target="_blank">【Anthony Gordon】 アンソニー・ゴードンはベンフィカ戦で素晴らしい活躍を見せ、久しぶりの最高のプレーを見せた。#N...</a> - Newcastle Fans TV</li>
+<li><a href="https://www.youtube.com/watch?v=4LmMaJ9sg_w" target="_blank">【Yoane Wissa】 ニューカッスルはどのストライカーと契約すべきでしょうか?ニック・ウォルテメイドのパートナーにヨ...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=VI7FYoT0H2k" target="_blank">【Armando Broja】 BREAKING DOWN EVERY CHELSEA TRANSFER SUMMER SAG...</a> - MAH</li>
+<li><a href="https://www.youtube.com/watch?v=KpaJ_wT5ASU" target="_blank">【Yoane Wissa】 🇨🇩 Welcome Yoane Wissa! 🖤🤍</a> - Magpie 24:7 - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=gf5VNtER_m8" target="_blank">【Armando Broja】 Wales will &#39;take anybody&#39; in World Cup ...</a> - tl-news</li>
+<li><a href="https://www.youtube.com/watch?v=ql6ZCVk9Sa0" target="_blank">【Anthony Gordon】 Newcastle vs Barcelona: Gordon Back!#shorts</a> - Royal updates</li>
+<li><a href="https://www.youtube.com/watch?v=xD8smtBRD9g" target="_blank">【Yoane Wissa】 🚨 Wissa Wants Out! Brentford Star Demands Newca...</a> - DJE TV</li>
+<li><a href="https://www.youtube.com/watch?v=Ia44pt_9-tY" target="_blank">【Harvey Barnes】 Should Scotland call up Harvey Barnes for the W...</a> - Daily Record</li>
+<li><a href="https://www.youtube.com/watch?v=4-V-b1tMol4" target="_blank">【Armando Broja】 TRỰC TIẾP I MAN UNITED vs BURNLEY 21h00 NGÀY 30...</a> - Tin Bóng đá</li>
+<li><a href="https://www.youtube.com/watch?v=4chD18t9nX8" target="_blank">【Anthony Gordon】 Ranking TOP NEWCASTLE 2024 vs 2025 Players Name...</a> - Football Prime</li>
+<li><a href="https://www.youtube.com/watch?v=fxMOHKxS_bk" target="_blank">【Yoane Wissa】 Yoane Wissa WILL JOIN Newcastle United + Eddie ...</a> - Adam Pearson</li>
+<li><a href="https://www.youtube.com/watch?v=5I0nHw8w6zk" target="_blank">【Armando Broja】 Tottenham vs Burnley 21h00 | 16/08: 3 Điểm Đầu ...</a> - BLV Kai Qin</li>
+<li><a href="https://www.youtube.com/watch?v=bq4-EAIlJLY" target="_blank">【Anthony Gordon】 🔥 Woltemade Assists Gordon for AMAZING Goal vs ...</a> - PlayZone X</li>
+<li><a href="https://www.youtube.com/watch?v=p9nUNIl1b2Q" target="_blank">【Armando Broja】 シャビ・シモンズ、ストライキで割引！ハトのメディカルチェック完了！エステバオ、チェルシーの夢を...</a> - Blue Lions TV - A Chelsea Channel</li>
+<li><a href="https://www.youtube.com/watch?v=vV8U1o7YC8E" target="_blank">【Harvey Barnes】 Gabby Agbolahor SUPPORTS Newcastle Star Harvey ...</a> - talkSPORT Newcastle</li>
+<li><a href="https://www.youtube.com/watch?v=L2NKFzy3QKU" target="_blank">【Armando Broja】 Kiernan Dewsbury-Hall to Everton: What This £28...</a> - Nextis Today</li>
+<li><a href="https://www.youtube.com/watch?v=Q4vvbdmFEDQ" target="_blank">【Anthony Gordon】 &quot;We can compete with anyone.&quot; 🗣️Antho...</a> - Derrick Ayim Official</li>
+<li><a href="https://www.youtube.com/watch?v=GxjzIuVusAc" target="_blank">【Yoane Wissa】 ニューカッスルの新攻撃デュオ - ニック・ウォルテメイドとヨアン・ウィッサはゲームチェンジャー...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=iZz_LEYVn5U" target="_blank">【Armando Broja】 オプション ファイル アップデート 2025 年 8 月 13 日 - PES 2017 | ...</a> - roffy wong</li>
+<li><a href="https://www.youtube.com/watch?v=HBszwsGKrsI" target="_blank">【Anthony Gordon】 ウォルテマデとハリー・ケインはいかに似ているか | ニューカッスルとイングランド代表フォワード...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=fTXedNGjXXY" target="_blank">【Harvey Barnes】 ハーヴェイ・バーンズのゴール | ニューカッスル vs マンチェスター・シティ (1-0) 全...</a> - VIVAL SPORTS </li>
+<li><a href="https://www.youtube.com/watch?v=60jHQKL1Gqw" target="_blank">【Armando Broja】 RELEASE! EFOOTBALL 26 PPSSPP BY MP PATCH NEW LA...</a> - Mazdy Projects</li>
+<li><a href="https://www.youtube.com/watch?v=3C3S-ZgY1O8" target="_blank">【Anthony Gordon】 Newcastle Utd Buildup Goal against Barcelona✨</a> - Crazy Football</li>
+<li><a href="https://www.youtube.com/watch?v=1dBM2EA3n04" target="_blank">【Yoane Wissa】 Nick Woltemade in Newcastle training ⚫️⚪️</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=7k27y-LH4JA" target="_blank">【Anthony Gordon】 ポープ、ゴードン、バーンズ 信じられない | エディ・ハウ | ニューカッスル 3-0 ベンフィカ</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=Kyc9Jfbx7YM" target="_blank">【Yoane Wissa】 Okay, The NEW Newcastle Squad is SCARY</a> - PedTalksSports</li>
+<li><a href="https://www.youtube.com/watch?v=2tqGcFR5yIo" target="_blank">【Anthony Gordon】 ニューカッスル戦で2ゴールを決めるまでは、ラッシュフォードが好きだった！ | アンソニー・ゴー...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=EGUl7yooEDs" target="_blank">【Yoane Wissa】 ニューカッスルがイサクの代わりとしてまさに必要としていたのはウィッサとウォルテマデだった理由！</a> - Alice- ECILA Football</li>
+<li><a href="https://www.youtube.com/watch?v=BpSYlRW23U8" target="_blank">【Anthony Gordon】 ゴードンは素晴らしい、ニューカッスルは別次元！ジョゼ・モウリーニョ | ニューカッスル 3-0...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=_Hm3Uo5dg64" target="_blank">【Yoane Wissa】 Yoane Wissa FINALLY makes #NUFC debut with GREA...</a> - Harry De Cosemo</li>
+<li><a href="https://www.youtube.com/watch?v=yG4GUD8pIRU" target="_blank">【Anthony Gordon】 Aston Villa 0 - 0 Newcastle United  | Premier L...</a> - USA SPORTS NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=hozNnssCi2A" target="_blank">【Harvey Barnes】 Harvey Barnes Explores Switch to Scotland After...</a> - NewsBOT Sports</li>
+<li><a href="https://www.youtube.com/watch?v=uJKpxRZwe6Q" target="_blank">【Yoane Wissa】 Newcastle v Burnley. 6.12.25. Wissa run and shot</a> - Newcastle gigs</li>
+<li><a href="https://www.youtube.com/watch?v=QhOTKZ7_Vzs" target="_blank">【Yoane Wissa】 ニューカッスルのターゲット、ジョエル・オルドニェスとジョルシー・モキオが移籍へ🚨！ヨアン・ウィ...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=8pgkkBTlrgo" target="_blank">【Anthony Gordon】 Anthony Gordon on England’s Tactical Setup and ...</a> - FTBL Tactics</li>
+<li><a href="https://www.youtube.com/watch?v=FkiJJ5fzRzg" target="_blank">【Yoane Wissa】 Yoane Wissa Transfer Rejected! Brentford Turn D...</a> - USA NEWS TODAY</li>
+<li><a href="https://www.youtube.com/watch?v=MykAVMwjHJA" target="_blank">【Harvey Barnes】 One of the Most Underrated Wingers in the World</a> - Tekkers Productions</li>
+<li><a href="https://www.youtube.com/watch?v=RkPofcvujY8" target="_blank">【Yoane Wissa】 エリオット・アンダーソンがニューカッスルに復帰！？ ヨアン・ウィッサ + ルイス・ホール最新情報！</a> - The Magpie Channel TV</li>
+<li><a href="https://www.youtube.com/watch?v=V63vDycXGrw" target="_blank">【Yoane Wissa】 Wissa Refuses to Play for Brentford, Pushes for...</a> - Folin Sport</li>
+<li><a href="https://www.youtube.com/watch?v=x2M9mO4Ci8w" target="_blank">【Harvey Barnes】 バーンズがベンチにいるのは贅沢だ - 完全な贅沢 - ジョゼ・モウリーニョ監督、ニューカッスル...</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=SJaa_4kl8CE" target="_blank">【Anthony Gordon】 Anthony Gordon compares Harry Kane to Nick Wolt...</a> - Christian Falk Bayern Insider</li>
+<li><a href="https://www.youtube.com/watch?v=2bnuhv0_u_A" target="_blank">【Yoane Wissa】 ブルーノ・ギマランエスがサンダーランド戦を前にニューカッスル・ユナイテッドについて語る + ヨ...</a> - Adam Pearson</li>
+<li><a href="https://www.youtube.com/watch?v=YZBlVEFeFc0" target="_blank">【Yoane Wissa】 YOANE WISSA to Newcastle: The GAME-CHANGER Eddi...</a> - Style of Play Football</li>
+<li><a href="https://www.youtube.com/watch?v=t0FBj79I5rk" target="_blank">【Harvey Barnes】 &quot;COMPLETE CONTROL&quot; José Mourinho on B...</a> - CBS Sports Golazo</li>
+<li><a href="https://www.youtube.com/watch?v=PJkGrfA_eXA" target="_blank">【Harvey Barnes】 Steve Clarke: The door for Harvey Barnes to pla...</a> - STV News</li>
+<li><a href="https://www.youtube.com/watch?v=Uh0NaqY3mfc" target="_blank">【Yoane Wissa】 Newcastle Ready New Bid for Yoane Wissa as Talk...</a> - Football Unbound</li>
+<li><a href="https://www.youtube.com/watch?v=ZAS8V6hg77Y" target="_blank">【Harvey Barnes】 ハーヴェイ・バーンズのゴール | ニューカッスル vs マンチェスター・シティ (1-0) 全...</a> - VIVAL SPORTS </li>
+<li><a href="https://www.youtube.com/watch?v=rvrLBzjuJK0" target="_blank">【Yoane Wissa】 ヨアン・ウィッサの感動的な旅：酸攻撃を乗り越えてニューカッスル・ユナイテッドに加入</a> - TrendTrove</li>
+<li><a href="https://www.youtube.com/watch?v=7lfudOoc-Os" target="_blank">【Harvey Barnes】 #newcastleutd play like Brazil in the #champion...</a> - OFFSIDE AND ON TAP</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (83件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=w7o6Lag-ZtQ" target="_blank">【Loum Tchaouna】 Burnley vs Liverpool - Tactical Breakdown highl...</a> - Agada Francis Louis <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_rDATo9TL4g" target="_blank">【Loum Tchaouna】 Burnley 2-0 Leeds United | Premier League highl...</a> - Leeds United Official <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=w7o6Lag-ZtQ" target="_blank">【Armando Broja】 Burnley vs Liverpool - Tactical Breakdown highl...</a> - Agada Francis Louis <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1kDa0P5t9t4" target="_blank">【Armando Broja】 Newcastle United 2 Burnley 1 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=MzFrT3YDPCM" target="_blank">【Armando Broja】 HIGHLIGHTS! City 5-1 Burnley | Haaland (2), Est...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=c7EAKmK6UhQ" target="_blank">【Armando Broja】 Burnley v. Chelsea | PREMIER LEAGUE HIGHLIGHTS ...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=j0HeUEaN0q8" target="_blank">【Armando Broja】 Walker-Peters Seals Comeback Win! ⚒️ | West Ham...</a> - West Ham United FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=rNEW9zaScUo" target="_blank">【Armando Broja】 Burnley 0-2 Chelsea | HIGHLIGHTS | Premier Leag...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=cjkJi2ODZdk" target="_blank">【Armando Broja】 MUST-SEE Commentary For Arsenal&#39;s Late Equa...</a> - Premier League <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=C3OaF1G6BvQ" target="_blank">【Armando Broja】 WINLESS RUN WORRIES ME..BUT STATS SHOW WE&#39;R...</a> - THYNK REACTS  <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=vnXgUO7n97o" target="_blank">【Marcus Edwards】 Bournemouth vs Burnley 1-1 Live Stream Premier ...</a> - Sammy Sk Football <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XHtB1e20FbI" target="_blank">【Marcus Edwards】 Burnley v. Arsenal | PREMIER LEAGUE HIGHLIGHTS ...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=VEnUGzDojLM" target="_blank">【Marcus Edwards】 Burnley VS Fulham - Premier League 2025/26 - BB...</a> - Radio Sports Commentary <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_A9heKxlEZM" target="_blank">【Marcus Edwards】 Premier League Live: Burnley v Arsenal Alt Audi...</a> - JB Sports <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=UxrhiG4hqRk" target="_blank">【Marcus Edwards】 ISAK TO MAKE DEBUT? | Burnley vs Liverpool | Ma...</a> - The Kop TV <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9eLZLQCyFEo" target="_blank">【Marcus Edwards】 Burnley vs Liverpool LIVE | Premier League | Wa...</a> - Vinskey Valor <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0WQ3P1gN6_A" target="_blank">【Marcus Edwards】 West Ham United vs Burnley LIVE Watchalong | Pr...</a> - JUSTJOE FOOTBALL SHOW <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Hjdo8Ti-YUs" target="_blank">【Marcus Edwards】 Premier League Live: Burnley v Arsenal Alt Audi...</a> - Mike Harniman  <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=meZZOPvDQow" target="_blank">【Marcus Edwards】 WEST HAM vs BURNLEY Live Stream COMMENTARY | Pr...</a> - And It’s Live Football Commentary & LiveScores <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x1qQlZtnk0Q" target="_blank">【Marcus Edwards】 The Brace on Sunday: Aston Villa v Burnley Alt ...</a> - Mike Harniman  <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7gWFrR5gcvE" target="_blank">【Marcus Edwards】 The Brace on Sunday: Aston Villa v Burnley Alt ...</a> - JB Sports <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=DljfDmRaMFk" target="_blank">【Marcus Edwards】 Premier League Live: Burnley v Leeds United Alt...</a> - Mike Harniman  <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Vc_Wp7AUyjQ" target="_blank">【Marcus Edwards】 The Brace on Sunday PL Live: Aston Villa v Burn...</a> - The Commentary Hub <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wz7hhrCddac" target="_blank">【Anthony Gordon】 Newcastle United vs. Barcelona: Extended Highli...</a> - CBS Sports Golazo <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=epGcfJnrQr0" target="_blank">【Anthony Gordon】 2-3! NEWCASTLE vs LIVERPOOLl🔥 Rio Ngumoha last ...</a> - 442oons <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Rhoo0mDFcBQ" target="_blank">【Anthony Gordon】 Newcastle United 2 Chelsea 2 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=S9Zy0hOXjRE" target="_blank">【Anthony Gordon】 Newcastle v. Chelsea | PREMIER LEAGUE HIGHLIGHT...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=KHdtBTZmCqw" target="_blank">【Anthony Gordon】 BIG WIN IN THE UCL 💫 Union SG 0 Newcastle Unite...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=dWwVfEcPP24" target="_blank">【Anthony Gordon】 Newcastle United v. Arsenal | PREMIER LEAGUE HI...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Y9xT8aPZzyY" target="_blank">【Anthony Gordon】 Extended Highlights: 100th Minute Ngumoha Winne...</a> - Liverpool FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=b9_Rk9Xlz2s" target="_blank">【Anthony Gordon】 Aston Villa 0 Newcastle United 0 | Premier Leag...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IPUkqwC5TZc" target="_blank">【Anthony Gordon】 Brighton and Hove Albion 2 Newcastle United 1 |...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hPaiGoXCB1s" target="_blank">【Anthony Gordon】 Newcastle United 4 Bradford City 1 | EXTENDED C...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=EbRtHkEPz8c" target="_blank">【Anthony Gordon】 LATE RIO NGUMOHA WINNER! Newcastle 2-3 Liverpoo...</a> - Liverpool FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=o4Kw7VUiB6Q" target="_blank">【Anthony Gordon】 WOLTEMADE DOES IT AGAIN! Newcastle United 2 Not...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=I06cvon9-l8" target="_blank">【Anthony Gordon】 Gordon Compares Voltemata to Kane: Playmaking S...</a> - NUFC TALK TV - XTRA <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-8w9SmQH3II" target="_blank">【Anthony Gordon】 Newcastle United 2 Nottingham Forest 0 | Premie...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1kDa0P5t9t4" target="_blank">【Anthony Gordon】 Newcastle United 2 Burnley 1 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=L7hIHM7ZWdw" target="_blank">【Anthony Gordon】 Newcastle United 1 Arsenal 2 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Nf6TtEJedH0" target="_blank">【Anthony Gordon】 Anthony Gordon Red Card vs Liverpool | Liverpoo...</a> - ZROX <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=82qx82-X6RU" target="_blank">【Anthony Gordon】 🔥 What a Play by Gordon! Watch Till the End | N...</a> - PlayZone X <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=QL2cwshihbg" target="_blank">【Anthony Gordon】 The moment everyone inside St. James&#39; Park ...</a> - Newcastle Fans TV <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=3jyIK1e0cmo" target="_blank">【Anthony Gordon】 £100m For Anthony Gordon?! 🤣</a> - Anfield Agenda <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=yd7RqysUrz0" target="_blank">【Anthony Gordon】 &#39;What a moment. Enjoy it!&#39; Newcastle 2-...</a> - Liverpool FC <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=NsscWBrw5Lk" target="_blank">【Anthony Gordon】 🟥 Anthony Gordon SENT OFF with STRAIGHT RED CAR...</a> - FOOTBALL VIEW <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sQrVU2K4OMM" target="_blank">【Anthony Gordon】 ⚽️ Newcatsle vs Liverpool | All Goal highlight</a> - Watch Again ⚽️ <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1JnxFYdvE9s" target="_blank">【Yoane Wissa】 Newcastle United 2 Fulham 1 | EXTENDED Carabao ...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1kDa0P5t9t4" target="_blank">【Yoane Wissa】 Newcastle United 2 Burnley 1 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wqanCwu459M" target="_blank">【Yoane Wissa】 WISSA &amp; WOLTEMADE‼️NEWCASTLE STRONGER THAN ...</a> - Quinny's Football Community <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=UiKW8g4yqM8" target="_blank">【Yoane Wissa】 🔴Unbelievable Move! Yoane Wissa Snubs Liverpool...</a> - LIVERPOOL VENTURE <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8HIbpGAdOBY" target="_blank">【Yoane Wissa】 Yoane Wissa&#39;s lengthy transfer window saga ...</a> - The Sun Sport <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2r5k4oGio_o" target="_blank">【Yoane Wissa】 Yoane Wissa&#39;s Recovery: Latest Update from ...</a> - NUFC TALK TV <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=W8611KAv5w8" target="_blank">【Yoane Wissa】 Yoane Wissa Return? PRESS CONFERENCE | Eddie Ho...</a> - Newcastle United <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wz7hhrCddac" target="_blank">【Harvey Barnes】 Newcastle United vs. Barcelona: Extended Highli...</a> - CBS Sports Golazo <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=LtDaYwfqTZk" target="_blank">【Harvey Barnes】 Harvey Barnes Goal | Brentford vs Newcastle 3-1...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kJv_3Pa5aR8" target="_blank">【Harvey Barnes】 Tottenham Hotspur vs. Newcastle United: Extende...</a> - CBS Sports Golazo <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xtFIPaZovh0" target="_blank">【Harvey Barnes】 Brentford vs Newcastle 3-1 EPL highlights 2025 ...</a> - VizBit Game Zone <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=E8MlXa6gK2s" target="_blank">【Harvey Barnes】 Brentford vs Newcastle 3-1 EPL highlights 2025 ...</a> - VizBit Game Zone <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=W7FmpSH1QKA" target="_blank">【Harvey Barnes】 HIGHLIGHTS! City rue missed chances after narro...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Rhoo0mDFcBQ" target="_blank">【Harvey Barnes】 Newcastle United 2 Chelsea 2 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=vhXJ8zmAW0w" target="_blank">【Harvey Barnes】 Newcastle United 2 Tottenham Hotspur 2 | Premie...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_s5sMdq557w" target="_blank">【Harvey Barnes】 INTO THE QUARTER-FINAL 🙌 Newcastle United 2 Tot...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IPUkqwC5TZc" target="_blank">【Harvey Barnes】 Brighton and Hove Albion 2 Newcastle United 1 |...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=H5mVkoM54Ec" target="_blank">【Harvey Barnes】 Newcastle United v. Manchester City | PREMIER L...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-8w9SmQH3II" target="_blank">【Harvey Barnes】 Newcastle United 2 Nottingham Forest 0 | Premie...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ZUtCujDfV3Y" target="_blank">【Harvey Barnes】 Brentford v. Newcastle United | PREMIER LEAGUE ...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=prTKN7aX1D0" target="_blank">【Harvey Barnes】 Newcastle United v. Liverpool | PREMIER LEAGUE ...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=CrZz841wRsM" target="_blank">【Harvey Barnes】 Newcastle United v. Nottingham Forest | PREMIER...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=3V0dnC-8rTA" target="_blank">【Harvey Barnes】 Newcastle United 1 Wolverhampton Wanderers 0 | ...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=S9Zy0hOXjRE" target="_blank">【Harvey Barnes】 Newcastle v. Chelsea | PREMIER LEAGUE HIGHLIGHT...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ONBI2nRBQuE" target="_blank">【Harvey Barnes】 Everton 1 Newcastle United 4 | EXTENDED Premier...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wmlZq6i9oNk" target="_blank">【Harvey Barnes】 Newcastle United v. Tottenham Hotspur | PREMIER...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=b9_Rk9Xlz2s" target="_blank">【Harvey Barnes】 Aston Villa 0 Newcastle United 0 | Premier Leag...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7Z91R1sCrdg" target="_blank">【Harvey Barnes】 Newcastle United 2-0 Tottenham Hotspur | Caraba...</a> - Tottenham Hotspur <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=BW_nDawaX-4" target="_blank">【Harvey Barnes】 Newcastle 2-2 Chelsea | HIGHLIGHTS - Extended |...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1JnxFYdvE9s" target="_blank">【Harvey Barnes】 Newcastle United 2 Fulham 1 | EXTENDED Carabao ...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Y9xT8aPZzyY" target="_blank">【Harvey Barnes】 Extended Highlights: 100th Minute Ngumoha Winne...</a> - Liverpool FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=f6MR7Zq5xGk" target="_blank">【Harvey Barnes】 WOLTEMADE WINNER! Newcastle United 1 Wolverhamp...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=b-3jSenFT3M" target="_blank">【Harvey Barnes】 AFC Bournemouth 0 Newcastle United 0 | EXTENDED...</a> - Newcastle United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=f3i82x8aJ60" target="_blank">【Harvey Barnes】 EVERTON 1-4 NEWCASTLE UNITED | Premier League h...</a> - Everton Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0shaUUsYCdo" target="_blank">【Harvey Barnes】 HARVEY BARNES STUNNER! | Why Man City LOST to N...</a> - IMPACT PLAY  <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=cl44OuxHrRA" target="_blank">【Harvey Barnes】 Nick Pope’s Stunning 65-Yard Assist Newcastle K...</a> - THE FOOTBALL ARENA HUB <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=YmLOlZ4t5gs" target="_blank">【Harvey Barnes】 Newcastle 2-1 Man City | Fans Reactions Mashup</a> - InsiderReaction <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+<details open>
+<summary><strong>🏃 練習風景 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QMFijr5l3QQ" target="_blank"><img src="https://i.ytimg.com/vi/QMFijr5l3QQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QMFijr5l3QQ" target="_blank">【Newcastle】 Ruben Has Options For Newcastle! 🤝</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=6n92Jv8p-Eg" target="_blank"><img src="https://i.ytimg.com/vi/6n92Jv8p-Eg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=6n92Jv8p-Eg" target="_blank">【Newcastle】 &quot;I Believe In My Team!&quot; 🤝 |...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ehDxZOAqHRM" target="_blank"><img src="https://i.ytimg.com/vi/ehDxZOAqHRM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ehDxZOAqHRM" target="_blank">【Burnley】 “Bryan, You Always Look Down!” 👀</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=p54y_-WZUAU" target="_blank"><img src="https://i.ytimg.com/vi/p54y_-WZUAU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=p54y_-WZUAU" target="_blank">【Newcastle】 EZE RUNNING RINGS!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=dhlM6lrHVP4" target="_blank"><img src="https://i.ytimg.com/vi/dhlM6lrHVP4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=dhlM6lrHVP4" target="_blank">【Burnley】 &quot;LOTS OF POSITIVES!&quot; Alex C...</a></strong><br/>📺 <strong>✅ talkSPORT</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=8LbLcUrFG2M" target="_blank"><img src="https://i.ytimg.com/vi/8LbLcUrFG2M/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=8LbLcUrFG2M" target="_blank">【Newcastle】 FULL PENALTY SHOOT-OUT | Arsenal vs C...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0rvtJyW4-Y0" target="_blank"><img src="https://i.ytimg.com/vi/0rvtJyW4-Y0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0rvtJyW4-Y0" target="_blank">【Newcastle】 CHEEKY ARSENAL GOAL!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=fatzW0PUfkM" target="_blank"><img src="https://i.ytimg.com/vi/fatzW0PUfkM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=fatzW0PUfkM" target="_blank">【Newcastle】 Lisandro Martinez advises Jack Fletch...</a></strong><br/>📺 <strong>⚠️ FOTBOLERA</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=biSpssz8Dlw" target="_blank"><img src="https://i.ytimg.com/vi/biSpssz8Dlw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=biSpssz8Dlw" target="_blank">【Newcastle】 Lisandro Martinez advises Jack Fletch...</a></strong><br/>📺 <strong>⚠️ KJ News</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HlYZpkBLUiw" target="_blank"><img src="https://i.ytimg.com/vi/HlYZpkBLUiw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HlYZpkBLUiw" target="_blank">【Burnley】 The 5 footballers who served in their...</a></strong><br/>📺 <strong>⚠️ Footy District</strong> ・ 🕐 4日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (65件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=wMLM5R9Sj-M" target="_blank">【Newcastle】 ✅INSIDE CARRINGTON! 😍MAN UNITED TRAINING NEWs &...</a> - Reds View </li>
+<li><a href="https://www.youtube.com/watch?v=etRggST9_8s" target="_blank">【Burnley】 These 8 Players Had the Worst 2025</a> - Goal 90</li>
+<li><a href="https://www.youtube.com/watch?v=xOHO2-6iSkg" target="_blank">【Newcastle】 NEWCASTLE UNITED&#39;S HUGE PROBLEM AHEAD OF MA...</a> - MUFC Pulse</li>
+<li><a href="https://www.youtube.com/watch?v=DdTn0wmIYKI" target="_blank">【Burnley】 Funny moments 😂</a> - BallVerseX1</li>
+<li><a href="https://www.youtube.com/watch?v=s_1upVrVe50" target="_blank">【Burnley】 #herobrine #viralboy</a> - 7mov_ftbl</li>
+<li><a href="https://www.youtube.com/watch?v=UZdIzzE-8MY" target="_blank">【Burnley】 Tom Heaton</a> - Grace knows</li>
+<li><a href="https://www.youtube.com/watch?v=2S-5PipsK8M" target="_blank">【Newcastle】 Training in Newcastle </a> - Johnny get caged</li>
+<li><a href="https://www.youtube.com/watch?v=CRi7tmX8CY0" target="_blank">【Burnley】 #vairalboy</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=FN_qFGObK2o" target="_blank">【Burnley】 The 5 most unbelievable football lookalikes</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=TCLrADgQelo" target="_blank">【Burnley】 #vairalboy</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=s6yia_bVW4I" target="_blank">【Newcastle】 Athletic Endurance &amp; Strength | Simple Trai...</a> - DIETBYMYUR</li>
+<li><a href="https://www.youtube.com/watch?v=YLe0lKWqxCM" target="_blank">【Burnley】 #vecna</a> - HypEditz </li>
+<li><a href="https://www.youtube.com/watch?v=0Bk5wYaG1jM" target="_blank">【Newcastle】 EDDIE HOWE 99.9% SURE HE WON&#39;T BE HERE? 🤔 #...</a> - Forde Have Mercy Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=fwKi6tXmdxY" target="_blank">【Burnley】 🔥INSIDE ARSENAL TRAINING 🚨 Gabriel Jesus RETURN...</a> - UDOGOD Gunners TV</li>
+<li><a href="https://www.youtube.com/watch?v=Fp4yXNT0okU" target="_blank">【Newcastle】 No Mbeumo, Amad or Mazraoui — Amorim Keeps Unit...</a> - MUFC NEWS LIVE</li>
+<li><a href="https://www.youtube.com/watch?v=leD7eb9VQFA" target="_blank">【Newcastle】 เอ็ดดี้ ฮาว ยอมรับว่าแผนสนามใหม่และสนามฝึกซ้อมข...</a> - บอลทรู ที่นี่มีแต่ฟุตบอล</li>
+<li><a href="https://www.youtube.com/watch?v=mI6fJbOK9B8" target="_blank">【Burnley】 #vecna</a> - HypEditz </li>
+<li><a href="https://www.youtube.com/watch?v=bhpHVbzvzLs" target="_blank">【Newcastle】 12 Chelsea training images ahead of Newcastle 👊💙</a> - Chelsea FC </li>
+<li><a href="https://www.youtube.com/watch?v=Ei14OjfGKj4" target="_blank">【Newcastle】 Amorim MUST Do This! Man United vs Newcastle Go...</a> - The United Stand</li>
+<li><a href="https://www.youtube.com/watch?v=1YIVjENkzII" target="_blank">【Burnley】 Guess the Player | Football Quiz | 🇳🇱 Chelsea →...</a> - Football Quiz</li>
+<li><a href="https://www.youtube.com/watch?v=bM8D-n0Eoe8" target="_blank">【Newcastle】 His Training Is Dangerous… (@c.s2ok)</a> - FitBlips</li>
+<li><a href="https://www.youtube.com/watch?v=IiokxegNEPE" target="_blank">【Burnley】 dembele in PSG💀🔥🔥🔥💪 #football #edit  o</a> - 𝔉𝔞𝔪𝔦𝔭</li>
+<li><a href="https://www.youtube.com/watch?v=w7VAPiQk9cY" target="_blank">【Newcastle】 ‘LIMBO’ Eddie Howe BOMBSHELL On His Future &amp...</a> - The Magpie Channel TV</li>
+<li><a href="https://www.youtube.com/watch?v=yKAUudlx9vs" target="_blank">【Burnley】 #vairalboy</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=LxCulLpOtfI" target="_blank">【Burnley】 1 vs 11 💀 #football #footballshorts</a> - SAF</li>
+<li><a href="https://www.youtube.com/watch?v=GI1TlM8_Rlc" target="_blank">【Newcastle】 Howe Admits Newcastle’s Stadium Vision Unlikely...</a> - FOOTBALL TOP SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=wKB36EPm4nc" target="_blank">【Burnley】 720p footballers 💀</a> - Femyft</li>
+<li><a href="https://www.youtube.com/watch?v=afH1ieON6Ao" target="_blank">【Newcastle】 VERY RARELY QUESTION OUR ATTITUDE! | Eddie Howe...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=U5V9hQ9EZtc" target="_blank">【Newcastle】 MAN UTD VS NEWCASTLE: COMBINED XI 🔴⚫️ #football...</a> - OutTheTunnel</li>
+<li><a href="https://www.youtube.com/watch?v=UPgebZn6tws" target="_blank">【Burnley】 Why Patience is Key in Football (Soccer)</a> - MANDI VLOGS</li>
+<li><a href="https://www.youtube.com/watch?v=9JLIbR2WPdk" target="_blank">【Newcastle】 Newcastle Town Moor and Exhibition Park 10k 2025</a> - Rollercoaster Of Running</li>
+<li><a href="https://www.youtube.com/watch?v=5itJ94P7IG8" target="_blank">【Burnley】 When Yamal Gets Bored💀🔥 #football #footballshor...</a> - homeboyz sports</li>
+<li><a href="https://www.youtube.com/watch?v=WhxnDmZ7Kt0" target="_blank">【Newcastle】 Senne Lammens’ crazy saves against Newcastle se...</a> - FOTBOLERA</li>
+<li><a href="https://www.youtube.com/watch?v=GBaNDZDqiyQ" target="_blank">【Burnley】 Why look elsewhere when we&#39;ve got Matheus C...</a> - AbsoluteAmorim</li>
+<li><a href="https://www.youtube.com/watch?v=Qg9-Z0CJO60" target="_blank">【Newcastle】 Newcastle Transformation 2021-2025 #viral #foot...</a> - Ted's TOON ARMY</li>
+<li><a href="https://www.youtube.com/watch?v=LUuKt1ON2uY" target="_blank">【Burnley】 Cristiano Ronaldo se ha puesto a escuchar este ...</a> - ᴊ.ᴘʀɪᴍᴇ™</li>
+<li><a href="https://www.youtube.com/watch?v=0s8AOcXRgoQ" target="_blank">【Newcastle】   Heaven Stuns Newcastle!😍 AMORIM SPEAKS OUT On...</a> - Reds View </li>
+<li><a href="https://www.youtube.com/watch?v=RzeY0BjdEEg" target="_blank">【Burnley】 144p footballers 💀 #football #footballshorts #e...</a> - Notmtzsoux </li>
+<li><a href="https://www.youtube.com/watch?v=cH877bkMrPM" target="_blank">【Burnley】 Real Madrid rockets prt2 🥶🔥</a> - Femyft</li>
+<li><a href="https://www.youtube.com/watch?v=VZgq4iVoa_Y" target="_blank">【Burnley】 Scored the Penalty, Couldn&#39;t Celebrate 💔</a> - SevenBall</li>
+<li><a href="https://www.youtube.com/watch?v=XqsPCJTMAW4" target="_blank">【Newcastle】 The Most Unstable Countries in the World</a> - USA News Live</li>
+<li><a href="https://www.youtube.com/watch?v=p77WWppBLug" target="_blank">【Burnley】 Scary teams of next season 🔥💀 #football #footba...</a> - SSAFTBL7</li>
+<li><a href="https://www.youtube.com/watch?v=tINrbb3g7HE" target="_blank">【Newcastle】 Real Madrid - Intense Finishing Drill</a> - Train Like a Pro - By The Best Football Coaches</li>
+<li><a href="https://www.youtube.com/watch?v=g7cV-QI7eK8" target="_blank">【Burnley】 What halaand is doing is truely shocking #short...</a> - Footy Slider</li>
+<li><a href="https://www.youtube.com/watch?v=JZu3PC3R3LQ" target="_blank">【Newcastle】 😱 MY GOD!! 💥💣 THE BOMB EXPLODED THIS MORNING! M...</a> - UTD BUZZ Official</li>
+<li><a href="https://www.youtube.com/watch?v=xiSbhbDwb-c" target="_blank">【Burnley】 رسميا الاعب الذي دمره تشابي الونسو ينتقل إلى لي...</a> - المصمم عـبـاس</li>
+<li><a href="https://www.youtube.com/watch?v=mElu5OE0TaY" target="_blank">【Burnley】 Shhh celebrations 🤫💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=g58KY-02gk0" target="_blank">【Newcastle】 #horse #horseriding #newcastle #countydurham</a> - Lexi</li>
+<li><a href="https://www.youtube.com/watch?v=l9PLyMeHocM" target="_blank">【Burnley】 2025 Best Transfers.  #football #footballshorts</a> - MoonHd30x</li>
+<li><a href="https://www.youtube.com/watch?v=cyV8kw034ZE" target="_blank">【Newcastle】 Eddie Howe: ‘99.9% I Won’t Be Here’ 🔥 Howe Admi...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=Kzy7UbUoQDA" target="_blank">【Burnley】 Mất Điểm Phút Cuối 😭 #football #bongda</a> - DTS</li>
+<li><a href="https://www.youtube.com/watch?v=Vnvifuuup_c" target="_blank">【Newcastle】 “NEW STADIUM? NO CLARITY!”</a> - USA News Live</li>
+<li><a href="https://www.youtube.com/watch?v=lEUqDKFPrjY" target="_blank">【Burnley】 Is Raphinha Really Deserve Better In Barcelona?...</a> - SHYT7</li>
+<li><a href="https://www.youtube.com/watch?v=Jl2wILmPcfc" target="_blank">【Newcastle】 Irish Mags Show #107 - Will January Transfer Wi...</a> - The Irish Mags NUFC Supporters Group</li>
+<li><a href="https://www.youtube.com/watch?v=dgyscp9NbCs" target="_blank">【Burnley】 Is Raphinha Back in His Prime? 🤔🔥⚽ #raphinha #b...</a> - DanFooty</li>
+<li><a href="https://www.youtube.com/watch?v=c_k0v-agWJw" target="_blank">【Burnley】 #vecna</a> - Ultra Footy</li>
+<li><a href="https://www.youtube.com/watch?v=ZMgL4qu5NRE" target="_blank">【Newcastle】 #horse #horseriding #newcastle #countydurham #f...</a> - Lexi</li>
+<li><a href="https://www.youtube.com/watch?v=0N4WG1zhPDk" target="_blank">【Burnley】 1 vs 11 💀 #football  #footballshorts</a> - joo Football</li>
+<li><a href="https://www.youtube.com/watch?v=1jJuvTXi-ow" target="_blank">【Newcastle】 Racehorse newcastle racecourse</a> - S Banks</li>
+<li><a href="https://www.youtube.com/watch?v=DuvX2_-wnbA" target="_blank">【Burnley】 The 5 footballers who don’t have children</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=eCinuGdYDwA" target="_blank">【Newcastle】 No Excuses 🔥 Amorim Pushes Man United Hard Ahea...</a> - MUFC NEWS LIVE</li>
+<li><a href="https://www.youtube.com/watch?v=4KzSrnRWTL8" target="_blank">【Burnley】 #vecna</a> - HypEditz </li>
+<li><a href="https://www.youtube.com/watch?v=kc9L8Utc50I" target="_blank">【Burnley】 Is LAMINE YAMAL injured ...💔</a> - GBS10</li>
+<li><a href="https://www.youtube.com/watch?v=aA_-44vmkr0" target="_blank">【Burnley】 Nathan Jones on Portsmouth loss 🗣️ (December 2025)</a> - Charlton Athletic Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=lty6QxceGgw" target="_blank">【Newcastle】 Estevao BACK, I LOVE Cole Palmer | Enzo Maresca...</a> - HaytersTV</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (24件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">【Burnley】 Patrick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">【Burnley】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Burnley】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">【Burnley】 Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0wjS9i_Aajo" target="_blank">【Burnley】 Highlights: Portsmouth 2 Charlton 1 (December 2...</a> - Charlton Athletic Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=cIJbxv5sfbE" target="_blank">【Burnley】 Is Frimpong Better Than Trent? 🤔🔥⚽ #frimpong #t...</a> - DanFooty <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=__ml0aEHfBw" target="_blank">【Burnley】 SAM ALABI HAS A LOT OF TALENT AND A GREAT ATTIT...</a> - BeanymanSports <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xlZqB2puiCo" target="_blank">【Burnley】 TOUGH GAME AGAINST A REALLY AGGRESSIVE SIDE! 💪 ...</a> - BeanymanSports2 <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9Rcq5tAbJfo" target="_blank">【Burnley】 NOT GOOD ENOUGH WITH THE BALL BUT WE’LL TAKE TH...</a> - BeanymanSports2 <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-t3tWOd5QBI" target="_blank">【Burnley】 FANS DESERVE BETTER! Eddie Howe wants away joy ...</a> - SPORTS SHOW <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kG79J-5Lf-4" target="_blank">【Burnley】 Manager reactions ☠️pt2</a> - BallVerseX1 <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=R3yJXiuNZrw" target="_blank">【Newcastle】 Manchester United vs Newcastle (1-0) Extended H...</a> - SELEVEN REPORT <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IbvnmciBpzs" target="_blank">【Newcastle】 Manchester United vs Newcastle United (1-0) Ext...</a> - FOOTBALL THRILLS 😍 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ptZ9drVJR2E" target="_blank">【Newcastle】 A Boxing Day Special! | Man Utd 4-3 Newcastle |...</a> - Manchester United <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Newcastle】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XDnLgOSMkIc" target="_blank">【Newcastle】 LIVE NOW 🛑 UNITED SQUAD INSIDE TRAINING AHEAD O...</a> - THE UNITED UPDATES  <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=6C7P3ilLidA" target="_blank">【Newcastle】 LIVE NOW🛑SESKO,ZERKZEE &amp;MORE IN CHRISTMAS T...</a> - OLD TRAFFORD EXCLUSIVE ⚽⚽ <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sDh3KLpW-2Y" target="_blank">【Newcastle】 LIVE | Man Utd 1-0 Newcastle | Ruben Amorim &am...</a> - HaytersTV <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=4LdVsPzNBPQ" target="_blank">【Newcastle】 &quot;We&#39;ll Find Solutions To Play&quot; | ...</a> - Manchester United <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_8Qs0dxQO2A" target="_blank">【Newcastle】 &quot;I Can Help Them Play Better&quot; | Ruben...</a> - Manchester United <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=__ml0aEHfBw" target="_blank">【Newcastle】 SAM ALABI HAS A LOT OF TALENT AND A GREAT ATTIT...</a> - BeanymanSports <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=cHgKpR2TTkM" target="_blank">【Newcastle】 IT’S IMPOSSIBLE TO REPLACE BRUNO! 🧠 | Ruben Amo...</a> - BeanymanSports <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-t3tWOd5QBI" target="_blank">【Newcastle】 FANS DESERVE BETTER! Eddie Howe wants away joy ...</a> - SPORTS SHOW <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xlZqB2puiCo" target="_blank">【Newcastle】 TOUGH GAME AGAINST A REALLY AGGRESSIVE SIDE! 💪 ...</a> - BeanymanSports2 <span style="color:#f44336">[press_conference]</span></li>
+</ul>
+</details>
+</details>
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>Nottingham Forest vs Everton （EPL）… Low rank</li>
+<li>West Ham vs Brighton （EPL）… Low rank</li>
+<li>Manchester United vs Wolves （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: (キャッシュから取得のため情報なし)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 39回呼び出し (キャッシュ: 0件, 合計リクエスト: 39件)</li>
+</ul>
+        <div class="timestamp">
+            生成日時: 2025-12-31 07:22:41 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

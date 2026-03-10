@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[DEBUG] Levante vs Alaves - LALIGA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/report_styles.css">
+    <link rel="stylesheet" href="../assets/nav_menu.css">
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
+<div class="mode-banner mode-banner-debug">🔧 DEBUG MODE - このレポートはデバッグ用です</div>
+<div class="match-header-container">
+    <img src="https://media.api-sports.io/football/leagues/140.png" class="competition-logo-header" alt="LALIGA">
+    <div class="match-header-info">
+        <h1>
+<img src="https://media.api-sports.io/football/teams/539.png" class="header-team-logo-left"
+                alt="Levante">            Levante vs Alaves
+<img src="https://media.api-sports.io/football/teams/542.png" class="header-team-logo-right"
+                alt="Alaves">        </h1>
+        <div class="match-metadata">
+            <span class="match-datetime">2026/02/28（土） 05:00 JST / 2026-02-27 20:00 Local @ Estadio Ciudad de Valencia, Valencia</span>
+        </div>
+    </div>
+</div>
+
+<div class="news-summary-top">
+    <p>バレンシアの夜、レバンテ対アラベス。降格圏脱出を目指すレバンテと、残留を確実なものとしたいアラベスの思惑が交錯する一戦だ.</p>
+<p>レバンテは現在リーグ19位。直近のリーグ戦では4連敗を喫し、ホームでの戦績も芳しくない. しかし、ホームでは意地を見せており、大崩れはしていない. 一方の攻撃陣は、チャンスを作りながらも決定力不足に悩まされている.</p>
+<p>対するアラベスは14位。直近5試合では1敗のみと安定した戦いを見せている. しかし、アウェイでの勝負弱さが課題だ. チームは堅守をベースにしており、組織的な守備からカウンターを狙う.</p>
+<p>両チームの過去の対戦では、アラベスがやや優勢。しかし、レバンテも過去6試合で3勝を挙げている. 今回の試合は、両チームにとって重要な意味を持つ。レバンテは連敗を止め、降格圏からの脱出への足がかりを掴みたい。アラベスは、アウェイでの苦手意識を克服し、残留争いから一歩抜け出したいところだ.</p>
+<p>レバンテは、ケルビン・アリアガが出場停止。ウナイ・エルゲサバルにも不安が残る. 一方のアラベスは、ヴィレ・コスキが欠場する.</p>
+<p>レバンテのキープレーヤーは、イバン・ロメロ。今シーズン、すでに4ゴールを挙げている. 一方のアラベスは、直近の試合で2ゴールを挙げたルーカス・ボジェに注目だ.</p>
+<p>両チームとも負けられない状況。激しい試合展開が予想される。</p>
+</div>
+
+<!-- Win Prediction Section (Issue #199 Repositioned) -->
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ 勝敗予想</h3>
+        <div class="prediction-card win-probability">
+            <div class="prob-row">
+                <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="prob-team-logo">
+
+                <div class="prob-bar-container">
+                    <div class="prob-bar home"
+                        style="width: 10%; background-color: #CCCCCC">
+                        <span class="prob-label">10%</span>
+                    </div>
+                    <div class="prob-bar draw" style="width: 45%; background-color: #95a5a6">
+                        <span class="prob-label">45%</span>
+                    </div>
+                    <div class="prob-bar away"
+                        style="width: 45%; background-color: #009AD7">
+                        <span class="prob-label">45%</span>
+                    </div>
+                </div>
+
+                <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="prob-team-logo">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<details class="collapsible-section">
+    <summary>📊 順位表 (Regular Season - 26)</summary>
+    <div class="section-content">
+        <div class="standings-container">
+    <table class="standings-table">
+        <thead>
+            <tr>
+                <th class="rank">順位</th>
+                <th class="team">チーム</th>
+                <th class="played">試合</th>
+                <th class="won">勝</th>
+                <th class="draw">分</th>
+                <th class="lost">負</th>
+                <th class="goals">得失</th>
+                <th class="points">勝点</th>
+                <th class="form desktop-only">直近</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        1
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/529.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Barcelona</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">20</td>
+                <td class="draw">1</td>
+                <td class="lost">4</td>
+                <td class="goals">42</td>
+                <td class="points"><strong>61</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        2
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/541.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Real Madrid</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">19</td>
+                <td class="draw">3</td>
+                <td class="lost">3</td>
+                <td class="goals">33</td>
+                <td class="points"><strong>60</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        3
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/533.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Villarreal</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">16</td>
+                <td class="draw">3</td>
+                <td class="lost">6</td>
+                <td class="goals">20</td>
+                <td class="points"><strong>51</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge cl">
+                        4
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/530.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Atletico Madrid</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">14</td>
+                <td class="draw">6</td>
+                <td class="lost">5</td>
+                <td class="goals">19</td>
+                <td class="points"><strong>48</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge el">
+                        5
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/543.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Real Betis</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">11</td>
+                <td class="draw">9</td>
+                <td class="lost">5</td>
+                <td class="goals">10</td>
+                <td class="points"><strong>42</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        6
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/538.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Celta Vigo</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">9</td>
+                <td class="draw">10</td>
+                <td class="lost">6</td>
+                <td class="goals">7</td>
+                <td class="points"><strong>37</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        7
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/540.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Espanyol</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">10</td>
+                <td class="draw">5</td>
+                <td class="lost">10</td>
+                <td class="goals">-6</td>
+                <td class="points"><strong>35</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        8
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/531.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Athletic Club</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">10</td>
+                <td class="draw">4</td>
+                <td class="lost">11</td>
+                <td class="goals">-6</td>
+                <td class="points"><strong>34</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        9
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/727.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Osasuna</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">9</td>
+                <td class="draw">6</td>
+                <td class="lost">10</td>
+                <td class="goals">1</td>
+                <td class="points"><strong>33</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        10
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/548.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Real Sociedad</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">8</td>
+                <td class="draw">8</td>
+                <td class="lost">9</td>
+                <td class="goals">-1</td>
+                <td class="points"><strong>32</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        11
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/536.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Sevilla</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">8</td>
+                <td class="draw">5</td>
+                <td class="lost">12</td>
+                <td class="goals">-7</td>
+                <td class="points"><strong>29</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        12
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/546.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Getafe</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">8</td>
+                <td class="draw">5</td>
+                <td class="lost">12</td>
+                <td class="goals">-9</td>
+                <td class="points"><strong>29</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot d">D</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        13
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/547.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Girona</span>
+                    </div>
+                </td>
+                <td class="played">24</td>
+                <td class="won">7</td>
+                <td class="draw">8</td>
+                <td class="lost">9</td>
+                <td class="goals">-14</td>
+                <td class="points"><strong>29</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        14
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/728.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Rayo Vallecano</span>
+                    </div>
+                </td>
+                <td class="played">24</td>
+                <td class="won">6</td>
+                <td class="draw">8</td>
+                <td class="lost">10</td>
+                <td class="goals">-9</td>
+                <td class="points"><strong>26</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="highlight-away">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        15
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/542.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Alaves</span>
+                    </div>
+                </td>
+                <td class="played">24</td>
+                <td class="won">7</td>
+                <td class="draw">5</td>
+                <td class="lost">12</td>
+                <td class="goals">-9</td>
+                <td class="points"><strong>26</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        16
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/532.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Valencia</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">6</td>
+                <td class="draw">8</td>
+                <td class="lost">11</td>
+                <td class="goals">-13</td>
+                <td class="points"><strong>26</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge ">
+                        17
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/797.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Elche</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">5</td>
+                <td class="draw">10</td>
+                <td class="lost">10</td>
+                <td class="goals">-5</td>
+                <td class="points"><strong>25</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge rel">
+                        18
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/798.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Mallorca</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">6</td>
+                <td class="draw">6</td>
+                <td class="lost">13</td>
+                <td class="goals">-12</td>
+                <td class="points"><strong>24</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="highlight-home">
+                <td class="rank">
+                    <span
+                        class="rank-badge rel">
+                        19
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/539.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Levante</span>
+                    </div>
+                </td>
+                <td class="played">25</td>
+                <td class="won">4</td>
+                <td class="draw">6</td>
+                <td class="lost">15</td>
+                <td class="goals">-18</td>
+                <td class="points"><strong>18</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot d">D</span>
+                    </div>
+                </td>
+            </tr>
+            <tr
+                class="">
+                <td class="rank">
+                    <span
+                        class="rank-badge rel">
+                        20
+                    </span>
+                </td>
+                <td class="team">
+                    <div class="team-info">
+                        <img src="https://media.api-sports.io/football/teams/718.png" class="standings-team-logo" alt="">
+                        <span class="team-name">Oviedo</span>
+                    </div>
+                </td>
+                <td class="played">24</td>
+                <td class="won">3</td>
+                <td class="draw">8</td>
+                <td class="lost">13</td>
+                <td class="goals">-23</td>
+                <td class="points"><strong>17</strong></td>
+                <td class="form desktop-only">
+                    <div class="form-indicators">
+                        <span class="form-dot d">D</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot w">W</span>
+                        <span class="form-dot l">L</span>
+                        <span class="form-dot l">L</span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="standings-legend">
+        <span class="legend-item"><span class="rank-badge cl"></span> CL圏</span>
+        <span class="legend-item"><span class="rank-badge el"></span> EL圏</span>
+        <span class="legend-item"><span class="rank-badge rel"></span> 降格圏</span>
+    </div>
+</div>
+    </div>
+</details>
+
+
+
+<div class="two-column-section">
+    <div class="team-column">
+        <h3 class="lineup-header">
+<img src="https://media.api-sports.io/football/teams/539.png" alt="Levante"
+                class="team-logo">            Levante
+        </h3>
+        <div class="section-label">Starting XI <span class="formation-badge">(4-1-4-1)</span>
+        </div>
+        <div class="player-cards">
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>マシュー・ライアン</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/2741.png" alt="マシュー・ライアン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #13</div>
+                <div class="player-card-nationality">🇦🇺 Australia</div>
+                <div class="player-card-age">33歳 (1992/04/08)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ジェレミー・トルヤン</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/1118.png" alt="ジェレミー・トルヤン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #22</div>
+                <div class="player-card-nationality">🇩🇪 Germany</div>
+                <div class="player-card-age">31歳 (1994/08/08)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アドリアン・デ・ラ・フエンテ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/734.png" alt="アドリアン・デ・ラ・フエンテ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #4</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">27歳 (1999/02/26)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>マティアス・モレノ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/421807.png" alt="マティアス・モレノ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #2</div>
+                <div class="player-card-nationality">🇦🇷 Argentina</div>
+                <div class="player-card-age">22歳 (2003/09/24)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>マヌエル・サンチェス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/64309.png" alt="マヌエル・サンチェス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #23</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">25歳 (2000/08/24)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ウーゴ・ラグーバー</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/334878.png" alt="ウーゴ・ラグーバー" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #14</div>
+                <div class="player-card-nationality">🇫🇷 France</div>
+                <div class="player-card-age">22歳 (2003/07/13)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>カリーム・トゥンデ</span>
+        </div>
+        <div class="player-card-body">
+            <div class="player-card-photo player-card-photo-placeholder"></div>
+            <div class="player-card-info">
+                <div class="player-card-position">FW #26</div>
+                <div class="player-card-nationality"></div>
+                <div class="player-card-age"></div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ジョン・アンデル・オラサガスティ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/182603.png" alt="ジョン・アンデル・オラサガスティ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #8</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">25歳 (2000/08/16)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>カルロス・アルバレス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/182770.png" alt="カルロス・アルバレス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #24</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">22歳 (2003/08/06)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>パコ・コルテス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/463279.png" alt="パコ・コルテス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #27</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">18歳 (2007/08/11)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>イバン・ロメロ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/192032.png" alt="イバン・ロメロ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #9</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">24歳 (2001/04/10)</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Substitutes</div>
+        <div class="player-cards-scroll">
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>パブロ・クニャット</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/286611.png" alt="パブロ・クニャット" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #1</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">23歳 (2002/04/28)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アラン・マトゥーロ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/316517.png" alt="アラン・マトゥーロ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #3</div>
+                <div class="player-card-nationality">🇺🇾 Uruguay</div>
+                <div class="player-card-age">21歳 (2004/10/11)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ナチョ・ペレス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/504605.png" alt="ナチョ・ペレス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #29</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age"></div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ディエゴ・パンピン</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/104832.png" alt="ディエゴ・パンピン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #6</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">25歳 (2000/03/15)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>オリオル・レイ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/106727.png" alt="オリオル・レイ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #20</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">28歳 (1998/02/25)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ビクトル・ガルシア</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/46790.png" alt="ビクトル・ガルシア" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #17</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">28歳 (1997/09/16)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>イケル・ロサダ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/128985.png" alt="イケル・ロサダ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #18</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">24歳 (2001/08/01)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ウナイ・ベンセドール</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/182639.png" alt="ウナイ・ベンセドール" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #12</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">25歳 (2000/11/15)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>タイ・アベド</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/328139.png" alt="タイ・アベド" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #55</div>
+                <div class="player-card-nationality">🇮🇱 Israel</div>
+                <div class="player-card-age">21歳 (2004/03/08)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>エッタ・エヨン</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/378284.png" alt="エッタ・エヨン" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #21</div>
+                <div class="player-card-nationality">🇨🇲 Cameroon</div>
+                <div class="player-card-age">22歳 (2003/10/14)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>カルロス・エスピー</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/450497.png" alt="カルロス・エスピー" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #19</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">20歳 (2005/07/24)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ホセ・ルイス・モラレス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/47467.png" alt="ホセ・ルイス・モラレス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #11</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">38歳 (1987/07/23)</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Injuries / Suspended</div>
+        <div class="player-cards-scroll">
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>K. Arriaga</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/125239.png" alt="K. Arriaga" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Levante</div>
+                <div class="player-card-age injury-reason">⚠️ Red Card</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>R. Brugue</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/47225.png" alt="R. Brugue" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Levante</div>
+                <div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>U. Elgezabal</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/46941.png" alt="U. Elgezabal" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Levante</div>
+                <div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>P. アントニオ・マルティネス</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/104949.png" alt="P. アントニオ・マルティネス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Levante</div>
+                <div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+    <div class="team-column">
+        <h3 class="lineup-header">
+<img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves"
+                class="team-logo">            Alaves
+        </h3>
+        <div class="section-label">Starting XI <span class="formation-badge">(4-4-2)</span>
+        </div>
+        <div class="player-cards">
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アントニオ・シベラ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/47353.png" alt="アントニオ・シベラ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #1</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">29歳 (1996/08/11)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ジョニー・オット</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/18740.png" alt="ジョニー・オット" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #17</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">31歳 (1994/03/03)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ナウエル・テナグリア</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/6233.png" alt="ナウエル・テナグリア" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #14</div>
+                <div class="player-card-nationality">🇦🇷 Argentina</div>
+                <div class="player-card-age">30歳 (1996/02/21)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ヨン・パチェコ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/182546.png" alt="ヨン・パチェコ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #5</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">25歳 (2001/01/08)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ビクトル・パラダ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/128951.png" alt="ビクトル・パラダ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #24</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">23歳 (2002/04/04)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アンヘル・ペレス</span>
+        </div>
+        <div class="player-card-body">
+            <div class="player-card-photo player-card-photo-placeholder"></div>
+            <div class="player-card-info">
+                <div class="player-card-position">MF #7</div>
+                <div class="player-card-nationality"></div>
+                <div class="player-card-age"></div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>パブロ・イバニェス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/139001.png" alt="パブロ・イバニェス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #19</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">27歳 (1998/09/20)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アントニオ・ブランコ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/162686.png" alt="アントニオ・ブランコ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #8</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">25歳 (2000/07/23)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>カルレス・アレーニャ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/143.png" alt="カルレス・アレーニャ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #10</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">28歳 (1998/01/05)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>トニ・マルティネス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/47181.png" alt="トニ・マルティネス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #11</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">28歳 (1997/06/30)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ルーカス・ボジェ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/608.png" alt="ルーカス・ボジェ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #15</div>
+                <div class="player-card-nationality">🇦🇷 Argentina</div>
+                <div class="player-card-age">30歳 (1996/02/28)</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Substitutes</div>
+        <div class="player-cards-scroll">
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ラウル・フェルナンデス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/46987.png" alt="ラウル・フェルナンデス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">GK #13</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">37歳 (1988/03/13)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ファクンド・ガルセス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/6638.png" alt="ファクンド・ガルセス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #2</div>
+                <div class="player-card-nationality">🇦🇷 Argentina</div>
+                <div class="player-card-age">26歳 (1999/09/05)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>カレベ・ゴンサルベス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/266658.png" alt="カレベ・ゴンサルベス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #20</div>
+                <div class="player-card-nationality">🇧🇷 Brazil</div>
+                <div class="player-card-age">25歳 (2000/04/30)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アンデル・ゲバラ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/47309.png" alt="アンデル・ゲバラ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #6</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">28歳 (1997/07/07)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>カルロス・ベナビデス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/6085.png" alt="カルロス・ベナビデス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #23</div>
+                <div class="player-card-nationality">🇺🇾 Uruguay</div>
+                <div class="player-card-age">27歳 (1998/03/30)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ユセフ・エンリケス・レケディム</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/361384.png" alt="ユセフ・エンリケス・レケディム" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">DF #3</div>
+                <div class="player-card-nationality">🇲🇦 Morocco</div>
+                <div class="player-card-age">20歳 (2005/10/07)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>ヨン・グリディ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/104821.png" alt="ヨン・グリディ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #18</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">31歳 (1995/02/28)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アブデルラマン・レバック</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/183751.png" alt="アブデルラマン・レバック" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #21</div>
+                <div class="player-card-nationality">🇩🇿 Algeria</div>
+                <div class="player-card-age">27歳 (1998/08/11)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>デニス・スアレス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/1461.png" alt="デニス・スアレス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">MF #4</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">32歳 (1994/01/06)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>アイトール・マニャス</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/330440.png" alt="アイトール・マニャス" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #34</div>
+                <div class="player-card-nationality">🇪🇸 Spain</div>
+                <div class="player-card-age">23歳 (2003/01/05)</div>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-card-header">
+            <span>イブラヒム・ディアバテ</span>
+        </div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/182784.png" alt="イブラヒム・ディアバテ" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">FW #22</div>
+                <div class="player-card-nationality">🇨🇮 Côte d&#39;Ivoire</div>
+                <div class="player-card-age">26歳 (1999/11/17)</div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="section-label">Injuries / Suspended</div>
+        <div class="player-cards-scroll">
+    <div class="player-card injury-card">
+        <div class="player-card-header"><span>M. Diaz</span></div>
+        <div class="player-card-body">
+            <img src="https://media.api-sports.io/football/players/760.png" alt="M. Diaz" class="player-card-photo">
+            <div class="player-card-info">
+                <div class="player-card-position">🏥 OUT</div>
+                <div class="player-card-nationality">Alaves</div>
+                <div class="player-card-age injury-reason">⚠️ Coach&#39;s decision</div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<p>- 主審：None</p>
+
+<h3>■ 直近5試合</h3>
+<div class="two-column-section">
+    <div class="form-column">
+        <h4>
+<img src="https://media.api-sports.io/football/teams/539.png" class="form-team-logo-small" alt="">            Levante
+<span class="form-summary-text">(0勝1分4負)</span>        </h4>
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th colspan="2">対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2026-02-22</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/529.png" class="form-team-logo" alt="Barcelona">
+            </td>
+            <td>Barcelona</td>
+            <td>LaLiga</td>
+            <td>0-3</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-18</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/533.png" class="form-team-logo" alt="Villarreal">
+            </td>
+            <td>Villarreal</td>
+            <td>LaLiga</td>
+            <td>0-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-15</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/532.png" class="form-team-logo" alt="Valencia">
+            </td>
+            <td>Valencia</td>
+            <td>LaLiga</td>
+            <td>0-2</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-08</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/531.png" class="form-team-logo" alt="Athletic Club">
+            </td>
+            <td>Athletic Club</td>
+            <td>LaLiga</td>
+            <td>2-4</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-01-31</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/530.png" class="form-team-logo" alt="Atletico Madrid">
+            </td>
+            <td>Atletico Madrid</td>
+            <td>LaLiga</td>
+            <td>0-0</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+    </tbody>
+</table>    </div>
+    <div class="form-column">
+        <h4>
+<img src="https://media.api-sports.io/football/teams/542.png" class="form-team-logo-small" alt="">            Alaves
+<span class="form-summary-text">(1勝2分2負)</span>        </h4>
+<table class="form-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th colspan="2">対戦相手</th>
+            <th>大会</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2026-02-23</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/547.png" class="form-team-logo" alt="Girona">
+            </td>
+            <td>Girona</td>
+            <td>LaLiga</td>
+            <td>2-2</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-14</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/536.png" class="form-team-logo" alt="Sevilla">
+            </td>
+            <td>Sevilla</td>
+            <td>LaLiga</td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2026-02-08</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/546.png" class="form-team-logo" alt="Getafe">
+            </td>
+            <td>Getafe</td>
+            <td>LaLiga</td>
+            <td>0-2</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-02-04</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/548.png" class="form-team-logo" alt="Real Sociedad">
+            </td>
+            <td>Real Sociedad</td>
+            <td>Copa</td>
+            <td>2-3</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2026-01-30</td>
+            <td class="opponent-logo-cell">
+                <img src="https://media.api-sports.io/football/teams/540.png" class="form-team-logo" alt="Espanyol">
+            </td>
+            <td>Espanyol</td>
+            <td>LaLiga</td>
+            <td>2-1</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+    </tbody>
+</table>    </div>
+</div>
+
+<h3>■ 過去の対戦成績</h3>
+<p class="h2h-summary">過去5年間 10試合: Levante 3勝, 引分 3, Alaves 4勝</p>
+<table class="h2h-table">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>大会</th>
+            <th>対戦</th>
+            <th>スコア</th>
+            <th>結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2025-08-16</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/140.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>LaLiga</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Alaves</strong></span>
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Levante</span>
+            </td>
+            <td>2-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2024-07-27</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/667.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>Friendly</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Levante</span>
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Alaves</span>
+            </td>
+            <td>1-1</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2023-06-17</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/141.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>Segunda División</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Levante</span>
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Alaves</strong></span>
+            </td>
+            <td>0-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+        <tr>
+            <td>2023-06-11</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/141.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>Segunda División</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Alaves</span>
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Levante</span>
+            </td>
+            <td>0-0</td>
+            <td class="result-draw">Draw ⚪</td>
+        </tr>
+        <tr>
+            <td>2023-04-29</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/141.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>Segunda División</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Levante</strong></span>
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Alaves</span>
+            </td>
+            <td>2-0</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2022-12-12</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/141.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>Segunda División</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Alaves</span>
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Levante</strong></span>
+            </td>
+            <td>0-2</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2022-05-15</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/140.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>LaLiga</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Levante</strong></span>
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Alaves</span>
+            </td>
+            <td>3-1</td>
+            <td class="result-win">Win 🟢</td>
+        </tr>
+        <tr>
+            <td>2021-11-06</td>
+            <td class="h2h-competition-cell">
+                <img src="https://media.api-sports.io/football/leagues/140.png" class="h2h-logo h2h-league-logo" alt="" onerror="this.style.display='none';">
+                <span>LaLiga</span>
+            </td>
+            <td class="h2h-matchup-cell">
+                <img src="https://media.api-sports.io/football/teams/542.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span><strong>Alaves</strong></span>
+                <img src="https://media.api-sports.io/football/teams/539.png" class="h2h-logo h2h-team-logo" alt="" onerror="this.style.display='none';">
+                <span>Levante</span>
+            </td>
+            <td>2-1</td>
+            <td class="result-loss">Loss 🔴</td>
+        </tr>
+    </tbody>
+</table>
+<h3>■ フォーメーション図</h3>
+<div class="formation-container">
+    <div class="formation-pitch-side" style="--team-color: #CCCCCC;">
+        <div class="formation-header">
+<img src="https://media.api-sports.io/football/teams/539.png" class="formation-header-logo" alt="">            <span class="formation-team-name">Levante</span>
+            <span class="formation-style-label">(4-1-4-1)</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 10.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/2741.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/au.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#13</span>
+                </div>
+                <span class="player-name-text">M・ライアン</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 30.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/1118.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/de.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#22</span>
+                </div>
+                <span class="player-name-text">J・トルヤン</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 30.0%; left: 37.3%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/734.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#4</span>
+                </div>
+                <span class="player-name-text">A・デ・ラ・フエンテ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 30.0%; left: 62.7%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/421807.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/ar.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#2</span>
+                </div>
+                <span class="player-name-text">M・モレノ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 30.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/64309.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#23</span>
+                </div>
+                <span class="player-name-text">M・サンチェス</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 50.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/334878.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/fr.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#14</span>
+                </div>
+                <span class="player-name-text">U・ラグーバー</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 70.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <div class="player-photo-placeholder-circle"></div>
+                </div>
+                <div class="card-right-side">
+                    <span class="player-number-badge">#26</span>
+                </div>
+                <span class="player-name-text">K・トゥンデ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 70.0%; left: 37.3%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/182603.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#8</span>
+                </div>
+                <span class="player-name-text">J・アンデル・オラサガスティ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 70.0%; left: 62.7%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/182770.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#24</span>
+                </div>
+                <span class="player-name-text">C・アルバレス</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 70.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/463279.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#27</span>
+                </div>
+                <span class="player-name-text">P・コルテス</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 90.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/192032.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#9</span>
+                </div>
+                <span class="player-name-text">I・ロメロ</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="formation-pitch-side" style="--team-color: #009AD7;">
+        <div class="formation-header">
+<img src="https://media.api-sports.io/football/teams/542.png" class="formation-header-logo" alt="">            <span class="formation-team-name">Alaves</span>
+            <span class="formation-style-label">(4-4-2)</span>
+        </div>
+        <div class="pitch-visual-area">
+            <div class="pitch-markings-overlay">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-circle center-circle"></div>
+                <div class="pitch-area penalty-area-top"></div>
+                <div class="pitch-area goal-area-top"></div>
+                <div class="pitch-area penalty-area-bottom"></div>
+                <div class="pitch-area goal-area-bottom"></div>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 10.0%; left: 50.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/47353.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#1</span>
+                </div>
+                <span class="player-name-text">A.シベラ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 32.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/18740.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#17</span>
+                </div>
+                <span class="player-name-text">J.オット</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 32.0%; left: 37.3%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/6233.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/ar.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#14</span>
+                </div>
+                <span class="player-name-text">N.テナグリア</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 32.0%; left: 62.7%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/182546.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#5</span>
+                </div>
+                <span class="player-name-text">J.パチェコ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 32.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/128951.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#24</span>
+                </div>
+                <span class="player-name-text">V.パラダ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 60.0%; left: 13.5%;">
+                <div class="player-photo-container">
+                    <div class="player-photo-placeholder-circle"></div>
+                </div>
+                <div class="card-right-side">
+                    <span class="player-number-badge">#7</span>
+                </div>
+                <span class="player-name-text">A・ペレス</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 60.0%; left: 37.3%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/139001.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#19</span>
+                </div>
+                <span class="player-name-text">P.イバニェス</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 60.0%; left: 62.7%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/162686.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#8</span>
+                </div>
+                <span class="player-name-text">A.ブランコ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 60.0%; left: 86.5%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/143.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#10</span>
+                </div>
+                <span class="player-name-text">C.アレーニャ</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 85.0%; left: 35.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/47181.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/es.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#11</span>
+                </div>
+                <span class="player-name-text">T.マルティネス</span>
+            </div>
+            <div class="player-card-horizontal"
+                style="top: 85.0%; left: 65.0%;">
+                <div class="player-photo-container">
+                    <img src="https://media.api-sports.io/football/players/608.png" class="player-photo-circle" alt="">
+                </div>
+                <div class="card-right-side">
+                    <img src="https://flagcdn.com/ar.svg" class="player-flag" alt="">
+                    <span class="player-number-badge">#15</span>
+                </div>
+                <span class="player-name-text">L・ボジェ</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scorer Prediction Section (Issue #199 Repositioned) -->
+<div class="prediction-container">
+    <div class="prediction-group">
+        <h3>■ スコア予想</h3>
+        <div class="prediction-card scorer-markets">
+            <div class="market-list">
+                <div class="market-item">
+                    <div class="market-name">Anytime Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">ルーカス・ボジェ</span>
+                            <span class="odd-value">2.75</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アントニオ・マルティネス</span>
+                            <span class="odd-value">3.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">イブラヒム・ディアバテ</span>
+                            <span class="odd-value">3.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">カール・エッタ</span>
+                            <span class="odd-value">3.20</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アイトール・マナス</span>
+                            <span class="odd-value">3.20</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">First Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">ルーカス・ボジェ</span>
+                            <span class="odd-value">6.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アントニオ・マルティネス</span>
+                            <span class="odd-value">6.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">イブラヒム・ディアバテ</span>
+                            <span class="odd-value">6.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">カール・エッタ</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アイトール・マナス</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">Last Goal Scorer</div>
+                    <div class="odds-chips-scroll">
+                        <div class="odd-chip">
+                            <span class="player-name">ルーカス・ボジェ</span>
+                            <span class="odd-value">6.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アントニオ・マルティネス</span>
+                            <span class="odd-value">6.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">イブラヒム・ディアバテ</span>
+                            <span class="odd-value">6.50</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">カール・エッタ</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                        <div class="odd-chip">
+                            <span class="player-name">アイトール・マナス</span>
+                            <span class="odd-value">7.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="matchup-section">
+<h3 class="section-title">■ 同国対決</h3>
+<div class="matchup-container">
+
+<div class="matchup-country">
+    <div class="matchup-header-row">
+        <div class="matchup-country-header">🇦🇷 Argentina</div>
+        <div class="matchup-players">
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/421807.png" alt="マティアス・モレノ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">マティアス・モレノ</div>
+                    <div class="matchup-team-name">Levante</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/6233.png" alt="ナウエル・テナグリア" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ナウエル・テナグリア</div>
+                    <div class="matchup-team-name">Alaves</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/608.png" alt="ルーカス・ボジェ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ルーカス・ボジェ</div>
+                    <div class="matchup-team-name">Alaves</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/6638.png" alt="ファクンド・ガルセス" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ファクンド・ガルセス</div>
+                    <div class="matchup-team-name">Alaves</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="matchup-description">
+        間には、アルゼンチン・コルドバ州の激しいライバル関係が背景にある。マティアス・モレノ は Belgrano の下部組織出身でトップ昇格を果たした選手だが、対する ナウエル・テナグリア はその宿敵である Talleres で長年プレーし、精神的支柱でもあった。コルドバ・ダービー（Clásico Cordobés）の熱狂を知る両者がスペインで対峙する構図は非常に興味深い。また、 は Colón で主将を務め、2021年のリーグカップ優勝に貢献した屈強なセンターバックであり、若手の マティアス・モレノ にとっては母国リーグで実績を残した偉大な先輩にあたる。経験豊富なストライカー  も含め、同国人同士の激しいフィジカルバトルが予想される。
+    </div>
+</div>
+
+<div class="matchup-country">
+    <div class="matchup-header-row">
+        <div class="matchup-country-header">🇺🇾 Uruguay</div>
+        <div class="matchup-players">
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/316517.png" alt="アラン・マトゥーロ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">アラン・マトゥーロ</div>
+                    <div class="matchup-team-name">Levante</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/6085.png" alt="カルロス・ベナビデス" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">カルロス・ベナビデス</div>
+                    <div class="matchup-team-name">Alaves</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="matchup-description">
+        共にウルグアイ屈指の育成クラブである Defensor Sporting のアカデミー出身という、「La Viola（紫のチーム）」の同窓生対決である。カルロス・ベナビデス は2016年に同クラブでプロデビューし、中盤の要として活躍した後に海外へ渡った先輩である。一方、後輩にあたる アラン・マトゥーロ も同じく Defensor Sporting でプロキャリアをスタートさせ、2023年のU-20ワールドカップではウルグアイ代表の初優勝に大きく貢献し、大会シルバーボール（準MVP）を受賞した守備の超新星だ。名門アカデミーのDNAを受け継ぐ二人が、スペインの舞台で先輩後輩としてマッチアップする可能性がある。
+    </div>
+</div>
+</div>
+</div>
+
+
+
+<details class="collapsible-section" open>
+    <summary>📊 戦術プレビュー</summary>
+    <div class="section-content">
+        <div class="matchup-section key-player-section">
+<h3 class="section-title">⚽ キープレイヤー</h3>
+<div class="matchup-container">
+
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/players/334878.png" alt="ウーゴ・ラグーバー" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="matchup-badge" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">ウーゴ・ラグーバー</div>
+                <div class="matchup-team-name">Levante</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        レバンテの攻撃を司る若き司令塔。19歳ながら、その創造性と正確なパスでチームにリズムをもたらす。直近の試合ではアシストを記録し、その才能を証明。冷静な判断力と戦術理解度の高さで、今後の成長が期待される。ピッチ外では物静かな性格だが、内に秘めた情熱は誰よりも熱い。
+        
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    ウーゴ・ラグーバーは、レバンテのユース出身で、トップチームに昇格して間もないながらも、その才能を遺憾なく発揮している。中盤でのボール奪取能力も高く、攻撃の起点となるだけでなく、守備でも貢献できる。 彼のパスセンスは特筆もので、的確な判断でチャンスを演出する。また、セットプレーのキッカーも務めるなど、プレースキックの精度も高い。 Ugoは、レバンテの未来を担う存在として、サポーターからの期待も大きい。
+                </div>
+            </details>
+            
+    </div>
+</div>
+
+<div class="matchup-country key-player-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/players/608.png" alt="ルーカス・ボジェ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">ルーカス・ボジェ</div>
+                <div class="matchup-team-name">Alaves</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        アラベスの前線を牽引するアルゼンチン人ストライカー。 強靭なフィジカルと決定力を武器に、チームの得点源として活躍。直近の試合でもゴールを挙げ、その存在感を示している。 チームを勝利に導くゴールへの強いこだわりを持つ。ピッチ外では家族を大切にする一面も。
+        
+            <details class="key-player-details">
+                <summary>詳細を見る</summary>
+                <div class="key-player-details-content">
+                    ルーカス・ボジェは、アルゼンチン出身の29歳で、そのキャリアを通じて様々な国のリーグでプレーしてきた.。アラベスでは、その経験と高い決定力を活かし、チームの攻撃を活性化させている。空中戦にも強く、セットプレーでも脅威となる。 献身的なプレーも魅力で、前線からの積極的なチェイスで守備にも貢献する。 過去には、アルゼンチンの名門クラブでもプレーしており、その実力は折り紙付きだ。
+                </div>
+            </details>
+            
+    </div>
+</div>
+</div>
+</div><div class="matchup-section tactical-style-section">
+<h3 class="section-title">🎯 戦術スタイル</h3>
+<div class="matchup-container">
+
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">Levante</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        レバンテは4-1-4-1のフォーメーションを採用し、中盤の人数をかけてボールを保持し、ゲームをコントロールすることを目指す。アンカーのウーゴ・ラグーバーを中心に、両サイドの選手を積極的に活用し、攻撃の幅を広げる。 守備においては、前線からのプレッシングと、最終ラインの統率された動きで、相手の攻撃を封じ込める.。近年は攻撃的なサッカーを確立しつつあり、安定感を高めることが課題となっている.。
+    </div>
+</div>
+
+<div class="matchup-country tactical-style-card">
+    <div class="matchup-header-row">
+        <div class="matchup-player-item">
+            <div class="matchup-photo-wrapper">
+                <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" style="width: 48px; height: 48px;" onerror="this.style.display='none';">
+            </div>
+            <div class="matchup-player-info">
+                <div class="matchup-player-name">Alaves</div>
+            </div>
+        </div>
+    </div>
+    <div class="matchup-description">
+        アラベスは4-4-2のフォーメーションを採用し、堅守速攻を重視する。 2ラインを形成し、中央を固めて相手の攻撃を防ぎ、カウンターからルーカス・ボジェの決定力を活かす。 サイドからの攻撃も得意とし、クロスからの得点も多い.。 守備時は、前線から積極的にプレスをかけ、ボールを奪って素早く攻撃に転じる.。
+    </div>
+</div>
+</div>
+</div><div class="matchup-section">
+<h3 class="section-title">🔥 キーマッチアップ</h3>
+<div class="matchup-container">
+
+<div class="matchup-country">
+    <div class="matchup-header-row">
+        
+        <div class="matchup-players">
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/182603.png" alt="ジョン・アンデル・オラサガスティ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">ジョン・アンデル・オラサガスティ</div>
+                    <div class="matchup-team-name">Levante</div>
+                </div>
+            </div>
+            
+            <div class="matchup-player-item">
+                <div class="matchup-photo-wrapper">
+                    <img src="https://media.api-sports.io/football/players/162686.png" alt="アントニオ・ブランコ" class="matchup-photo" onerror="this.style.opacity='0.3';">
+                    <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="matchup-badge" onerror="this.style.display='none';">
+                </div>
+                <div class="matchup-player-info">
+                    <div class="matchup-player-name">アントニオ・ブランコ</div>
+                    <div class="matchup-team-name">Alaves</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="matchup-description">
+        中盤でのボール奪取とゲームメイク能力に優れた両選手の対決。ジョン・アンデル・オラサガスティはレバンテの攻撃の起点として、アントニオ・ブランコはアラベスの守備の要として、互いのチームの命運を握る。このマッチアップを制した方が、試合の流れを大きく引き寄せるだろう。
+    </div>
+</div>
+</div>
+</div>
+    </div>
+</details>
+
+<details class="collapsible-section" open>
+    <summary>🎙️ 監督プレビュー</summary>
+    <div class="section-content">
+        <div class="manager-section">
+    <div class="manager-card">
+        <div class="manager-identity">
+            <img src="https://media.api-sports.io/football/teams/539.png" alt="Levante" class="manager-team-logo">
+            <img src="https://media.api-sports.io/football/coachs/25678.png" alt="ルイス・カストロ" class="manager-photo">
+            <div class="manager-text-info">
+                <div class="manager-team">Levante</div>
+                <div class="manager-name">ルイス・カストロ</div>
+            </div>
+        </div>
+        <div class="manager-comment"><p>了解いたしました。サッカー専門ジャーナリストとして、レバンテのルイス・カストロ監督がアラベス戦に向けて語ったコメントや記者会見の内容を検索し、日本語の記事として書き起こします。直近24-48時間以内の情報に限定し、他の試合やエドゥアルド・コウデット監督の発言は含めません。</p>
+<h3>アラベス戦に向けた集中</h3>
+<p>ルイス・カストロ監督は、デポルティーボ・アラベス戦に向けて、チームとサポーターに向けて集中を呼びかけました。彼は、「レバンテUDのすべての人のエネルギーをデポルティーボ・アラベス戦に集中させる」ことを望んでいると述べ、クラブがその歴史を通して直面してきた挑戦と、ファンを特徴づける闘争心について言及しました。</p>
+<p>カストロ監督は、試合前の記者会見で、「明日の試合だけに集中し、それ以外のことは考えないようにしなければならない」と強調しました。さらに、「勝つために集中し、強い願望を持って試合に臨まなければならない。なぜなら、必要な結果を出し始めれば、物事はすぐに変わるからだ。次の試合が最も重要な試合であり、何よりも集中しなければならない」と述べました。</p>
+<h3>クラブのアイデンティティとサポーターへの感謝</h3>
+<p>カストロ監督は、クラブのアイデンティティとして、常にベストを尽くすことを強調しました。また、苦しい状況にも関わらずサポートしてくれるファンに感謝の意を表明し、「グラノタスのファンは、勝利の時だけでなく、常にクラブと共にいる人々だ」と述べました。さらに、「一部のチームのファンであることは非常に簡単だ。なぜなら、彼らは試合の90％に勝つからだ。しかし、ここではそうではないことを私たちは知っている。だからこそ、最も困難な時に彼らは私たちと共にいるのだ」と語りました。</p>
+<h3>試合への意気込みと過去の因縁</h3>
+<p>カストロ監督は、アラベス戦について、「常に前向きに考え、すべての試合を決勝戦として捉えなければならない」と語りました。そして、「状況は困難だが、不可能ではない。だからこそ、これから来る試合に集中し、勝つために強い意欲を持って臨まなければならない」と続けました。さらに、「フットボールでは、1週間で非常に悪い状況から、3週間後には状況が大きく変わる可能性がある。だからこそ、その試合に集中しなければならない。次の試合が今シーズン最も重要な試合なのだ」と語気を強めました。</p>
+<p>また、2023年の昇格プレーオフ決勝でアラベスに敗れたことにも言及し、「チームも選手も異なり、戦い方も違う。明日の試合に集中する必要がある」と述べました。その上で、「勝ちたいという気持ちは当然ある。あらゆるモチベーションは良いことだが、心が頭よりも先走らないように集中する必要がある。そうすると、最も重要な瞬間にプレーの質と集中力を失ってしまうからだ」と語りました。</p>
+<h3>ゴール欠乏と信頼</h3>
+<p>カストロ監督は、チームのゴール欠乏について、「すべての試合でチャンスを作っているので、ゴールは必ず生まれると信じている」と述べ、チームへの信頼を強調しました。</p>
+<h3>選手の状況について</h3>
+<p>具体的な負傷者や復帰選手に関する言及は見つかりませんでした。</p></div>
+    </div>
+    <div class="manager-card">
+        <div class="manager-identity">
+            <img src="https://media.api-sports.io/football/teams/542.png" alt="Alaves" class="manager-team-logo">
+            <img src="https://media.api-sports.io/football/coachs/862.png" alt="エドゥアルド・コウデ" class="manager-photo">
+            <div class="manager-text-info">
+                <div class="manager-team">Alaves</div>
+                <div class="manager-name">エドゥアルド・コウデ</div>
+            </div>
+        </div>
+        <div class="manager-comment"><p>直近の情報が見つかりませんでしたが、Alavesの監督 エドゥアルド・コウデ が、Levante戦に向けて語ったコメントや記者会見の内容をまとめました。</p>
+<h3>監督交代の噂とチームへの影響</h3>
+<p>Alavesのエドゥアルド・コウデ監督は、Levante戦を前に、アルゼンチンの名門クラブ、リーベル・プレートの監督就任の噂に関する質問を受けることが予想されています。リーベル・プレートは、マルセロ・ガジャルド監督の退任後、後任を探しており、エドゥアルド・コウデ監督が有力候補として名前が挙がっています。この噂は、チームの士気に影響を与える可能性があり、残留争いを繰り広げるAlavesにとって、Levante戦は非常に重要な一戦となります。</p>
+<p>複数のメディアが、エドゥアルド・コウデ監督とリーベル・プレートの間で口頭合意がなされたと報じていますが、Alaves側はエドゥアルド・コウデ監督の放出を望んでいないとされています。Alavesは、エドゥアルド・コウデ監督が昨シーズン、チームを降格から救ったことを評価しており、今シーズンも残留を達成するために、彼の手腕を必要としています。</p>
+<h3>Levante戦への集中</h3>
+<p>エドゥアルド・コウデ監督は、リーベル・プレートからの関心についてコメントを避けることが予想されます。彼は、チームの目標であるリーガ残留に集中しており、Levante戦に向けて全力を尽くすことを強調すると考えられます。Levanteは、Alavesにとって残留を争う直接的なライバルであり、勝利すれば降格圏との差を広げることができます。エドゥアルド・コウデ監督は、この重要な試合に向けて、チームを最高の状態に導くために、戦術や戦略について具体的な指示を出すでしょう。</p>
+<h3>過去の試合からの学び</h3>
+<p>エドゥアルド・コウデ監督は、過去の試合から得られた教訓を生かし、Levante戦に臨むと考えられます。レアル・マドリード戦後には、チームが「良い試合をした」にもかかわらず、わずかなミスが結果を左右することを強調しました。Levante戦では、このようなミスをなくし、集中力を維持することが重要になります。</p></div>
+    </div>
+</div>
+    </div>
+</details>
+
+
+
+
+<hr>
+<details class="collapsible-section">
+<summary>🛠️ デバッグ情報</summary>
+<div class="section-content">
+<p><strong>Importance:</strong> None</p>
+</div>
+</details>
+<div class="debug-info">
+<h3>選外試合リスト</h3>
+<ul>
+<li>Wolves vs Aston Villa （EPL）… Low rank</li>
+</ul>
+<h3>API使用状況</h3>
+<table class="api-stats-table">
+<thead><tr>
+<th>API</th>
+<th>実行回数</th>
+<th>残クォータ</th>
+<th>上限</th>
+<th>確認リンク</th>
+</tr>
+</thead>
+<tr>
+<td>API-Football</td>
+<td>1 (キャッシュ: 64)</td>
+<td>7,380</td>
+<td>7,500/日</td>
+<td><a href="https://dashboard.api-football.com/" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>YouTube Data API</td>
+<td>0</td>
+<td>不明</td>
+<td>10,000/日</td>
+<td><a href="https://console.cloud.google.com/apis/dashboard" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gemini API</td>
+<td>3</td>
+<td>不明</td>
+<td>~1,500/日</td>
+<td><a href="https://aistudio.google.com/app/apikey" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gemini Grounding</td>
+<td>2 (キャッシュ: 3)</td>
+<td>不明</td>
+<td>課金制</td>
+<td><a href="https://console.cloud.google.com/billing" target="_blank">確認</a></td>
+</tr>
+<tr>
+<td>Gmail API</td>
+<td>0</td>
+<td>不明</td>
+<td>500/日*</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><small>*Gmail API: OAuth認証済みアカウントの送信制限</small></p>
+</div>
+
+        <div class="timestamp">
+            生成日時: 2026-03-01 01:12:59 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

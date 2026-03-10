@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Palace vs Tottenham - EPL (08:38:33)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        
+        <h1>Crystal Palace vs Tottenham</h1>
+<p><strong>EPL</strong> / None</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/29(月) 01:30 JST<br><span class="match-info-subtext">2025-12-28 16:30 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">Selhurst Park, London</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/52.png" alt="Crystal Palace" class="team-logo"> Crystal Palace（3-4-2-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Dean Henderson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19088.png" alt="Dean Henderson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/03/12)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jefferson Lerma</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2490.png" alt="Jefferson Lerma" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #8</div>
+<div class="player-card-nationality">🇨🇴 Colombia</div>
+<div class="player-card-age">31歳 (1994/10/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Maxence Lacroix</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20995.png" alt="Maxence Lacroix" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">25歳 (2000/04/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Marc Guéhi</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/67971.png" alt="Marc Guéhi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #6</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/07/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nathaniel Clyne</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18862.png" alt="Nathaniel Clyne" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #17</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">34歳 (1991/04/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Adam Wharton</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/288102.png" alt="Adam Wharton" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #20</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/06/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Will Hughes</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18806.png" alt="Will Hughes" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #19</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">30歳 (1995/04/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Tyrick Mitchell</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/182201.png" alt="Tyrick Mitchell" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #3</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/09/01)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Justin Devenny</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/286458.png" alt="Justin Devenny" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #55</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</div>
+<div class="player-card-age">22歳 (2003/10/11)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Yéremy Pino</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/184226.png" alt="Yéremy Pino" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">23歳 (2002/10/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jean-Philippe Mateta</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/25927.png" alt="Jean-Philippe Mateta" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #14</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">28歳 (1997/06/28)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Edward Nketiah</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1468.png" alt="Edward Nketiah" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/05/30)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Christantus Uche</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/403554.png" alt="Christantus Uche" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #12</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">22歳 (2003/05/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Romain Esse</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/402640.png" alt="Romain Esse" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #21</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/05/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Walter Benítez</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22157.png" alt="Walter Benítez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #44</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">32歳 (1993/01/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jaydee Canvot</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/412759.png" alt="Jaydee Canvot" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #23</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">19歳 (2006/07/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Dean Benamar</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/557414.png" alt="Dean Benamar" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #72</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Borna Sosa</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/26303.png" alt="Borna Sosa" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #24</div>
+<div class="player-card-nationality">🇭🇷 Croatia</div>
+<div class="player-card-age">27歳 (1998/01/21)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Kaden Rodney</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/301295.png" alt="Kaden Rodney" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #42</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/10/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Joel Drakes-Thomas</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/557413.png" alt="Joel Drakes-Thomas" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #86</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>R. Cardines</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/380703.png" alt="R. Cardines" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Crystal Palace</div>
+<div class="player-card-age injury-reason">⚠️ Muscle Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>C. Doucoure</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/3339.png" alt="C. Doucoure" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Crystal Palace</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>D. Kamada</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2601.png" alt="D. Kamada" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Crystal Palace</div>
+<div class="player-card-age injury-reason">⚠️ Hamstring Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>C. Kporha</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/380679.png" alt="C. Kporha" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Crystal Palace</div>
+<div class="player-card-age injury-reason">⚠️ Back Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>D. Munoz</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/13736.png" alt="D. Munoz" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Crystal Palace</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/47.png" alt="Tottenham" class="team-logo"> Tottenham（4-2-3-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Guglielmo Vicario</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/31354.png" alt="Guglielmo Vicario" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🇮🇹 Italy</div>
+<div class="player-card-age">29歳 (1996/10/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Pedro Porro</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47519.png" alt="Pedro Porro" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #23</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">26歳 (1999/09/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Kevin Danso</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/25287.png" alt="Kevin Danso" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #4</div>
+<div class="player-card-nationality">🇦🇹 Austria</div>
+<div class="player-card-age">27歳 (1998/09/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Micky van de Ven</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/152849.png" alt="Micky van de Ven" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #37</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">24歳 (2001/04/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Djed Spence</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19235.png" alt="Djed Spence" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #24</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/08/09)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Rodrigo Bentancur</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/863.png" alt="Rodrigo Bentancur" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #30</div>
+<div class="player-card-nationality">🇺🇾 Uruguay</div>
+<div class="player-card-age">28歳 (1997/06/25)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Archie Gray</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/328089.png" alt="Archie Gray" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #14</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/03/12)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Mohammed Kudus</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/15911.png" alt="Mohammed Kudus" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #20</div>
+<div class="player-card-nationality">🇬🇭 Ghana</div>
+<div class="player-card-age">25歳 (2000/08/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lucas Bergvall</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/347316.png" alt="Lucas Bergvall" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #15</div>
+<div class="player-card-nationality">🇸🇪 Sweden</div>
+<div class="player-card-age">19歳 (2006/02/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Randal Kolo Muani</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/21104.png" alt="Randal Kolo Muani" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #39</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">27歳 (1998/12/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Richarlison</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2413.png" alt="Richarlison" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">28歳 (1997/05/10)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>João Palhinha</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/41104.png" alt="João Palhinha" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #6</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">30歳 (1995/07/09)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Wilson Odobert</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/336564.png" alt="Wilson Odobert" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #28</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">21歳 (2004/11/28)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Radu Drăguşin</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162498.png" alt="Radu Drăguşin" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🇷🇴 Romania</div>
+<div class="player-card-age">23歳 (2002/02/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Brennan Johnson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129711.png" alt="Brennan Johnson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #22</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</div>
+<div class="player-card-age">24歳 (2001/05/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Antonín Kinský</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/265826.png" alt="Antonín Kinský" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #31</div>
+<div class="player-card-nationality"> Czechia</div>
+<div class="player-card-age">22歳 (2003/03/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Kota Takai</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/337593.png" alt="Kota Takai" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #25</div>
+<div class="player-card-nationality">🇯🇵 Japan</div>
+<div class="player-card-age">21歳 (2004/09/04)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ben Davies</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/164.png" alt="Ben Davies" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #33</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</div>
+<div class="player-card-age">32歳 (1993/04/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Mathys Tel</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/270510.png" alt="Mathys Tel" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">20歳 (2005/04/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Dane Scarlett</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162552.png" alt="Dane Scarlett" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #44</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/03/24)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home LWWLL (❌✅✅❌❌) / Away DWLLW (➖✅❌❌✅)</li>
+<li>過去の対戦成績：過去5試合: Crystal Palace 2勝, 引分 0, Tottenham 3勝</li>
+<li>主審：Jarred Gillett, Australia</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Crystal Palace" src="/reports/images/1379143_home.png" /><br />
+<img alt="Tottenham" src="/reports/images/1379143_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグの舞台で、南ロンドンに本拠地を置くクリスタル・パレスが、トッテナム・ホットスパーをホームのセルハースト・パークに迎える。プライドがぶつかり合う、注目のロンドンダービーだ。</li>
+</ul>
+<p>アウェイのトッテナムは、ここ数試合で勝ち星から遠ざかっており、再び勝利の軌道に戻るための重要な局面を迎えている。チームの強みはリーグでも上位の得点力であり、ここまで17試合で26ゴールを記録。豊富な攻撃タレントを活かし、敵地でゴールをこじ開け、是が非でも勝ち点3を掴み取りたいところだ。</p>
+<p>対するホームのクリスタル・パレスは、対照的にリーグ屈指の堅守を誇るチームとして知られている。今季は17試合でわずか19失点と、その数字はリーグで4番目に少ない。組織的な守備ブロックと、熱狂的なホームサポーターの大声援を武器に、攻撃的なトッテナムを封じ込めることができるかが問われる。</p>
+<p>この試合の最大の焦点は、間違いなく「トッテナムの攻撃力 vs クリスタル・パレスの守備力」という構図になるだろう。ポゼッションを高めて相手を押し込みたいトッテナムに対し、パレスはコンパクトな陣形を保ち、カウンターから鋭い一撃を狙う展開が予想される。トッテナムがいかにしてパレスの粘り強い守備網を突破するか。戦術的な駆け引きが勝敗を大きく左右する。勝利で流れを変えたいトッテナムと、ホームで強敵を叩きたいクリスタル・パレス。両者の思惑が交錯するこの一戦は、最後まで目の離せない緊迫した展開が期待される。</p>
+<details>
+<summary><strong>📚 Sources (10件)</strong></summary>
+<ul>
+<li><a href="https://www.reddit.com/r/coys/comments/1pxyisd/postmatch_thread_crystal_palace_0_1_tottenham/" target="_blank">[Post-Match Thread] Crystal Palace 0 - 1 Tottenham : r/coys</a> (www.reddit.com)</li>
+<li><a href="https://www.premierleague.com/en/match/2562069/crystal-palace-vs-tottenham-hotspur" target="_blank">Crystal Palace v Tottenham Hotspur | 2025/2026 | Premier League ...</a> (www.premierleague.com)</li>
+<li><a href="https://www.reddit.com/r/soccer/comments/1pxwlcy/crystal_palace_0_1_tottenham_hotspur_archie_gray/" target="_blank">Crystal Palace 0 - [1] Tottenham Hotspur - Archie Gray 42‎'‎ : r/soccer</a> (www.reddit.com)</li>
+<li><a href="https://www.facebook.com/groups/194980242827810/posts/1193203336338824/" target="_blank">Crystal palace vs tottenham hotspur match prediction</a> (www.facebook.com)</li>
+<li><a href="https://www.theguardian.com/football/2025/dec/28/crystal-palace-tottenham-premier-league-match-report" target="_blank">Archie Gray heads Spurs to victory at Crystal Palace to ease ...</a> (www.theguardian.com)</li>
+<li><a href="https://www.foxsports.com/articles/soccer/crystal-palace-vs-tottenham-hotspur-prediction-odds-picks-dec-28" target="_blank">Crystal Palace vs. Tottenham Hotspur Prediction, Odds, Picks - Dec ...</a> (www.foxsports.com)</li>
+<li><a href="https://ca.sports.yahoo.com/news/crystal-palace-vs-tottenham-hotspur-060000922.html" target="_blank">Crystal Palace vs Tottenham Hotspur – Match Preview and Team ...</a> (ca.sports.yahoo.com)</li>
+<li><a href="https://prosoccerwire.usatoday.com/story/sports/premier-league/2025/12/28/crystal-palace-vs-tottenham-premier-league-betting-odds-prediction-pick/87926999007/" target="_blank">Crystal Palace vs. Tottenham: EPL betting odds, prediction, pick</a> (prosoccerwire.usatoday.com)</li>
+<li><a href="https://www.standard.co.uk/sport/football/crystal-palace-vs-tottenham-prediction-kick-off-time-tv-live-stream-team-news-latest-h2h-results-odds-premier-league-2025-preview-b1263964.html" target="_blank">Crystal Palace vs Tottenham: Prediction, kick-off time, TV, live ...</a> (www.standard.co.uk)</li>
+<li><a href="https://www.bbc.co.uk/sport/football/live/c0ed3488950t" target="_blank">Premier League LIVE: Crystal Palace vs Tottenham Hotspur - radio ...</a> (www.bbc.co.uk)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>クリスタル・パレス対トッテナムの一戦は、堅守速攻を志向するホームチームと、ポゼッションで相手を崩したいアウェイチームという対照的なスタイルの激突が予想される。</li>
+</ul>
+<p>クリスタル・パレスは、[4-2-3-1]または[4-3-3]のフォーメーションで、自陣にコンパクトなブロックを形成するだろう。守備組織を固め、ボールを奪ってからは両翼のスピードを活かしたカウンターで好機を窺う戦術が基本線となる。特に中盤でのボール奪取から、前線の選手へいかに素早くボールを供給できるかが鍵となる。</p>
+<p>一方のトッテナムは、[4-3-3]を基本システムとし、ボールを保持して試合の主導権を握ることを目指す。高いディフェンスラインを保ち、ピッチを広く使った攻撃でパレスの守備網に揺さぶりをかける。相手の引いた守備をこじ開けるため、中盤の創造性と前線の選手の連携、そして流動的な動きが求められるだろう。</p>
+<p>この試合の焦点は、トッテナムの攻撃陣がパレスの堅固な守備ブロックをいかに攻略するか、そしてパレスがトッテナムのハイラインの背後に生まれる広大なスペースをカウンターで突けるかという点に集約される。中盤での主導権争いも激しく、トッテナムのビルドアップをパレスが効果的に妨害できるかどうかが、試合の流れを大きく左右するだろう。</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/1534.png" alt="Oliver Glasner" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Crystal Palace</div>
+<div class="manager-name">Oliver Glasner</div>
+<div class="manager-comment">【Crystal Palace】
+オリヴァー・グラスナー監督は試合前の記者会見に臨み、チームの状況に関して前向きな見通しを語りました。監督は選手たちとのコミュニケーションを重視していることを強調し、「我々は彼らと話し合い、彼がすべきことについて伝えた」とコメント。戦術や個々の役割について、チーム内で密な対話が行われていることを示唆しました。具体的な選手名や戦術への言及は少ないものの、チームが良い雰囲気で試合への準備を進めている様子がうかがえます。</div>
+</div>
+</div>
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/90.png" alt="Thomas Frank" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Tottenham</div>
+<div class="manager-name">Thomas Frank</div>
+<div class="manager-comment">【Tottenham】
+提供されたニュース記事の断片は、クリスタル・パレス戦を控えたトッテナムの状況に言及していますが、監督や選手の直接的な試合前コメントは含まれていません。記事の中心はブレントフォードのトーマス・フランク監督の発言で、一部では同監督をトッテナムの監督と誤って記しています。また、他チームの監督が移籍市場について語る文脈でトッテナムの名前が挙げられているものの、これもトッテナム側の発言ではありません。このため、提供された情報からは引用可能な監督や選手のコメントを要約することはできませんでした。</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=NMrjJtW_7Io" target="_blank"><img src="https://i.ytimg.com/vi/NMrjJtW_7Io/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=NMrjJtW_7Io" target="_blank">【Thomas Frank】 GET A CLEAN SHEET, WIN 1 0, THAT WAS ...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 3時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=gF_OC63IIQU" target="_blank"><img src="https://i.ytimg.com/vi/gF_OC63IIQU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=gF_OC63IIQU" target="_blank">【Thomas Frank】 PRESS CONFERENCE: Thomas Frank: Cryst...</a></strong><br/>📺 <strong>⚠️ Chris Cowlin: Spurs Chat Podcast & Tottenham News</strong> ・ 🕐 2時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=KlIm8N9DdV0" target="_blank"><img src="https://i.ytimg.com/vi/KlIm8N9DdV0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=KlIm8N9DdV0" target="_blank">【Thomas Frank】 Palace 0-1 Spurs Thomas Frank Intervi...</a></strong><br/>📺 <strong>⚠️ Talk Tottenham</strong> ・ 🕐 4時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=WmbyTN2QTHg" target="_blank"><img src="https://i.ytimg.com/vi/WmbyTN2QTHg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=WmbyTN2QTHg" target="_blank">【Thomas Frank】 FULL PRESS CONFERENCE (Including Emba...</a></strong><br/>📺 <strong>⚠️ Chris Cowlin: Spurs Chat Podcast & Tottenham News</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=xAP78xyWtc0" target="_blank"><img src="https://i.ytimg.com/vi/xAP78xyWtc0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=xAP78xyWtc0" target="_blank">【Thomas Frank】 Thomas Frank post-match press confere...</a></strong><br/>📺 <strong>⚠️ HotspurHangout</strong> ・ 🕐 3時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Ys_T_OKE2u0" target="_blank"><img src="https://i.ytimg.com/vi/Ys_T_OKE2u0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Ys_T_OKE2u0" target="_blank">【Thomas Frank】 I KNOW HOW TO BUILD A COMPETITIVE TEA...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=R8JmuNkNEro" target="_blank"><img src="https://i.ytimg.com/vi/R8JmuNkNEro/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=R8JmuNkNEro" target="_blank">【Thomas Frank】 Palace 0-1 Spurs Radu Dragusin Interv...</a></strong><br/>📺 <strong>⚠️ Talk Tottenham</strong> ・ 🕐 3時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2acX2HP_vaw" target="_blank"><img src="https://i.ytimg.com/vi/2acX2HP_vaw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2acX2HP_vaw" target="_blank">【Thomas Frank】 &quot;THE RECRUITMENT HAS TO BE BETTE...</a></strong><br/>📺 <strong>⚠️ Chris Cowlin: Spurs Chat Podcast & Tottenham News</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HPJgsMJ9qPQ" target="_blank"><img src="https://i.ytimg.com/vi/HPJgsMJ9qPQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HPJgsMJ9qPQ" target="_blank">【Thomas Frank】 &quot;THINGS ARE MORE COMPLEX HERE!&q...</a></strong><br/>📺 <strong>⚠️ Chris Cowlin: Spurs Chat Podcast & Tottenham News</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QZJTZxoOi7U" target="_blank"><img src="https://i.ytimg.com/vi/QZJTZxoOi7U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QZJTZxoOi7U" target="_blank">【Thomas Frank】 THE 60 SECOND SPURS NEWS UPDATE: Thom...</a></strong><br/>📺 <strong>⚠️ Chris Cowlin: Spurs Chat Podcast & Tottenham News</strong> ・ 🕐 1日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (8件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=NLoTuWKoTxk" target="_blank">【Thomas Frank】 &quot;I DIDN&#39;T GET AN INVITE!&quot; Thomas ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=2DZKGJEoPfY" target="_blank">【Thomas Frank】 &quot;WE ARE WORKING VERY, VERY HARD!&quot; Tho...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=TIUeuytpea4" target="_blank">【Thomas Frank】 &quot;IT WILL COME... HOPEFULLY SOONER RATHER T...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=AZdnNKn-Zh4" target="_blank">【Thomas Frank】 &quot;THINGS ARE MORE COMPLEX HERE WITH THE AMO...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=iJKXpkTzVIw" target="_blank">【Thomas Frank】 &quot;HE CAN PLAY IN A NUMBER OF ROLES WHICH IS...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=hs-Y2QchCTM" target="_blank">【Thomas Frank】 &quot;RIGHT NOW JOHAN AND FABIO ARE HERE!&quot;...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=wHCBgueruRc" target="_blank">【Thomas Frank】 &quot;ANY PLAYER WE SIGN NEEDS TO BE FULLY COMM...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=BYTFEPS6ZW4" target="_blank">【Thomas Frank】 &quot;HE IS A BIG PART OF THE FUTURE WE TRY TO ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (19件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=an_HGLmIKNk" target="_blank">【Oliver Glasner】 🔴 LIVE | Thomas Frank and Oliver Glasner post-m...</a> - BeanymanSports <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-MaOJA7LfyY" target="_blank">【Oliver Glasner】 PRESS CONFERENCE: Oliver Glasner: Crystal Palac...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=uEWdr5X3xF0" target="_blank">【Oliver Glasner】 WE SHOULDN&#39;T LOSE THE GAME! 😤 | Oliver Glas...</a> - BeanymanSports2 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=i8IlAWjB3p8" target="_blank">【Oliver Glasner】 🔴 LIVE | Thomas Frank and Oliver Glasner post-m...</a> - HotspurHangout <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=x9qMU-RUrk0" target="_blank">【Thomas Frank】 Palace 0-1 Spurs Celebrations ft Archie Gray | ...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wlC_bBZkFwo" target="_blank">【Thomas Frank】 高井 幸大 Kota Takai in Spurs squad for 1st time! C...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=wFM-9pZjeaQ" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=L6Pa_mOo-vE" target="_blank">【Thomas Frank】 Archie Gray Goal Palace 0-1 Spurs Highlights | ...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=K1Mi0-0CYas" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=NCxUDLML2Xg" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=iaSGRCVUiS8" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8p2pxda4yIE" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ixKb-vjtSow" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ykbBJl35Eb4" target="_blank">【Thomas Frank】 Palace 0-1 Spurs Highlights ft Archie Gray Goal...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=F5LxI49crgY" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=OyH_dp3_pOE" target="_blank">【Thomas Frank】 Palace v Spurs Prematch Highlights | Crystal Pa...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=an_HGLmIKNk" target="_blank">【Thomas Frank】 🔴 LIVE | Thomas Frank and Oliver Glasner post-m...</a> - BeanymanSports <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=i8IlAWjB3p8" target="_blank">【Thomas Frank】 🔴 LIVE | Thomas Frank and Oliver Glasner post-m...</a> - HotspurHangout <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=BUTyVRg8dME" target="_blank">【Thomas Frank】 A Gray day to lift the gloom! Reaction to Cryst...</a> - Tom Barclay <span style="color:#f44336">[live_stream]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=-yr2NB9mrZ8" target="_blank"><img src="https://i.ytimg.com/vi/-yr2NB9mrZ8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=-yr2NB9mrZ8" target="_blank">Tottenham Hotspur 0-2 Crystal Palace ...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 7ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=k93V_35EoQY" target="_blank"><img src="https://i.ytimg.com/vi/k93V_35EoQY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=k93V_35EoQY" target="_blank">TOTTENHAM HOTSPUR 3-1 CRYSTAL PALACE ...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 2024/03/04</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank"><img src="https://i.ytimg.com/vi/X6w_zL7QlwQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">ODEGAARD STUNNER &amp; OWN GOAL SECUR...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Ahte335Pcao" target="_blank"><img src="https://i.ytimg.com/vi/Ahte335Pcao/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Ahte335Pcao" target="_blank">Cristian Romero’s last gasp overhead ...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zlowHWpghcM" target="_blank"><img src="https://i.ytimg.com/vi/zlowHWpghcM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zlowHWpghcM" target="_blank">Why&#39;s Eze Laughing? 😂</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 7ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4KOtAeiqF2o" target="_blank"><img src="https://i.ytimg.com/vi/4KOtAeiqF2o/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4KOtAeiqF2o" target="_blank">Crystal Palace 1-0 Tottenham Hotspur ...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 2024/10/27</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank"><img src="https://i.ytimg.com/vi/JM1CBng2YGk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">HIGHLIGHTS! City end the year in styl...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cCL8F44UcfM" target="_blank"><img src="https://i.ytimg.com/vi/cCL8F44UcfM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cCL8F44UcfM" target="_blank">Kudus&#39; first Spurs goal! 🥶 | Leed...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2K47A4Vs4qA" target="_blank"><img src="https://i.ytimg.com/vi/2K47A4Vs4qA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2K47A4Vs4qA" target="_blank">SHOOT-OUT WINNERS, THROUGH TO THE SEM...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=sRBQpghDdXs" target="_blank"><img src="https://i.ytimg.com/vi/sRBQpghDdXs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=sRBQpghDdXs" target="_blank">NORTH LONDON DERBY DELIGHT 🤩 | EXTEND...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (30件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=8LbLcUrFG2M" target="_blank">FULL PENALTY SHOOT-OUT | Arsenal vs Crystal Pal...</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">Patrick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a> - Manchester United</li>
+<li><a href="https://www.youtube.com/watch?v=-0O_79PpMGY" target="_blank">Everton 0-3 Tottenham Hotspur | Extended Premie...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=ApPZcCitzwE" target="_blank">Brighton 2-2 Tottenham Hotspur | Premier League...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=GDYzMFhlUmk" target="_blank">Tottenham Hotspur 1-2 Aston Villa | Premier Lea...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=E8bXYmnGhwo" target="_blank">Kolo Muani&#39;s first Spurs goals | PSG 5-3 Sp...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=P_6q29Py3bo" target="_blank">PSG 2-2 Spurs (Pens 4-3) | UEFA Super Cup Highl...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=jlcCHD4ISCY" target="_blank">Newcastle 2-2 Spurs | Premier League Extended H...</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=3JCd5K51vl4" target="_blank">Football idols: Tottenham Hotspur edition 👀</a> - UEFA</li>
+<li><a href="https://www.youtube.com/watch?v=uL3RVoLTMCE" target="_blank">Harry back in N17 🤍</a> - Tottenham Hotspur</li>
+<li><a href="https://www.youtube.com/watch?v=qdeXtnVKxoo" target="_blank">EZE SCORES WINNER VERSUS HIS FORMER CLUB! | Ars...</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=4oUy9ih5RTs" target="_blank">You can’t sit there mate 🤣</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=a06wODkHJJw" target="_blank">The Strangest Goal Ever Scored At Old Trafford? 🤯🤣</a> - Manchester United</li>
+<li><a href="https://www.youtube.com/watch?v=1HVGFp6PVtM" target="_blank">Palace DOMINATE Spurs 💥 PREMIER LEAGUE Highligh...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=iAVk53yxvpo" target="_blank">PENALTY DRAMA! | Arsenal v Crystal Palace exten...</a> - EFL</li>
+<li><a href="https://www.youtube.com/watch?v=PRXBKhwxy1Q" target="_blank">MATETA STRIKE SINKS TOTTENHAM | Premier League ...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=mkNolg-xz7A" target="_blank">Tottenham Hotspur 2-3 Crystal Palace | U21 Matc...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=ZRK8ZNx3zSI" target="_blank">Tottenham vs Crystal Palace u18 Highlights | u1...</a> - StrikerSync</li>
+<li><a href="https://www.youtube.com/watch?v=37GKlXePA68" target="_blank">SARR BRACE 2️⃣🤩 | UEFA Conference League Highli...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=s8gxMGjWWFY" target="_blank">FANTASTIQUE™️ | JP post-match celebrations agai...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=soIg9Ln1N2I" target="_blank">EVERTON 2-1 CRYSTAL PALACE | Premier League hig...</a> - Everton Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=TKSZaIvbqKs" target="_blank">Ebere Eze v Joachim Andersen: the stand-off</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=_PGqXESHZC8" target="_blank">Leeds United 4-1 Crystal Palace | Premier Leagu...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=cT84ZT2SLeA" target="_blank">GOALS GALORE 🔥 | Crystal Palace 3-3 AFC Bournem...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=PVvcu6uxMhs" target="_blank">How Cole Palmer Became Pep&#39;s biggest Regret...</a> - FastplayHQ</li>
+<li><a href="https://www.youtube.com/watch?v=_s5sMdq557w" target="_blank">INTO THE QUARTER-FINAL 🙌 Newcastle United 2 Tot...</a> - Newcastle United</li>
+<li><a href="https://www.youtube.com/watch?v=_PyVO4msMho" target="_blank">HIGHLIGHTS | Brighton v Newcastle | Premier League</a> - Official Brighton & Hove Albion FC</li>
+<li><a href="https://www.youtube.com/watch?v=ckaqMe_G1gs" target="_blank">Prime Dele Alli was different</a> - Footy Skillz</li>
+<li><a href="https://www.youtube.com/watch?v=LJVoLrfwLyI" target="_blank">MANCHESTER CITY 2-0 EVERTON | Premier League Hi...</a> - Everton Football Club</li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wMbw-PQFwx8" target="_blank"><img src="https://i.ytimg.com/vi/wMbw-PQFwx8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wMbw-PQFwx8" target="_blank">【Crystal Palace】 【試合解説】クリスタルパレスvsリバプールを戦術的観点から解説！リバプール...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw" target="_blank"><img src="https://i.ytimg.com/vi/5_Z5xUa9kiw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=5_Z5xUa9kiw" target="_blank">【Tottenham】 【戦術の進化】マンチェスターシティvsトッテナムを戦術的観点から解説｜シテ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=XNa_PF_jYxQ" target="_blank"><img src="https://i.ytimg.com/vi/XNa_PF_jYxQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=XNa_PF_jYxQ" target="_blank">【Crystal Palace】 【徹底解説】クリスタルパレスがリバプールをPK戦の末破る！勝敗を分けた要因...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wZuCZB9KgRE" target="_blank"><img src="https://i.ytimg.com/vi/wZuCZB9KgRE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wZuCZB9KgRE" target="_blank">【Crystal Palace】 【プレミアリーグ】クリスタル・パレスvsリバプール今季のリバプールを徹底分...</a></strong><br/>📺 <strong>✅ スポルティーバ</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank"><img src="https://i.ytimg.com/vi/vAO1BPQStBg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank">【Tottenham】 【プレミアリーグ展望】お金持ちのプレス回避術／ペップの新戦術／トッテナム優...</a></strong><br/>📺 <strong>✅ PIVOT 公式チャンネル</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=W_Clntzgb7c" target="_blank"><img src="https://i.ytimg.com/vi/W_Clntzgb7c/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=W_Clntzgb7c" target="_blank">【Tottenham】 【徹底解説】劇的展開！パリSGvsトッテナムの試合総括/パリが追いついた理...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QuhY45IHcpc" target="_blank"><img src="https://i.ytimg.com/vi/QuhY45IHcpc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QuhY45IHcpc" target="_blank">【Tottenham】 トッテナム痛恨の敗戦…チェルシーに0-1完封負け、攻撃停滞の原因を徹底分析...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DjopJE8apbo" target="_blank"><img src="https://i.ytimg.com/vi/DjopJE8apbo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DjopJE8apbo" target="_blank">【Tottenham】 【徹底解説】三笘先発&amp;2点先制もフランクスパーズとドロー決着！フラ...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=t41xMTX_4aY" target="_blank"><img src="https://i.ytimg.com/vi/t41xMTX_4aY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=t41xMTX_4aY" target="_blank">【Tottenham】 スパーズ連勝ストップ！ボーンマスに敗北した要因を解説【レオザ切り抜き】</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mQ7e29YFgnI" target="_blank"><img src="https://i.ytimg.com/vi/mQ7e29YFgnI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mQ7e29YFgnI" target="_blank">【Crystal Palace】 アーセナルがクリスタル・パレスに勝利！公式戦7連勝の理由とセットプレーで勝...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 2ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (87件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=i5_92BXrTGs" target="_blank">【Crystal Palace】 なぜリヴァプールは勝てなかった？鎌田躍動パレスに敗れた要因を解説【レオザ切り抜き】</a> - レオザマニア【Leothefootball】公認切り抜き</li>
+<li><a href="https://www.youtube.com/watch?v=G_EYZ__FB_Q" target="_blank">【Tottenham】 トッテナムの補強ラッシュ！エゼ85%合意＋サヴィーニョを本気で狙う理由【レオザ切り抜き】</a> - レオザマニア【Leothefootball】公認切り抜き</li>
+<li><a href="https://www.youtube.com/watch?v=IpL6V-qtqno" target="_blank">【Tottenham】 【プレミアリーグ】アーセナル vs トッテナム・ホットスパー戦Q&amp;A 大量得点差になっ...</a> - スポルティーバ</li>
+<li><a href="https://www.youtube.com/watch?v=7kRlBX9yfz0" target="_blank">【Tottenham】 今季のスパーズのベストメンバーは？#海外サッカー #プレミアリーグ #トッテナム</a> - R_Football</li>
+<li><a href="https://www.youtube.com/watch?v=Oe3emHPJVek" target="_blank">【Crystal Palace】 【解明】鎌田大地不在で負けが続くクリスタルパレス、現地サポが理由を分析し赤裸々にしてしまう！！！！！</a> - 2chサッカー天国</li>
+<li><a href="https://www.youtube.com/watch?v=H6r456laGPI" target="_blank">【Crystal Palace】 首を振り続けて未来を視る鎌田大地 #サッカー</a> - BALLISTAR365</li>
+<li><a href="https://www.youtube.com/watch?v=KiDJ2y3Hp-0" target="_blank">【Crystal Palace】 【秒でサッカー解説動画】クリスタルパレスPressing vs リバプールBuildup  #...</a> - 元J1分析官のサッカー解説</li>
+<li><a href="https://www.youtube.com/watch?v=jDN4bFJOCeY" target="_blank">【Crystal Palace】 【30秒戦術】クリスタルパレス｜18戦無敗の理由　　#30秒戦術 #サッカー戦術 #タクサカ ...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=atCZJQA5IYc" target="_blank">【Crystal Palace】 【秒でサッカー解説動画】クリスタルパレスBuildup vs リバプールPressing  #...</a> - 元J1分析官のサッカー解説</li>
+<li><a href="https://www.youtube.com/watch?v=__hKD_uYP28" target="_blank">【Tottenham】 【完全攻略】ペナルティーエリアはこう崩せ#サッカー解説 #戦術分析 #ポケット侵入 #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=3s-h4Xm7fJM" target="_blank">【Crystal Palace】 グラスナー監督がいかにしてSLOTを圧倒したか、クリスタル・パレス対リバプール戦2-1：徹底分析</a> - Greatest Sport</li>
+<li><a href="https://www.youtube.com/watch?v=5QXYv2TScRY" target="_blank">【Tottenham】 【30秒戦術】トーマスフランク式4-4-2の鉄壁守備　#30秒戦術 #サッカー戦術 #タクサカ...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=vo_rVxFoL7I" target="_blank">【Tottenham】 対ボドー/グリムトに対するトッテナムの戦術の損害</a> - George Achillea</li>
+<li><a href="https://www.youtube.com/watch?v=8uFvO2Qezng" target="_blank">【Crystal Palace】 【前編】鎌田大地が日本代表にはないと語った&quot;仕組み&quot;がクリスタルパレスの戦...</a> - Hurricane Football</li>
+<li><a href="https://www.youtube.com/watch?v=snGBiD8flbw" target="_blank">【Tottenham】 トッテナムはいかにしてアーセナルの守備を崩すか。ノースロンドンダービーの戦術分析</a> - Lilywhite Lane</li>
+<li><a href="https://www.youtube.com/watch?v=G36k-aKdDDY" target="_blank">【Crystal Palace】 見えている視野が広すぎる #サッカー #日本代表 #鎌田大地 #クリスタルパレス #cryst...</a> - サッカー軍曹</li>
+<li><a href="https://www.youtube.com/watch?v=b7zcHie9tOg" target="_blank">【Tottenham】 PSG対トッテナムの完全戦術分析</a> - PSGINT</li>
+<li><a href="https://www.youtube.com/watch?v=tcUOSW5VQbk" target="_blank">【Crystal Palace】 オリバー・グラスナーがボールを持っていない状態でも全員を倒す方法…</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=vA2kUtAfB9E" target="_blank">【Tottenham】 #トッテナム#ボーンマス#サッカー分析</a> - Jサポの交差点</li>
+<li><a href="https://www.youtube.com/watch?v=iudKc2GUVvA" target="_blank">【Crystal Palace】 敵味方ともに&quot;支配&quot;する鎌田大地#サッカー #日本代表 #鎌田大地 #戦術...</a> - サッカー軍曹</li>
+<li><a href="https://www.youtube.com/watch?v=lGmZUtF01CI" target="_blank">【Tottenham】 【30秒戦術】トッテナム 開幕好調の裏で露呈した課題　#THFC #トッテナム #プレミアリー...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=Ijy3wLPClSY" target="_blank">【Crystal Palace】 【秒でサッカー解説動画】クリスタルパレスFinish vs リバプールBlock  #サッカー...</a> - 元J1分析官のサッカー解説</li>
+<li><a href="https://www.youtube.com/watch?v=DCSxaLCJsa0" target="_blank">【Tottenham】 【30秒戦術】UEFAスーパーカップを30秒で！！！！#30秒戦術 #サッカー戦術 #タクサカ...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=xsuJ6Z7QO7o" target="_blank">【Crystal Palace】 【秒でサッカー解説動画】クリスタルパレスBlock vs リバプールFinish  #サッカー...</a> - 元J1分析官のサッカー解説</li>
+<li><a href="https://www.youtube.com/watch?v=GQo_bsJZE3A" target="_blank">【Tottenham】 トッテナムの戦術がバイエルン・ミュンヘン戦で敗れた理由</a> - George Achillea</li>
+<li><a href="https://www.youtube.com/watch?v=kx2Zh4et4UQ" target="_blank">【Crystal Palace】 【海外の反応】「パレス史上最高のチーム」プレミアリーグCL圏内4位浮上！鎌田大地ボランチからシ...</a> - FOOT侍</li>
+<li><a href="https://www.youtube.com/watch?v=7ACLCkX_7y8" target="_blank">【Tottenham】 トーマス・フランクがトッテナムへ💥セカンドボールで試合に勝利🔥</a> - Dario Grabusic | Football Coach</li>
+<li><a href="https://www.youtube.com/watch?v=vpviAUSgbfQ" target="_blank">【Crystal Palace】 【首位独走】アーセナルvsクリスタルパレスがっつり解説！首位で首位ません！！</a> - やいしフットボールチャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=Lzj_Bz2gR0A" target="_blank">【Tottenham】 ウェストハム 0-3 トッテナム・ホットスパー戦から学んだこと！📊 戦術と分析</a> - Spurs Related</li>
+<li><a href="https://www.youtube.com/watch?v=jhGhlPkLch0" target="_blank">【Tottenham】 トッテナム・ホットスパー相手に得点するのはなぜこんなに難しいのか...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=kjZZGw9rEYo" target="_blank">【Crystal Palace】 リヴァプール戦でのクリスタルパレスの守備がヤバい！#リヴァプール #クリスタルパレス #プレミ...</a> - アナセカ【育成年代 試合分析】</li>
+<li><a href="https://www.youtube.com/watch?v=-dubBOKkU-E" target="_blank">【Tottenham】 【30秒戦術】トッテナム3-0発進！フランクの“間”支配がやばい！#30秒戦術 #サッカー戦術...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=ryHM4iQfyu8" target="_blank">【Crystal Palace】 🔵⚔️ PREDICTED CHELSEA XI vs CRYSTAL PALACE! Pal...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=x0wolBc4b6M" target="_blank">【Crystal Palace】 🎯 🔵😱CHELSEA vs CRYSTAL PALACE – FUTURE STARS! D...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=k9y8pOPbVIw" target="_blank">【Tottenham】 トッテナムのフルバックパズル – 戦術的分析</a> - Lilywhite Lab</li>
+<li><a href="https://www.youtube.com/watch?v=eTr2aQhuACA" target="_blank">【Crystal Palace】 グラスナーのオフザボールでの見事な戦術。#footballtactics #football ...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=3MJZtAUdemY" target="_blank">【Tottenham】 097 4/5 トッテナム vs リーズ | EPLハイライト、反応、分析</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=O2I2Xm1EkDI" target="_blank">【Crystal Palace】 🔵🏆EPL 2025/26 XI CHELSEA VS CRYSTAL PALACE SCAR...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=PK8HfM9eOfw" target="_blank">【Tottenham】 トッテナムの戦術分析：ゲームプランを分析</a> - Stephen Howson</li>
+<li><a href="https://www.youtube.com/watch?v=hl1ks60hcFQ" target="_blank">【Crystal Palace】 【後編】これが鎌田大地が語る&quot;仕組み&quot;なのか？格上相手にも通用するパレス独...</a> - Hurricane Football</li>
+<li><a href="https://www.youtube.com/watch?v=3kD0LPFBRXg" target="_blank">【Tottenham】 【30秒戦術】ASモナコが示した“前向き守備”｜トッテナム封じ　#ASモナコ #トッテナム #...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=eTIQRoz9puU" target="_blank">【Crystal Palace】 How Manchester United BROKE Crystal Palace | Am...</a> - Scarlet Report</li>
+<li><a href="https://www.youtube.com/watch?v=Ox5Trwll8RM" target="_blank">【Tottenham】 097 3/5 スパーズ対リーズ｜戦術分析と試合後リアクション</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=k52aRxNPSc8" target="_blank">【Crystal Palace】 クリスタル・パレスは過小評価されてきた | フットボールランブル</a> - Football Ramble</li>
+<li><a href="https://www.youtube.com/watch?v=yy0xCbWYikg" target="_blank">【Tottenham】 「プレミア4節終了！真のNo 1監督は誰だ？」#プレミアリーグ #監督分析#サッカー戦術</a> - サッカーワールド</li>
+<li><a href="https://www.youtube.com/watch?v=nMgJD_e-zF0" target="_blank">【Crystal Palace】 087 5/5 ウェストハム vs クリスタルパレス</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=8HntolGNmsU" target="_blank">【Tottenham】 🔴TOTTENHAM’S DREAM 2026 LINEUP: Simons, Kudus, ...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=MsPVWxDNBAI" target="_blank">【Crystal Palace】 リーズ・ユナイテッド vs クリスタル・パレス！ 意外と勝てる？！ 戦術プレビュー！</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=4Nlv0rQep-s" target="_blank">【Tottenham】 フリーキック失敗からの衝撃的な結末#バイエルン #サッカー解説 #戦術分析 #shorts</a> - サッカー革命家チキン</li>
+<li><a href="https://www.youtube.com/watch?v=v9Rhr6U2ifQ" target="_blank">【Crystal Palace】 【悲報】鎌田を失った影響か？クリスタル・パレスがリーズ戦で大崩壊</a> - 2Chサッカー反応まとめニュース</li>
+<li><a href="https://www.youtube.com/watch?v=PuLeJN_jJuM" target="_blank">【Tottenham】 エヴァートン 0-3 スパーズ戦から学んだこと | トッテナム戦術分析</a> - Spurs Related</li>
+<li><a href="https://www.youtube.com/watch?v=_Pwq6cxD4w8" target="_blank">【Crystal Palace】 ストラスブール、クリスタル・パレスに2-1で衝撃😱 チェルシーのスター、エンシソ・マジックとエ...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=uAuHMnM-zA4" target="_blank">【Tottenham】 スパーズはフラムの最大の弱点を狙わなければならない！トッテナム対フラムの戦術分析</a> - Lilywhite Lane</li>
+<li><a href="https://www.youtube.com/watch?v=20j4nd-VWG4" target="_blank">【Crystal Palace】 リバプールがクリスタル・パレスに完全に打ち負かされた理由</a> - A Game Of Two Halves</li>
+<li><a href="https://www.youtube.com/watch?v=vHBq79TJR2g" target="_blank">【Crystal Palace】 トンネル内 | クリスタルパレス プレビュー</a> - Justin Talks Villa </li>
+<li><a href="https://www.youtube.com/watch?v=UaCdoK6xjUg" target="_blank">【Tottenham】 トーマス・フランクはいかにしてエディ・ハウを戦術的に出し抜くのか！ニューカッスル対トッテナムの...</a> - Lilywhite Lane</li>
+<li><a href="https://www.youtube.com/watch?v=z_AudxQNguw" target="_blank">【Crystal Palace】 </a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=9OCIpd9vRdI" target="_blank">【Tottenham】 ヴィカリオは負担か？トッテナムの戦術分析</a> - Lilywhite Lane</li>
+<li><a href="https://www.youtube.com/watch?v=GCLRq9xZWmA" target="_blank">【Crystal Palace】 「これがチャンピオン・フットボールだ」 | マンチェスター・シティ 3-0 パレス | キャラ...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=boF_xmXj71g" target="_blank">【Tottenham】 ⚡TOTTENHAM’S DREAM XI WITH XAVI SIMONS: €447M S...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=rfMtIQ80ezg" target="_blank">【Crystal Palace】 Crystal Palace&#39;s SECRET Weakness Exposed (A...</a> - The Untold Moments</li>
+<li><a href="https://www.youtube.com/watch?v=SwzPE7bz7vw" target="_blank">【Tottenham】 ⚽UCL Draw: Chelsea in pot 1, Arsenal in Pot 2, ...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=CZzGX2j7wF0" target="_blank">【Crystal Palace】 リヴァプールを笑おう！ | リヴァプール 0-3 クリスタル・パレス リアクション</a> - URKG</li>
+<li><a href="https://www.youtube.com/watch?v=gMkhAHO4P0o" target="_blank">【Tottenham】 トッテナムのボールコントロール問題：戦術分析 #shorts</a> - Barnaby Slater</li>
+<li><a href="https://www.youtube.com/watch?v=nIsQQW4Trj8" target="_blank">【Crystal Palace】 ダロトの今シーズン最高の試合？！クリスタル・パレス戦の選手評価</a> - Stephen Howson</li>
+<li><a href="https://www.youtube.com/watch?v=PXp7oj5Cj5A" target="_blank">【Tottenham】 【30秒戦術】マンチェスターシティ0-2トッテナム　信念か、結果か　#30秒戦術 #サッカー戦...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=AzKmSqRVbVU" target="_blank">【Crystal Palace】 クリスタルパレス優勝後、鎌田大地の“熱い言葉”に監督が涙…欧州騒然の理由とは【海外の反応】ht 1</a> - JP Football Insider</li>
+<li><a href="https://www.youtube.com/watch?v=1YlfqNJyvIE" target="_blank">【Tottenham】 097 1/5 スパーズ対リーズ・ユナイテッド｜プレミアリーグ戦術分析</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=caR3ymLWP8Y" target="_blank">【Crystal Palace】 マンチェスター・ユナイテッドがセルハースト・パークでクリスタル・パレスに勝つための正確な方法</a> - Footy with an Edge</li>
+<li><a href="https://www.youtube.com/watch?v=ktKkoqkaar0" target="_blank">【Tottenham】 トッテナム vs リヴァプール - プレミアリーグ 2025 / 26 - フォート・シモンズ...</a> - 2Bit FIFA</li>
+<li><a href="https://www.youtube.com/watch?v=-H99tIhgsM8" target="_blank">【Crystal Palace】 091 1 / 5 リバプール vs クリスタルパレス プレビュー | ラインナップ、戦術、予...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=Xk5vFavJht4" target="_blank">【Crystal Palace】 ブッチャーが帰ってきた！リサンドロ・マルティネスがクリスタル・パレス戦で復帰戦で輝きを放つ｜完...</a> - Manchester United wave</li>
+<li><a href="https://www.youtube.com/watch?v=rW6xYSUGrY4" target="_blank">【Tottenham】 マンチェスター・シティ対トッテナム：見逃せない戦術的チェスマッチ</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=uF1_aAvqox0" target="_blank">【Crystal Palace】 攻めのスイッチを入れる鎌田大地#サッカー #日本代表 #鎌田大地 #クリスタルパレス #cry...</a> - サッカー軍曹</li>
+<li><a href="https://www.youtube.com/watch?v=5exl7Tjo-wg" target="_blank">【Tottenham】 トッテナム 1-0 ビジャレアル |試合後の分析とヴェン、バーグバル、フランク、アヨゼ、ベンタ...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=TkJJqlArQes" target="_blank">【Crystal Palace】 グラスナー率いるパレスがリバプールの弱点を露呈！ | 戦術分析</a> - Football news San </li>
+<li><a href="https://www.youtube.com/watch?v=__T5_URx2CE" target="_blank">【Tottenham】 エバートン 0-3 トッテナム | ファン・デ・ヴェンの2得点とサールの勝利宣言 試合後の反応と分析</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=c7jXCS3fNLc" target="_blank">【Crystal Palace】 099 エバートン vs クリスタル・パレス フル | 試合プレビュー＆戦術分析</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=5kbqcXTmGdw" target="_blank">【Tottenham】 Xavi Simons Shock Message To Chelsea🔥😱TOTTENHAM...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=cvDdTR57rDI" target="_blank">【Crystal Palace】 ニック・ウォルテメイドは違う🇩🇪🔥 #footballtactics #football #n...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=Sz7pj5W55Gk" target="_blank">【Tottenham】 ソン・フンミン2ゴールMOM、アメリカでゴールゲッターに変身した理由は？#評価9.0 #2ゴー...</a> - ティティポップポップ</li>
+<li><a href="https://www.youtube.com/watch?v=9NlSpRmuwsA" target="_blank">【Crystal Palace】 プレミアリーグ2025 第3節 混沌！ 私の大胆予想で衝撃の展開に！ #EPL #footba...</a> - Mystery Tales by Angel</li>
+<li><a href="https://www.youtube.com/watch?v=z1yEDXaGjpg" target="_blank">【Crystal Palace】 クリスタルパレス優勝後、鎌田大地の“熱い言葉”に監督が涙…欧州騒然の理由とは【海外の反応】ht</a> - JP Football Insider</li>
+<li><a href="https://www.youtube.com/watch?v=05vVNWZ4lSg" target="_blank">【Crystal Palace】 リヴァプール 0-3 クリスタル・パレス：戦術分析とハイライト | カラバオカップ</a> - Pop Culture Files</li>
+<li><a href="https://www.youtube.com/watch?v=SUbDyyQ-RXM" target="_blank">【Tottenham】 🔥😱Tottenham BOTTLE It Again🤯2-0 Lead to Penalty...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=jCvq089SUAQ" target="_blank">【Crystal Palace】 クリスタル・パレスがリバプールを驚愕させた方法 l 戦術分析</a> - Campfire Football</li>
+<li><a href="https://www.youtube.com/watch?v=RrP80Is_wEk" target="_blank">【Tottenham】 トッテナムのポチェッティーノの瞬間?! コペンハーゲン大敗の戦術分析!</a> - Mitch Fretton</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (2件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=sn9h0EOwtMg" target="_blank">【Tottenham】 2人で崩す&quot;背後の意識&quot; #サッカー #戦術分析 #解説 #liverpool</a> - サッカー軍曹 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=aMisFSPZPvo" target="_blank">【Tottenham】 リヴァプールの新たな守備戦術と引いた相手の崩し方 vs Tottenham Hotspur (...</a> - Liverpool Report <span style="color:#f44336">[live_stream]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4Go1Rxc2g38" target="_blank"><img src="https://i.ytimg.com/vi/4Go1Rxc2g38/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4Go1Rxc2g38" target="_blank">【Lucas Bergvall】 【攻守に躍動💥】ルーカス・ベリヴァル（トッテナム・ホットスパー）プレミアリ...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=nl8OLRL6tsY" target="_blank"><img src="https://i.ytimg.com/vi/nl8OLRL6tsY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=nl8OLRL6tsY" target="_blank">【Richarlison】 SHOWBOATING From Mohammed Kudus 🪄😱</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qiT29_HXcb0" target="_blank"><img src="https://i.ytimg.com/vi/qiT29_HXcb0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qiT29_HXcb0" target="_blank">【Richarlison】 【圧巻のスーパーボレー😲】リシャーリソン（トッテナム・ホットスパー）プレミ...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2mfMYGt2DGI" target="_blank"><img src="https://i.ytimg.com/vi/2mfMYGt2DGI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2mfMYGt2DGI" target="_blank">【Jean-Philippe Mateta】 【エースストライカーとしてチームに君臨👑】ジャン＝フィリップ・マテタ (ク...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=M9WiVgCP4wQ" target="_blank"><img src="https://i.ytimg.com/vi/M9WiVgCP4wQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=M9WiVgCP4wQ" target="_blank">【Lucas Bergvall】 Nick Woltemade&#39;s SPECIAL Newcastl...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=3ozvKuj4yfk" target="_blank"><img src="https://i.ytimg.com/vi/3ozvKuj4yfk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=3ozvKuj4yfk" target="_blank">【Jean-Philippe Mateta】 マテタは最高に面白い方法でザハを屈辱させた💀🇫🇷</a></strong><br/>📺 <strong>⚠️ FastplayHQ</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=gDDdq5U-3k4" target="_blank"><img src="https://i.ytimg.com/vi/gDDdq5U-3k4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=gDDdq5U-3k4" target="_blank">【Yéremy Pino】 Yeremy Pino 2025 – Magic Skills, Drib...</a></strong><br/>📺 <strong>⚠️ Xabi Scout</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=J3ow1MymhVA" target="_blank"><img src="https://i.ytimg.com/vi/J3ow1MymhVA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=J3ow1MymhVA" target="_blank">【Justin Devenny】 Adam Wharton is 100% Miraculous Gem ●...</a></strong><br/>📺 <strong>⚠️ rom7ooo</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=7g6sF-4QMXs" target="_blank"><img src="https://i.ytimg.com/vi/7g6sF-4QMXs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=7g6sF-4QMXs" target="_blank">【Richarlison】 【馴染めそう？】タトゥーの悪そうな先輩に絡まれる高井</a></strong><br/>📺 <strong>⚠️ フットボール HERO'S</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DIwy5vtO4zE" target="_blank"><img src="https://i.ytimg.com/vi/DIwy5vtO4zE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DIwy5vtO4zE" target="_blank">【Randal Kolo Muani】 Randal Kolo Muani ● Welcome to Totten...</a></strong><br/>📺 <strong>⚠️ SVMM</strong> ・ 🕐 3ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (173件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=cJ-DVthQppA" target="_blank">【Lucas Bergvall】 Lucas Bergvall Super Classy Skill Show 🔥</a> - rom7ooo</li>
+<li><a href="https://www.youtube.com/watch?v=M4qJiLmmX20" target="_blank">【Jean-Philippe Mateta】 😳 ジャン＝フィリップ・マテタがマンチェスター・ユナイテッド戦でPKのやり直しを許されるも物議...</a> - Girhore Plus </li>
+<li><a href="https://www.youtube.com/watch?v=un6dPy2XDOA" target="_blank">【Yéremy Pino】 C71E24: He Got Great Energy; Great Feet, He&#39;...</a> - Deepstuff Records Ltd</li>
+<li><a href="https://www.youtube.com/watch?v=85CsiCPozOI" target="_blank">【Richarlison】 Richarlison Career #Richarlison #Tottenham #Bra...</a> - TIME OF TRIK JR.</li>
+<li><a href="https://www.youtube.com/watch?v=SAkLlbmF33Q" target="_blank">【Randal Kolo Muani】 EVERY Randal Kolo Muani Goal &amp; Assist | Ser...</a> - Serie A</li>
+<li><a href="https://www.youtube.com/watch?v=lWASr17bRcM" target="_blank">【Jean-Philippe Mateta】 マテタで見る強靭センターフォワードの動き！</a> - tube matu</li>
+<li><a href="https://www.youtube.com/watch?v=aguXeO8CxDY" target="_blank">【Yéremy Pino】 S071E6: He Got Great Energy; Great Feet, He&#39;...</a> - Deepstuff Records Ltd</li>
+<li><a href="https://www.youtube.com/watch?v=IbDMzKIqP6g" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: &quot;HERE WE ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=q4xPxvdzU9A" target="_blank">【Lucas Bergvall】 マディソンの怪我はひどいものでした |ルーカス・バーグヴァル</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=ogRIgbYPoU4" target="_blank">【Jean-Philippe Mateta】 When Mateta got revenge on Zaha for laughing at...</a> - Sulwxys_</li>
+<li><a href="https://www.youtube.com/watch?v=knee6mNXBXQ" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Randal Kolo Mu...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=lYOxsekJhvg" target="_blank">【Lucas Bergvall】 「信じられない！プレミアリーグ初ゴール！」試合後インタビュー ルーカス・ベルヴァル ウェストハ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=IdP_4bDZypA" target="_blank">【Yéremy Pino】 C74E44: And He Gave Away A Freekick That Was Un...</a> - Deepstuff Records Ltd</li>
+<li><a href="https://www.youtube.com/watch?v=EjDJ3tm5sSE" target="_blank">【Richarlison】 【現地映像】途中出場からブラジルを切り裂く伊東純也</a> - フットボール HERO'S</li>
+<li><a href="https://www.youtube.com/watch?v=TvqWesBesgs" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Club Have Almo...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Wh4VvEYP4Ow" target="_blank">【Jean-Philippe Mateta】 ユナイテッド移籍が噂される鎌田の兄貴分&quot;JP・マテタ&quot; #海外サッカー #...</a> - ジョニーレ プレミアリーグTV</li>
+<li><a href="https://www.youtube.com/watch?v=Eqzb8npCGCE" target="_blank">【Yéremy Pino】 Crystal Palace Close to Signing Yeremy Pino fro...</a> - USA NEWS TODAY</li>
+<li><a href="https://www.youtube.com/watch?v=hAubQC0E6m4" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Randal Kolo Mu...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=jZ_Xm3yyt4c" target="_blank">【Lucas Bergvall】 素晴らしいベルグ！ウェストハム0-3スパーズ戦のリアクション。トーマス・フランク率いるセットプ...</a> - Tom Barclay</li>
+<li><a href="https://www.youtube.com/watch?v=klB0PS-ztlY" target="_blank">【Jean-Philippe Mateta】 ムベウモ vs マテタ | FC 26 ゲームプレイ クリスタル・パレス vs マンチェスター...</a> - Tech Vanced Gamer</li>
+<li><a href="https://www.youtube.com/watch?v=4pNZCf2-q48" target="_blank">【Richarlison】 Players vs Nuno Mendes + HIM 🥶</a> - FootyLibre</li>
+<li><a href="https://www.youtube.com/watch?v=3WxteM0RRYo" target="_blank">【Randal Kolo Muani】 The Real Reason Why Tottenham Just Signed Kolo ...</a> - Alice- ECILA Football</li>
+<li><a href="https://www.youtube.com/watch?v=MP3GkbblPVQ" target="_blank">【Lucas Bergvall】 クルセフスキーとベルグヴァルはどちらも現在トッテナム・ホットスパーでプレーしている #kulu...</a> - Every Moment Updates</li>
+<li><a href="https://www.youtube.com/watch?v=jyxTmX9pow8" target="_blank">【Jean-Philippe Mateta】 FC 26 | 25/26 プレミアリーグ | シミュレーション | クリスタル・パレス vs...</a> - JustForFootball</li>
+<li><a href="https://www.youtube.com/watch?v=xoJtvNIVqik" target="_blank">【Randal Kolo Muani】 &quot;KOLO MUANI AND SOLANKE... STILL OUT!&quot...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=AhEcKJL0i0A" target="_blank">【Lucas Bergvall】 元審判長ルーカス・ベルグヴァルは、トッテナムの「珍しい」事件で、リーグを破ったにもかかわらず、...</a> - LAD Sports One Plus</li>
+<li><a href="https://www.youtube.com/watch?v=Cz2PHpx3Rgc" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス対ボーンマス戦（3-3）のエディ・ンケティアとセメニョ、E.J.クルピ、R....</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=buELBlxDTUo" target="_blank">【Richarlison】 &quot;HAPPY WITH RICHARLISON! GOOD NUMBERS!&quo...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=-nBr1azqp64" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Solomon to Vil...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Tnaz0eLDaas" target="_blank">【Lucas Bergvall】 ポロとベルグヴァルの素晴らしいプレー！もしかしたらスパーズについて私の予想は間違っていたのかも...</a> - Never A Foul</li>
+<li><a href="https://www.youtube.com/watch?v=5jf3zw2MlTk" target="_blank">【Jean-Philippe Mateta】 【スレまとめ】【サッカーボイス】鎌田大地の神パス炸裂！マテタのハットで3-3激戦！</a> - サッカーボイス　日本と世界の反応まとめ Soccer Voices</li>
+<li><a href="https://www.youtube.com/watch?v=_rVtLOoWQoo" target="_blank">【Lucas Bergvall】 うわあ…ロメロとベルグヴァルは素晴らしかった！トッテナム 3-0 ウェストハム レビュー</a> - Alice- ECILA Football</li>
+<li><a href="https://www.youtube.com/watch?v=KC_9VBEPt3Q" target="_blank">【Jean-Philippe Mateta】 アーセナル vs クリスタル・パレス | ウチェはマテタよりも先発すべきか？ | 試合プレビュ...</a> - Back of The Nest - Crystal Palace Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=va9oDHL-bOw" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Randal Kolo Mu...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=92e39JuHFR0" target="_blank">【Lucas Bergvall】 60秒でわかるスパーズ最新情報：ルーカス・ベルグヴァルが最終候補に、チームニュース、クリスチャ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=5EM38M8xzqc" target="_blank">【Jean-Philippe Mateta】 【海外の反応】マテタが本音激白…『鎌田大地は中盤の革命家』と絶賛！パレス2-0完勝を生んだ衝撃...</a> - ブルーカード</li>
+<li><a href="https://www.youtube.com/watch?v=j5GZOWr3suc" target="_blank">【Richarlison】 MOHAMMED KUDUS SAD TO SEE TOTTENHAM vs MANCHEST...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=Tz68X9rPkc0" target="_blank">【Randal Kolo Muani】 &quot;KOLO MUANI WILL NOT BE AVAILABLE TOMORROW...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=AZ08c2oAyNg" target="_blank">【Lucas Bergvall】 トーマス・フランクのジュード・ベリンガム比較：トッテナムの新星、ルーカス・ベルグヴァル</a> - Ana Gabriel Ritmos y Sentimientos</li>
+<li><a href="https://www.youtube.com/watch?v=nGG49x1dG_g" target="_blank">【Jean-Philippe Mateta】 🚨 VAR Shock! 🤯 The New Rule That Let Mateta Ret...</a> - Trending Sports News</li>
+<li><a href="https://www.youtube.com/watch?v=wH_A1LYQ8ZE" target="_blank">【Richarlison】 &quot;HE IS MY STARTING NO. 9... I WANT TO KEEP...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Ptqwit3RUm4" target="_blank">【Randal Kolo Muani】 Romero WILL START and Kolo Muani BACK IN TRAINI...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=30oNZDvduRQ" target="_blank">【Lucas Bergvall】 トッテナム対マンチェスター・ユナイテッド：トップ4争いを決定づける一戦</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=Toz6XVZt40A" target="_blank">【Jean-Philippe Mateta】 ザハ監督、マテタ監督に激怒！衝撃発言で元チームメイトが激怒！</a> - Football Sphere</li>
+<li><a href="https://www.youtube.com/watch?v=Q7Q4tf0zuIE" target="_blank">【Randal Kolo Muani】 Thomas Frank on when Randal Kolo Muani and Domi...</a> - Delbert - Tottenham News Today</li>
+<li><a href="https://www.youtube.com/watch?v=45o4rRWMz3o" target="_blank">【Lucas Bergvall】 トッテナムは今日素晴らしいプレーを見せた！ベルクヴァルがMOTM、ウェストハム相手にここ数年で...</a> - Tottenham logic tv</li>
+<li><a href="https://www.youtube.com/watch?v=LSfTJ-kP77U" target="_blank">【Jean-Philippe Mateta】 【速報】アストン・ヴィラ戦でPKを決めたマテタに鎌田が放った‘‘ある発言‘‘が話題に…復帰後か...</a> - サッカーニュース速報</li>
+<li><a href="https://www.youtube.com/watch?v=OoZeGlBvUjk" target="_blank">【Richarlison】 THE 60 SECOND SPURS NEWS UPDATE: Richarlison &q...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=UMSXsMz4vdE" target="_blank">【Randal Kolo Muani】 FC 26 | 25/26 Premier League | Simulation | For...</a> - JustForFootball</li>
+<li><a href="https://www.youtube.com/watch?v=xhLOpGYVibA" target="_blank">【Lucas Bergvall】 60秒スパーズニュース速報：ベルヴァルがクリーンシートについて、フランクがジェドとシャビについ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=rRZgFPveBbU" target="_blank">【Jean-Philippe Mateta】 Wilfried Zaha vs. Jean-Philippe Mateta: The Tru...</a> - 洋佳酱 YangJia</li>
+<li><a href="https://www.youtube.com/watch?v=etBBhwU8bhA" target="_blank">【Richarlison】 &quot;HE WAS MORE IN THE BOX AND THE CROSSES DI...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=siFV4sBcK3g" target="_blank">【Randal Kolo Muani】 &quot;HE CAN PLAY ANYWHERE ACROSS THE FRONT LIN...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=0tfQym67UQg" target="_blank">【Lucas Bergvall】 「彼はプレーにさらなる磨きをかけている！」トーマス・フランク、ルーカス・ベルグヴァルについて語...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=no1WlCxbXg4" target="_blank">【Jean-Philippe Mateta】 ザハ対マテタ：フランス代表争いの真相</a> - Pop Culture Insights</li>
+<li><a href="https://www.youtube.com/watch?v=CXEsVc-qge8" target="_blank">【Richarlison】 How Eze went savage with a hat-trick in his fir...</a> - FutVibes</li>
+<li><a href="https://www.youtube.com/watch?v=GoyABuVbZ1A" target="_blank">【Randal Kolo Muani】 &quot;MINOR INJURIES!&quot; Thomas Frank on Ran...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=bpunckk8TQ8" target="_blank">【Richarlison】 Richarlison&#39;s Genius Assist  The Unselfish ...</a> - SpursTalkShow</li>
+<li><a href="https://www.youtube.com/watch?v=I49vaey4xF0" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Randal Kolo Mu...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=1zcmRSW2S7k" target="_blank">【Lucas Bergvall】 60秒スパーズニュース更新：パプ・マタール・サール、ルーカス・バーグバル、シャビ、ファン・デ・...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Y2yw1qbYEro" target="_blank">【Jean-Philippe Mateta】 🔴プレミアリーグ 2025-26 | クリスタル・パレスがセルハースト・パーク・スタジアムでマ...</a> - timelord flight</li>
+<li><a href="https://www.youtube.com/watch?v=RDVtCNHOnOI" target="_blank">【Randal Kolo Muani】 &quot;WE NEED TO BLAME PAPE! HE RAN INTO HIM!&q...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=JZ1IpcmhRgk" target="_blank">【Lucas Bergvall】 Bergvall&#39;s Concussion &amp; Spurs&#39; Stru...</a> - Barnaby Slater</li>
+<li><a href="https://www.youtube.com/watch?v=hpKBKlFD8Ho" target="_blank">【Jean-Philippe Mateta】 【イーフットボール】どーしてもマテタを使いたい</a> - BEEYanフットボール</li>
+<li><a href="https://www.youtube.com/watch?v=lAwr64ri8vk" target="_blank">【Richarlison】 &quot;IF YOU PLAY WELL AND SCORE GOALS YOU KEEP...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=HztdPNQ5wlc" target="_blank">【Randal Kolo Muani】 🚨🔥DEADLINE DAY! TOTTENHAM SIGN RANDAL KOLO MUAN...</a> - SPURS LATEST NEWSLINE</li>
+<li><a href="https://www.youtube.com/watch?v=jo4Qwk4SqFI" target="_blank">【Lucas Bergvall】 ニューカッスルが楽々とスパーズを破り、カラバオカップの準々決勝に進出するのを一緒に見に行きましょう。</a> - Newcastle Fans TV</li>
+<li><a href="https://www.youtube.com/watch?v=ZmnctMhN8fY" target="_blank">【Richarlison】 &quot;GET OFF YOUR BACKSIDE, RICHARLISON!&quot;...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=s1kon4wvlnE" target="_blank">【Randal Kolo Muani】 KOLO MUANI LOAN MOVE TO SPURS CONFIRMED!!🚨</a> - Durag Diaries</li>
+<li><a href="https://www.youtube.com/watch?v=eRK-zGKDN1I" target="_blank">【Lucas Bergvall】 セットプレーの力：トッテナムのゴールのための新戦略 #shorts</a> - Barnaby Slater</li>
+<li><a href="https://www.youtube.com/watch?v=PjCUA-HcFGo" target="_blank">【Richarlison】 FC 26: Tottenham vs Chelsea — Richarlison vs Pe...</a> - Smgoat Gamerz</li>
+<li><a href="https://www.youtube.com/watch?v=j6dqoe-vRt4" target="_blank">【Randal Kolo Muani】 Spurs News Latest: How Randal Kolo Muani played...</a> - Delbert - Tottenham News Today</li>
+<li><a href="https://www.youtube.com/watch?v=xcy0yjH5lEo" target="_blank">【Lucas Bergvall】 60秒スパーズニュース速報 マディソン「寂しいよ！」シモンズ、ベルグヴァル「夢だ！」、U21</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=ucRi93FWjp4" target="_blank">【Jean-Philippe Mateta】 マテタはクリスタル・パレスを率いてアーセナルの鉄壁の守備を突破できるか？</a> - Mirror7 News | Breaking News</li>
+<li><a href="https://www.youtube.com/watch?v=fDq31bCKYHY" target="_blank">【Richarlison】 THIS RICHARLISON IS UNBELIEVABLE STRIKER ⁉️|| F...</a> - struggle bhoi</li>
+<li><a href="https://www.youtube.com/watch?v=CzvQA3x3EDQ" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: &quot;No Loan ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=wP98SQYNaHU" target="_blank">【Lucas Bergvall】 トッテナムとニューカッスルの試合が2-2の引き分けに終わった後、私の考えは変わった</a> - Alice- ECILA Football</li>
+<li><a href="https://www.youtube.com/watch?v=dTVVQtsaVMI" target="_blank">【Jean-Philippe Mateta】 ルーフスの見事なプレー！ | クリスタル・パレス 0-0 サンダーランド</a> - TC</li>
+<li><a href="https://www.youtube.com/watch?v=dpddaW3NPrc" target="_blank">【Richarlison】 MANCHESTER UNITED ROBBED AGAIN! VAR SPARKS OUTR...</a> - The Red Devil's Hub</li>
+<li><a href="https://www.youtube.com/watch?v=BCN1FlVeFE4" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Ange Hits Out,...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=t7dPxE11-9c" target="_blank">【Lucas Bergvall】 エディ・ハウ監督はスパーズに2-0で勝利し、ニューカッスルが準々決勝進出を果たしたことを語った...</a> - Newcastle Fans TV</li>
+<li><a href="https://www.youtube.com/watch?v=7YOeCx_Ds8U" target="_blank">【Jean-Philippe Mateta】 🔥クリスタル・パレス主砲マテタ、契約延長へ⁉️鎌田大地と共にさらなる飛躍か⚡</a> - 京都ハバル</li>
+<li><a href="https://www.youtube.com/watch?v=p1hi2qLlfmo" target="_blank">【Richarlison】 6개월 동안 EPL 20개 구장을 걸어서 완주한 남자 [몰아보기·결말포함]</a> - 대빠리 Daebbari</li>
+<li><a href="https://www.youtube.com/watch?v=AbKQ_NJP0ZM" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE £8.6M Winger Le...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=LLalrPxKdUw" target="_blank">【Lucas Bergvall】 マンチェスター・シティ、スパーズ戦で大失敗！ 現実を思い知らされる！</a> - Typical City</li>
+<li><a href="https://www.youtube.com/watch?v=Ok_ScqwP5Z0" target="_blank">【Jean-Philippe Mateta】 マテタ、ついにミラン移籍の可能性⁉#ジャンフィリップマテタ #ACミラン #セリエA #移籍情...</a> - Nippon News</li>
+<li><a href="https://www.youtube.com/watch?v=puENyKVZRzg" target="_blank">【Richarlison】 RICHARLISON: THE MAIN DIFFERENCES Last Season t...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=FXxb0hD4X9s" target="_blank">【Randal Kolo Muani】 🚨🔥URGENT! VLAHOVIĆ CLOSE TO SPURS? £13M DEAL! K...</a> - SPURS LATEST NEWSLINE</li>
+<li><a href="https://www.youtube.com/watch?v=sfe9ipHuw-Y" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス 0-0 サンダーランド | プレミアリーグハイライト＆リアクション</a> - 洋佳酱 YangJia</li>
+<li><a href="https://www.youtube.com/watch?v=hq7pv4bFogM" target="_blank">【Randal Kolo Muani】 TOTTENHAM SIGN RANDEL KOLO MUANI | New Striker ...</a> - Hollie's Hotspurs</li>
+<li><a href="https://www.youtube.com/watch?v=emZ7C0jxv-M" target="_blank">【Lucas Bergvall】 スパーズは売却不可｜トーマス・フランク、入札拒否に反応</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=rUlx4-jb4zA" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス対マンチェスター・シティ、どちらが勝つ？ #プレミアリーグ</a> - Prophet Pastor Ran</li>
+<li><a href="https://www.youtube.com/watch?v=W5YnoZKSP5Y" target="_blank">【Richarlison】 Premier League Kick‑Off: City DOMINATE, Spurs T...</a> - Fut-Afrique</li>
+<li><a href="https://www.youtube.com/watch?v=4r2ur7cuzhc" target="_blank">【Randal Kolo Muani】 Tottenham’s 2025 Summer Transfer: Can Frank Tak...</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=2oO5A3HU1gY" target="_blank">【Lucas Bergvall】 60秒スパーズニュース速報：フランクがビジャレアル戦勝利を喜び、シモンズ「嬉しい！」ベルグヴァ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=t1tVbb7RKFQ" target="_blank">【Jean-Philippe Mateta】 鎌田大地⚡クリスタル・パレス今季初黒星🔥エヴァートンに惜敗</a> - JP STAR PLAYER </li>
+<li><a href="https://www.youtube.com/watch?v=YagOElhreUQ" target="_blank">【Randal Kolo Muani】 Rafa Honigstein on Spurs’ Big Signings: Xavi Si...</a> - An Echo of Glory Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=t_XmBBLIemQ" target="_blank">【Lucas Bergvall】 60秒スパーズニュース速報：アーチー・グレイ・ローン、デビッド・ベントレーがルーカス・ベルヴァ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=ZX8SbpLAqW4" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレスはUEFAカンファレンスの第1戦でフレドリクスタに1-0で辛勝した。</a> - Bangsaen AI Studio</li>
+<li><a href="https://www.youtube.com/watch?v=-2tcw1X-IPg" target="_blank">【Richarlison】 FIFA 26 | TOTTENHAM HOTSPUR PLAYER RATINGS IN F...</a> - Mati 19900</li>
+<li><a href="https://www.youtube.com/watch?v=kvvHS2hDtr8" target="_blank">【Lucas Bergvall】 #efootball #イーフト Bergvall</a> - NorizoU</li>
+<li><a href="https://www.youtube.com/watch?v=YdHsNDu-FeM" target="_blank">【Jean-Philippe Mateta】 第60節プレミアリーグニュース更新：ファン・デ・ヴェン、マイヌー、トロサール、ヘスス、ファビア...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=ZSFTJSDYQ0M" target="_blank">【Richarlison】 FC 26 | 25/26 Premier League | Simulation | For...</a> - JustForFootball</li>
+<li><a href="https://www.youtube.com/watch?v=8gs2u-BiPQE" target="_blank">【Lucas Bergvall】 トッテナム、チャンピオンズリーグ復帰戦を勝利で飾る | スパーズ (1) ビジャレアル (0)...</a> - Hollie's Hotspurs</li>
+<li><a href="https://www.youtube.com/watch?v=FKYkqPyg2LA" target="_blank">【Jean-Philippe Mateta】 チェルシー vs クリスタル・パレス | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=0fKueIbn-IY" target="_blank">【Richarlison】 MOHAMMED KUDUS INCONSISTENCY SCARE THOMAS FRANK...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=9kBxdnWbVS4" target="_blank">【Randal Kolo Muani】 RANDAL KOLO MUANI: Player Profile: All You Need...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=-LIdytrDpHs" target="_blank">【Lucas Bergvall】 DLS 26のベストプレーヤートップ100 - 公式レーティングアップデート | ドリームリー...</a> - Nguyễn Huy Hoàng</li>
+<li><a href="https://www.youtube.com/watch?v=XTPHjZ-iv2E" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs サンダーランド | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=d_aeShgwjww" target="_blank">【Richarlison】 Richarlison at Spurs: Should He Play Wide Left?...</a> - Barnaby Slater</li>
+<li><a href="https://www.youtube.com/watch?v=F1t-K_gbUO8" target="_blank">【Randal Kolo Muani】 I TOLD MICKY TO SCORE MORE HEADERS! 😂 | Thomas ...</a> - BeanymanSports</li>
+<li><a href="https://www.youtube.com/watch?v=1Pqk5rXuLQ8" target="_blank">【Lucas Bergvall】 ニューカッスル、カラバオカップ準々決勝進出 シャーとウォルテマデがセント・ジェームズ・パークで...</a> - Every Moment Updates</li>
+<li><a href="https://www.youtube.com/watch?v=m-3dNYC14eA" target="_blank">【Jean-Philippe Mateta】 それは恥ずべきことだ | アストン・ヴィラ 0-3 クリスタル・パレス</a> - Every Week We Follow | An Aston Villa Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=20UzHlM19Rc" target="_blank">【Richarlison】 FC 26 - Tottenham vs Chelsea | Ft. Palmer, Este...</a> - FIFA Fusion</li>
+<li><a href="https://www.youtube.com/watch?v=qMGWMUEGGVQ" target="_blank">【Randal Kolo Muani】 THE 60 SECOND PREMIER LEAGUE NEWS UPDATE: Marti...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=WMsH8W7mOZA" target="_blank">【Lucas Bergvall】 モハメド・クドゥス、トッテナム対チェルシー戦で信じられない衝撃のゴール…ジョアン・ペドロ…アン...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=GouxKZm5ZQ8" target="_blank">【Jean-Philippe Mateta】 ザハ対マテタ - 私はフランス代表としてプレーし、トロフィーを獲得し、MLSでミックステープを...</a> - ChinxPhase</li>
+<li><a href="https://www.youtube.com/watch?v=RiztjXW8oJw" target="_blank">【Richarlison】 💥🚨BREAKING! IGOR THIAGO TO SPURS? VAN HECKE NEG...</a> - SPURS LATEST NEWSLINE</li>
+<li><a href="https://www.youtube.com/watch?v=ervJZzRRI4o" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: &quot;Club Wor...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=NFYElq5FUnI" target="_blank">【Lucas Bergvall】 ルイス・ジュニオールのオウンゴールが決め手に：トッテナム vs ビジャレアル戦の舞台裏 #チャ...</a> - Kishioka.Design</li>
+<li><a href="https://www.youtube.com/watch?v=HWGGo73GM2U" target="_blank">【Jean-Philippe Mateta】 まだ限界に達していない！💪 | オリバー・グラスナー | シェルボーン対クリスタル・パレス</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=4xMHIHh82Cg" target="_blank">【Richarlison】 Richarlison: Should He Play Wide Left? #shorts</a> - Barnaby Slater</li>
+<li><a href="https://www.youtube.com/watch?v=zr0OeOEGdD0" target="_blank">【Lucas Bergvall】 デイリー・トッテナム・ニュースのヘッドライン：ベルヴァルの契約に関する発言、リネカーのシモンズ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=0XLj95ixYQM" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs リヴァプール | プレミアリーグ 25/26 | FC 26 - ノ...</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=mPkWwoVZai0" target="_blank">【Randal Kolo Muani】 Randal Kolo Muani Joins Tottenham Hotspur: Dead...</a> - Ana Gabriel Ritmos y Sentimientos</li>
+<li><a href="https://www.youtube.com/watch?v=n9DByCDCeks" target="_blank">【Lucas Bergvall】 アーセナル対トッテナム：ガナーズはこの試練を乗り越えられるか？</a> - Football Memories.</li>
+<li><a href="https://www.youtube.com/watch?v=jAcsHjTyojA" target="_blank">【Jean-Philippe Mateta】 ウィルフレッド・ザハ、フランス🇫🇷🗼代表チームでプレーしているというマテタの虚偽の主張に涙😭</a> - Fanzvibes hq</li>
+<li><a href="https://www.youtube.com/watch?v=3y4On55ksD8" target="_blank">【Richarlison】 FC 26 - Spurs vs Man United | Ft. Richarlison, ...</a> - FIFA Fusion</li>
+<li><a href="https://www.youtube.com/watch?v=VgXQjKDq3D4" target="_blank">【Randal Kolo Muani】 🚨💥BREAKING! SOLANKE A CONCERN? KULUSEVSKI WITH ...</a> - SPURS LATEST NEWSLINE</li>
+<li><a href="https://www.youtube.com/watch?v=2rlr9SbgTIM" target="_blank">【Lucas Bergvall】 スペンスとヴァン・デ・ヴェンが謝罪 |グリエルモ・ヴィカリオとトーマス・フランク</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=ECxazooVXC0" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs リヴァプール | FAコミュニティ・シールド 2025 - エゼ＆ヴ...</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=zKvCj51h3ZI" target="_blank">【Richarlison】 Brazil destroys Korea with an exceptional artis...</a> - Football King</li>
+<li><a href="https://www.youtube.com/watch?v=dYOwxZXZzyI" target="_blank">【Randal Kolo Muani】 Tottenham Sign Randal Kolo Muani on Loan | Fina...</a> - USA TODAY NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=Mjzk6HmhRZY" target="_blank">【Lucas Bergvall】 ニューカッスルがスパーズを進軍させたとき</a> - Newcastle Fans TV</li>
+<li><a href="https://www.youtube.com/watch?v=x5TftaPDKKg" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs リヴァプール | FAコミュニティ・シールド - エンケティア＆マテ...</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=sc6ArOsZPdg" target="_blank">【Richarlison】 Cristian &quot;Cuti&quot; Romero 2024 ● CRAZY D...</a> - FZ Football</li>
+<li><a href="https://www.youtube.com/watch?v=8xFj1As3q_g" target="_blank">【Randal Kolo Muani】 Blocking Out Distractions for the West Ham game</a> - THE BOY HOTSPUR</li>
+<li><a href="https://www.youtube.com/watch?v=ZGf06EnMOv0" target="_blank">【Lucas Bergvall】 モハメド・クドゥスがマルク・ククレラを調理 トッテナム vs チェルシー (0-1) ジョアオ...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=ubznCBeud64" target="_blank">【Jean-Philippe Mateta】 最後の一撃が示したもの。パレスがリヴァプールの完璧な歩みに終止符を打つ #プレミアリーグ #ク...</a> - Kishioka.Design</li>
+<li><a href="https://www.youtube.com/watch?v=UZVTpSsvDoc" target="_blank">【Randal Kolo Muani】 IT WASN&#39;T A 3-0...BUT SET-PIECE WOES MADE I...</a> - THYNK REACTS </li>
+<li><a href="https://www.youtube.com/watch?v=Dp8Bg9u1TrQ" target="_blank">【Lucas Bergvall】 モハメド・クドゥス…トッテナム対チェルシー(0-1)ジョアン・ペドロのゴール後、ファン・デ・ヴ...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=Rh7v0Maaotg" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs リヴァプール | FAコミュニティ・シールド 2025 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=Ii9GCtDl80o" target="_blank">【Richarlison】 THE 60 SECOND SPURS NEWS UPDATE: Richarlison on...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=obCV8mSu4cU" target="_blank">【Randal Kolo Muani】 MOHAMMED KUDUS SADDENED IN EVERTON vs TOTTENHAM...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=PaFFyRZoaGM" target="_blank">【Lucas Bergvall】 VAR判定の不調にもかかわらず、ロメロがスパーズの勝ち点1を救った方法 | ニューカッスル (...</a> - Hollie's Hotspurs</li>
+<li><a href="https://www.youtube.com/watch?v=UMuCaxciITM" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs リヴァプール | プレミアリーグ 25/26 | FC 26 - P...</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=l3Pbm3E3mJ8" target="_blank">【Randal Kolo Muani】 Are Tottenham TITLE CONTENDERS? | Thomas Frank ...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=K4UzwM4eHrA" target="_blank">【Lucas Bergvall】 ミッキー・ファン・デ・ヴェン、UCLシーズン最優秀ゴール | トッテナム (4) vs コペン...</a> - Hollie's Hotspurs</li>
+<li><a href="https://www.youtube.com/watch?v=EaCPG_Camy8" target="_blank">【Richarlison】 FC 26 - Tottenham vs. Chelsea | Premier League ...</a> - 99 FC</li>
+<li><a href="https://www.youtube.com/watch?v=Fopph0Zs83Q" target="_blank">【Randal Kolo Muani】 Kulusevski BACK this year? | Thomas Frank | Tot...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=glb7wbifGu8" target="_blank">【Lucas Bergvall】 トッテナム・ホットスパー 1-0 ビジャレアル | チャンピオンズリーグハイライト</a> - GURUNG FIFA</li>
+<li><a href="https://www.youtube.com/watch?v=5kw3b_i_Jn8" target="_blank">【Jean-Philippe Mateta】 貯金ではなく投資しよう！それが私たちの直面する現実です！😤 | オリバー・グラスナー | クリ...</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=qwJDaQhrxNA" target="_blank">【Richarlison】 THE QUICK SPURS NEWS UPDATE: Richarlison is Bac...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Rcx_L8sFlWk" target="_blank">【Lucas Bergvall】 トッテナム対アストン・ヴィラ戦（1-2）前半R.ベンタンクールとモーガン・ロジャース・ブエンデ...</a> - Sports Link Ghana</li>
+<li><a href="https://www.youtube.com/watch?v=33gh84zc9MQ" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs リヴァプール | プレミアリーグ 25/26 | EFOOTBALL...</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=Op2ghpPIsgA" target="_blank">【Richarlison】 THE 60 SECOND SPURS NEWS UPDATE: Club Consideri...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=2E2_GTtO19g" target="_blank">【Randal Kolo Muani】 The BIG POSITIVES For Tottenham After PSG Loss.</a> - Only Tottenham</li>
+<li><a href="https://www.youtube.com/watch?v=Shd3c6B6eC8" target="_blank">【Lucas Bergvall】 エゼ？我々は市場にいる | トッテナムとアーセナルのターゲットについて語るトーマス・フランク</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=ccD1IGbJmLU" target="_blank">【Jean-Philippe Mateta】 ルベン・アモリム 試合後記者会見 | クリスタル・パレス 1-2 マンチェスター・ユナイテッド...</a> - RedDevilsLatest</li>
+<li><a href="https://www.youtube.com/watch?v=0EbFw3bsjuU" target="_blank">【Randal Kolo Muani】 🤩✅BREAKING! £182M IN SIGNINGS! TOTTENHAM SEAL L...</a> - SPURS LATEST NEWSLINE</li>
+<li><a href="https://www.youtube.com/watch?v=NFndsYx1Pj8" target="_blank">【Lucas Bergvall】 FM26で絶対にサインすべき最高の隠れた逸材 | Football Manager 2026 ...</a> - FM Scout</li>
+<li><a href="https://www.youtube.com/watch?v=yl35n2yzbc8" target="_blank">【Jean-Philippe Mateta】 クリスタル・パレス vs フレドリクスタ | UEFAカンファレンスリーグプレーオフ第1戦分析...</a> - NewsDrift</li>
+<li><a href="https://www.youtube.com/watch?v=fs495V-X5zs" target="_blank">【Richarlison】 Franky Panky vs Villareal</a> - THE BOY HOTSPUR</li>
+<li><a href="https://www.youtube.com/watch?v=AcvIJDrmpwk" target="_blank">【Randal Kolo Muani】 THE 60 SECOND SPURS NEWS UPDATE: Solanke, Muani...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=5_jkSh8ZeAw" target="_blank">【Lucas Bergvall】 「チャンピオンズリーグで優勝したい！」フランクとロメロの記者会見完全版：スパーズ対ビジャレアル</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=tLtyq-QdIls" target="_blank">【Jean-Philippe Mateta】 エバートン 2-1 クリスタル・パレス | 激しいプレーが必要 | 3つのポイント</a> - Toffee TV : Everton Fan Channel</li>
+<li><a href="https://www.youtube.com/watch?v=ZEahJOc9suc" target="_blank">【Richarlison】 FC 26 - Tottenham Hotspur vs Manchester united ...</a> - ASEE7</li>
+<li><a href="https://www.youtube.com/watch?v=ZcCbRb6uPGk" target="_blank">【Randal Kolo Muani】 TOTTENHAM NEWS &amp; TRANSFER WINDOW UPDATE: 8 ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=D7klMv0mT8k" target="_blank">【Lucas Bergvall】 U21チャンピオンズリーグでブレイクするスター選手たち：ベリンガム、ベルナル、アジッチなど20...</a> - Pop Culture Files</li>
+<li><a href="https://www.youtube.com/watch?v=0dmV5eofkvo" target="_blank">【Jean-Philippe Mateta】 私たちのせいだ！ | グラスナー、パレスの組織体制を批判 | クリスタル・パレス 1-2 マン...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=VIRXiw4UiCs" target="_blank">【Richarlison】 “Did the Brazilian Stars Just Take Over the Cha...</a> - Everyday  scoreline today </li>
+<li><a href="https://www.youtube.com/watch?v=M5zQ0FAUZeA" target="_blank">【Randal Kolo Muani】 🚨💥URGENT! END OF AN ERA AT TOTTENHAM! DANIEL LE...</a> - SPURS LATEST NEWSLINE</li>
+<li><a href="https://www.youtube.com/watch?v=3sm9iddQI8U" target="_blank">【Lucas Bergvall】 モハメド・クドゥス、トッテナム対アストン・ヴィラで悲しい敗戦 (1-2) ベンタンクール & ...</a> - Sports Link Ghana</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (17件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=tCCrj59I8qE" target="_blank">【Jean-Philippe Mateta】 🔴 プレミアリーグ 2025-26 | ウルブズ vs クリスタル・パレス</a> - timelord flight <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=uTaXIM0bG0s" target="_blank">【Jean-Philippe Mateta】 🔴プレミアリーグ：クリスタル・パレス vs マンチェスター・ユナイテッド</a> - timelord flight <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sVNe8dFh2vQ" target="_blank">【Richarlison】 Richarlison Goal, PSG vs Tottenham (0-1) All Go...</a> - VIVAL SPORTS  <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=zyxpsHdXcy4" target="_blank">【Richarlison】 Richarlison Goal, PSG vs Tottenham (0-1) All Go...</a> - VIVAL SPORTS  <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=M4GNzBkB1sQ" target="_blank">【Richarlison】 ⚡ #OusmaneDembélé destroys #Spurs with killer s...</a> - BerKi GameZ <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=aYulTEoanxI" target="_blank">【Richarlison】 #MathysTel fires PSG ahead vs #Spurs! Clinical ...</a> - BerKi GameZ <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ZkeuWvXqGHg" target="_blank">【Richarlison】 Richarlison Goal, Tottenham - Liverpool 1-2 Hig...</a> - VIVAL SPORTS  <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Oayid_6MPOs" target="_blank">【Richarlison】 Richarlison Goal, Tottenham - Liverpool 1-2 Hig...</a> - VIVAL SPORTS  <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Deywbv2Q4VI" target="_blank">【Richarlison】 Let It All Work Out! Eze&#39;s Hat-Trick Heroic...</a> - Context Football  <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=N7lxz7VBy3M" target="_blank">【Richarlison】 リシャルリソンAT劇的弾で絶望してたヨップがデリフト劇的同点弾で大復活する瞬間…！【プレチャン...</a> - プレチャンBOX 【プレチャン / 切り抜き】 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9YPzUK09Uak" target="_blank">【Richarlison】 FC 25 - Tottenham Hotspur vs Liverpool FC | UEF...</a> - Theft Gamerz <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=p4pKTN8fhqY" target="_blank">【Richarlison】 Tottenham hotspur vs Manchester United Premier ...</a> - ChillBrainTrending <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=rW6xYSUGrY4" target="_blank">【Richarlison】 Manchester City vs Tottenham: A Tactical Chess ...</a> - Football Memories. <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=qqEwShs7GXk" target="_blank">【Richarlison】 Tottenham vs Liverpool | Premier League 2025-20...</a> - SageofGames <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=p4pKTN8fhqY" target="_blank">【Randal Kolo Muani】 Tottenham hotspur vs Manchester United Premier ...</a> - ChillBrainTrending <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hA4XrltoeSc" target="_blank">【Randal Kolo Muani】 PROMISING or SPURSY!? Give Frank TIME!! PSG 5-3...</a> - Durag Diaries <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IsbN-PI0gUI" target="_blank">【Randal Kolo Muani】 Goalkeeper HOWLER Saved US! Kolo Muani DEBUT! T...</a> - Durag Diaries <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>🏃 練習風景 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=NxQp4lh1jsE" target="_blank"><img src="https://i.ytimg.com/vi/NxQp4lh1jsE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=NxQp4lh1jsE" target="_blank">【Crystal Palace】 Behind the scenes at Spurs Christmas ...</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 2日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wNKgKowfNVM" target="_blank"><img src="https://i.ytimg.com/vi/wNKgKowfNVM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wNKgKowfNVM" target="_blank">【Crystal Palace】 HAVERTZ RETURNS ❤️ | Our Gunners gear...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=dflQYDVKkWM" target="_blank"><img src="https://i.ytimg.com/vi/dflQYDVKkWM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=dflQYDVKkWM" target="_blank">【Crystal Palace】 MARTINELLI’S DAZZLING DRIBBLE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=p54y_-WZUAU" target="_blank"><img src="https://i.ytimg.com/vi/p54y_-WZUAU/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=p54y_-WZUAU" target="_blank">【Crystal Palace】 EZE RUNNING RINGS!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=XQPbYHFj2AQ" target="_blank"><img src="https://i.ytimg.com/vi/XQPbYHFj2AQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=XQPbYHFj2AQ" target="_blank">【Tottenham】 The Spurs Hidden Talent Show 2025</a></strong><br/>📺 <strong>✅ Tottenham</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=txjf3uYZ1dk" target="_blank"><img src="https://i.ytimg.com/vi/txjf3uYZ1dk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=txjf3uYZ1dk" target="_blank">【Crystal Palace】 POST-MATCH SCENES AFTER CRYSTAL PALAC...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=5WQ5vRfU-Ow" target="_blank"><img src="https://i.ytimg.com/vi/5WQ5vRfU-Ow/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=5WQ5vRfU-Ow" target="_blank">【Crystal Palace】 ONTO THE NEXT BATTLE.</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=z4VTi5I3n7Y" target="_blank"><img src="https://i.ytimg.com/vi/z4VTi5I3n7Y/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=z4VTi5I3n7Y" target="_blank">【Crystal Palace】 SUPER SALIBA SLIDE TACKLE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QpUobsD6BOg" target="_blank"><img src="https://i.ytimg.com/vi/QpUobsD6BOg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QpUobsD6BOg" target="_blank">【Crystal Palace】 GABRIEL JESUS HAT-TRICK VS CRYSTAL PA...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=1jOyRhEU_hE" target="_blank"><img src="https://i.ytimg.com/vi/1jOyRhEU_hE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=1jOyRhEU_hE" target="_blank">【Crystal Palace】 8 PERFECT PENALTIES!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 4日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (54件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=HbX5wopeZW0" target="_blank">【Crystal Palace】 Watch Crystal Palace Players Showing Skills In ...</a> - UTOPIA SPORTS</li>
+<li><a href="https://www.youtube.com/watch?v=snHDkxCtToM" target="_blank">【Tottenham】 TOTTENHAM TRAINING SESSION: The Spurs Squad at ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Zg_3SJA1jv0" target="_blank">【Crystal Palace】 No Days Off! Arsenal Go FULL THROTTLE in Traini...</a> - ARSENAL UPDATE NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=QSQhHoftZRE" target="_blank">【Tottenham】 Berapa Banyak Sarung Tangan Kiper Habis dalam S...</a> - Blessing Soccer</li>
+<li><a href="https://www.youtube.com/watch?v=1lFf5iJlrLo" target="_blank">【Tottenham】 &quot;WE WILL HAVE AN INTENSE TRAINING SESSION ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=NT84iFOwMnA" target="_blank">【Crystal Palace】 INSIDE TRAINING | Saka, gyokeres intensive prep...</a> - Arsenal NCT</li>
+<li><a href="https://www.youtube.com/watch?v=4vdTr8XxJnw" target="_blank">【Crystal Palace】 Arsenal Players Inside Training Today ahead of ...</a> - Arsenal Insider</li>
+<li><a href="https://www.youtube.com/watch?v=CD_fNoTNWWU" target="_blank">【Tottenham】 LEAKED! COACH AND MIDFIELD STAR IN TRAINING BUS...</a> - THE HOTSPUR NEWS</li>
+<li><a href="https://www.youtube.com/watch?v=dgVcU9sGAC4" target="_blank">【Crystal Palace】 Sophia&#39;s Christmas Surprise  🎄🦅 | Crystal P...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=L6RvkpvTMm4" target="_blank">【Tottenham】 Elite Player #Shorts</a> - Official STREET Channel</li>
+<li><a href="https://www.youtube.com/watch?v=klmKqkLr0cI" target="_blank">【Crystal Palace】 Arsenal’s KAI HAVERTZ welcomed back to FULL TRA...</a> - HYBR1D</li>
+<li><a href="https://www.youtube.com/watch?v=CLaj-HUZpPA" target="_blank">【Tottenham】 لعيبة توتنهام بيروحوا التدريب بعربيات خرافية !!</a> - Camel Sport </li>
+<li><a href="https://www.youtube.com/watch?v=lhjVKZ58I0k" target="_blank">【Tottenham】 Yamal’s Funny Moment in Training 😂⚽</a> - CR7 World</li>
+<li><a href="https://www.youtube.com/watch?v=K3VYmyf9fj4" target="_blank">【Crystal Palace】 INSIDE TRAINING ✅Saka, Gyokeres, Eze &amp; Meri...</a> - Arsenal News</li>
+<li><a href="https://www.youtube.com/watch?v=BI0slYMpBy8" target="_blank">【Tottenham】 Henry Explains Greatest Messi&#39;s Goal</a> - SH10Comps</li>
+<li><a href="https://www.youtube.com/watch?v=6ZvCAfHl6PQ" target="_blank">【Crystal Palace】 Crystal Palace - Double Crossing And Finishing ...</a> - Train Like a Pro - By The Best Football Coaches</li>
+<li><a href="https://www.youtube.com/watch?v=-u21UtGdf6s" target="_blank">【Crystal Palace】 BIG NEWS 🔥 Gyokeres Welcome Kai Havertz Back to...</a> - GUNNERS 4L</li>
+<li><a href="https://www.youtube.com/watch?v=VTi8GEETBig" target="_blank">【Tottenham】 Eden Hazard made everything look too easy</a> - Don Sheve Talkfootball </li>
+<li><a href="https://www.youtube.com/watch?v=WYouPU9h4R8" target="_blank">【Crystal Palace】 Sky Sports Confirm🚨Havertz RETURNS To Arsenal T...</a> - Arsenal Chronicle TV</li>
+<li><a href="https://www.youtube.com/watch?v=aixOHXsS_5w" target="_blank">【Tottenham】 ⚪ Tottenham Hotspur Mobile Rondo</a> - Keepitonthedeck</li>
+<li><a href="https://www.youtube.com/watch?v=e46BXbMz3pE" target="_blank">【Crystal Palace】 arsenal turned up the intensity at the training...</a> - Go GUNNER'S</li>
+<li><a href="https://www.youtube.com/watch?v=wm9f5hpoPog" target="_blank">【Tottenham】 What Cars Do Chelsea Players Drive? Cole Palmer...</a> - Oswin Hartley</li>
+<li><a href="https://www.youtube.com/watch?v=quftVyaW0M8" target="_blank">【Crystal Palace】 Saka &amp; Havertz Back in Action: Gunners Gear...</a> - Arsenal Daily updates</li>
+<li><a href="https://www.youtube.com/watch?v=vFvGs-h293Q" target="_blank">【Tottenham】 Toko Koga 古賀塔子 in training - Manchester United ...</a> - 1LoveMUFC</li>
+<li><a href="https://www.youtube.com/watch?v=7m800Uh9rb8" target="_blank">【Crystal Palace】 arsenal turned up the intensity at the training...</a> - Go GUNNER'S</li>
+<li><a href="https://www.youtube.com/watch?v=vW-dhc5tMLc" target="_blank">【Crystal Palace】 TOTTENHAM TRAINING SESSION: The Squad Train at ...</a> - Chris Cowlin: Spurs Chat Podcast & Tottenham News</li>
+<li><a href="https://www.youtube.com/watch?v=Vsfav0UleTw" target="_blank">【Crystal Palace】 Inside Arsenal  Training Today As Kai Havertz  ...</a> - THE ARSENAL  GEM</li>
+<li><a href="https://www.youtube.com/watch?v=CpDS2n3pFBk" target="_blank">【Crystal Palace】 PENALTY SHOOT-OUT 👀| Arsenal 1-1 Crystal Palace...</a> - Crystal Palace FC</li>
+<li><a href="https://www.youtube.com/watch?v=eDrTBAJs448" target="_blank">【Tottenham】 Hotspurs Soccer - Touches with a move and finish</a> - Sean Zagorski</li>
+<li><a href="https://www.youtube.com/watch?v=xMzBW2UTPKs" target="_blank">【Crystal Palace】 🔴 ARSENAL COMPLETE INTENSIVE TRAINING PREPARATI...</a> - ARSENAL BREAKING </li>
+<li><a href="https://www.youtube.com/watch?v=yEPQguur1fs" target="_blank">【Tottenham】 Peter Crouch 🤩💫</a> - فوتباال</li>
+<li><a href="https://www.youtube.com/watch?v=NmP7AL5d-d0" target="_blank">【Crystal Palace】 I LOVED that from Gray! | Thomas Frank | Palace...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=b-Q2rLSGKO0" target="_blank">【Tottenham】 The 5 best football academies in the world</a> - Footy District</li>
+<li><a href="https://www.youtube.com/watch?v=vPOkRcbPTfo" target="_blank">【Crystal Palace】 GYÖKERES, SAKA, EZE, WHITE  HOTS AGAIN AHEAD OF...</a> - Arsenal updates</li>
+<li><a href="https://www.youtube.com/watch?v=FxnjX4Eafyw" target="_blank">【Tottenham】 Son Heung-min: Dari Asia ke Puncak Dunia!</a> - Misteri Dunia</li>
+<li><a href="https://www.youtube.com/watch?v=he9SN1holS4" target="_blank">【Tottenham】 Lost the match but won the hearts ❤️‍🩹</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=tA5_dg5LSXQ" target="_blank">【Crystal Palace】 INSIDE TRAINING ✅ GUNNERS are ready for the sim...</a> - Gooners Pulse</li>
+<li><a href="https://www.youtube.com/watch?v=9HIQZ9wLeCU" target="_blank">【Tottenham】 TOTTENHAM HOTSPUR ARE GOING TO WIN ANOTHER TROPHY</a> - Cyzz Takes</li>
+<li><a href="https://www.youtube.com/watch?v=rapyoPVdiU0" target="_blank">【Crystal Palace】 Arsenal Training | Nwaneri, Trossad, Gyokeres, ...</a> - Inside Arsenal NC</li>
+<li><a href="https://www.youtube.com/watch?v=g7cV-QI7eK8" target="_blank">【Tottenham】 What halaand is doing is truely shocking #short...</a> - Footy Slider</li>
+<li><a href="https://www.youtube.com/watch?v=g66doMbllCU" target="_blank">【Crystal Palace】 When Pep CONFUSED Bernardo Silva 🤨😅 #manchester...</a> - Amazon Prime Video Sport</li>
+<li><a href="https://www.youtube.com/watch?v=8BQFhZzohkY" target="_blank">【Crystal Palace】 😳Mikel Arteta &amp; Saka Convinces Marc Guehi t...</a> - GUNNERS 4L</li>
+<li><a href="https://www.youtube.com/watch?v=CV9Mb44uUA8" target="_blank">【Tottenham】 Hotspurs Soccer - Training🔥⚽️ #soccer #training...</a> - Sean Zagorski</li>
+<li><a href="https://www.youtube.com/watch?v=zDLvKofZrZs" target="_blank">【Crystal Palace】 JESUS can START quarter final I Mikel Arteta I ...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=6YcIN586Bzw" target="_blank">【Tottenham】 Duo celebrations pt. 2💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=Vcqbsz7_JcA" target="_blank">【Crystal Palace】 Kai Havertz RETURNS to Training Ahead of Arsena...</a> - Sports Pulse Daily</li>
+<li><a href="https://www.youtube.com/watch?v=0wH6dTV_-oc" target="_blank">【Tottenham】 Harry Kane - Skills &amp; Goals</a> - Football Xpertz</li>
+<li><a href="https://www.youtube.com/watch?v=mJDYxA356GA" target="_blank">【Tottenham】 What Semenyo is doing is truely shocking 😮 #sho...</a> - Footy Slider</li>
+<li><a href="https://www.youtube.com/watch?v=DdTn0wmIYKI" target="_blank">【Tottenham】 Funny moments 😂</a> - BallVerseX1</li>
+<li><a href="https://www.youtube.com/watch?v=LXAxf43YIMs" target="_blank">【Crystal Palace】 PICTURES OF ARSENAL TRAINING AHEAD CRYSTAL PALA...</a> - kickAZTV</li>
+<li><a href="https://www.youtube.com/watch?v=gbdg-03Zh-s" target="_blank">【Tottenham】 No mirrors, no hype, just growth🔥🔥🔥#tottenham #...</a> - 4DMOTUS</li>
+<li><a href="https://www.youtube.com/watch?v=wKB36EPm4nc" target="_blank">【Tottenham】 720p footballers 💀</a> - Femyft</li>
+<li><a href="https://www.youtube.com/watch?v=OGErdJ2ZAy8" target="_blank">【Crystal Palace】 🔥TRAINING INSIDER: Gyökeres, Saliba, Ødegaard, ...</a> - Football Fans Hour</li>
+<li><a href="https://www.youtube.com/watch?v=lZQtI6y4_dA" target="_blank">【Tottenham】 #crazily</a> - FOOTYBRO</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (30件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=2K47A4Vs4qA" target="_blank">【Crystal Palace】 SHOOT-OUT WINNERS, THROUGH TO THE SEMIS | HIGHL...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=84cDTLtW27U" target="_blank">【Crystal Palace】 Spurs Training for Palace | Crystal Palace v To...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7YXgidDIi5M" target="_blank">【Crystal Palace】 SEMI-FINAL BOUND | EXTENDED HIGHLIGHTS | Arsena...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XQrxEQ0csmQ" target="_blank">【Crystal Palace】 Spurs Training for Palace | Crystal Palace v To...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=qxbXyFA8yqM" target="_blank">【Crystal Palace】 Crystal Palace 0-1 Tottenham Hotspur| Premier L...</a> - Crystal Palace FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=vRaN5MkZ7uw" target="_blank">【Crystal Palace】 NO DAYS OFF! ARSENAL PREPARE FOR CRYSTAL PALACE...</a> - The Football Sphere <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">【Crystal Palace】 Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Crystal Palace】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=bPqc9_j2_s0" target="_blank">【Crystal Palace】 🔥Big Boost Eze Ready, Gyökeres, Saka &amp; Mart...</a> - Arsenal News <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Zwm-cU-zRLw" target="_blank">【Crystal Palace】 SEMI-FINAL PLACE AT STAKE ✊ | Arsenal v Crystal...</a> - Arsenal <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xwusAtnwg7U" target="_blank">【Crystal Palace】 LIVE 🔴| Arsenal vs Crystal Palace - EFL CARABAO...</a> - RAUNDLER <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_pSnMvONnl0" target="_blank">【Crystal Palace】 🔥FINAL TRAINING: Arteta CONFIRMS G.Jesus, Nørga...</a> - Football Fans Hour <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=oMOZulPm8CI" target="_blank">【Crystal Palace】 THROUGH TO THE SEMIS | Arsenal 1-1 Crystal Pala...</a> - Arsenal <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XQrxEQ0csmQ" target="_blank">【Tottenham】 Spurs Training for Palace | Crystal Palace v To...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=84cDTLtW27U" target="_blank">【Tottenham】 Spurs Training for Palace | Crystal Palace v To...</a> - Talk Tottenham <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">【Tottenham】 Patrick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=WocOWr7ggg8" target="_blank">【Tottenham】 ROLFO SEALS IT! 💪 | Man Utd v Spurs | Extended ...</a> - Manchester United Women <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">【Tottenham】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=qxbXyFA8yqM" target="_blank">【Tottenham】 Crystal Palace 0-1 Tottenham Hotspur| Premier L...</a> - Crystal Palace FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Tottenham】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">【Tottenham】 Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Gmn9uySYoB0" target="_blank">【Tottenham】 ✅NOW🔥 EKITIKE, SZOBOSLAI,WITZ, MACALISTER, SALA...</a> - LIVERPOOL BREAKING <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kwxaksTP5OA" target="_blank">【Tottenham】 IT&#39;S RESTING, RESTING, RESTING! 😴 | Oliver ...</a> - BeanymanSports2 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=F03qDM7qEkA" target="_blank">【Tottenham】 Greatest Chelsea Freekicks | CFC</a> - Chelsea Football Club <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kE5Ec7A-1Nw" target="_blank">【Tottenham】 ✅Alan Shearer Slams Richarlison After Spurs Def...</a> - LIVERPOOL VIBES <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1OnKlxIKZYM" target="_blank">【Tottenham】 I don&#39;t UNDERSTAND Slot&#39;s comments! | T...</a> - HaytersTV <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=AdcauAL-bUg" target="_blank">【Tottenham】 See What Florian Wirtz Said In His Reaction Aft...</a> - Match Reaction <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=lHq3w89Slwc" target="_blank">【Tottenham】 RUBEN AMORIM STUNNED BY SHEA LACEY’S CRAZY SKIL...</a> -  GLOBAL FOOTBALL NEWS <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Qt7GKR_-T6c" target="_blank">【Tottenham】 IF MY DEFENDERS DON’T DO THAT, NOT TRUE DEFENDE...</a> - BeanymanSports <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=e09YJ0tljPg" target="_blank">【Tottenham】 Federico Chiesa REACTION as he DID THIS To Alex...</a> - SIPEBOI <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>なし</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: Remaining: 7376 / Limit: 7500 (requests/day)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 26回呼び出し (キャッシュ: 0件, 合計リクエスト: 26件)</li>
+</ul>
+        <div class="timestamp">
+            生成日時: 2025-12-29 08:38:33 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chelsea vs Bournemouth - EPL (07:22:41)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        /* Issue #40: Instagram link styles */
+        .player-instagram-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-left: 6px;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .player-instagram-link:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .player-instagram-icon {
+            width: 16px;
+            height: 16px;
+            fill: #E4405F;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        
+        <h1>Chelsea vs Bournemouth</h1>
+<p><strong>EPL</strong> / A</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/31(水) 04:30 JST<br><span class="match-info-subtext">2025-12-30 19:30 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">Stamford Bridge, London</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/49.png" alt="Chelsea" class="team-logo"> Chelsea（4-2-3-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Robert Sánchez</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18959.png" alt="Robert Sánchez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">28歳 (1997/11/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Josh Acheampong</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/366735.png" alt="Josh Acheampong" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #34</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/05/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Wesley Fofana</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22094.png" alt="Wesley Fofana" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #29</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">25歳 (2000/12/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Trevoh Chalobah</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19720.png" alt="Trevoh Chalobah" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #23</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/07/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Malo Gusto</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/161907.png" alt="Malo Gusto" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #27</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">22歳 (2003/05/19)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Moisés Caicedo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/116117.png" alt="Moisés Caicedo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #25</div>
+<div class="player-card-nationality">🇪🇨 Ecuador</div>
+<div class="player-card-age">24歳 (2001/11/02)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Enzo Fernández</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/5996.png" alt="Enzo Fernández" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">24歳 (2001/01/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Estêvão</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/425733.png" alt="Estêvão" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #41</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">18歳 (2007/04/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Cole Palmer</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/152982.png" alt="Cole Palmer" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/05/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Alejandro Garnacho</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284324.png" alt="Alejandro Garnacho" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #49</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">21歳 (2004/07/01)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Liam Delap</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/161948.png" alt="Liam Delap" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">22歳 (2003/02/08)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Reece James</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19545.png" alt="Reece James" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #24</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/12/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Pedro Neto</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1864.png" alt="Pedro Neto" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #7</div>
+<div class="player-card-nationality">🇵🇹 Portugal</div>
+<div class="player-card-age">25歳 (2000/03/09)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>João Pedro</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/10329.png" alt="João Pedro" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #20</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">24歳 (2001/09/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Andrey Santos</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/305834.png" alt="Andrey Santos" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #17</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">21歳 (2004/05/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jamie Gittens</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/286894.png" alt="Jamie Gittens" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">21歳 (2004/08/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Filip Jørgensen</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/286616.png" alt="Filip Jørgensen" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #12</div>
+<div class="player-card-nationality">🇩🇰 Denmark</div>
+<div class="player-card-age">23歳 (2002/04/16)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Benoît Badiashile</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/95.png" alt="Benoît Badiashile" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">24歳 (2001/03/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Tosin Adarabioyo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19145.png" alt="Tosin Adarabioyo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #4</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/09/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Facundo Buonanotte</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/311334.png" alt="Facundo Buonanotte" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #40</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">21歳 (2004/12/23)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>L. Colwill</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/152953.png" alt="L. Colwill" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Chelsea</div>
+<div class="player-card-age injury-reason">⚠️ Knee Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>D. Essugo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/308678.png" alt="D. Essugo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Chelsea</div>
+<div class="player-card-age injury-reason">⚠️ Thigh Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>R. Lavia</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/282125.png" alt="R. Lavia" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Chelsea</div>
+<div class="player-card-age injury-reason">⚠️ Thigh Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>M. Mudryk</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/63577.png" alt="M. Mudryk" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Chelsea</div>
+<div class="player-card-age injury-reason">⚠️ Suspended</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>M. Cucurella</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47380.png" alt="M. Cucurella" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Chelsea</div>
+<div class="player-card-age injury-reason">⚠️ Thigh Injury</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/35.png" alt="Bournemouth" class="team-logo"> Bournemouth（4-2-3-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Đorđe Petrović</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/118307.png" alt="Đorđe Petrović" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🇷🇸 Serbia</div>
+<div class="player-card-age">26歳 (1999/10/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Álex Jiménez</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/330437.png" alt="Álex Jiménez" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #20</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">20歳 (2005/05/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>James Hill</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20093.png" alt="James Hill" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #23</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/01/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Marcos Senesi</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/6610.png" alt="Marcos Senesi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">28歳 (1997/05/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Adrien Truffert</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162267.png" alt="Adrien Truffert" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">24歳 (2001/11/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Marcus Tavernier</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19245.png" alt="Marcus Tavernier" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #16</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">26歳 (1999/03/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Alex Scott</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/304853.png" alt="Alex Scott" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #8</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">22歳 (2003/08/21)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>David Brooks</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18870.png" alt="David Brooks" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #7</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</div>
+<div class="player-card-age">28歳 (1997/07/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Justin Kluivert</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/792.png" alt="Justin Kluivert" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #19</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">26歳 (1999/05/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Antoine Semenyo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19281.png" alt="Antoine Semenyo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #24</div>
+<div class="player-card-nationality">🇬🇭 Ghana</div>
+<div class="player-card-age">25歳 (2000/01/07)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Evanilson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/152856.png" alt="Evanilson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">26歳 (1999/10/06)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Amine Adli</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129682.png" alt="Amine Adli" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #21</div>
+<div class="player-card-nationality">🇲🇦 Morocco</div>
+<div class="player-card-age">25歳 (2000/05/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Enes Ünal</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47499.png" alt="Enes Ünal" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #26</div>
+<div class="player-card-nationality"> Türkiye</div>
+<div class="player-card-age">28歳 (1997/05/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Adam Smith</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18869.png" alt="Adam Smith" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #15</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">34歳 (1991/04/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Will Dennis</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/151756.png" alt="Will Dennis" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #40</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/07/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Julián Araujo</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/51051.png" alt="Julián Araujo" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #2</div>
+<div class="player-card-nationality">🇲🇽 Mexico</div>
+<div class="player-card-age">24歳 (2001/08/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Julio Soler</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/363333.png" alt="Julio Soler" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #6</div>
+<div class="player-card-nationality">🇦🇷 Argentina</div>
+<div class="player-card-age">20歳 (2005/02/16)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Bafodé Diakité</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22136.png" alt="Bafodé Diakité" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #18</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">24歳 (2001/01/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Eli Junior Kroupi</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/368030.png" alt="Eli Junior Kroupi" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #22</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">19歳 (2006/06/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Remy Rees-Dottin</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/402434.png" alt="Remy Rees-Dottin" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #50</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">19歳 (2006/03/06)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home WWLWW (✅✅❌✅✅) / Away DWLLW (➖✅❌❌✅)</li>
+<li>過去の対戦成績：過去22試合: Chelsea 12勝, 引分 6, Bournemouth 4勝</li>
+<li>主審：Samuel Barrott, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Chelsea" src="/reports/images/1379152_home.png" /><br />
+<img alt="Bournemouth" src="/reports/images/1379152_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグ、チェルシー対ボーンマスの一戦が、チェルシーのホームスタジアムであるスタンフォード・ブリッジで開催される。この試合は両チームにとって2025年を締めくくる最終戦となり、多くのサッカーファンの注目を集めている。</li>
+</ul>
+<p>ホームのチェルシーは、シーズン目標であるトップ4への返り咲きを目指す上で、この試合を絶対に落とせない。年末をホームでの勝利で飾り、後半戦に向けて弾みをつけることができるか、チームの真価が問われる重要な一戦だ。</p>
+<p>一方、アウェイのボーンマスも侮れない相手だ。各メディアのプレビューでは、両チームの最近のパフォーマンスやキープレイヤーの分析が行われている。特に、前回対戦が引き分けに終わっているという事実は、今回もチェルシーが簡単に勝利できる相手ではないことを示唆している。ボーンマスとしては、敵地で勝ち点を持ち帰り、シーズンの中盤戦を良い形で乗り切りたいところだろう。</p>
+<p>チェルシーがホームの圧倒的な声援を背に攻撃的なサッカーでボーンマスを圧倒するのか、それともボーンマスが堅実な守備から鋭いカウンターを狙い、再びチェルシーの行く手を阻むのか。キックオフを前に、スターティングイレブンの発表や最新のチームニュースが待たれる中、この年末の大一番に対する期待感は高まるばかりだ。</p>
+<details>
+<summary><strong>📚 Sources (10件)</strong></summary>
+<ul>
+<li><a href="https://www.facebook.com/groups/2347941208835635/posts/3785664538396621/" target="_blank">Chelsea vs Bournemouth match preview</a> (www.facebook.com)</li>
+<li><a href="https://www.bbc.co.uk/sport/football/live/c20gvn7gp7dt" target="_blank">Chelsea vs AFC Bournemouth: Premier League preview, team news ...</a> (www.bbc.co.uk)</li>
+<li><a href="https://www.facebook.com/groups/1828806570517507/posts/25687936297511200/" target="_blank">Chelsea vs Bournemouth match preview</a> (www.facebook.com)</li>
+<li><a href="https://www.si.com/onsi/soccer/chelsea/match-coverage/chelsea-vs-bournemouth-premier-league-preview-team-news-kick-off-time-how-to-watch-01kdmw5hkfca" target="_blank">Chelsea vs Bournemouth: Premier League preview, team news, kick ...</a> (www.si.com)</li>
+<li><a href="https://www.threads.com/@ifeadigo_sports/post/DS4yUX1EYqV/video-chelsea-vs-bournemouth-today-match-preview-and-prediction-chelsea-chelsea-fc" target="_blank">Chelsea VS Bournemouth today match preview and prediction ...</a> (www.threads.com)</li>
+<li><a href="https://www.instagram.com/reel/DS4jMeSDdIh/" target="_blank">Chelsea Bournemouth Preview / Last meeting ended in a Draw ...</a> (www.instagram.com)</li>
+<li><a href="https://x.com/JamesGregory197/status/2005668895773102163" target="_blank">Match preview for #Chelsea's #PremierLeague meeting against ...</a> (x.com)</li>
+<li><a href="https://www.premierleague.com/en/match/2562078/chelsea-vs-bournemouth" target="_blank">Chelsea v Bournemouth | 2025/2026 | Premier League | Overview</a> (www.premierleague.com)</li>
+<li><a href="https://www.standard.co.uk/sport/football/chelsea-fc-vs-bournemouth-prediction-kick-off-time-tv-live-stream-team-news-latest-h2h-results-odds-premier-league-2025-preview-today-b1264106.html" target="_blank">Chelsea FC vs Bournemouth: Prediction, kick-off time, TV, live ...</a> (www.standard.co.uk)</li>
+<li><a href="https://www.bbc.com/sport/football/live/c20gvn7gp7dt?page=2" target="_blank">Chelsea vs AFC Bournemouth: Premier League preview, team news ...</a> (www.bbc.com)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>チェルシーは4-3-3または4-2-3-1のフォーメーションを基に、ボールポゼッションで試合を支配しようと試みるだろう。攻撃時にはサイドバックも高い位置を取り、ウイングとの連携で相手守備網の攻略を図る。一方のボーンマスは、4-4-2を基本としたコンパクトな守備ブロックで中央を固め、カウンターアタックの機会をうかがう戦術が予想される。</li>
+</ul>
+<p>この試合の鍵を握るのは、チェルシーの攻撃陣対ボーンマスの守備組織のマッチアップだ。チェルシーが前線の流動的な動きで最終ラインにギャップを生み出せるか、ボーンマスが規律ある守備でスペースを消し続けられるかが一つの焦点となる。また、攻守の切り替え（トランジション）も重要なポイントだ。ボーンマスがボールを奪った際、前線の快足アタッカーへ素早く展開できるか。対するチェルシーは、攻撃から守備への切り替えの速さでカウンターの芽を摘み、二次攻撃へと繋げられるかが問われる。</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/12629.png" alt="Enzo Maresca" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Chelsea</div>
+<div class="manager-name">Enzo Maresca</div>
+<div class="manager-comment">【Chelsea】
+チェルシーのエンツォ・マレスカ監督が、プレミアリーグの試合を前に記者会見を行った。会見では、複数の選手が抱える負傷について最新情報を提供することが主なテーマとなった。監督はチームの現状について「何人かの選手の状態を確認する必要があるが、タフな試合に向けて準備はできている」とコメントし、困難な状況でも戦う姿勢を示した。その他、FWニコラス・ジャクソンの移籍の可能性など、個別の選手の状況についても言及し、メディアの質問に答えた。</div>
+</div>
+</div>
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/2108.png" alt="Andoni Iraola" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Bournemouth</div>
+<div class="manager-name">Andoni Iraola</div>
+<div class="manager-comment">【Bournemouth】
+ご提示いただいたニュース記事には、チェルシー戦に向けたボーンマスの監督や選手の試合前コメントは含まれていませんでした。
+
+記載されているアンドニ・イラオラ監督の発言は、過去のブレントフォード戦やバーンリー戦を振り返る試合後の内容です。また、他の記事は対戦相手であるチェルシー側の情報が中心でした。そのため、ボーンマス側の試合前の意気込みなどを引用して要約することはできません。</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=OLdeL_1aSP0" target="_blank"><img src="https://i.ytimg.com/vi/OLdeL_1aSP0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=OLdeL_1aSP0" target="_blank">【Enzo Maresca】 Maresca Press Conference | Chelsea vs...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=XYDJqdsXEB4" target="_blank"><img src="https://i.ytimg.com/vi/XYDJqdsXEB4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=XYDJqdsXEB4" target="_blank">【Enzo Maresca】 Enzo Maresca pre-match press conferen...</a></strong><br/>📺 <strong>⚠️ MightyBluesNews</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=TM6fmoX0F5I" target="_blank"><img src="https://i.ytimg.com/vi/TM6fmoX0F5I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=TM6fmoX0F5I" target="_blank">【Enzo Maresca】 IT’S NOT RANDOM WHEN SOMETHING KEEPS ...</a></strong><br/>📺 <strong>⚠️ BeanymanSports</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=rzQbZat81tw" target="_blank"><img src="https://i.ytimg.com/vi/rzQbZat81tw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=rzQbZat81tw" target="_blank">【Enzo Maresca】 Please START Palmer AND Estevao! | CH...</a></strong><br/>📺 <strong>⚠️ SonOfChelsea</strong> ・ 🕐 11時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Glr1i9Lpszw" target="_blank"><img src="https://i.ytimg.com/vi/Glr1i9Lpszw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Glr1i9Lpszw" target="_blank">【Enzo Maresca】 Maresca CALLS for Experience, HUGE In...</a></strong><br/>📺 <strong>⚠️ TalkinChelsea</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zHpAv7J5vbw" target="_blank"><img src="https://i.ytimg.com/vi/zHpAv7J5vbw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zHpAv7J5vbw" target="_blank">【Enzo Maresca】 Chelsea vs Bournemouth | Semenyo vs G...</a></strong><br/>📺 <strong>⚠️ Chelsea Perspective</strong> ・ 🕐 7時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zxG-dfpT9Ok" target="_blank"><img src="https://i.ytimg.com/vi/zxG-dfpT9Ok/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zxG-dfpT9Ok" target="_blank">【Enzo Maresca】 Chelsea vs Bournemouth Head to Head A...</a></strong><br/>📺 <strong>⚠️ GFC </strong> ・ 🕐 20時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=lKKS194inDI" target="_blank"><img src="https://i.ytimg.com/vi/lKKS194inDI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=lKKS194inDI" target="_blank">【Enzo Maresca】 Maresca SACKING CLOSE &amp; Chelsea C...</a></strong><br/>📺 <strong>⚠️ The Football Terrace</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=v9lJNSQ1tLY" target="_blank"><img src="https://i.ytimg.com/vi/v9lJNSQ1tLY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=v9lJNSQ1tLY" target="_blank">【Enzo Maresca】 Estevao and Delap fit to face Villa c...</a></strong><br/>📺 <strong>⚠️ AP Archive</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=yUnt_2KuArA" target="_blank"><img src="https://i.ytimg.com/vi/yUnt_2KuArA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=yUnt_2KuArA" target="_blank">【Enzo Maresca】 Enzo Maresca Post-Match Press Confere...</a></strong><br/>📺 <strong>⚠️ Sports Spotlight</strong> ・ 🕐 1日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (9件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=TurlBcqDf_o" target="_blank">【Enzo Maresca】 🔵Chelsea vs Aston Vila | Maresca | In Experienc...</a> - PressPlaySport </li>
+<li><a href="https://www.youtube.com/watch?v=Tgf6ftbJB-4" target="_blank">【Enzo Maresca】 Chelsea vs Bournemouth: Maresca Addresses Disci...</a> - Chelsea FC</li>
+<li><a href="https://www.youtube.com/watch?v=BkcZWxyAWJM" target="_blank">【Enzo Maresca】 “We Must Respond” | Enzo Maresca Previews Chels...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=My6KpaOcl-g" target="_blank">【Enzo Maresca】 Enzo Maresca&#39;s pre-Bournemouth press confer...</a> - 90minutesvibes⚽️⚽️</li>
+<li><a href="https://www.youtube.com/watch?v=eQ_dYTzhyKE" target="_blank">【Enzo Maresca】 Listen to what Maresca said in the pre-match pr...</a> - Naro Sports</li>
+<li><a href="https://www.youtube.com/watch?v=sNVKe8KSQRE" target="_blank">【Enzo Maresca】 Maresca SHUTS IT DOWN: ‘No Chelsea Discipline P...</a> - Chelsea News 24</li>
+<li><a href="https://www.youtube.com/watch?v=SNiBgG3AGlE" target="_blank">【Enzo Maresca】 Latest update from Enzo meresca press conferenc...</a> - Mr bobi 10</li>
+<li><a href="https://www.youtube.com/watch?v=8foPZYX2cbA" target="_blank">【Enzo Maresca】 Chelsea Under Pressure | Maresca Speaks Before ...</a> - BlueView</li>
+<li><a href="https://www.youtube.com/watch?v=WXfF3WmdQG4" target="_blank">【Enzo Maresca】 Mikel Arteta drops new January transfer hint as...</a> - Football celebrity bio</li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jX2al9bycCM" target="_blank"><img src="https://i.ytimg.com/vi/jX2al9bycCM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jX2al9bycCM" target="_blank">Chelsea v. Bournemouth | PREMIER LEAG...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 11ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=pkrqi9Y_cTY" target="_blank"><img src="https://i.ytimg.com/vi/pkrqi9Y_cTY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=pkrqi9Y_cTY" target="_blank">Bournemouth 0-0 Chelsea | HIGHLIGHTS ...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=zdET6F7tpjo" target="_blank"><img src="https://i.ytimg.com/vi/zdET6F7tpjo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=zdET6F7tpjo" target="_blank">Bournemouth v. Chelsea | PREMIER LEAG...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=u-Xji_w8SdI" target="_blank"><img src="https://i.ytimg.com/vi/u-Xji_w8SdI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=u-Xji_w8SdI" target="_blank">Bournemouth vs. Chelsea | Highlights ...</a></strong><br/>📺 <strong>⚠️ Telemundo Deportes</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jDfASg69eY0" target="_blank"><img src="https://i.ytimg.com/vi/jDfASg69eY0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jDfASg69eY0" target="_blank">Bournemouth 0-0 Chelsea | HIGHLIGHTS ...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jHeB83y8zEo" target="_blank"><img src="https://i.ytimg.com/vi/jHeB83y8zEo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jHeB83y8zEo" target="_blank">Bournemouth v. Chelsea | PREMIER LEAG...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 2024/09/14</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4i2vnXpOlDA" target="_blank"><img src="https://i.ytimg.com/vi/4i2vnXpOlDA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4i2vnXpOlDA" target="_blank">Manchester City v. Bournemouth | PREM...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=1_Ht92NPJt8" target="_blank"><img src="https://i.ytimg.com/vi/1_Ht92NPJt8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=1_Ht92NPJt8" target="_blank">Sunderland v. Bournemouth | PREMIER L...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=ehnPVD6Wolw" target="_blank"><img src="https://i.ytimg.com/vi/ehnPVD6Wolw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=ehnPVD6Wolw" target="_blank">Brentford v. Bournemouth | PREMIER LE...</a></strong><br/>📺 <strong>⚠️ NBC Sports</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank"><img src="https://i.ytimg.com/vi/hayLeqAkX7I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">Chelsea 1-2 Aston Villa | HIGHLIGHTS ...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 3日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (28件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=GA6qVxZ27cY" target="_blank">Chelsea 2-2 Bournemouth | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=sSGH_PxJpl0" target="_blank">Chelsea 2-2 Bournemouth | HIGHLIGHTS - Extended...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=Doa0YqMHD1E" target="_blank">Bournemouth v. Nottingham Forest | PREMIER LEAG...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=1qGeq_yLcns" target="_blank">An all-time Premier League CLASSIC | Manchester...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=Udt0HQgUey4" target="_blank">Brentford v. Chelsea | PREMIER LEAGUE HIGHLIGHT...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=wncfFE7dWOI" target="_blank">Semenyo nets OUTSTANDING strike in Burnley draw...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=om0HfsSgjAg" target="_blank">Cardiff City 1-3 Chelsea | HIGHLIGHTS - Extende...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=hhpdSD0jEoA" target="_blank">Chelsea 1-2 Sunderland | HIGHLIGHTS | Premier L...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=nJcoHfx6q34" target="_blank">Semenyo SHINES and Kluivert SCREAMER in scorchi...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=5B3m4IlH8NI" target="_blank">Newcastle 2-2 Chelsea | HIGHLIGHTS | Premier le...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=Aqe6C9iQ-HQ" target="_blank">Chelsea 1-2 Sunderland | HIGHLIGHTS - Extended ...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=Umc5cAk0iH0" target="_blank">Chelsea v. Brighton | PREMIER LEAGUE HIGHLIGHTS...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=2fasSB1vhHQ" target="_blank">Chelsea 2-0 Everton | HIGHLIGHTS | Premier Leag...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=rTOkoQxoWqs" target="_blank">Semenyo disallowed goal and Sánchez formidable ...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=oBsdJyhGV_E" target="_blank">Tottenham Hotspur v. Bournemouth | PREMIER LEAG...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=nMJx31ZJ32I" target="_blank">Chelsea vs Bournemouth – Goal &amp; Highlights ...</a> - ArenaXSports</li>
+<li><a href="https://www.youtube.com/watch?v=jkgE-H3DvPg" target="_blank">Chelsea 1-3 Brighton | HIGHLIGHTS | Premier Lea...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=UbEbY4XlWVg" target="_blank">What ACTUALLY Happened To The World&#39;s Best ...</a> - futbolrush</li>
+<li><a href="https://www.youtube.com/watch?v=GgRSxSjtuDY" target="_blank">PALMER is back 💥 | Chelsea 2-0 Everton | HIGHLI...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=S9Zy0hOXjRE" target="_blank">Newcastle v. Chelsea | PREMIER LEAGUE HIGHLIGHT...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=yJCJ1ZfXv20" target="_blank">An INCREDIBLE match for the ages | Manchester U...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=klSrn-cbzxM" target="_blank">Bournemouth v. West Ham United | PREMIER LEAGUE...</a> - NBC Sports</li>
+<li><a href="https://www.youtube.com/watch?v=tUg0m6THbgU" target="_blank">Wolves 3-4 Chelsea | HIGHLIGHTS - Extended | Ca...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=rNEW9zaScUo" target="_blank">Burnley 0-2 Chelsea | HIGHLIGHTS | Premier Leag...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=1fzbVeSNCZ8" target="_blank">Brentford 4-1 Bournemouth | Extended Premier Le...</a> - Brentford Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=PVvcu6uxMhs" target="_blank">How Cole Palmer Became Pep&#39;s biggest Regret...</a> - FastplayHQ</li>
+<li><a href="https://www.youtube.com/watch?v=0tO7F6dF2UA" target="_blank">Brentford vs Bournemouth 4-1 | HIGHLIGHTS | Kev...</a> - Football Xtra</li>
+<li><a href="https://www.youtube.com/watch?v=Zv9o9rLy4PM" target="_blank">Nottingham Forest 0-3 Chelsea | HIGHLIGHTS | Pr...</a> - Chelsea Football Club</li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=pt3oj5UuPY8" target="_blank"><img src="https://i.ytimg.com/vi/pt3oj5UuPY8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=pt3oj5UuPY8" target="_blank">【Chelsea】 【徹底解説】チェルシーがパリSGを下し優勝！勝敗を分けた要因とチェルシーの...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=t41xMTX_4aY" target="_blank"><img src="https://i.ytimg.com/vi/t41xMTX_4aY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=t41xMTX_4aY" target="_blank">【Bournemouth】 スパーズ連勝ストップ！ボーンマスに敗北した要因を解説【レオザ切り抜き】</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HF9GipbPbJE" target="_blank"><img src="https://i.ytimg.com/vi/HF9GipbPbJE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HF9GipbPbJE" target="_blank">【Chelsea】 【CL】チェルシーに敗戦のバルサ、戦術の穴が完全にバレた理由を徹底解説【レ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank"><img src="https://i.ytimg.com/vi/vAO1BPQStBg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vAO1BPQStBg" target="_blank">【Chelsea】 【プレミアリーグ展望】お金持ちのプレス回避術／ペップの新戦術／トッテナム優...</a></strong><br/>📺 <strong>✅ PIVOT 公式チャンネル</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QuhY45IHcpc" target="_blank"><img src="https://i.ytimg.com/vi/QuhY45IHcpc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QuhY45IHcpc" target="_blank">【Chelsea】 トッテナム痛恨の敗戦…チェルシーに0-1完封負け、攻撃停滞の原因を徹底分析...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=PZ2Vm-rZWgg" target="_blank"><img src="https://i.ytimg.com/vi/PZ2Vm-rZWgg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=PZ2Vm-rZWgg" target="_blank">【Chelsea】 【戦術分析】ポルトでCL優勝&amp;チェルシーでプレミア2連覇を達成した...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BHJBYP2mmr0" target="_blank"><img src="https://i.ytimg.com/vi/BHJBYP2mmr0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BHJBYP2mmr0" target="_blank">【Bournemouth】 ハーランドが完全復活！マンCがボーンマスを3-1撃破、ロドリ復帰で2位浮上...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=jttTtxp2j4k" target="_blank"><img src="https://i.ytimg.com/vi/jttTtxp2j4k/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=jttTtxp2j4k" target="_blank">【Chelsea】 【考察】PSGを攻略する２つの方法&amp;チェルシーとのクラブW杯決勝展...</a></strong><br/>📺 <strong>✅ GOAT理論【切り抜き】</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=vA2kUtAfB9E" target="_blank"><img src="https://i.ytimg.com/vi/vA2kUtAfB9E/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=vA2kUtAfB9E" target="_blank">【Bournemouth】 #トッテナム#ボーンマス#サッカー分析</a></strong><br/>📺 <strong>⚠️ Jサポの交差点</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=qEJrj_LjYwo" target="_blank"><img src="https://i.ytimg.com/vi/qEJrj_LjYwo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=qEJrj_LjYwo" target="_blank">【Chelsea】 FWは見ろ&quot;点の取り方&quot; #サッカー #戦術解説 #分...</a></strong><br/>📺 <strong>⚠️ サッカー軍曹</strong> ・ 🕐 4ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (73件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=RbTf4EyA3As" target="_blank">【Bournemouth】 Iraola’s Aggressive 4-4-2: Bournemouth&#39;s Mi...</a> - Total Football Analysis Magazine</li>
+<li><a href="https://www.youtube.com/watch?v=Q5xDoudl52I" target="_blank">【Chelsea】 【欧州最大火力のパンツァー】コンパニー率いるバイエルン・ミュンヘンの4-2-3-1戦術分析</a> - サッカー戦術分析 鳥の眼</li>
+<li><a href="https://www.youtube.com/watch?v=fYQ6ARionsc" target="_blank">【Bournemouth】 Bypass the High Press | Man City vs Bournemouth...</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=FKaqcyhsJ8M" target="_blank">【Chelsea】 Chelsea vs PSG Tactical Analysis - Animated Bre...</a> - ANIMATION ENTATEMENT</li>
+<li><a href="https://www.youtube.com/watch?v=iudKc2GUVvA" target="_blank">【Bournemouth】 敵味方ともに&quot;支配&quot;する鎌田大地#サッカー #日本代表 #鎌田大地 #戦術...</a> - サッカー軍曹</li>
+<li><a href="https://www.youtube.com/watch?v=_BcZm5dsaQQ" target="_blank">【Chelsea】 Bayern Munich Tactical Masterclass vs Chelsea</a> - D.T. Nazir Zelada</li>
+<li><a href="https://www.youtube.com/watch?v=wSNUivPOaQY" target="_blank">【Bournemouth】 In The Know - Frank&#39;s Tactics</a> - An Echo of Glory Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=CNSodSYXqUU" target="_blank">【Chelsea】 Chelsea’s Secret Tactics That Stopped PSG!</a> - D.T. Nazir Zelada</li>
+<li><a href="https://www.youtube.com/watch?v=KETK1TU04cU" target="_blank">【Chelsea】 How Maresca&#39;s CHELSEA DESTROYS teams | CHEL...</a> - The Pitch Report</li>
+<li><a href="https://www.youtube.com/watch?v=3b4XWngvtGM" target="_blank">【Chelsea】 Chelsea’s Genius Tactic is Breaking Oppositions</a> - Atomic Analyst</li>
+<li><a href="https://www.youtube.com/watch?v=iVAQ0Sz7l60" target="_blank">【Bournemouth】 Why Andoni Iraola Is Tactically One Of The BEST...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=jJ0oVBcxc0g" target="_blank">【Chelsea】 How Maresca&#39;s Perfect Tactics Demolished PSG</a> - Football Meta</li>
+<li><a href="https://www.youtube.com/watch?v=6pdj__wKSag" target="_blank">【Bournemouth】 Bournemouth vs Chelsea: Tactical Breakdown, Key...</a> - footballlamber</li>
+<li><a href="https://www.youtube.com/watch?v=PkCGg6VmhLA" target="_blank">【Chelsea】 Bayern Munich 3 Chelsea 1 - Tactical Analysis</a> - Tactx</li>
+<li><a href="https://www.youtube.com/watch?v=lopWr8R_Yrc" target="_blank">【Bournemouth】 8 Goals, Zero Control — The Tactical Chaos of M...</a> - The Football Analyst</li>
+<li><a href="https://www.youtube.com/watch?v=TRJt5Y976WY" target="_blank">【Chelsea】 Enzo Maresca&#39;s Chelsea Tactics Are Scary</a> - FutBro</li>
+<li><a href="https://www.youtube.com/watch?v=_gZ_T8AmGik" target="_blank">【Bournemouth】 Why Bournemouth are the PERFECT OPPONENTS for A...</a> - Footy with an Edge</li>
+<li><a href="https://www.youtube.com/watch?v=XzwVdjN6VHw" target="_blank">【Chelsea】 How Chelsea Pressed Barcelona to Death! | FULL ...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=tl2MPz_iDuI" target="_blank">【Bournemouth】 How LEEDS can beat BOURNEMOUTH! Tactical Preview!</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=LAzmCAS8q5k" target="_blank">【Chelsea】 The Truth about Maresca&#39;s Chelsea Nobody Ta...</a> - Atomic Analyst</li>
+<li><a href="https://www.youtube.com/watch?v=fFOL5dsCR0Q" target="_blank">【Bournemouth】 “This Was the Correct Call!” Neville Podcast Re...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=bdYfejueKes" target="_blank">【Bournemouth】 【三笘薫】待望の今季初ゴール！ボーンマス監督が試合後に思わず漏らした衝撃本音「まさかあの瞬間は...</a> - JP Football Insider</li>
+<li><a href="https://www.youtube.com/watch?v=dEv4W1gs1PE" target="_blank">【Chelsea】 THIS IS WHY CHELSEA NEEDS LW, EDILSON BREAKS AL...</a> - Sports 7 GH Xtra</li>
+<li><a href="https://www.youtube.com/watch?v=wxXQpOlLy5w" target="_blank">【Bournemouth】 EL CITY SE MIDE ANTE EL SORPRENDENTE BOURNEMOUT...</a> - awpitia</li>
+<li><a href="https://www.youtube.com/watch?v=S3bo0z09XyI" target="_blank">【Chelsea】 HOW Chelsea Can STOP PSG? Tactical Preview #clu...</a> - Pythagoras in Boots</li>
+<li><a href="https://www.youtube.com/watch?v=ttKZSrN90Rk" target="_blank">【Bournemouth】 Slot CRUSHED the 3 Most Defensive Teams</a> - Liverpool Fan In Japan</li>
+<li><a href="https://www.youtube.com/watch?v=TBjjr6OTqx4" target="_blank">【Chelsea】 【決勝】チェルシー対PSG#fifaclubworldcup #chelsea #psg</a> - 留太郎football</li>
+<li><a href="https://www.youtube.com/watch?v=JyJ_J5g6kDM" target="_blank">【Bournemouth】 How Bournemouth Physically Bullied Spurs: Totte...</a> - Zedders</li>
+<li><a href="https://www.youtube.com/watch?v=q0CxjUsMECg" target="_blank">【Chelsea】 La Fortaleza Defensiva del Campeón: Chelsea #fu...</a> - Futbol y Algo Mas +</li>
+<li><a href="https://www.youtube.com/watch?v=kpjRaaU3hjk" target="_blank">【Bournemouth】 The Basque Blueprint: Andoni Iraola’s Bournemou...</a> - Soccerspective</li>
+<li><a href="https://www.youtube.com/watch?v=9xeKuRxA6BI" target="_blank">【Bournemouth】 O INTENSO BOURNEMOUTH DE IRAOLA | Análise Tática</a> - Henrique Rocha</li>
+<li><a href="https://www.youtube.com/watch?v=gZHqImbnT_o" target="_blank">【Chelsea】 Rahasia Chelsea! Bisa Bertahan di Liga Champion...</a> - Sekilas Olahraga</li>
+<li><a href="https://www.youtube.com/watch?v=hCj1CluZB-U" target="_blank">【Bournemouth】 Why Defensive Rest-Defense Failed Repeatedly (M...</a> - The Possessor's View</li>
+<li><a href="https://www.youtube.com/watch?v=ZdkwyhV3tsQ" target="_blank">【Chelsea】 CHELSEA PREVIEW WITH BROADCASTER AND CHELSEA FA...</a> - Justin Talks Villa </li>
+<li><a href="https://www.youtube.com/watch?v=vyoye61XfyE" target="_blank">【Bournemouth】 Bournemouth vs Newcastle: PL 25/26 Tactical Ana...</a> - AI Football Predictions</li>
+<li><a href="https://www.youtube.com/watch?v=ahY3-3ceAmI" target="_blank">【Chelsea】 🔥Pedro Neto. Chelsea: Control, Finta. A Generar...</a> - Profe Javi Fdez Tu Dorsal Football Center</li>
+<li><a href="https://www.youtube.com/watch?v=Z8p_7tr7ie8" target="_blank">【Chelsea】 Menguasai lapangan: gerakan taktis dan pertahan...</a> - Yohan Cruyff</li>
+<li><a href="https://www.youtube.com/watch?v=qKAi9yeCv_c" target="_blank">【Bournemouth】 Tottenham vs Bournemouth: Cherries&#39; Tactica...</a> - boytoymichelle</li>
+<li><a href="https://www.youtube.com/watch?v=1QJY7XICiYs" target="_blank">【Chelsea】 Newcastle vs Chelsea PREVIEW 🔥| Tactical WAR In...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=XyjCDx6_b1Y" target="_blank">【Bournemouth】 😤 SPURS must FIX these problems NOW! Tactical a...</a> - Spurs Related</li>
+<li><a href="https://www.youtube.com/watch?v=Gu3W5iR9k0w" target="_blank">【Chelsea】 What Pedri Does BEFORE He Gets the Ball #shorts</a> - Shivam Chopra Analysis</li>
+<li><a href="https://www.youtube.com/watch?v=dDDZelMnEIs" target="_blank">【Bournemouth】 案堅守と戦術勝負の90分─ボーンマスがトッテナムを沈めた第3節の真実 #プレミアリーグ #トッ...</a> - Kishioka.Design</li>
+<li><a href="https://www.youtube.com/watch?v=-g0AKQ9U80Y" target="_blank">【Bournemouth】 GABRIEL Is A MONSTER Defensively🔥 #footballtact...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=pgJV7r32qic" target="_blank">【Chelsea】 How To Outsmart Defenders Like A Pro CM</a> - FTGIntel </li>
+<li><a href="https://www.youtube.com/watch?v=2J1rOzDKYXA" target="_blank">【Bournemouth】 Analysing Cherki&#39;s False Winger Role | Man ...</a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=S70BkQabAoQ" target="_blank">【Chelsea】 Flamengo x Chelsea: Análise Tática e Superiorid...</a> - Flow e Podpah Cortes</li>
+<li><a href="https://www.youtube.com/watch?v=LO6zQoBKzB4" target="_blank">【Bournemouth】 The Truth About Man Utd’s Midfield in the 4-4 D...</a> - All Football Hit News</li>
+<li><a href="https://www.youtube.com/watch?v=-gN6pbPtRJg" target="_blank">【Chelsea】 Vitor Roque sobe uma posição e Rayan do Vasco a...</a> - Foot Analysis - Português</li>
+<li><a href="https://www.youtube.com/watch?v=RAURxhNPUFc" target="_blank">【Chelsea】 Chelsea Vs Fulham Tactical Breakdown </a> - Mono FC</li>
+<li><a href="https://www.youtube.com/watch?v=UdltRnyPzvI" target="_blank">【Bournemouth】 Roy Keane On Man Utd 4-4 Defensive SHOCKER v Bo...</a> - TheBigD_</li>
+<li><a href="https://www.youtube.com/watch?v=vEUqi2LyPjE" target="_blank">【Chelsea】 Analisis Taktik Maresca Bantai PSG😎🔥 #shorts #c...</a> - NR612_SPORT</li>
+<li><a href="https://www.youtube.com/watch?v=3ANgi066514" target="_blank">【Chelsea】 Set Plays &amp; Premier League: Tactical Analys...</a> - Creative Set Plays</li>
+<li><a href="https://www.youtube.com/watch?v=XoYzKIgFKJs" target="_blank">【Bournemouth】 Antoine Semenyo Is A BALLER🇬🇭🔥 #footballtactics...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=nRE74SPV6FM" target="_blank">【Chelsea】 Will Man utd will go all attack against Chelsea...</a> - The Tactical Eye</li>
+<li><a href="https://www.youtube.com/watch?v=-oCYCxzpKKE" target="_blank">【Bournemouth】 😱 MAN UTD&#39;S YOUNG GUNS DESTROY BOURNEMOUTH ...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=ta6nwdBv7hY" target="_blank">【Chelsea】 Por qué MOISÉS CAICEDO es el Jugador IRREMPLAZA...</a> - Poimandres Futbol</li>
+<li><a href="https://www.youtube.com/watch?v=laXl_mO5i1Y" target="_blank">【Chelsea】 Chelsea vs Milan  Reece James&#39;s Dazzling As...</a> - El Ojo del 10</li>
+<li><a href="https://www.youtube.com/watch?v=jpdcPpDWr-k" target="_blank">【Bournemouth】 COMO EL BOURNEMOUTH IRAOLA DESTROZÓ AL TOTTENH...</a> - Espacio_Reducido </li>
+<li><a href="https://www.youtube.com/watch?v=O6a1vrg4SDY" target="_blank">【Bournemouth】 Bournemouth&#39;s BIG Surprise in Premier Leagu...</a> - Betting Education</li>
+<li><a href="https://www.youtube.com/watch?v=9T7EDjgGc8U" target="_blank">【Chelsea】 نقاط الضعف والقوه لباريس سان جيرمان وتشيلسي</a> - اوفسايد offside </li>
+<li><a href="https://www.youtube.com/watch?v=9oAPtcyjTsg" target="_blank">【Bournemouth】 Why United Will Attack Through The Middle vs Bo...</a> - Footy with an Edge</li>
+<li><a href="https://www.youtube.com/watch?v=vLIghsWcqa8" target="_blank">【Chelsea】 taktikada macalin maresca ee finalka CWL ka #a9...</a> - A9_sports</li>
+<li><a href="https://www.youtube.com/watch?v=_fW7YDbBJ_g" target="_blank">【Bournemouth】 2025-26 ENGLISH PREMIER LEAGUE. MANCHESTER UNIT...</a> - Captain Smart Ninja</li>
+<li><a href="https://www.youtube.com/watch?v=FuLQF9ps3l8" target="_blank">【Chelsea】 Análisis Táctico  ¿El cambio de planteo funcion...</a> - PURO SHORTS DEPORTIVOS</li>
+<li><a href="https://www.youtube.com/watch?v=nk5f-UmiKfc" target="_blank">【Bournemouth】 Tim Manchester United vs Bournemouth Siapa Pema...</a> - Michele Angelo</li>
+<li><a href="https://www.youtube.com/watch?v=2tCeALyjaIA" target="_blank">【Chelsea】 India vs Singapore tactical analysis #isl2025 #...</a> - The Tactical Eye</li>
+<li><a href="https://www.youtube.com/watch?v=0TfjhHkIMLw" target="_blank">【Bournemouth】 Tactical BREAKDOWN Man United vs Bournemouth  -...</a> - American Red Devils</li>
+<li><a href="https://www.youtube.com/watch?v=N2DOc9M8bRs" target="_blank">【Chelsea】 How Real Madrid defeated Oviedo tactical analys...</a> - The Tactical Eye</li>
+<li><a href="https://www.youtube.com/watch?v=wBSZ2Kx8d4I" target="_blank">【Bournemouth】 S6 สรุประบบอิราโอลา  ความเข้มข้นที่น่าตื่นเต้นแ...</a> - ราชาฟุตบอล</li>
+<li><a href="https://www.youtube.com/watch?v=0EmPust61Cg" target="_blank">【Chelsea】 How Maresca GENIUS IDEAS BROKE PSG&#39;s META i...</a> - Blue Lions TV - A Chelsea Channel</li>
+<li><a href="https://www.youtube.com/watch?v=ZilbqlCKa-g" target="_blank">【Chelsea】 Will Chelsea succeed in winning trophies this w...</a> - mohram</li>
+<li><a href="https://www.youtube.com/watch?v=FIpKtl_waVk" target="_blank">【Chelsea】 Cole Palmer Masterclass 🌍 Club World Cup Final ...</a> - ForPro</li>
+<li><a href="https://www.youtube.com/watch?v=wjevTkN2V6I" target="_blank">【Bournemouth】 ABSOLUTE CHAOS! 😱 Man United 4–4 Bournemouth | ...</a> - Sport Lab</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (16件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=t3kQGPeBam8" target="_blank">【Chelsea】 Chelsea Dominate Bayern Leverkusen | Complete M...</a> - SoccerVerse360 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=elVotZcfeE8" target="_blank">【Chelsea】 104 3 OF  5 Chelsea vs Liverpool Tactical Analy...</a> - Grip On Games <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hQqTxtuKgO8" target="_blank">【Chelsea】 Chelsea&#39;s Tactics  Analyzing Their Win Agai...</a> - TalkFootball Tyrone <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=AB7qONdaqeo" target="_blank">【Chelsea】 NEWCASTLE 2-2 CHELSEA: Chaos at St James’ Park ...</a> - António Mango <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=GFJxM7z6Oco" target="_blank">【Chelsea】 João Pedro Scores vs Bayer Leverkusen, Clinical...</a> - SoccerVerse360 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=69fQPHmIals" target="_blank">【Bournemouth】 Bournemouth vs Liverpool - Disrupting the Build...</a> - Footy Tactics <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=5-e_hw4h4gA" target="_blank">【Bournemouth】 Tactical Analysis: Ekitike Goal, Mac Allister A...</a> - FTBL Tactics <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=6CnLK6nuS2U" target="_blank">【Bournemouth】 How Arne Slot Beat Bournemouth’s Man-to-Man Press</a> - iScout <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=h6tFmgDQtUE" target="_blank">【Bournemouth】 Did Endo Just Make the Best Assist of the Season?</a> - Liverpool Fan In Japan <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Ynre_rc1uMA" target="_blank">【Bournemouth】 Chelsea Fans STUNNED! Maresca Reveals Unexpecte...</a> - Sport Lab <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Ve-9vhJZd_s" target="_blank">【Bournemouth】 Arne Slot analyses both goals by Antoine Semeny...</a> - FTBL Tactics <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9NlSpRmuwsA" target="_blank">【Bournemouth】 Premier League 2025 Matchday 3 CHAOS! My Bold P...</a> - Mystery Tales by Angel <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=p7lJaD0CHdk" target="_blank">【Bournemouth】 ഈ tactics കൊണ്ട് ലിവർപൂളിന്റെ അഴിഞ്ഞാട്ടമായിരിക...</a> - Counter Press <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=fHvXQxmXplc" target="_blank">【Bournemouth】 The Secret Stat That Predicted Liverpool&#39;s ...</a> - Matchday Maestro <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kNcoaBHuMmk" target="_blank">【Bournemouth】 Manchester City 3-1 Bournemouth | Haaland Brace...</a> - Sport Lab <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9cbNSmBvUAU" target="_blank">【Bournemouth】 Man Utd 4-4 Bournemouth Reaction: Where Must Ma...</a> - All Football Hit News <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mkNDl7wwoDc" target="_blank"><img src="https://i.ytimg.com/vi/mkNDl7wwoDc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mkNDl7wwoDc" target="_blank">【Justin Kluivert】 Incredible Strike From Distance In Ev...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=TDoHIKAF0OM" target="_blank"><img src="https://i.ytimg.com/vi/TDoHIKAF0OM/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=TDoHIKAF0OM" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho BEST Goals for Man...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=gCTYMSfKTBY" target="_blank"><img src="https://i.ytimg.com/vi/gCTYMSfKTBY/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=gCTYMSfKTBY" target="_blank">【Evanilson】 Everyone Is Sleeping On This Football...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=enmTkA8UPMs" target="_blank"><img src="https://i.ytimg.com/vi/enmTkA8UPMs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=enmTkA8UPMs" target="_blank">【Alejandro Garnacho】 Garnacho SCORING Against Chelsea At S...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=EZ9uK9IVwmE" target="_blank"><img src="https://i.ytimg.com/vi/EZ9uK9IVwmE/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=EZ9uK9IVwmE" target="_blank">【Cole Palmer】 It Was A Cold Summer For Cole Palmer</a></strong><br/>📺 <strong>✅ DAZN Football</strong> ・ 🕐 5ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Z45FisEMc1A" target="_blank"><img src="https://i.ytimg.com/vi/Z45FisEMc1A/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Z45FisEMc1A" target="_blank">【Cole Palmer】 Cole Palmer Completes Ice Cold Comeba...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=cEenLbMKxdw" target="_blank"><img src="https://i.ytimg.com/vi/cEenLbMKxdw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=cEenLbMKxdw" target="_blank">【Evanilson】 Rayan Cherki KNEW Erling Haaland woul...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=b4BKg0zKdfQ" target="_blank"><img src="https://i.ytimg.com/vi/b4BKg0zKdfQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=b4BKg0zKdfQ" target="_blank">【Antoine Semenyo】 Why This Winger Is As Dangerous As Ha...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=eaRXHYGlmJw" target="_blank"><img src="https://i.ytimg.com/vi/eaRXHYGlmJw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=eaRXHYGlmJw" target="_blank">【Cole Palmer】 Cole Palmer is BACK! 🥶</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 3ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=YGEYnECw7XA" target="_blank"><img src="https://i.ytimg.com/vi/YGEYnECw7XA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=YGEYnECw7XA" target="_blank">【Cole Palmer】 Cole Palmer speaking FACTS 🗣️</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (204件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=VMF92g9Rvmo" target="_blank">【Antoine Semenyo】 The Secret Behind Antoine Semenyo&#39;s Form 🤫</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=8wXso3wi9W0" target="_blank">【Antoine Semenyo】 Semenyo From An IMPOSSIBLE ANGLE 🤯</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=Ddx0u_hKa18" target="_blank">【Cole Palmer】 Cole Palmer, Estevao, Moises Caicedo &amp; Enzo...</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=k2Pcq_fmXZo" target="_blank">【Evanilson】 Mbeumo Wins Trophy On Man Utd DEBUT 🏆</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=5hmlx9lQY8Q" target="_blank">【Liam Delap】 &quot;REALLY BAD SITUATION!&quot; Alan Pardew C...</a> - talkSPORT</li>
+<li><a href="https://www.youtube.com/watch?v=kuTNDmwoQjw" target="_blank">【Antoine Semenyo】 &quot;At Man City or Man United...&quot; Semeny...</a> - talkSPORT</li>
+<li><a href="https://www.youtube.com/watch?v=Wkjxfv8pcPI" target="_blank">【Antoine Semenyo】 SNEAKY Wall Tactic Couldn&#39;t Stop This Free-...</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=WFch8IYYSac" target="_blank">【Cole Palmer】 What a first start for Estevao!</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=lWv9A2J68cw" target="_blank">【Cole Palmer】 Hang it n the Louvre 😮‍💨🔥#colepalmer #football ...</a> - DAZN Football</li>
+<li><a href="https://www.youtube.com/watch?v=TdRYq6_7mZc" target="_blank">【Antoine Semenyo】 Only One Player Has Clocked A Faster Time Than ...</a> - Manchester United</li>
+<li><a href="https://www.youtube.com/watch?v=ipcz9ezjnxE" target="_blank">【Alejandro Garnacho】 Garnacho&#39;s MUST-SEE Performance v Wolves</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=nl8OLRL6tsY" target="_blank">【Antoine Semenyo】 SHOWBOATING From Mohammed Kudus 🪄😱</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=IbxGxpUIyds" target="_blank">【Alejandro Garnacho】 Best of Alejandro Garnacho so far for Chelsea</a> - MUIR HD</li>
+<li><a href="https://www.youtube.com/watch?v=Y2YULr4POPE" target="_blank">【Antoine Semenyo】 燃え盛る！今シーズンここまでのアントワーヌ・セメニョのゴールとアシストを全て見よう！🔥</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=NhJ6OfehEyM" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho Is Starting to COOK at Chels...</a> - Umwatch</li>
+<li><a href="https://www.youtube.com/watch?v=5vnbhZr6Hek" target="_blank">【Cole Palmer】 Cole Palmer&#39;s Best Performances for Chelsea !!</a> - RDC Productions</li>
+<li><a href="https://www.youtube.com/watch?v=Fx9TZyH8z6c" target="_blank">【Alejandro Garnacho】 The Best of Alejandro Garnacho - Welcome to Che...</a> - ChelsTV</li>
+<li><a href="https://www.youtube.com/watch?v=mYqVq2Cu1TE" target="_blank">【Cole Palmer】 Cole Palmer Ultimate Skill Show 🤯</a> - ChelsTV</li>
+<li><a href="https://www.youtube.com/watch?v=9oGr3Q6duhg" target="_blank">【Antoine Semenyo】 Antoine Semenyo ▶ Skills, Goals &amp; Assists 2025</a> - YES Skills Vault</li>
+<li><a href="https://www.youtube.com/watch?v=_XNDQJjKH28" target="_blank">【Liam Delap】 An incredible finish from Liam Delap to score h...</a> - Channel 5</li>
+<li><a href="https://www.youtube.com/watch?v=AWBUriLxk40" target="_blank">【Cole Palmer】 Top 5 Cole Palmer Goals🥶</a> - Jogiñho</li>
+<li><a href="https://www.youtube.com/watch?v=cuKsB9q-u2w" target="_blank">【Liam Delap】 エンツォ・マレスカは、チェルシー対ウルブズ戦でのリアム・デラップへのレッドカードは「非常に愚か...</a> - GOAL RUSH</li>
+<li><a href="https://www.youtube.com/watch?v=JQ0ae5mV1Nw" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho SKILLS 2025 🔵 Chelsea&#39;s ...</a> - ALLSKILLS</li>
+<li><a href="https://www.youtube.com/watch?v=6eoKNntH4sk" target="_blank">【Cole Palmer】 Cole Palmer ● All 71 Goals &amp; Assists For Ch...</a> - Zeeky17</li>
+<li><a href="https://www.youtube.com/watch?v=r0lDV4UEVJU" target="_blank">【Justin Kluivert】 “クライファート兄弟”の特別な1週間 #サッカー #クライファート #オランダ代表 #ゼーブル...</a> - サッカーヒストリー</li>
+<li><a href="https://www.youtube.com/watch?v=z8mtmyT_9jQ" target="_blank">【Liam Delap】 Liam Delap scores his first goal at Stamford Br...</a> - Channel 5</li>
+<li><a href="https://www.youtube.com/watch?v=kCXqWQkiiCc" target="_blank">【Alejandro Garnacho】 Garnacho Focus 🔎</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=E6PzoBd0be8" target="_blank">【Antoine Semenyo】 Here&#39;s Why Man City Want Antoine Semenyo</a> - Manie HD</li>
+<li><a href="https://www.youtube.com/watch?v=4Ou-OFNTTtQ" target="_blank">【Justin Kluivert】 タヴェルニエがコーナーキックから直接ゴール！ | AFCボーンマス 2-0 ノッティンガム・フ...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=nG-93-ytR1Q" target="_blank">【Liam Delap】 Liam delap shocking skills at Chelsea #chelsea ...</a> - chelsea blues</li>
+<li><a href="https://www.youtube.com/watch?v=bf4oJlTdBp4" target="_blank">【Alejandro Garnacho】 Garnacho is here! 🇦🇷</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=OWTa3Gwjajo" target="_blank">【Cole Palmer】 Bangers from Palmer 👌</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=K3C1B_DMszE" target="_blank">【Liam Delap】 what I think on delap red card vs wolves 😱</a> - UR▪️Football Girl 😊</li>
+<li><a href="https://www.youtube.com/watch?v=JE8ac4JsWsM" target="_blank">【Cole Palmer】 Cole Palmer • All 31 Goals &amp; Assists • 2024/25</a> - ChelseaTV</li>
+<li><a href="https://www.youtube.com/watch?v=QoUbPo1YDjw" target="_blank">【Antoine Semenyo】 Antoine Semenyo 2025  - Insane Skills, Goals &a...</a> - Xabi Scout</li>
+<li><a href="https://www.youtube.com/watch?v=zPcFs0XkaXY" target="_blank">【Justin Kluivert】 家族全員がプロになった🤯</a> - lukegerr</li>
+<li><a href="https://www.youtube.com/watch?v=jbqgvUzow-w" target="_blank">【Liam Delap】 ウルブズ戦でデラップレッドカードを受けたマレスカの反応😱</a> - UR▪️Football Girl 😊</li>
+<li><a href="https://www.youtube.com/watch?v=tnOHv6RnMCs" target="_blank">【Alejandro Garnacho】 Will Alejandro Garnacho Perform Better At Chels...</a> - Data Mission</li>
+<li><a href="https://www.youtube.com/watch?v=457YCDT7bOk" target="_blank">【Antoine Semenyo】 今季のセメニョがエグすぎる＃プレミアリーグ #海外サッカー #ボーンマス</a> - R_Football</li>
+<li><a href="https://www.youtube.com/watch?v=4YEFuZOmHFQ" target="_blank">【Justin Kluivert】 KEYAKINAN JUSTIN KLUIVERT! SEBUT AYAHNYA Bisa M...</a> - SUPERSKOR</li>
+<li><a href="https://www.youtube.com/watch?v=5QZgNgcDK60" target="_blank">【Liam Delap】 Extraordinary Moments By Cole Palmer</a> - Nino12x</li>
+<li><a href="https://www.youtube.com/watch?v=tiJyycv3RlI" target="_blank">【Alejandro Garnacho】 Garnacho Betrayed United 💔😢</a> - FootyLibre</li>
+<li><a href="https://www.youtube.com/watch?v=k0SPk9Tt3y8" target="_blank">【Cole Palmer】 Cole Palmer in Finals 🥶🥶</a> - MA 26 EDITS</li>
+<li><a href="https://www.youtube.com/watch?v=T74e6WA0vSQ" target="_blank">【Justin Kluivert】 BOURNEMOUTH GÂY SỐC PREMIER LEAGUE: HẠ FULHAM 3...</a> - bóng đá </li>
+<li><a href="https://www.youtube.com/watch?v=5ybWjPPpf64" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho ● Chelsea New Player! 🔵🇦🇷 2025</a> - SVMM</li>
+<li><a href="https://www.youtube.com/watch?v=SRFeF-SeIrk" target="_blank">【Justin Kluivert】 Are Bournemouth the best in attacking transitio...</a> - In2 The 90'</li>
+<li><a href="https://www.youtube.com/watch?v=oOKj4B0iId0" target="_blank">【Liam Delap】 チェルシー対ACミランの試合で、リアム・デラップにPKを与えたエステヴァオの称賛に値する行動を...</a> - Extra Moment+</li>
+<li><a href="https://www.youtube.com/watch?v=oZQ9sBkSLRQ" target="_blank">【Alejandro Garnacho】 Garnacho Arriving at Chelsea 😅💀</a> - Playmakerz</li>
+<li><a href="https://www.youtube.com/watch?v=KjfwEDX5aoE" target="_blank">【Cole Palmer】 Cole Palmer&#39;s dream 5-a-side team 💭</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=vSWgnpRWGak" target="_blank">【Liam Delap】 Enzo Maresca: &quot;Liam Delap Knows Exactly Ho...</a> - XFun</li>
+<li><a href="https://www.youtube.com/watch?v=DmLIZxBEO1Q" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho VS Bayern Munich - All Duels</a> - DD Comps</li>
+<li><a href="https://www.youtube.com/watch?v=0eI2zprSfvE" target="_blank">【Cole Palmer】 Cole Palmer&#39;s COLDest Body Feint &amp; Goal 🥶</a> - Coach Can't Save</li>
+<li><a href="https://www.youtube.com/watch?v=KJXAeVtJg4o" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=wCTXaNFcgwc" target="_blank">【Justin Kluivert】 アンドニ・イラオラがバスク地方から戦術マスタークラスを披露</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=K468mQvGQEE" target="_blank">【Liam Delap】 DELAP vs. JOAO PEDRO | (Playing Style, Quality ...</a> - Chizzy Football </li>
+<li><a href="https://www.youtube.com/watch?v=0JZ7RflfEiY" target="_blank">【Cole Palmer】 Cole Palmer &amp; Chelsea Destroyed PSG☠️🥶 #sho...</a> - @xa07_Editx</li>
+<li><a href="https://www.youtube.com/watch?v=1y8tdaKG1c4" target="_blank">【Antoine Semenyo】 Antoine Semenyo – Unstoppable with Both Feet 🔥</a> - Tenz HD</li>
+<li><a href="https://www.youtube.com/watch?v=RIY0Xg-0xFE" target="_blank">【Justin Kluivert】 Justin Kluivert on Indonesia&#39;s football pas...</a> - Stadium Astro</li>
+<li><a href="https://www.youtube.com/watch?v=GE_kA53rhtA" target="_blank">【Liam Delap】 Liam Delap is a maths genius</a> - Dose Of Futbol</li>
+<li><a href="https://www.youtube.com/watch?v=YYM8K1Z94Q4" target="_blank">【Alejandro Garnacho】 The Day Alejandro Garnacho Scored Two Goals Aga...</a> - RDC Productions</li>
+<li><a href="https://www.youtube.com/watch?v=0Fd_jnA6Mz4" target="_blank">【Cole Palmer】 Cole palmer vs Fabian Ruiz #colepalmer @chelsea...</a> - Aashish Shrestha</li>
+<li><a href="https://www.youtube.com/watch?v=E0E06dqaKVQ" target="_blank">【Justin Kluivert】 Justin Kluivert Injury Update: Will He Play Aga...</a> - Thiện Duyên Phật Pháp - Triết Lý Cuộc Sống</li>
+<li><a href="https://www.youtube.com/watch?v=xJZz_E83YPo" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho ● Welcome to Chelsea 2025 ● ...</a> - MUIR HD</li>
+<li><a href="https://www.youtube.com/watch?v=5p1msYJT-X0" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=xPc7CGnG8No" target="_blank">【Antoine Semenyo】 今シーズン最高の試合の一つ🍿 | クリスタル・パレス 3-3 AFCボーンマス</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=1QVEzWXOfsw" target="_blank">【Justin Kluivert】 Bournemouth&#39;s Justin Kluivert RANKS the TOP...</a> - CBS Sports Golazo</li>
+<li><a href="https://www.youtube.com/watch?v=dMaTTO7qbto" target="_blank">【Alejandro Garnacho】 Garnacho nets his first goal for Chelsea!🔥</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=iJBc5jvuSQg" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=OuRU4p4sn_s" target="_blank">【Justin Kluivert】 THE CRAZIEST MATCH OF THE SEASON 🤯 MU Concedes ...</a> - Wilder Sport</li>
+<li><a href="https://www.youtube.com/watch?v=0B5bxjJaLbo" target="_blank">【Liam Delap】 リアム・デラップがチェルシーで再びプレーする時期が重要な進展を経て明らかになった。</a> - LAD Sports One Plus</li>
+<li><a href="https://www.youtube.com/watch?v=Mj7djccUSng" target="_blank">【Alejandro Garnacho】 ガルナチョは勝ったと思ったのに、彼のミスのせいでチェルシーはデビュー戦で勝利を逃した。😭💀</a> - FutVibes</li>
+<li><a href="https://www.youtube.com/watch?v=R6BObK-af8Q" target="_blank">【Cole Palmer】 Cole Palmer actually isn&#39;t fully English — ...</a> - FutVibes</li>
+<li><a href="https://www.youtube.com/watch?v=8XoHYlA1u70" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=nXLO3wXFMSc" target="_blank">【Justin Kluivert】 🔴プレミアリーグ 2025-26 | マンチェスター・ユナイテッドが伝説のオールド・トラッフォ...</a> - timelord flight</li>
+<li><a href="https://www.youtube.com/watch?v=pxSI3ios1vY" target="_blank">【Liam Delap】 🚨 BREAKING NEWS! Liam Delap is BACK in training...</a> - DrPureFC</li>
+<li><a href="https://www.youtube.com/watch?v=qv1Q1fF5KMQ" target="_blank">【Alejandro Garnacho】 Garnacho to start in Chelsea 🤯😶‍🌫️</a> - DTB TV </li>
+<li><a href="https://www.youtube.com/watch?v=nCT53GHPbqM" target="_blank">【Cole Palmer】 Cole Palmer And Bukayo Saka Are Talisman For Th...</a> - Data Mission</li>
+<li><a href="https://www.youtube.com/watch?v=hc0603jkUaY" target="_blank">【Justin Kluivert】 اللاعب الحَلّاق! ✂️ جاستن كلويفرت مهاجم بورنموث...</a> - blinxsports</li>
+<li><a href="https://www.youtube.com/watch?v=knNpBg1AaNk" target="_blank">【Liam Delap】 Liam Delap stopped the long throw. Bro chose go...</a> - Next Goal Wins</li>
+<li><a href="https://www.youtube.com/watch?v=cAuLaiPvYyk" target="_blank">【Alejandro Garnacho】 ガルナチョが馬鹿げたセレブレーションの呪いでチェルシーを破壊した方法😱🤣</a> - Globe C</li>
+<li><a href="https://www.youtube.com/watch?v=aCa2NKRH780" target="_blank">【Cole Palmer】 He Chose Chelsea, Not a Wife. Cole Palmer&#39;s...</a> - ChampZone</li>
+<li><a href="https://www.youtube.com/watch?v=T-2LwPV1SDg" target="_blank">【Evanilson】 Evanilson Strikes Early! Bournemouth End Totten...</a> - Every Moment Updates</li>
+<li><a href="https://www.youtube.com/watch?v=x_CoMJ0NViU" target="_blank">【Liam Delap】 CHELSEA NEW SIGNINGS INTRODUCTION AT STAMFORD B...</a> - Chelsea Online</li>
+<li><a href="https://www.youtube.com/watch?v=86CQlVj45YU" target="_blank">【Alejandro Garnacho】 Here&#39;s Why Chelsea Signed Alejandro Garnach...</a> - ScoutNation</li>
+<li><a href="https://www.youtube.com/watch?v=Ru_6Bdvjj7s" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=G9MqmI3Wn3I" target="_blank">【Justin Kluivert】 #justinkluivert #afcb #afcbournemouth #bournemo...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=UaBLsfJbOQE" target="_blank">【Liam Delap】 Why Liam Delap might be the next victim of Chel...</a> - FOOTBALL GOSSIPS </li>
+<li><a href="https://www.youtube.com/watch?v=A23areqE2rI" target="_blank">【Alejandro Garnacho】 GARNACHO CHOSE CHELSEA FOR GOLD UNITED LEFT EMB...</a> - Evs Futball</li>
+<li><a href="https://www.youtube.com/watch?v=voz6dVMYs78" target="_blank">【Cole Palmer】 Evolution of Cole Palmer (2018 - 2025) 🏴󠁧󠁢󠁥󠁮󠁧󠁿 ...</a> - MrSoniq 2</li>
+<li><a href="https://www.youtube.com/watch?v=CQFjY9Kz214" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=K7EVW5VSYFU" target="_blank">【Antoine Semenyo】 アレックス・スコットが強烈なゴールを決め、プレミアリーグ最高のスタートを切る | AFCボーン...</a> - AFC Bournemouth</li>
+<li><a href="https://www.youtube.com/watch?v=s5TKWAU08EM" target="_blank">【Justin Kluivert】 リヴァプール vs ボーンマス | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=-LEi0X-48oo" target="_blank">【Liam Delap】 Delap x Pedro | Link Up Play. #shorts #efootbal...</a> - FUTBall Streaming</li>
+<li><a href="https://www.youtube.com/watch?v=YknHwSnVRJo" target="_blank">【Alejandro Garnacho】 アレハンドロ・ガルナチョがチェルシーでの初ゴールを決めた。</a> - Sports Arena 2025</li>
+<li><a href="https://www.youtube.com/watch?v=y09wclP5PlI" target="_blank">【Cole Palmer】 Can I Stand Longer Than Cole Palmer?</a> - Thogden</li>
+<li><a href="https://www.youtube.com/watch?v=nrgAcwxGtgE" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=rfKQEQDWb3I" target="_blank">【Justin Kluivert】 開幕からプレーできて本当に嬉しい！マリック・ティアウ、ボーンマスとのドロー戦でのデビューについて語る</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=p2zfY8wzvDM" target="_blank">【Liam Delap】 Chelsea&#39;s Thrilling Goal: Flekken&#39;s Unc...</a> - Golden Boots</li>
+<li><a href="https://www.youtube.com/watch?v=qKjC168Mp9A" target="_blank">【Alejandro Garnacho】 new career is Alejandro Garnacho💸⚽️#football #y...</a> - Transfer In Football </li>
+<li><a href="https://www.youtube.com/watch?v=lQu5ky50fS0" target="_blank">【Evanilson】 #evanilson #afcb #afcbournemouth #bournemouth #...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=ExthLCUQBdU" target="_blank">【Antoine Semenyo】 ANTOINE SEMENYO&#39;S TOUGHEST OPPONENT REVEALE...</a> - Pro:Direct Soccer</li>
+<li><a href="https://www.youtube.com/watch?v=Mc5TXDIGpR4" target="_blank">【Justin Kluivert】 Red card or yellow card ? #arbitro #football #p...</a> - Paul Nanfah 237</li>
+<li><a href="https://www.youtube.com/watch?v=WmFUX-wSrz8" target="_blank">【Liam Delap】 恥ずべきデラップ、レッドカードに値する！マレスカがストライカーを叩きつける | ウルブズ 3-...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=5hEleQj9SfE" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho ● Welcome to Chelsea 2025 🔵🇦...</a> - SVMM</li>
+<li><a href="https://www.youtube.com/watch?v=kswdpo9qBbc" target="_blank">【Antoine Semenyo】 How Semenyo Deals With Racism 😎😎😱😱</a> - Extended Footy</li>
+<li><a href="https://www.youtube.com/watch?v=D0mRwlMXNj8" target="_blank">【Liam Delap】 Joao Pedro and Delap Striker Rotation might win...</a> - JackChat</li>
+<li><a href="https://www.youtube.com/watch?v=Dx2NvfVeujo" target="_blank">【Cole Palmer】 COLE PALMER RAP 🧊 #zdotss #rap #colepalmer #pal...</a> - brickifyit</li>
+<li><a href="https://www.youtube.com/watch?v=4pjFlj1my68" target="_blank">【Antoine Semenyo】 🇬🇭 Chelsea are reportedly ready to pay around £...</a> - Madridista Mania</li>
+<li><a href="https://www.youtube.com/watch?v=rb5faeOYyTw" target="_blank">【Justin Kluivert】 Bournemouth 0 1 Everton Dec 2, 2025 Game Analys...</a> - newswiki</li>
+<li><a href="https://www.youtube.com/watch?v=IHMzd3C-N84" target="_blank">【Liam Delap】 Enzo Maresca Accuses Liam Delap Of Playing For ...</a> - Only Football </li>
+<li><a href="https://www.youtube.com/watch?v=sQleOpDK0Tk" target="_blank">【Alejandro Garnacho】 🚫🤫👍⚽COLE PALMER &amp; GARNACHO TOGETHER? NEXT-L...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=YvCmO_zIj08" target="_blank">【Cole Palmer】 ⚔️🔥🛡️🗡️COLE PALMER VS SAKA: STATS BATTLE! #chel...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=ogR5BU-GkpM" target="_blank">【Antoine Semenyo】 This is Why NOBODY Signed Antoine Semenyo This ...</a> - Goal 90</li>
+<li><a href="https://www.youtube.com/watch?v=T4Bm57Wkn7g" target="_blank">【Justin Kluivert】 #justinkluivert #afcb #afcbournemouth #bournemo...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=Z9l8N2cx-1Y" target="_blank">【Liam Delap】 Liam Delap BACK in Training! 💪 Chelsea Star Ret...</a> - Fans VARsity</li>
+<li><a href="https://www.youtube.com/watch?v=fdR2c3E2sT0" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho at Stamford Bridge to watch ...</a> - Stan Sport Football</li>
+<li><a href="https://www.youtube.com/watch?v=fuZSWxUN8s0" target="_blank">【Liam Delap】 Chelsea Blocks Nicolas Jackson’s Bayern Loan Ov...</a> - ILANR</li>
+<li><a href="https://www.youtube.com/watch?v=vzzaY4l2Tgw" target="_blank">【Cole Palmer】 ✈️😱🔥Cole Palmer&#39;s Bad Days! The Groin Injur...</a> - Chelsea shed end</li>
+<li><a href="https://www.youtube.com/watch?v=NjvUNPfqr1g" target="_blank">【Antoine Semenyo】 Semenyo vs. Osimhen 🇬🇭  🇳🇬</a> - ESPN UK</li>
+<li><a href="https://www.youtube.com/watch?v=MRMX4JsuGyI" target="_blank">【Justin Kluivert】 ハーランドは強烈なプレーで止めるのが難しい！アンドニ・イアオラのコメント｜マンチェスター・シテ...</a> - THYNK REACTS </li>
+<li><a href="https://www.youtube.com/watch?v=j63tOp89YmY" target="_blank">【Liam Delap】 LIAM DELAP RED CARD #chelsea #chelseafc #chelse...</a> - Deep play review </li>
+<li><a href="https://www.youtube.com/watch?v=r5h6CSxiZqY" target="_blank">【Alejandro Garnacho】 ガルナチョがチェルシーデビューですべてを台無しにする😱</a> - reyo</li>
+<li><a href="https://www.youtube.com/watch?v=9ZgS3licuAo" target="_blank">【Cole Palmer】 これは決して運ではなかった - コール・パーマーの誕生</a> - Harry on Football</li>
+<li><a href="https://www.youtube.com/watch?v=gMOX_3b0GWw" target="_blank">【Antoine Semenyo】 アントワーヌ・セメニョがこれまで対戦した中で最もタフなディフェンダー…👀💪</a> - LeosGoals</li>
+<li><a href="https://www.youtube.com/watch?v=q4Oc8RfPSLs" target="_blank">【Justin Kluivert】 #justinkluivert #afcb #afcbournemouth #bournemo...</a> - Richard Morse</li>
+<li><a href="https://www.youtube.com/watch?v=85zplwJrzAw" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho to Chelsea Fc 🔥😱 #chelseafc ...</a> - stewie the news reporter</li>
+<li><a href="https://www.youtube.com/watch?v=PvITkFCcilc" target="_blank">【Cole Palmer】 Cole Palmer Feeling Sad On Injury 😢💔</a> - Sui7HD</li>
+<li><a href="https://www.youtube.com/watch?v=sCXdtoEJ9ro" target="_blank">【Justin Kluivert】 Manchester City vs Bournemouth - English Premie...</a> - Gameplay Arena</li>
+<li><a href="https://www.youtube.com/watch?v=l97OxOyNxZY" target="_blank">【Liam Delap】 リアム・デラップは準備完了です！ |エンツォ・マレスカ |ウルブズ v チェルシー</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=KLICmH1DX9c" target="_blank">【Alejandro Garnacho】 Garnacho makes his Chelsea debut as his cross s...</a> - TheBailz</li>
+<li><a href="https://www.youtube.com/watch?v=RQeV0YpynP4" target="_blank">【Cole Palmer】 Cole Palmer 🤝 Jeremie Frimpong</a> - Sky Sports Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=zPmIhOQ23WA" target="_blank">【Justin Kluivert】 500K BONUS ACTIVATED! 🤯 Bournemouth 3-2 Spurs: ...</a> - The Cherries</li>
+<li><a href="https://www.youtube.com/watch?v=hVZpHdNRAeE" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho To Chelsea A Match Made In H...</a> - Only Football </li>
+<li><a href="https://www.youtube.com/watch?v=bs-Rs8dtOoc" target="_blank">【Cole Palmer】 COLE PALMER RAP 🧊 #zdotss #rap #colepalmer #pal...</a> - Z dotss</li>
+<li><a href="https://www.youtube.com/watch?v=2ByYmcyOu2U" target="_blank">【Antoine Semenyo】 This is Why Manchester City Decided to Sign Ant...</a> - Goal 90</li>
+<li><a href="https://www.youtube.com/watch?v=zALk9KujUXc" target="_blank">【Liam Delap】 Major blow for Chelsea ⚠️ Liam Delap limps off ...</a> - Stadium Astro</li>
+<li><a href="https://www.youtube.com/watch?v=DKMEUR8AUkI" target="_blank">【Alejandro Garnacho】 Chelsea Just UNLOCKED a MONSTER… ALEJANDRO GARN...</a> - PedTalksSports</li>
+<li><a href="https://www.youtube.com/watch?v=Q4tMQomxlh4" target="_blank">【Cole Palmer】 Cole Palmer wasn&#39;t sure why Donald Trump jo...</a> - GOAL</li>
+<li><a href="https://www.youtube.com/watch?v=sgmBBx3a1as" target="_blank">【Justin Kluivert】 リヴァプール vs ボーンマス | プレミアリーグ 25/26 | FC 25 - ノールール</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=goV4Mo8kEzQ" target="_blank">【Liam Delap】 Liam Delap returns to face wolves</a> - Techsport</li>
+<li><a href="https://www.youtube.com/watch?v=Co5gVgeOTns" target="_blank">【Alejandro Garnacho】 😱 Garnacho vs Gittens: No Competition at Chelse...</a> - Football stories and tips </li>
+<li><a href="https://www.youtube.com/watch?v=Qzm6R7us30Y" target="_blank">【Cole Palmer】 COLE PALMER RAP🧊 #zdotss #rap #colepalmer #palm...</a> - NICK PRO21</li>
+<li><a href="https://www.youtube.com/watch?v=YdPs6UHTiGY" target="_blank">【Antoine Semenyo】 THIS Is Why Amorim Wants Semenyo At Manchester ...</a> - AJAnalysis</li>
+<li><a href="https://www.youtube.com/watch?v=2CVzUgAsl2E" target="_blank">【Justin Kluivert】 🎯 GUESS THE PLAYER AFC Bournemouth 2020–2025 | ...</a> - Football Quiz</li>
+<li><a href="https://www.youtube.com/watch?v=Hm6KmjXIw9o" target="_blank">【Liam Delap】 JOAO PEDRO &amp; LIAM DELAP COULD PLAY WELL TOG...</a> - Zedai Ché Enny</li>
+<li><a href="https://www.youtube.com/watch?v=T6CEhFtxcvw" target="_blank">【Alejandro Garnacho】 🔥 How Garnacho went from prodigy to unwanted un...</a> - Prime Footy TV</li>
+<li><a href="https://www.youtube.com/watch?v=8NsCvVFGJgA" target="_blank">【Cole Palmer】 How Cole Palmer ended Garnacho’s career by stea...</a> - FutVibes</li>
+<li><a href="https://www.youtube.com/watch?v=8eRo44eYIZE" target="_blank">【Antoine Semenyo】 マンチェスター・シティがアントワーヌ・セメニョに6500万ポンドを支払う理由</a> - Transfer FC</li>
+<li><a href="https://www.youtube.com/watch?v=NCwKJlKdqTg" target="_blank">【Justin Kluivert】 Antoine Semenyo Stars as Bournemouth Climb to S...</a> - USA NEWS TODAY</li>
+<li><a href="https://www.youtube.com/watch?v=EG5CnQ_0Wn0" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho gets Boo&#39;d by Man United...</a> - JM Editz</li>
+<li><a href="https://www.youtube.com/watch?v=qR90H5mvqEI" target="_blank">【Cole Palmer】 Cole palmer and Estevao already linking up on d...</a> - Dose Of Futbol</li>
+<li><a href="https://www.youtube.com/watch?v=GGOehPBH80g" target="_blank">【Liam Delap】 リアム・デラップの高IQプレーは、チェルシーが3人のストライカーを必要とする理由を示している</a> - OOP</li>
+<li><a href="https://www.youtube.com/watch?v=dm8WiHpxEgQ" target="_blank">【Alejandro Garnacho】 Garnacho TO CHELSEA HERE WE GO!  #manchesteruni...</a> - ManUnitedCentral</li>
+<li><a href="https://www.youtube.com/watch?v=FacULP8nuvA" target="_blank">【Antoine Semenyo】 Antoine Semenyo to Man City… #football #semenyo...</a> - Bradz Talks Sports</li>
+<li><a href="https://www.youtube.com/watch?v=aeTzYuRK9xU" target="_blank">【Justin Kluivert】 Chelsea vs Bournemouth Premier League 2025/2026...</a> - Football Best Moments</li>
+<li><a href="https://www.youtube.com/watch?v=MFlPQEtXHQU" target="_blank">【Liam Delap】 💥 リアム・デラップ、チェルシーで新たな役割？！ 😱 エンツォ・マレスカ、衝撃の決断！ 🔵🔥</a> - Chelsea Hotspot </li>
+<li><a href="https://www.youtube.com/watch?v=u-3UxvMGcvg" target="_blank">【Alejandro Garnacho】 MANCHESTER UNITED supporters welcomed their for...</a> - Sports kris</li>
+<li><a href="https://www.youtube.com/watch?v=vT7XO9ygchU" target="_blank">【Cole Palmer】 Ridiculousssss 🏆🤣</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=bkn2R6VLgFo" target="_blank">【Antoine Semenyo】 Top 5 Antoine Semenyo goals</a> - EPL Central</li>
+<li><a href="https://www.youtube.com/watch?v=7Tu51Q3sNZU" target="_blank">【Justin Kluivert】 Manchester United vs Bournemouth Premier League...</a> - Football Best Moments</li>
+<li><a href="https://www.youtube.com/watch?v=7B62AHMAl1k" target="_blank">【Liam Delap】 Liam Delap could be fined  by his own teammates...</a> - Chelsea Sport News</li>
+<li><a href="https://www.youtube.com/watch?v=tw2m_HLBh3g" target="_blank">【Alejandro Garnacho】 ALEJANDRO GARNACHO | First Interview in Blue 🔵 ...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=-ccAqhDQOAc" target="_blank">【Antoine Semenyo】 This is Why Antoine Semenyo is PERFECT for Amor...</a> - GEOTV</li>
+<li><a href="https://www.youtube.com/watch?v=p2c05LdiU1g" target="_blank">【Justin Kluivert】 最高の試合ができなかった！エディ・ハウ監督がニューカッスル対ボーンマスの引き分けにコメント</a> - SPORTS SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=nj9jNp_6E7Q" target="_blank">【Liam Delap】 🚨✅速報 | コール・パーマーとリアム・デラップがトレーニングに復帰 | チェルシー最新ニュー...</a> - CFC DAILY DOSE</li>
+<li><a href="https://www.youtube.com/watch?v=CoUXsdU1Zrs" target="_blank">【Alejandro Garnacho】 Garnacho siap obrak abrik MU 🐅</a> - Sejarah Bola Update</li>
+<li><a href="https://www.youtube.com/watch?v=3sioy8p0lQA" target="_blank">【Cole Palmer】 パーマー：「みんな私たちの悪口を言ってたよ」😅😱😱</a> - Off Topic Footy</li>
+<li><a href="https://www.youtube.com/watch?v=vIqc9LnNkOA" target="_blank">【Antoine Semenyo】 Antoine Semenyo linked to Man City 👀 &#39;Why l...</a> - ESPN FC</li>
+<li><a href="https://www.youtube.com/watch?v=FCeFfffj69Y" target="_blank">【Justin Kluivert】 【今日の海外サッカーニュース】ロナウド948ゴール達成！記録更新の嵐！</a> - GaroopTV</li>
+<li><a href="https://www.youtube.com/watch?v=37OzEjW8rcQ" target="_blank">【Liam Delap】 💥「速報：リアム・デラップがチェルシーのチームトレーニングに復帰か！マレスカの秘密兵器が復活！」</a> - Chelsea Champions Hub</li>
+<li><a href="https://www.youtube.com/watch?v=tNMEtczXZ-A" target="_blank">【Alejandro Garnacho】 Garnacho 🤝 Neto</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=_7pycI-pGXs" target="_blank">【Cole Palmer】 How Chelsea Exploited PSG’s Weakness | #chelsea...</a> - The Athletic FC</li>
+<li><a href="https://www.youtube.com/watch?v=V-092ahOCWA" target="_blank">【Antoine Semenyo】 「プレーしている場所に留まれ！」｜ルブーフ、セメニョとマンチェスター・シティの噂について語る</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=nbuQvwGLEXA" target="_blank">【Justin Kluivert】 FC26 MOD | AFCボーンマス VS マンチェスター・シティ | プレミアリーグ 25...</a> - Jhony Escobar</li>
+<li><a href="https://www.youtube.com/watch?v=dRlD9mMckmA" target="_blank">【Liam Delap】 リアム・デラップが復帰！チェルシーのストライカーがチャンピオンズリーグのアヤックス戦に向けてフ...</a> - Chelsea 247 news</li>
+<li><a href="https://www.youtube.com/watch?v=KgXgveGvhio" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho Passion For Chelsea 💙 #garna...</a> - Chelsea Fans  Tribe </li>
+<li><a href="https://www.youtube.com/watch?v=Q51A83inf6Q" target="_blank">【Cole Palmer】 Cole Palmer Owns Mendes 😂</a> - cfcfootball</li>
+<li><a href="https://www.youtube.com/watch?v=uZdFXTlZ7Hw" target="_blank">【Justin Kluivert】 JK&#39;s BRILLIANT Volley &amp; That Red Card! ...</a> - The Cherries</li>
+<li><a href="https://www.youtube.com/watch?v=euiYtm_tSJc" target="_blank">【Liam Delap】 AFC Bournemouth 0-0 Chelsea: Delap’s Injury Shi...</a> - Boundless Journey</li>
+<li><a href="https://www.youtube.com/watch?v=ks6HyzqiXDc" target="_blank">【Alejandro Garnacho】 Garnacho intense training ahead of Brentford #f...</a> - Chelsea Radar</li>
+<li><a href="https://www.youtube.com/watch?v=vLSXY6JQgvU" target="_blank">【Cole Palmer】 Why Cole Palmer Got DUMPED Right After Winning ...</a> - Elastigoal</li>
+<li><a href="https://www.youtube.com/watch?v=LJWTOdqsde0" target="_blank">【Liam Delap】 Joao Pedro with an incredible finish for Chelsea 🎯</a> - Channel 5</li>
+<li><a href="https://www.youtube.com/watch?v=4GdNUkiSCWk" target="_blank">【Alejandro Garnacho】 CHELSEA FANS chant for NEW signing ALEJANDRO GA...</a> - True Blue Football News</li>
+<li><a href="https://www.youtube.com/watch?v=Qko-WNhhiAk" target="_blank">【Liam Delap】 🔥リアム・デラップが怪我から復帰！💙 サンダーランド戦でマレスカが先発出場予定 — チェルシー...</a> - Chelsea 247 news</li>
+<li><a href="https://www.youtube.com/watch?v=EKtKI99funQ" target="_blank">【Alejandro Garnacho】 マンチェスター・ユナイテッドを去った後、アレハンドロ・ガルナチョに何が起こったのか？</a> - Sports Arena 2025</li>
+<li><a href="https://www.youtube.com/watch?v=mXwquI5IcPc" target="_blank">【Cole Palmer】 This is the story of Cole Palmer #football #soc...</a> - Matchday</li>
+<li><a href="https://www.youtube.com/watch?v=Lj18NAzgVmQ" target="_blank">【Antoine Semenyo】 Antoine Semenyo - Incredible With Both Feet  🔥</a> - MyFootballFix</li>
+<li><a href="https://www.youtube.com/watch?v=utOi7Ika-E0" target="_blank">【Justin Kluivert】 8 Players Who Were FAMOUS Before Football</a> - Goal 90</li>
+<li><a href="https://www.youtube.com/watch?v=N5ekNcI6TzY" target="_blank">【Cole Palmer】 Cole Palmer Rap Edit #colepalmer #chelsea #foot...</a> - Fluxus</li>
+<li><a href="https://www.youtube.com/watch?v=6A_kpOe6xtg" target="_blank">【Justin Kluivert】 TRAVEL FATIGUE HIT US HARDER! SEAN DYCHE REACTS...</a> - THYNK REACTS </li>
+<li><a href="https://www.youtube.com/watch?v=MedRP3u0iD4" target="_blank">【Liam Delap】 チェルシーはデラップよりもマルク・ギウを起用すべきか？</a> - Younes Talks Football</li>
+<li><a href="https://www.youtube.com/watch?v=Ec9a1-3nfeI" target="_blank">【Alejandro Garnacho】 Manchester United Have Made HUGE PROFIT On Sale...</a> - Data Mission</li>
+<li><a href="https://www.youtube.com/watch?v=kuVgnlyaWTM" target="_blank">【Cole Palmer】 Cole Palmer Has A Big Estêvão Problem Next Season</a> - Chizzy Football </li>
+<li><a href="https://www.youtube.com/watch?v=ohyDy66kSzc" target="_blank">【Antoine Semenyo】 Antoine Semenyo’s Story #semenyo #afcbournemout...</a> - Joe Ham</li>
+<li><a href="https://www.youtube.com/watch?v=gHdTpsJW8_8" target="_blank">【Justin Kluivert】 PUTRA LEGENDA BELANDA PATRICK KLUVIERT CERITA, ...</a> - SUPERSKOR</li>
+<li><a href="https://www.youtube.com/watch?v=k5JXQEf440s" target="_blank">【Liam Delap】 デラップは謝罪しました！ |エンツォ・マレスカ |トッテナム v チェルシー</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=And1RpcKUk4" target="_blank">【Alejandro Garnacho】 Garnacho first appearance against Brentford #cf...</a> - MARVELLOUS CFC </li>
+<li><a href="https://www.youtube.com/watch?v=8X_X-zCJR4Q" target="_blank">【Cole Palmer】 Cole Palmer, Lamine Yamal, and Jamal Musiala – ...</a> - IFR create gaming </li>
+<li><a href="https://www.youtube.com/watch?v=QGkjQO3eevs" target="_blank">【Antoine Semenyo】 Why EVERY Club Wants Antoine Semenyo | The Over...</a> - The Breakdown</li>
+<li><a href="https://www.youtube.com/watch?v=25ywRQY22E4" target="_blank">【Justin Kluivert】 Nederland WK 2026! 🇳🇱 Kan Oranje EINDELIJK Winn...</a> - Denken met Spinoza</li>
+<li><a href="https://www.youtube.com/watch?v=8KfYu0kU1_4" target="_blank">【Liam Delap】 Champions League Week 5 Chelsea vs. Barcelona M...</a> - Footballer Focus</li>
+<li><a href="https://www.youtube.com/watch?v=2dRmeWvhzes" target="_blank">【Alejandro Garnacho】 Garnacho kira dirinya sudah menang, tapi blunde...</a> - Revisi Terakhir</li>
+<li><a href="https://www.youtube.com/watch?v=ichQTX4ZJZ0" target="_blank">【Cole Palmer】 Cole palmer knows the right time to play #besto...</a> - GEZ EDIT </li>
+<li><a href="https://www.youtube.com/watch?v=KjZLgzseEiU" target="_blank">【Antoine Semenyo】 Meet Antoine Semenyo: The Premier League&#39;s ...</a> - Counter 11 Zone</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (51件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=Mn1qidYv1wM" target="_blank">【Liam Delap】 Liam Delap 2G - Chelsea vs AC Milan 4-1 Extende...</a> - Fut Elite <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=9UYXU4_4330" target="_blank">【Liam Delap】 SEVEN GOAL THRILLER! 🤯 | Wolverhampton Wanderer...</a> - EFL <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=LQ2gkkrrT74" target="_blank">【Liam Delap】 Liam Delap BRILLIANT GOAL vs Ac Milan #liamdela...</a> - Ola Oni  <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=X27EhohSzcA" target="_blank">【Liam Delap】 Seven goals and a red card | Wolves 3-4 Chelsea...</a> - Wolves <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=UMIVCoAPhVI" target="_blank">【Liam Delap】 Chelsea 4-1 AC Milan | HIGHLIGHTS - Extended | ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=tUg0m6THbgU" target="_blank">【Liam Delap】 Wolves 3-4 Chelsea | HIGHLIGHTS - Extended | Ca...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=YBWj7YbQANQ" target="_blank">【Liam Delap】 Chelsea 2-0 Bayer Leverkusen | HIGHLIGHTS - Ext...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=-mE1Y3dXaqs" target="_blank">【Liam Delap】 West Ham 1-5 Chelsea | HIGHLIGHTS - Extended | ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=U__qdTOyECU" target="_blank">【Liam Delap】 TYRIQUE tap-in! ⚡️👏</a> - Chelsea Football Club <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=om0HfsSgjAg" target="_blank">【Alejandro Garnacho】 Cardiff City 1-3 Chelsea | HIGHLIGHTS - Extende...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XwlLgArK1jY" target="_blank">【Alejandro Garnacho】 Alejandro Garnacho checking out the pitch at St...</a> - TNT Sports Football <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=iaw_SisdIAY" target="_blank">【Alejandro Garnacho】 GARNACHO forces the breakthrough! 💥</a> - Chelsea Football Club <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=asSkefp35F8" target="_blank">【Cole Palmer】 Cole Palmer Put Chelsea On His Back vs. PSG | F...</a> - DAZN Football <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Nhfa9Tl6BXM" target="_blank">【Cole Palmer】 what cole palmer did to maresca after early sub 👀</a> - UR▪️Football Girl 😊 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=8hy7KHZ-JLU" target="_blank">【Cole Palmer】 Cole Palmer is finally in the zone 🧠</a> - Stan Sport Football <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=pcAtQVzr7BA" target="_blank">【Cole Palmer】 Cole Palmer checks in at the Bridge 🏟️📌</a> - TNT Sports Football <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=jgl9bvPlelo" target="_blank">【Evanilson】 Extended Premier League Highlights | Sunderland...</a> - Sunderland AFC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sSC33fHEPKw" target="_blank">【Evanilson】 Tottenham Hotspur 0-1 Bournemouth | Premier Lea...</a> - Tottenham Hotspur <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=stjx4DyerYA" target="_blank">【Evanilson】 Liverpool v. Bournemouth | PREMIER LEAGUE HIGHL...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Cmqz63yCmvo" target="_blank">【Evanilson】 EXTENDED HIGHLIGHTS | Man City 3-1 Bournemouth ...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=nmXaR6ZDI2c" target="_blank">【Evanilson】 Semenyo nets STUNNER in Premier League opener |...</a> - AFC Bournemouth <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IFLuvoRzoMo" target="_blank">【Evanilson】 Manchester United v. Bournemouth | PREMIER LEAG...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ZGcFz8jadqw" target="_blank">【Evanilson】 ⚽ Manchester United 4–4 Bournemouth | Full Goal...</a> - Ultra Moments <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=HnlApOxoEgc" target="_blank">【Evanilson】 Chelsea vs Bournemouth | Premier League 2025/26...</a> - Quang Thuận Family <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=kvNAp0hL8vs" target="_blank">【Evanilson】 Tactical Analysis: Liverpool - Bournemouth 15/8...</a> - Holding Midfield <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xQaS25zHZ6I" target="_blank">【Evanilson】 Antoine Semenyo: UNDERRATED Baller? 🍒🤔</a> - Premier League <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=PvIUPEYW0bk" target="_blank">【Evanilson】 Andoni Iraola on Haaland threat, Scott form and...</a> - AFC Bournemouth <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xVe6XGdctOs" target="_blank">【Antoine Semenyo】 We Settle For A Point | Man Utd v Bournemouth |...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=p8YJmhN9_Yw" target="_blank">【Antoine Semenyo】 Frantic Game At Old Trafford | Man Utd v Bourne...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=nmXaR6ZDI2c" target="_blank">【Antoine Semenyo】 Semenyo nets STUNNER in Premier League opener |...</a> - AFC Bournemouth <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=stjx4DyerYA" target="_blank">【Antoine Semenyo】 Liverpool v. Bournemouth | PREMIER LEAGUE HIGHL...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=0xavu1xwQKg" target="_blank">【Antoine Semenyo】 90th Minute Drama! Highlights | Liverpool 4-2 B...</a> - Liverpool FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=5Dm3zj7cUGQ" target="_blank">【Antoine Semenyo】 Crystal Palace v. Bournemouth | PREMIER LEAGUE ...</a> - NBC Sports <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=RP1ipDjVCIA" target="_blank">【Antoine Semenyo】 Man Utd’s SHOCK Move for Semenyo?! 👀🔥 #football...</a> - GoalGab <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=G-t8ImnuU7Q" target="_blank">【Antoine Semenyo】 Antoine Semenyo is a BALLER! 🇬🇭 Best Goals &amp...</a> - SVMM <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=UwD2rdG369E" target="_blank">【Antoine Semenyo】 Here&#39;s Why Liverpool Want Antoine Semenyo 🇬🇭🔴</a> - ScoutNation <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xQaS25zHZ6I" target="_blank">【Antoine Semenyo】 Antoine Semenyo: UNDERRATED Baller? 🍒🤔</a> - Premier League <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hdwEE_s96bk" target="_blank">【Antoine Semenyo】 Antoine Semenyo was subjected to racist abuse b...</a> - Video 4Football <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=gB7wbSTDVIc" target="_blank">【Antoine Semenyo】 NEW VIDEO! Disabled Liverpool fan who racistly ...</a> - Matchday Liverpool <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=c1gAcWZIZMU" target="_blank">【Antoine Semenyo】 Antoine Semenyo Racism Incident Shocks Premier ...</a> - ZROX <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=KMOQL4_RsPY" target="_blank">【Antoine Semenyo】 A £65M STEAL? Liverpool, Manchester City &amp; ...</a> - Back of the Net - The AFC Bournemouth Fan Channel <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=xe9vjSjIDmk" target="_blank">【Justin Kluivert】 Justin Kluivert Goal | Bournemouth vs Fulham 3-...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=IKZz_oFaWHg" target="_blank">【Justin Kluivert】 Antoine Semenyo Goal | Bournemouth vs Fulham 3-...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2umQKIZJLLM" target="_blank">【Justin Kluivert】 Antoine Semenyo Goal | Bournemouth vs Fulham 3-...</a> - Goal Disallowed 76 <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Lg7Z7QJShOM" target="_blank">【Justin Kluivert】 HIGHLIGHTS! Man City 3-1 Bournemouth | City mov...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ybJxBu8IcV8" target="_blank">【Justin Kluivert】 PS5 | FC26 | Manchester united &amp; AFC Bourne...</a> - Game Play Football Channel Official <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ggUDHkV0zY4" target="_blank">【Justin Kluivert】 🔴LIVE : Liverpool vs Bournemouth - English Prem...</a> - FIFA - Gameplay <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=T7tj9xV1oIc" target="_blank">【Justin Kluivert】 Liverpool VS Bournemouth - LIVE #PREMIERLEAGUE</a> - OnlyFacts Sports <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2XHhLSGQX4Q" target="_blank">【Justin Kluivert】 💥 KLUIVERT&#39;S CHIP &amp; JIMÉNEZ DEBUT! 🍒 Ou...</a> - The Cherries <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=jzs7cPih9CM" target="_blank">【Justin Kluivert】 WE&#39;RE GOING ALL THE WAY! 😱 Adams STUNNER &a...</a> - The Cherries <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=FbXgbVD8OOo" target="_blank">【Justin Kluivert】 ⚽​ Reaction to 🍒​AFC Bournemouth Vs Newcastle U...</a> - LOADED MAG NUFC <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>🏃 練習風景 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4hr48DCjwxw" target="_blank"><img src="https://i.ytimg.com/vi/4hr48DCjwxw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4hr48DCjwxw" target="_blank">【Chelsea】 TRAINING ahead of Aston Villa 🎄 | Che...</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=s6yia_bVW4I" target="_blank"><img src="https://i.ytimg.com/vi/s6yia_bVW4I/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=s6yia_bVW4I" target="_blank">【Bournemouth】 Athletic Endurance &amp; Strength | S...</a></strong><br/>📺 <strong>⚠️ DIETBYMYUR</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Gi5nr4pq8Sg" target="_blank"><img src="https://i.ytimg.com/vi/Gi5nr4pq8Sg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Gi5nr4pq8Sg" target="_blank">【Chelsea】 How Rich Are Chelsea Players? Just Lo...</a></strong><br/>📺 <strong>⚠️ Oswin Hartley</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=bM8D-n0Eoe8" target="_blank"><img src="https://i.ytimg.com/vi/bM8D-n0Eoe8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=bM8D-n0Eoe8" target="_blank">【Bournemouth】 His Training Is Dangerous… (@c.s2ok)</a></strong><br/>📺 <strong>⚠️ FitBlips</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=EGB9iret-Hs" target="_blank"><img src="https://i.ytimg.com/vi/EGB9iret-Hs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=EGB9iret-Hs" target="_blank">【Chelsea】 DELAP &amp; ESTÊVÃO BACK! Chelsea Go ...</a></strong><br/>📺 <strong>⚠️ Chelsea Radar</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=PxxEd5Hg46M" target="_blank"><img src="https://i.ytimg.com/vi/PxxEd5Hg46M/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=PxxEd5Hg46M" target="_blank">【Chelsea】 Estevao is Back!🔥Crazy Scenes at Cobh...</a></strong><br/>📺 <strong>⚠️ BluesCorner</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=nCYURdl7ZWc" target="_blank"><img src="https://i.ytimg.com/vi/nCYURdl7ZWc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=nCYURdl7ZWc" target="_blank">【Bournemouth】 Why Semenyo REJECTED Man Utd for City...</a></strong><br/>📺 <strong>⚠️ The Footy Fact</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=avYIuiTLI3U" target="_blank"><img src="https://i.ytimg.com/vi/avYIuiTLI3U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=avYIuiTLI3U" target="_blank">【Chelsea】 A festive sled race 🎅</a></strong><br/>📺 <strong>⚠️ Chelsea Football Club</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wm9f5hpoPog" target="_blank"><img src="https://i.ytimg.com/vi/wm9f5hpoPog/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wm9f5hpoPog" target="_blank">【Chelsea】 What Cars Do Chelsea Players Drive? C...</a></strong><br/>📺 <strong>⚠️ Oswin Hartley</strong> ・ 🕐 3日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=z69WemMeM9M" target="_blank"><img src="https://i.ytimg.com/vi/z69WemMeM9M/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=z69WemMeM9M" target="_blank">【Bournemouth】 🔥Gabriel, Timber, Havertz &amp; Calaf...</a></strong><br/>📺 <strong>⚠️ Gunners TNC</strong> ・ 🕐 1日前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (51件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=GM36bOseFvQ" target="_blank">【Chelsea】 END OF YEAR 2025 TRAINING WITH ALL CHELSEA LEGE...</a> - Chelsea Online</li>
+<li><a href="https://www.youtube.com/watch?v=wQqUiSJdPSw" target="_blank">【Bournemouth】 We’re back! Sign up now, link in our insta bio💜...</a> - The Student Network UK</li>
+<li><a href="https://www.youtube.com/watch?v=9QBuOEOyOoQ" target="_blank">【Chelsea】 Garnacho in training Garnacho against oppositio...</a> - All Football  Lovers</li>
+<li><a href="https://www.youtube.com/watch?v=D4NcFZXcecI" target="_blank">【Bournemouth】 Back to Business, | INSIDE TRAINING, Big Gabi, ...</a> - ARSENAL FC NET</li>
+<li><a href="https://www.youtube.com/watch?v=XF4MBnJMe3o" target="_blank">【Chelsea】 What do our Chelsea players want for Christmas? 🎁</a> - Chelsea FC Women</li>
+<li><a href="https://www.youtube.com/watch?v=ONl8v8CrxKA" target="_blank">【Chelsea】 Chelsea Training Ahead of Aston Villa Clash: Ne...</a> - De CHELSEA BLUEPRINT</li>
+<li><a href="https://www.youtube.com/watch?v=chmJwSgd8VE" target="_blank">【Bournemouth】 Are you joining Bournemouth Uni and looking for...</a> - The Student Network UK</li>
+<li><a href="https://www.youtube.com/watch?v=BCw7FHCL6g4" target="_blank">【Chelsea】 COLE PALMER, ESTÊVÃO AND DELAP  LEAD CHELSEA’S ...</a> - Chelsea Radar</li>
+<li><a href="https://www.youtube.com/watch?v=zaBMKlB8ybY" target="_blank">【Bournemouth】 Calafiori, Gabriel, Timber and Kai havertz Read...</a> - ARSENAL FC NET</li>
+<li><a href="https://www.youtube.com/watch?v=xETzojDEm8I" target="_blank">【Chelsea】 Chelsea Training Ahead of Aston Villa Clash as ...</a> - De CHELSEA BLUEPRINT</li>
+<li><a href="https://www.youtube.com/watch?v=UOL_vfijUnc" target="_blank">【Bournemouth】 Potenza Training Part 2</a> - Potenza Sports Ltd</li>
+<li><a href="https://www.youtube.com/watch?v=bAHEWXJ2JmQ" target="_blank">【Chelsea】 JOÃO PEDRO DRIBBLE PASS GITTEN DURING TRAINING😂...</a> - MARVELLOUS CFC </li>
+<li><a href="https://www.youtube.com/watch?v=DzXIl1Kbo9A" target="_blank">【Bournemouth】 Turn Out 1on1 #train #elite</a> - Marcus Hodges</li>
+<li><a href="https://www.youtube.com/watch?v=j3J7MA-TiJk" target="_blank">【Chelsea】 Chelsea Christmas Training 🎄</a> - Widdyftbl</li>
+<li><a href="https://www.youtube.com/watch?v=ILiaaoEUMkA" target="_blank">【Bournemouth】 Are you joining Bournemouth Uni and looking for...</a> - The Student Network UK</li>
+<li><a href="https://www.youtube.com/watch?v=bhpHVbzvzLs" target="_blank">【Chelsea】 12 Chelsea training images ahead of Newcastle 👊💙</a> - Chelsea FC </li>
+<li><a href="https://www.youtube.com/watch?v=jGiGn4cbvCk" target="_blank">【Bournemouth】 INSIDE TRAINING | Havertz, Masquera &amp; Marti...</a> - Gunners TNC</li>
+<li><a href="https://www.youtube.com/watch?v=CD3W_gGB-Xs" target="_blank">【Chelsea】  🛑 Now ‼️Estêvão, Liam Delap Return to Training...</a> - Chelsea daily news 🚨</li>
+<li><a href="https://www.youtube.com/watch?v=K2JThzVqfwY" target="_blank">【Bournemouth】 ARSENAL TRAINING | Kai havertz, Gyokeres, Eze, ...</a> - Inside Arsenal NC</li>
+<li><a href="https://www.youtube.com/watch?v=G6Ysq5J3fE0" target="_blank">【Chelsea】 NO Cucu, NO Hato! Acheampong &amp; Estevao MUST...</a> - Blue Lions TV - A Chelsea Channel</li>
+<li><a href="https://www.youtube.com/watch?v=vbXryn8dLeg" target="_blank">【Chelsea】 MADRID AND BARCELONA BACK TO TRAINING BUT ISSUE...</a> - AllSportsGH</li>
+<li><a href="https://www.youtube.com/watch?v=Pd_J9F8HGoo" target="_blank">【Bournemouth】 Ballers drip 💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=QwukoMuDuxQ" target="_blank">【Chelsea】 Chelsea Training Intensifies Ahead Aston Villa ...</a> - chelsea news hub</li>
+<li><a href="https://www.youtube.com/watch?v=YLe0lKWqxCM" target="_blank">【Bournemouth】 #vecna</a> - HypEditz </li>
+<li><a href="https://www.youtube.com/watch?v=BigdQwviVmA" target="_blank">【Chelsea】 💙Chelsea Step Up Training Ahead of Aston Villa ...</a> - chelsea news hub</li>
+<li><a href="https://www.youtube.com/watch?v=GMiBRaEQQeE" target="_blank">【Bournemouth】 Back to Business, Big Gabi, Kai havertz, gyoker...</a> - Inside Arsenal NC</li>
+<li><a href="https://www.youtube.com/watch?v=8IEQXnsGR5Y" target="_blank">【Chelsea】 Semenyo to Get Maresca Sacked? Chelsea vs Bourn...</a> - GreenTurf</li>
+<li><a href="https://www.youtube.com/watch?v=mI6fJbOK9B8" target="_blank">【Bournemouth】 #vecna</a> - HypEditz </li>
+<li><a href="https://www.youtube.com/watch?v=xfYVXmRJajU" target="_blank">【Chelsea】 ESTÊVÃO IS BACK! 🎄CHELSEA’D FESTIVE TRAINING GE...</a> - Chelsea Fc wave</li>
+<li><a href="https://www.youtube.com/watch?v=9THN6ZYGqiM" target="_blank">【Bournemouth】 Crossbar… Crossbar… Top Corner 😮‍🔥⚽ #shorts #fo...</a> - MShehab Footy</li>
+<li><a href="https://www.youtube.com/watch?v=O4xEL6BEP6Q" target="_blank">【Bournemouth】 🔵✅ Chelsea Board Pushes 👏for Antoine Semenyo 💥J...</a> - Chelsea daily news 🚨</li>
+<li><a href="https://www.youtube.com/watch?v=he9SN1holS4" target="_blank">【Bournemouth】 Lost the match but won the hearts ❤️‍🩹</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=6YcIN586Bzw" target="_blank">【Bournemouth】 Duo celebrations pt. 2💀</a> - FootEdits</li>
+<li><a href="https://www.youtube.com/watch?v=IS7pgc_29GI" target="_blank">【Bournemouth】 INSIDE -TRAINING | Kai havertz, Gabriel, Saliba...</a> - Inside Arsenal NC</li>
+<li><a href="https://www.youtube.com/watch?v=CMF5JZBV5gw" target="_blank">【Bournemouth】 Chelsea DISCIPLINE PROBLEM? | Enzo Maresca DISA...</a> - HaytersTV</li>
+<li><a href="https://www.youtube.com/watch?v=NcvTj7OuJAU" target="_blank">【Bournemouth】 Immersive Workout | Full Body Interactive Warm-...</a> - Immersive Workout </li>
+<li><a href="https://www.youtube.com/watch?v=yKAUudlx9vs" target="_blank">【Bournemouth】 #vairalboy</a> - RoxEditz</li>
+<li><a href="https://www.youtube.com/watch?v=xzH34ozeyUg" target="_blank">【Bournemouth】 Marcos Senesi - Welcome to Barcelona? 2025 - Sk...</a> - WIK7</li>
+<li><a href="https://www.youtube.com/watch?v=SWSw3f_6nOU" target="_blank">【Bournemouth】 Inside training | Arsenal Vs Brighton pre match...</a> - ARSENAL FC NET</li>
+<li><a href="https://www.youtube.com/watch?v=wKB36EPm4nc" target="_blank">【Bournemouth】 720p footballers 💀</a> - Femyft</li>
+<li><a href="https://www.youtube.com/watch?v=LxCulLpOtfI" target="_blank">【Bournemouth】 1 vs 11 💀 #football #footballshorts</a> - SAF</li>
+<li><a href="https://www.youtube.com/watch?v=s_1upVrVe50" target="_blank">【Bournemouth】 #herobrine #viralboy</a> - 7mov_ftbl</li>
+<li><a href="https://www.youtube.com/watch?v=mCSPPHb36_Q" target="_blank">【Bournemouth】 KAI HAVERTZ BACK IN TRAINING | INSIDE -TRAINING...</a> - ARSENAL FC NET</li>
+<li><a href="https://www.youtube.com/watch?v=l9PLyMeHocM" target="_blank">【Bournemouth】 2025 Best Transfers.  #football #footballshorts</a> - MoonHd30x</li>
+<li><a href="https://www.youtube.com/watch?v=GBaNDZDqiyQ" target="_blank">【Bournemouth】 Why look elsewhere when we&#39;ve got Matheus C...</a> - AbsoluteAmorim</li>
+<li><a href="https://www.youtube.com/watch?v=LUuKt1ON2uY" target="_blank">【Bournemouth】 Cristiano Ronaldo se ha puesto a escuchar este ...</a> - ᴊ.ᴘʀɪᴍᴇ™</li>
+<li><a href="https://www.youtube.com/watch?v=5itJ94P7IG8" target="_blank">【Bournemouth】 When Yamal Gets Bored💀🔥 #football #footballshor...</a> - homeboyz sports</li>
+<li><a href="https://www.youtube.com/watch?v=cH877bkMrPM" target="_blank">【Bournemouth】 Real Madrid rockets prt2 🥶🔥</a> - Femyft</li>
+<li><a href="https://www.youtube.com/watch?v=f23jI9Eu0jM" target="_blank">【Bournemouth】 up police training/ up police constable bharti ...</a> - Soldiers Dream </li>
+<li><a href="https://www.youtube.com/watch?v=UPgebZn6tws" target="_blank">【Bournemouth】 Why Patience is Key in Football (Soccer)</a> - MANDI VLOGS</li>
+<li><a href="https://www.youtube.com/watch?v=RzeY0BjdEEg" target="_blank">【Bournemouth】 144p footballers 💀 #football #footballshorts #e...</a> - Notmtzsoux </li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (10件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=DZSYd3qz80o" target="_blank">【Chelsea】 Maresca Press Conference | Chelsea vs Aston Vil...</a> - Chelsea Football Club <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Knt0pExCkdI" target="_blank">【Chelsea】 Chelsea 1-2 Aston Villa | HIGHLIGHTS - Extended...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=OLdeL_1aSP0" target="_blank">【Chelsea】 Maresca Press Conference | Chelsea vs Bournemou...</a> - Chelsea Football Club <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">【Bournemouth】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2K47A4Vs4qA" target="_blank">【Bournemouth】 SHOOT-OUT WINNERS, THROUGH TO THE SEMIS | HIGHL...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=TAr5UqO2b3c" target="_blank">【Bournemouth】 ⏪️ Chelsea 3-0 Bournemouth | Highlights - REWIN...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Bournemouth】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=cIJbxv5sfbE" target="_blank">【Bournemouth】 Is Frimpong Better Than Trent? 🤔🔥⚽ #frimpong #t...</a> - DanFooty <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=5qH3tRtKmdE" target="_blank">【Bournemouth】 RNLI Training. Thanks for your Service!</a> - Shore Vision Live <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=OLdeL_1aSP0" target="_blank">【Bournemouth】 Maresca Press Conference | Chelsea vs Bournemou...</a> - Chelsea Football Club <span style="color:#f44336">[press_conference]</span></li>
+</ul>
+</details>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>Nottingham Forest vs Everton （EPL）… Low rank</li>
+<li>West Ham vs Brighton （EPL）… Low rank</li>
+<li>Manchester United vs Wolves （EPL）… Low rank</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: (キャッシュから取得のため情報なし)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 39回呼び出し (キャッシュ: 0件, 合計リクエスト: 39件)</li>
+</ul>
+        <div class="timestamp">
+            生成日時: 2025-12-31 07:22:41 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>

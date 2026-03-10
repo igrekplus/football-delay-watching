@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunderland vs Leeds - EPL (08:38:33)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1, h2, h3 {
+            color: #feca57;
+            margin: 25px 0 15px 0;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #ff6b6b; padding-bottom: 10px; }
+        h2 { font-size: 1.5rem; border-left: 4px solid #ff6b6b; padding-left: 15px; }
+        h3 { font-size: 1.2rem; color: #74b9ff; }
+        .team-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .lineup-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #74b9ff;
+            margin: 25px 0 15px 0;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: rgba(255,255,255,0.1); color: #feca57; }
+        a { color: #74b9ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .timestamp {
+            text-align: right;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            width: 170px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        .player-card-body {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .player-card-photo {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .player-card-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .player-card-photo-placeholder::before {
+            content: '👤';
+        }
+        .player-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .player-card-name {
+            font-weight: bold;
+            color: #feca57;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .player-card-position {
+            color: #74b9ff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .player-card-nationality {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+        .player-card-age {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        .injury-card {
+            border-color: rgba(255, 107, 107, 0.4);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        .injury-card .player-card-header {
+            color: #ff6b6b;
+        }
+        .injury-reason {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .match-info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .match-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.15);
+            min-width: 280px;
+            flex: 1;
+        }
+        .match-info-icon {
+            font-size: 1.8rem;
+        }
+        .match-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+        .match-info-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .match-info-value {
+            font-size: 1rem;
+            color: #feca57;
+            font-weight: bold;
+        }
+        .match-info-small {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+        .match-info-wide {
+            flex: 2;
+            min-width: 280px;
+        }
+        .match-info-subtext {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: normal;
+        }
+        .manager-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .manager-card {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex: 1;
+            min-width: 280px;
+        }
+        .manager-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .manager-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #666;
+        }
+        .manager-info {
+            flex: 1;
+        }
+        .manager-team {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .manager-name {
+            font-size: 1.1rem;
+            color: #feca57;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+        .manager-comment {
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Navigation -->
+    <nav class="hamburger-nav">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">☰</button>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">⚽ メニュー</div>
+        <ul class="nav-links">
+            <li><a href="/calendar.html" class="nav-link" data-page="calendar">📅 カレンダー</a></li>
+            <li><a href="/?view=reports" class="nav-link" data-page="reports">📋 レポート一覧</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/" class="back-link">← レポート一覧に戻る</a>
+        
+        <h1>Sunderland vs Leeds</h1>
+<p><strong>EPL</strong> / None</p>
+<h3>■ 基本情報</h3>
+<div class="match-info-grid">
+<div class="match-info-item match-info-small">
+<div class="match-info-icon">🏆</div>
+<div class="match-info-content">
+<div class="match-info-label">大会</div>
+<div class="match-info-value">EPL</div>
+</div>
+</div>
+<div class="match-info-item match-info-wide">
+<div class="match-info-icon">📅</div>
+<div class="match-info-content">
+<div class="match-info-label">日時</div>
+<div class="match-info-value">2025/12/28(日) 23:00 JST<br><span class="match-info-subtext">2025-12-28 14:00 Local</span></div>
+</div>
+</div>
+<div class="match-info-item">
+<div class="match-info-icon">🏟️</div>
+<div class="match-info-content">
+<div class="match-info-label">会場</div>
+<div class="match-info-value">Stadium of Light, Sunderland</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/746.png" alt="Sunderland" class="team-logo"> Sunderland（4-2-3-1）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Robin Roefs</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/194536.png" alt="Robin Roefs" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #22</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">22歳 (2003/01/17)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Trai Hume</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/119121.png" alt="Trai Hume" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #32</div>
+<div class="player-card-nationality">🇬🇧 Northern Ireland</div>
+<div class="player-card-age">23歳 (2002/03/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Nordi Mukiele</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1146.png" alt="Nordi Mukiele" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #20</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">28歳 (1997/11/01)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Omar Alderete</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/6168.png" alt="Omar Alderete" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #15</div>
+<div class="player-card-nationality">🇵🇾 Paraguay</div>
+<div class="player-card-age">29歳 (1996/12/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Dennis Cirkin</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162076.png" alt="Dennis Cirkin" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #3</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">23歳 (2002/04/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Granit Xhaka</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1464.png" alt="Granit Xhaka" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #34</div>
+<div class="player-card-nationality">🇨🇭 Switzerland</div>
+<div class="player-card-age">33歳 (1992/09/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lutsharel Geertruida</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/37143.png" alt="Lutsharel Geertruida" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #6</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">25歳 (2000/07/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Chris Rigg</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/339201.png" alt="Chris Rigg" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #11</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">18歳 (2007/06/18)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Enzo Le Fée</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/20638.png" alt="Enzo Le Fée" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #28</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">25歳 (2000/02/03)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Simon Adingra</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/301771.png" alt="Simon Adingra" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #24</div>
+<div class="player-card-nationality"> Côte d'Ivoire</div>
+<div class="player-card-age">23歳 (2002/01/01)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Brian Brobbey</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/38750.png" alt="Brian Brobbey" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">23歳 (2002/02/01)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Eliezer Mayenda</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/349799.png" alt="Eliezer Mayenda" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #12</div>
+<div class="player-card-nationality">🇪🇸 Spain</div>
+<div class="player-card-age">20歳 (2005/05/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Wilson Isidor</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/84087.png" alt="Wilson Isidor" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #18</div>
+<div class="player-card-nationality">🇫🇷 France</div>
+<div class="player-card-age">25歳 (2000/08/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Romaine Mundle</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/284414.png" alt="Romaine Mundle" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #14</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">22歳 (2003/04/24)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Anthony Patterson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19881.png" alt="Anthony Patterson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/05/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Leo Fuhr Hjelde</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/297187.png" alt="Leo Fuhr Hjelde" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #33</div>
+<div class="player-card-nationality">🇳🇴 Norway</div>
+<div class="player-card-age">22歳 (2003/08/26)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jenson Jones</span></div>
+<div class="player-card-body">
+<div class="player-card-photo player-card-photo-placeholder"></div>
+<div class="player-card-info">
+<div class="player-card-position">DF #51</div>
+<div class="player-card-nationality"></div>
+<div class="player-card-age"></div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Dan Neil</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19910.png" alt="Dan Neil" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #4</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">24歳 (2001/11/30)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Harrison Jones</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/330640.png" alt="Harrison Jones" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #50</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">20歳 (2005/02/13)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Timur Tutierov</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/400033.png" alt="Timur Tutierov" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #57</div>
+<div class="player-card-nationality">🇺🇦 Ukraine</div>
+<div class="player-card-age">20歳 (2005/06/11)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards">
+<div class="player-card injury-card">
+<div class="player-card-header"><span>A. Alese</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/141133.png" alt="A. Alese" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Sunderland</div>
+<div class="player-card-age injury-reason">⚠️ Shoulder Injury</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>H. Diarra</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/327631.png" alt="H. Diarra" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Sunderland</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>R. Mandava</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/22225.png" alt="R. Mandava" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Sunderland</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>A. Masuaku</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18816.png" alt="A. Masuaku" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Sunderland</div>
+<div class="player-card-age injury-reason">⚠️ International duty</div>
+</div>
+</div>
+</div>
+<div class="player-card injury-card">
+<div class="player-card-header"><span>L. O'Nien</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19911.png" alt="L. O'Nien" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">🏥 OUT</div>
+<div class="player-card-nationality">Sunderland</div>
+<div class="player-card-age injury-reason">⚠️ Red Card</div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="lineup-header"><img src="https://media.api-sports.io/football/teams/63.png" alt="Leeds" class="team-logo"> Leeds（3-5-2）</h3>
+<h4>Starting XI</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Lucas Perri</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/80296.png" alt="Lucas Perri" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #1</div>
+<div class="player-card-nationality">🇧🇷 Brazil</div>
+<div class="player-card-age">28歳 (1997/12/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Joe Rodon</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19321.png" alt="Joe Rodon" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #6</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</div>
+<div class="player-card-age">28歳 (1997/10/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jaka Bijol</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/833.png" alt="Jaka Bijol" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #15</div>
+<div class="player-card-nationality">🇸🇮 Slovenia</div>
+<div class="player-card-age">26歳 (1999/02/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Pascal Struijk</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/64003.png" alt="Pascal Struijk" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #5</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">26歳 (1999/08/11)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jayden Bogle</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19201.png" alt="Jayden Bogle" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #2</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">25歳 (2000/07/27)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Brenden Aaronson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/50739.png" alt="Brenden Aaronson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #11</div>
+<div class="player-card-nationality">🇺🇸 USA</div>
+<div class="player-card-age">25歳 (2000/10/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ethan Ampadu</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/2279.png" alt="Ethan Ampadu" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #4</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</div>
+<div class="player-card-age">25歳 (2000/09/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Anton Stach</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/177665.png" alt="Anton Stach" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #18</div>
+<div class="player-card-nationality">🇩🇪 Germany</div>
+<div class="player-card-age">27歳 (1998/11/15)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Gabriel Gudmundsson</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/47969.png" alt="Gabriel Gudmundsson" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #3</div>
+<div class="player-card-nationality">🇸🇪 Sweden</div>
+<div class="player-card-age">26歳 (1999/04/29)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Dominic Calvert-Lewin</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18766.png" alt="Dominic Calvert-Lewin" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #9</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">28歳 (1997/03/16)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Noah Okafor</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/48389.png" alt="Noah Okafor" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #19</div>
+<div class="player-card-nationality">🇨🇭 Switzerland</div>
+<div class="player-card-age">25歳 (2000/05/24)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Substitutes</h4>
+<div class="player-cards">
+<div class="player-card">
+<div class="player-card-header"><span>Ao Tanaka</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/32966.png" alt="Ao Tanaka" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #22</div>
+<div class="player-card-nationality">🇯🇵 Japan</div>
+<div class="player-card-age">27歳 (1998/09/10)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Lukas Nmecha</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19461.png" alt="Lukas Nmecha" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #14</div>
+<div class="player-card-nationality">🇩🇪 Germany</div>
+<div class="player-card-age">27歳 (1998/12/14)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Wilfried Gnonto</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/162128.png" alt="Wilfried Gnonto" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #29</div>
+<div class="player-card-nationality">🇮🇹 Italy</div>
+<div class="player-card-age">22歳 (2003/11/05)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Karl Darlow</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/18885.png" alt="Karl Darlow" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">GK #26</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">35歳 (1990/10/08)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>James Justin</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19760.png" alt="James Justin" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #24</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">27歳 (1998/02/23)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Sebastiaan Bornauw</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/1408.png" alt="Sebastiaan Bornauw" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">DF #23</div>
+<div class="player-card-nationality">🇧🇪 Belgium</div>
+<div class="player-card-age">26歳 (1999/03/22)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Ilia Gruev</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/129142.png" alt="Ilia Gruev" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">MF #44</div>
+<div class="player-card-nationality"> Bulgaria</div>
+<div class="player-card-age">25歳 (2000/05/06)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Jack Harrison</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/19128.png" alt="Jack Harrison" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #20</div>
+<div class="player-card-nationality">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+<div class="player-card-age">29歳 (1996/11/20)</div>
+</div>
+</div>
+</div>
+<div class="player-card">
+<div class="player-card-header"><span>Joël Piroe</span></div>
+<div class="player-card-body">
+<img src="https://media.api-sports.io/football/players/250.png" alt="Joël Piroe" class="player-card-photo">
+<div class="player-card-info">
+<div class="player-card-position">FW #10</div>
+<div class="player-card-nationality">🇳🇱 Netherlands</div>
+<div class="player-card-age">26歳 (1999/08/02)</div>
+</div>
+</div>
+</div>
+</div>
+<h4>Injuries / Suspended</h4>
+<div class="player-cards"><p>なし</p></div>
+<ul>
+<li>直近フォーム：Home DLWDD (➖❌✅➖➖) / Away WDDWD (✅➖➖✅➖)</li>
+<li>過去の対戦成績：過去5試合: Sunderland 1勝, 引分 3, Leeds 1勝</li>
+<li>主審：Tony Harrington, England</li>
+</ul>
+<h3>■ フォーメーション図</h3>
+<p><img alt="Sunderland" src="/reports/images/1379147_home.png" /><br />
+<img alt="Leeds" src="/reports/images/1379147_away.png" /></p>
+<h3>■ ニュース要約（600〜1,000字）</h3>
+<ul>
+<li>プレミアリーグ、サンダーランド対リーズ・ユナイテッドの一戦が、サンダーランドのホーム「スタジアム・オブ・ライト」で開催される。</li>
+</ul>
+<p>今季共にプレミアリーグへ昇格したチーム同士の対決となるこの試合は、両チームにとって2025年を締めくくる最終戦となる。しかし、シーズン前半戦の歩みは対照的だ。リーズが好調を維持し上位争いに絡む一方で、サンダーランドは厳しい戦いを強いられており、順位表の両極端で相まみえることとなった。</p>
+<p>ホームのサンダーランド（愛称：ブラックキャッツ）は、素晴らしい一年となった2025年を勝利で締めくくり、サポーターへ最高のクリスマスプレゼントを届けることを目指す。好調なライバルをホームで叩き、来年への弾みとしたいところだ。</p>
+<p>一方、アウェイに乗り込むリーズは、現在の好調ぶりを維持したい。ファルケ監督は会見で、一部の負傷選手がこの試合に間に合わないことを認めており、現有戦力でこの重要なアウェイゲームに臨む。</p>
+<p>昇格組同士のプライドがぶつかり合う一戦。対照的な状況にある両チームだが、それゆえに勝利への渇望はどちらも強い。シーズンの行方を占う上でも重要な意味を持つこの対決から目が離せない。</p>
+<details>
+<summary><strong>📚 Sources (10件)</strong></summary>
+<ul>
+<li><a href="https://www.leedsunited.com/en/news/preview-sunderland-vs-leeds-united-2025" target="_blank">Preview: Sunderland vs Leeds United - Leeds United</a> (www.leedsunited.com)</li>
+<li><a href="https://ca.sports.yahoo.com/news/sunderland-vs-leeds-united-match-060000213.html" target="_blank">Sunderland vs Leeds United – Match Preview and Team News ...</a> (ca.sports.yahoo.com)</li>
+<li><a href="https://rokerreport.sbnation.com/match-previews/119108/match-preview-sunderland-v-leeds-united-will-the-lads-deliver-a-late-christmas-gift" target="_blank">Match Preview: Sunderland v Leeds United — Will The Lads Deliver ...</a> (rokerreport.sbnation.com)</li>
+<li><a href="https://www.bbc.co.uk/sport/football/live/c87lvdggp8nt" target="_blank">Premier League LIVE: Sunderland vs Leeds United - radio & text ...</a> (www.bbc.co.uk)</li>
+<li><a href="https://www.facebook.com/61556509649909/posts/sunderland-vs-leeds-preview-black-cats-welcome-in-form-fellow-newcomersfull-matc/122269901972216988/" target="_blank">Sunderland vs Leeds Preview: Black Cats Welcome In-Form Fellow ...</a> (www.facebook.com)</li>
+<li><a href="https://www.premierleague.com/en/match/2562073/sunderland-vs-leeds-united" target="_blank">Sunderland v Leeds United | 2025/2026 | Premier League | Overview</a> (www.premierleague.com)</li>
+<li><a href="https://www.facebook.com/groups/286782986702593/posts/1143310741049809/" target="_blank">SUNDAY MATCHDAY! EPL action today Sunderland vs Leeds ...</a> (www.facebook.com)</li>
+<li><a href="https://www.threads.com/@rokerreport/post/DSzA1X3CAnd/haway-the-podcast-join-the-lads-as-they-preview-todays-game-between-sunderland" target="_blank">Join the Lads as they preview today's game between Sunderland ...</a> (www.threads.com)</li>
+<li><a href="https://www.foxsports.com/articles/soccer/sunderland-afc-vs-leeds-united-prediction-odds-picks-dec-28" target="_blank">Sunderland AFC vs. Leeds United Prediction, Odds, Picks - Dec 28 ...</a> (www.foxsports.com)</li>
+<li><a href="https://www.threads.com/@theleedsview/post/DS0WvawgAaH/the-match-view-sunderland-v-leeds-united-leeds-leedsunited-epl-ers" target="_blank">The Match View: Sunderland 1 v 1 Leeds United https://youtube.com ...</a> (www.threads.com)</li>
+</ul>
+</details>
+
+<h3>■ 戦術プレビュー</h3>
+<ul>
+<li>リーズ・ユナイテッドは、ダニエル・ファルケ監督の下、得意とする4-2-3-1のフォーメーションで臨む可能性が高い。ボールポゼッションを重視し、両翼のウインガーを起点とした攻撃的なサッカーが予想される。トップ下の選手が攻撃のタクトを振るい、中盤のダブルボランチがゲームのテンポをコントロールするだろう。ショーン・ロングスタッフの欠場は中盤の構成に影響を与える可能性があり、代役のパフォーマンスが鍵となる。</li>
+</ul>
+<p>対するホームのサンダーランドは、リーズの強力な攻撃陣を警戒し、コンパクトな4-4-2、あるいは中盤の数的優位を狙う4-2-3-1で対抗することが考えられる。守備時は強固なブロックを形成し、ボールを奪ってからの素早いカウンターが主な得点源となるだろう。</p>
+<p>試合の行方を左右する最大の注目点は、リーズのウインガーとサンダーランドのサイドバックのマッチアップだ。また、中盤での主導権争いも激化するだろう。サンダーランドの中盤は、リーズのリズムを崩し、攻撃の芽を摘むことができるかどうかが問われる。サンダーランドのフォワードが、いかにしてリーズのセンターバック陣を攻略し、カウンターの起点となれるかも重要なポイントとなる。</p>
+<h3>■ 監督プレビュー</h3>
+<div class="manager-section">
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/6279.png" alt="Regis Le Bris" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Sunderland</div>
+<div class="manager-name">Regis Le Bris</div>
+<div class="manager-comment">【Sunderland】
+リーズ・ユナイテッド戦を前に、サンダーランドのレジス・ル・ブリ監督が記者会見に臨みました。監督はこれまでのチームの歩みを振り返り、その成功について言及。「この一年は…」とチームが過ごしてきた充実した期間について語り、現状のパフォーマンスに満足している様子を見せました。この発言は、チームが自信を持って重要な一戦に臨む準備ができていることを示唆しています。監督はチームのこれまでの成果を強調し、強敵との対戦に向けた前向きな姿勢を明らかにしました。</div>
+</div>
+</div>
+<div class="manager-card">
+<img src="https://media.api-sports.io/football/coachs/2.png" alt="Daniel Farke" class="manager-photo">
+<div class="manager-info">
+<div class="manager-team">Leeds</div>
+<div class="manager-name">Daniel Farke</div>
+<div class="manager-comment">【Leeds】
+サンダーランド戦を前に、ダニエル・ファルケ監督が記者会見に臨み、クリスマスシーズンの過密日程についての見解を述べました。監督はプロフェッショナルな姿勢を保つことの重要性を強調し、「（この時期は）飲んだり食べたりすることが重要なのではない」とコメント。ピッチ上でのパフォーマンスに集中する必要性を訴えました。チームの戦術的な進化にも注目が集まる中、重要な一戦に向けて監督はチームの気を引き締めており、万全の準備で試合に挑む姿勢を示しました。</div>
+</div>
+</div>
+</div>
+
+<h3>■ 📹 試合前の見どころ動画</h3>
+<details open>
+<summary><strong>🎤 記者会見 (2件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JyVls8wRdjQ" target="_blank"><img src="https://i.ytimg.com/vi/JyVls8wRdjQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JyVls8wRdjQ" target="_blank">【Daniel Farke】 Sunderland vs Leeds United Interview ...</a></strong><br/>📺 <strong>⚠️ music music viral</strong> ・ 🕐 6時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2hCJBpmC7po" target="_blank"><img src="https://i.ytimg.com/vi/2hCJBpmC7po/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2hCJBpmC7po" target="_blank">【Daniel Farke】 Dominic Calvert-Lewin Interview Post ...</a></strong><br/>📺 <strong>⚠️ music music viral</strong> ・ 🕐 7時間前</td></tr>
+</tbody>
+</table>
+</details>
+
+<details open>
+<summary><strong>⚔️ 因縁 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank"><img src="https://i.ytimg.com/vi/_GgtxJkbG_U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">Patrick Dorgu Rocket! 🚀 | Man Utd v N...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank"><img src="https://i.ytimg.com/vi/JM1CBng2YGk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">HIGHLIGHTS! City end the year in styl...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=81SZYCUYosQ" target="_blank"><img src="https://i.ytimg.com/vi/81SZYCUYosQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=81SZYCUYosQ" target="_blank">Two Nil To The Reds! 💪 | Extended Hig...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=oCey0rY1Exo" target="_blank"><img src="https://i.ytimg.com/vi/oCey0rY1Exo/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=oCey0rY1Exo" target="_blank">The STRANGEST one-two you&#39;ll ever...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=M2OrbddLG3U" target="_blank"><img src="https://i.ytimg.com/vi/M2OrbddLG3U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=M2OrbddLG3U" target="_blank">Sesko Scores At Home! 🏠🇸🇮 | Man Utd 2...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=4oUy9ih5RTs" target="_blank"><img src="https://i.ytimg.com/vi/4oUy9ih5RTs/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=4oUy9ih5RTs" target="_blank">You can’t sit there mate 🤣</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 2024/10/19</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank"><img src="https://i.ytimg.com/vi/X6w_zL7QlwQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">ODEGAARD STUNNER &amp; OWN GOAL SECUR...</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 1日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Q_OZwhU-n4g" target="_blank"><img src="https://i.ytimg.com/vi/Q_OZwhU-n4g/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Q_OZwhU-n4g" target="_blank">Amad In His Element 🪄🔥</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 2024/11/12</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Kiica-g5KFc" target="_blank"><img src="https://i.ytimg.com/vi/Kiica-g5KFc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Kiica-g5KFc" target="_blank">The FASTEST Sprint In Arsenal v West ...</a></strong><br/>📺 <strong>✅ Premier League</strong> ・ 🕐 10ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=a06wODkHJJw" target="_blank"><img src="https://i.ytimg.com/vi/a06wODkHJJw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=a06wODkHJJw" target="_blank">The Strangest Goal Ever Scored At Old...</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 10ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (28件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=9hqg5KFAMkQ" target="_blank">❤️ &#39;THAT&#39;S MY SON!&#39; | Josh Nichols&...</a> - Arsenal</li>
+<li><a href="https://www.youtube.com/watch?v=80Rw4BLckIE" target="_blank">BLISTERING Arsenal counter 💨</a> - Premier League</li>
+<li><a href="https://www.youtube.com/watch?v=PJ_gURNe_ow" target="_blank">Highlights | Leeds United 2-1 Sunderland | LAST...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=EfzjhQVaOXc" target="_blank">Extended Highlights | Sunderland AFC 2 - 2 Leed...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=56YAagOpWvM" target="_blank">LATE DRAMA! | Leeds United v Sunderland extende...</a> - EFL</li>
+<li><a href="https://www.youtube.com/watch?v=EywgeZBoVh8" target="_blank">IS THIS THE CRAZIEST FINISH TO A GAME OF FOOTBA...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=SWKV0yGv1VE" target="_blank">Highlights | Sunderland 2-2 Leeds United  | EFL...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=pz6RabCytR8" target="_blank">Leeds United 2-2 AFC Bournemouth | Premier Leag...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=Dvd2Tu7dryg" target="_blank">Talbi Scores Stoppage-Time Winner | Chelsea FC ...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=z9ckZOP9uwM" target="_blank">Highlights: Leeds United 0-0 Sunderland | EFL C...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=txKJN1rck1I" target="_blank">Nordi Mukiele Scores First Goal | Sunderland AF...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=PVvcu6uxMhs" target="_blank">How Cole Palmer Became Pep&#39;s biggest Regret...</a> - FastplayHQ</li>
+<li><a href="https://www.youtube.com/watch?v=BLVLC_jA3KY" target="_blank">Defeat At Turf Moor | Burnley FC 2 - 0 Sunderla...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=FuXL4qi9TQo" target="_blank">Brobbey Completes Comeback | Sunderland AFC 3 -...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=YeVTF8AF4yk" target="_blank">Extended Highlights | Leeds United 2 - 1 Sunder...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=SHr4K5kLm2I" target="_blank">HUGE GAME TO END THE YEAR! | SUNDERLAND VS LEED...</a> - JamSarny</li>
+<li><a href="https://www.youtube.com/watch?v=hhpdSD0jEoA" target="_blank">Chelsea 1-2 Sunderland | HIGHLIGHTS | Premier L...</a> - Chelsea Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=Muc701p6r18" target="_blank">Jude Bellingham watches Sunderland! 🤝❤️ #efl #b...</a> - EFL</li>
+<li><a href="https://www.youtube.com/watch?v=tmi0lkCJF6I" target="_blank">Nmecha penalty sends Elland Road wild! | Leeds ...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=_rDATo9TL4g" target="_blank">Burnley 2-0 Leeds United | Premier League highl...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=nnuF6BIU5z4" target="_blank">Black Cats Put Three Past Hammers | Sunderland ...</a> - Sunderland AFC</li>
+<li><a href="https://www.youtube.com/watch?v=EyjPEAHugzA" target="_blank">Wayne Rooney dreams of managing Man Utd or Ever...</a> - BBC Sport</li>
+<li><a href="https://www.youtube.com/watch?v=ygcCgu-ZjIQ" target="_blank">Arsenal Paid £64m for THIS 🤯#gyokeres</a> - Fengy United</li>
+<li><a href="https://www.youtube.com/watch?v=R_cmd0TGI6Y" target="_blank">Wayne Rooney stayed quiet for a while here! 🤐  ...</a> - BBC Sport</li>
+<li><a href="https://www.youtube.com/watch?v=Ih7qzXyyC3g" target="_blank">Leeds United 2-1 West Ham United | Premier Leag...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=JE8JB2AfvUw" target="_blank">Sunderland vs Leeds United | Premier League 25/...</a> - Fifa Live</li>
+<li><a href="https://www.youtube.com/watch?v=fq9hvT76ORc" target="_blank">Highlights | Leeds United 7-0 Cardiff City | Se...</a> - Leeds United Official</li>
+<li><a href="https://www.youtube.com/watch?v=a7R64kSx2Dw" target="_blank">Thierry Henry on his return to #arsenal #podcas...</a> - JI Safat</li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>📊 戦術分析 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=tqrdtUbN-4U" target="_blank"><img src="https://i.ytimg.com/vi/tqrdtUbN-4U/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=tqrdtUbN-4U" target="_blank">【Leeds】 田中碧の途中出場→途中交代に疑問続出…昇格組の選手をなぜ使わない？【レオザ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=EmmQyKBCi7M" target="_blank"><img src="https://i.ytimg.com/vi/EmmQyKBCi7M/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=EmmQyKBCi7M" target="_blank">【Sunderland】 昇格組とは思えない！サンダーランドがアーセナルに通用した理由【レオザ切り抜...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=inIo-Lm3URw" target="_blank"><img src="https://i.ytimg.com/vi/inIo-Lm3URw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=inIo-Lm3URw" target="_blank">【Leeds】 リーズの中盤に田中碧が絶対に必要な理由を解説します。エバートン戦で勝利に貢...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0d6pluRBtP4" target="_blank"><img src="https://i.ytimg.com/vi/0d6pluRBtP4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0d6pluRBtP4" target="_blank">【Sunderland】 昇格組サンダーランドが4位の理由。快進撃の立役者元アーセナルのジャカが見せ...</a></strong><br/>📺 <strong>✅ レオザマニア【Leothefootball】公認切り抜き</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FNwpHVYYST0" target="_blank"><img src="https://i.ytimg.com/vi/FNwpHVYYST0/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FNwpHVYYST0" target="_blank">【Sunderland】 サンダーランド強い。 #サッカー #shorts #サンダーランド #プレ...</a></strong><br/>📺 <strong>⚠️ ナリチ【カガシン日本代表】</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=mmXhMpg1Y9c" target="_blank"><img src="https://i.ytimg.com/vi/mmXhMpg1Y9c/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=mmXhMpg1Y9c" target="_blank">【Sunderland】 【30秒戦術】サンダーランド3-0発進　“対応力”で主導！#30秒戦術 #...</a></strong><br/>📺 <strong>⚠️ タクサカ. ch</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=0nuzMnHUXPc" target="_blank"><img src="https://i.ytimg.com/vi/0nuzMnHUXPc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=0nuzMnHUXPc" target="_blank">【Leeds】 Daniel Farke’s Leeds Tactics That SUR...</a></strong><br/>📺 <strong>⚠️ Ryan Hurst</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Rp87VwyWoNw" target="_blank"><img src="https://i.ytimg.com/vi/Rp87VwyWoNw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Rp87VwyWoNw" target="_blank">【Sunderland】 サンダーランドの守備は素晴らしい。🧠👏 #footballtactics ...</a></strong><br/>📺 <strong>⚠️ Ryan Hurst</strong> ・ 🕐 2ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=TQAlvAzh0wI" target="_blank"><img src="https://i.ytimg.com/vi/TQAlvAzh0wI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=TQAlvAzh0wI" target="_blank">【Leeds】 LEEDS UNITED vs BRIGHTON! HOW LEEDS c...</a></strong><br/>📺 <strong>⚠️ Leeds Lately</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=__hKD_uYP28" target="_blank"><img src="https://i.ytimg.com/vi/__hKD_uYP28/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=__hKD_uYP28" target="_blank">【Sunderland】 【完全攻略】ペナルティーエリアはこう崩せ#サッカー解説 #戦術分析 #ポケ...</a></strong><br/>📺 <strong>⚠️ サッカー革命家チキン</strong> ・ 🕐 2ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (58件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=QUcF_xPYAsA" target="_blank">【Sunderland】 サンダーランド 1-0 ニューカッスル | ジェイミー・キャラガーが試合を分析！🔥</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=YxmbayguKOk" target="_blank">【Leeds】 LEEDS UNITED vs FOREST ! HOW LEEDS can DESTROY ...</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=LJJ63XLZxNU" target="_blank">【Sunderland】 グラニト・ジャカはサンダーランドにとってどれほど良い選手か💪 #footballtactics...</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=Njbm6wZ20gw" target="_blank">【Leeds】 🚨Leeds DO HAVE Quality For This Level — But Und...</a> - Imagine Not Being Leeds</li>
+<li><a href="https://www.youtube.com/watch?v=ABw7McuaiVY" target="_blank">【Sunderland】 レジス・ル・ブリのサンダーランドがあなたが思っている以上に本気である理由。</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=-WDmrNzM_eI" target="_blank">【Leeds】 Build from the Back 🔥 Bielsa’s Genius 3-3-1-3 S...</a> - Dario Grabusic | Football Coach</li>
+<li><a href="https://www.youtube.com/watch?v=aMa9Dvj5uq4" target="_blank">【Sunderland】 チェルシー 1-2 サンダーランド | 終盤のタルビの決勝点でブルーズが驚愕！試合後戦術分析</a> - Fisayo Adedipe TV</li>
+<li><a href="https://www.youtube.com/watch?v=2cmZ4T_uFEU" target="_blank">【Leeds】 BRENTFORD VS LEEDS UNITED! A MUST WIN GAME?! Ta...</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=ekktmoB3tyA" target="_blank">【Sunderland】 サンダーランドAFC対リーズ・ユナイテッド！リーズはサンダーランドの弱点か？！戦術プレビュー！</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=-OMlmFbKGa4" target="_blank">【Leeds】 ARSENAL vs LEEDS TACTICS! Full video below!</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=iXb-w49M1eQ" target="_blank">【Sunderland】 How Amorim’s Tactics Beat Sunderland | Full Tac...</a> - Semeex Football</li>
+<li><a href="https://www.youtube.com/watch?v=aXCwN_Eo6YE" target="_blank">【Leeds】 THIS is HOWE LEEDS UNITED can BEAT NEWCASTLE! T...</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=LFTID6Rxso8" target="_blank">【Sunderland】 【30秒戦術】マンチェスターU｜“2つの変化”で2-0快勝　#MUFC #マンチェスターU #...</a> - タクサカ. ch</li>
+<li><a href="https://www.youtube.com/watch?v=0fITbJVNpjI" target="_blank">【Leeds】 Leeds United Post-Transfer Window Squad Review ...</a> - LockyLeeds</li>
+<li><a href="https://www.youtube.com/watch?v=zzhPTp6rdNk" target="_blank">【Sunderland】 </a> - LNobbins</li>
+<li><a href="https://www.youtube.com/watch?v=2fmTW3AldIU" target="_blank">【Leeds】 LEEDS UNITED vs WEST HAM! Tactical PREVIEW!</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=2wYx7oGvmQI" target="_blank">【Sunderland】 サンダーランドの快進撃！マンチェスター・ユナイテッドに勝てるか？</a> - American Red Devils</li>
+<li><a href="https://www.youtube.com/watch?v=majBJyt_VDc" target="_blank">【Sunderland】 サンダーランドはプレミアリーグで快進撃中！🚀 9試合で17ポイント獲得し、2位につけている！</a> - Conor McGilligan</li>
+<li><a href="https://www.youtube.com/watch?v=Z1keHvGq5Gs" target="_blank">【Sunderland】 🚨 エンツォ・マレスカがサンダーランド戦前に衝撃の発言！😱 | チェルシー対サンダーランド プ...</a> - Chelsea Hotspot </li>
+<li><a href="https://www.youtube.com/watch?v=MsPVWxDNBAI" target="_blank">【Leeds】 LEEDS UNITED VS CRYSTAL PALACE! WEIRDLY WINNABL...</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=LjRNilJQ5Z4" target="_blank">【Sunderland】 098 3/4 マンチェスター・シティ vs サンダーランド | プレビュー、ラインナップ、予...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=dbKUls0Yagw" target="_blank">【Sunderland】 Chelsea Tactics-Talk (Sunderland &amp; Wolves a...</a> - Connor Holden Football</li>
+<li><a href="https://www.youtube.com/watch?v=1YlfqNJyvIE" target="_blank">【Leeds】 097 1 OF 5 Spurs vs Leeds United | Premier Leag...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=HuZiQK_Qpjg" target="_blank">【Sunderland】 プレミアリーグのダークホース？サンダーランドの快進撃 | スリーバック！</a> - Conor McGilligan</li>
+<li><a href="https://www.youtube.com/watch?v=ghfWRYVXs5Y" target="_blank">【Leeds】 How Daniel Farke SAVED His Job.</a> - Ryan Hurst</li>
+<li><a href="https://www.youtube.com/watch?v=74EtdxZkCbQ" target="_blank">【Sunderland】 サンダーランド 2-2 アーセナルの反応: レジス・ル・ブリ監督の下でこのチームはどこまで勝ち...</a> - Sunderland Echo - SAFC</li>
+<li><a href="https://www.youtube.com/watch?v=4_7iR9Dt5Ng" target="_blank">【Leeds】 Chelsea Crumble at Elland Road! Leeds Dominate ...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=xcxuyDO_FUE" target="_blank">【Sunderland】 🎤 サンダーランド vs ブレントフォード | プレミアリーグプレビュー＆注目試合</a> - Only Fools and SAFC</li>
+<li><a href="https://www.youtube.com/watch?v=tl2MPz_iDuI" target="_blank">【Leeds】 How LEEDS can beat BOURNEMOUTH! Tactical Preview!</a> - Leeds Lately</li>
+<li><a href="https://www.youtube.com/watch?v=QzwvhZ2koD0" target="_blank">【Sunderland】 163 フル マンチェスター シティ vs サンダーランド – フルマッチハイライト & ゴー...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=K7J7HzxgJVg" target="_blank">【Leeds】 Burnley 2-0 Leeds | Ups N’ Downs: Big Problems ...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=f3I8oOJOxaA" target="_blank">【Sunderland】 スティーブ・ニコル、ファン・ダイクを痛烈に批判！🚨 リヴァプール、サンダーランドに衝撃を受ける...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=vXODMWOxWF0" target="_blank">【Sunderland】 マンチェスター・シティ、優勝目前！サンダーランドに3-0で勝利｜ペップ・グアルディオラ監督イン...</a> - Sport Lab</li>
+<li><a href="https://www.youtube.com/watch?v=I-4dB-8s_ds" target="_blank">【Leeds】 JC Previews Fulham v Leeds United | In-Depth Op...</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=OkmB2MUeals" target="_blank">【Sunderland】 レッズが生き残る - マンチェスター・ユナイテッド 2-0 vs サンダーランド！</a> - American Red Devils</li>
+<li><a href="https://www.youtube.com/watch?v=hOQB6-6JAx4" target="_blank">【Sunderland】 103 フル 🔥マンチェスター・ユナイテッド 2-0 サンダーランド | エピック EPL シ...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=1dJ2NrUqfpU" target="_blank">【Sunderland】 サンダーランド vs ニューカッスル | タイン・ウィア・ダービー プレビュー🔥重要な戦いと激...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=nmwurK9Nqxw" target="_blank">【Sunderland】 ⚽ チェルシー vs サンダーランド | 試合プレビューと戦術分析</a> - Fanzvibes hq</li>
+<li><a href="https://www.youtube.com/watch?v=BENlymMHTSk" target="_blank">【Sunderland】 ティム・シャーウッド：ルーベン・アモリム監督のシステムはなぜサンダーランド戦でうまく機能したの...</a> - 1hrsport TV</li>
+<li><a href="https://www.youtube.com/watch?v=F0E9OoIRnJo" target="_blank">【Sunderland】 103 1 / 4 ⚡マンチェスター・ユナイテッド 2-0 サンダーランド | EPL 202...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=NFci0e99MGY" target="_blank">【Sunderland】 サンダーランド 2-0 ウルブズ 試合分析</a> - THE MACKEM CABBIE</li>
+<li><a href="https://www.youtube.com/watch?v=Qu2Ogq0rL2c" target="_blank">【Sunderland】 サンダーランド 1–0 ニューカッスル・ユナイテッド | ニューカッスル、ダービーで惨敗😱 恥...</a> - António Mango</li>
+<li><a href="https://www.youtube.com/watch?v=DaKPoeiWKwA" target="_blank">【Sunderland】 チェルシー 1-2 サンダーランド 試合レビュー | 良い点、悪い点、そして醜い点</a> - Kavkas View</li>
+<li><a href="https://www.youtube.com/watch?v=FY2C4Lc6RMk" target="_blank">【Sunderland】 Maresca Got It WRONG! 💀 Chelsea 1-2 Sunderland ...</a> - FINEBOYPAPI</li>
+<li><a href="https://www.youtube.com/watch?v=obZAfUjYYog" target="_blank">【Sunderland】 サンチェスは世界王者サンダーランドの2点目を止められたのか？ | チェルシーの何が問題なのか？...</a> - Tranzeet Sports TV</li>
+<li><a href="https://www.youtube.com/watch?v=FAc0P4Rhy7E" target="_blank">【Sunderland】 🎤 チェルシー対サンダーランドの試合プレビュー | 5 点から始めなければならない!</a> - Only Fools and SAFC</li>
+<li><a href="https://www.youtube.com/watch?v=4xpMN68JP0s" target="_blank">【Sunderland】 🔴 プレミアリーグ 2025-26 | リヴァプール vs サンダーランド</a> - timelord flight</li>
+<li><a href="https://www.youtube.com/watch?v=9NlSpRmuwsA" target="_blank">【Sunderland】 プレミアリーグ2025 第3節 混沌！ 私の大胆予想で衝撃の展開に！ #EPL #footba...</a> - Mystery Tales by Angel</li>
+<li><a href="https://www.youtube.com/watch?v=IxxzhBtTPb4" target="_blank">【Sunderland】 「チェルシー対サンダーランド：試合前分析 – チームフォームとプレースタイル、フルマッチの分析！」</a> - footballlamber</li>
+<li><a href="https://www.youtube.com/watch?v=7kRlBX9yfz0" target="_blank">【Sunderland】 今季のスパーズのベストメンバーは？#海外サッカー #プレミアリーグ #トッテナム</a> - R_Football</li>
+<li><a href="https://www.youtube.com/watch?v=MqCXrrtZSpk" target="_blank">【Sunderland】 PL ゲームウィーク レビュー: サンダーランドが快進撃、リーズがペース維持、ヴィラが調子を取...</a> - Conor McGilligan</li>
+<li><a href="https://www.youtube.com/watch?v=246a1KF0VpQ" target="_blank">【Sunderland】 【朗報】サンダーランドを支える守備、ジャカのインターセプト率がプレミアNO1www</a> - 2chサッカーニュース【みんなの反応】</li>
+<li><a href="https://www.youtube.com/watch?v=LPieYAfe0B8" target="_blank">【Sunderland】 レジス・ル・ブリのサンダーランド 4231 FM24 戦術 #fm24 #fm24tactic...</a> - FM DNA</li>
+<li><a href="https://www.youtube.com/watch?v=3c8v20EYjlE" target="_blank">【Sunderland】 「リバプール、またしても勝ち点を落とす！サンダーランド戦でファンが激怒｜試合速報」</a> - SOLO P1</li>
+<li><a href="https://www.youtube.com/watch?v=TjBy4pTZVso" target="_blank">【Sunderland】 098 2/4 マン・シティ vs サンダーランド | 🔥試合前分析と予想（2-1 スリラー）...</a> - Grip On Games</li>
+<li><a href="https://www.youtube.com/watch?v=DPw6LnXnLyg" target="_blank">【Sunderland】 [サッカー分析] プレミアリーグ バーンリー vs. サンダーランド | 誰が最初に得点するか...</a> - THE LAYMAN METRICS</li>
+<li><a href="https://www.youtube.com/watch?v=nWdS2p64sOw" target="_blank">【Sunderland】 「彼らは最低だ！」サンダーランドがアーセナルを驚かせるか？ウェストハムとフォレストにチャンス？...</a> - Conor McGilligan</li>
+<li><a href="https://www.youtube.com/watch?v=YxTuysuI-YY" target="_blank">【Sunderland】 FIFA、サンダーランドに対するチェルシーの衝撃的な敗北におけるVARの失策に反応 - チェル...</a> - Chelsea Champions Hub</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (6件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=sn9h0EOwtMg" target="_blank">【Sunderland】 2人で崩す&quot;背後の意識&quot; #サッカー #戦術分析 #解説 #liverpool</a> - サッカー軍曹 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=yN4mLDZhoRc" target="_blank">【Leeds】 Late Drama! Brentford 1-1 Leeds United – Full M...</a> - Sport Lab <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=sn9h0EOwtMg" target="_blank">【Leeds】 2人で崩す&quot;背後の意識&quot; #サッカー #戦術分析 #解説 #liverpool</a> - サッカー軍曹 <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=TWcLzWCoth8" target="_blank">【Leeds】 Leeds 3–3 Liverpool | Ao Tanaka’s Last-Minute V...</a> - Sport Lab <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=KCa-FygJix0" target="_blank">【Leeds】 SCORECARD: Liverpool held to draw by late Leeds...</a> - Citi Sports Ghana <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=tr1Wq7DBqLc" target="_blank">【Leeds】 Leeds Thrashed 5-0 by Arsenal | Reaction w/ Joe...</a> - Leeds, That! <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>⭐ 選手紹介 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=I1i5c8O5Buc" target="_blank"><img src="https://i.ytimg.com/vi/I1i5c8O5Buc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=I1i5c8O5Buc" target="_blank">【Dominic Calvert-Lewin】 【ショートハイライト｜リーズ v リヴァプール】プレミアリーグ25/26 ...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QS5FfNLd2BQ" target="_blank"><img src="https://i.ytimg.com/vi/QS5FfNLd2BQ/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QS5FfNLd2BQ" target="_blank">【Dominic Calvert-Lewin】 【ショートハイライト｜マンチェスター・C v リーズ】プレミアリーグ25/...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 4週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=7zO7X9xM5Ck" target="_blank"><img src="https://i.ytimg.com/vi/7zO7X9xM5Ck/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=7zO7X9xM5Ck" target="_blank">【Dominic Calvert-Lewin】 【ショートハイライト｜リーズ v チェルシー】プレミアリーグ25/26 第14節</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=hmlSUKshjp8" target="_blank"><img src="https://i.ytimg.com/vi/hmlSUKshjp8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=hmlSUKshjp8" target="_blank">【Dominic Calvert-Lewin】 【ショートハイライト｜リーズ v ニューカッスル】プレミアリーグ25/26...</a></strong><br/>📺 <strong>✅ U-NEXT フットボール</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=wT7W8uBPAfI" target="_blank"><img src="https://i.ytimg.com/vi/wT7W8uBPAfI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=wT7W8uBPAfI" target="_blank">【Brian Brobbey】 ブロビーの最後の同点ゴールとコービンのカーラーゴール | 今月のゴール |...</a></strong><br/>📺 <strong>⚠️ Sunderland AFC</strong> ・ 🕐 3週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=Rf6DvUi0WWg" target="_blank"><img src="https://i.ytimg.com/vi/Rf6DvUi0WWg/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=Rf6DvUi0WWg" target="_blank">【Simon Adingra】 サイモン・アディングラのゴール サンダーランド エバートン 2025年11...</a></strong><br/>📺 <strong>⚠️ SmartFootball</strong> ・ 🕐 1ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=BZJZIV3ZOPk" target="_blank"><img src="https://i.ytimg.com/vi/BZJZIV3ZOPk/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=BZJZIV3ZOPk" target="_blank">【Enzo Le Fée】 エンツォ・ル・フェのゴール | サンダーランド - ボーンマス (1-2)...</a></strong><br/>📺 <strong>⚠️ VIVAL SPORTS </strong> ・ 🕐 4週間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=JiCleUZeAp4" target="_blank"><img src="https://i.ytimg.com/vi/JiCleUZeAp4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=JiCleUZeAp4" target="_blank">【Noah Okafor】 Noah Okafor ● Welcome to Leeds United...</a></strong><br/>📺 <strong>⚠️ SVMM</strong> ・ 🕐 4ヶ月前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=QOkA6ca2-lc" target="_blank"><img src="https://i.ytimg.com/vi/QOkA6ca2-lc/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=QOkA6ca2-lc" target="_blank">【Dominic Calvert-Lewin】 ハリー・ケインがドミニク・カルバート・ルーウィンのせいでリーズが移籍を撤回...</a></strong><br/>📺 <strong>⚠️ LAD Sports One Plus</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=HY_jRdbtSF4" target="_blank"><img src="https://i.ytimg.com/vi/HY_jRdbtSF4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=HY_jRdbtSF4" target="_blank">【Gabriel Gudmundsson】 Gabriel Gudmundsson ● Welcome to Leed...</a></strong><br/>📺 <strong>⚠️ SVMM</strong> ・ 🕐 5ヶ月前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (79件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=udK6ijuQXw8" target="_blank">【Brian Brobbey】 ブライアン・ブロビーのラストミニッツマジック！サンダーランド 2-2 アーセナル – アーセナ...</a> - Spotlight تريند
+</li>
+<li><a href="https://www.youtube.com/watch?v=W5YnoZKSP5Y" target="_blank">【Simon Adingra】 プレミアリーグ開幕：シティが圧勝、スパーズが大敗、サンダーランドが大逆転！</a> - Fut-Afrique</li>
+<li><a href="https://www.youtube.com/watch?v=rUvhjS9UTsc" target="_blank">【Enzo Le Fée】 FC 26 サンダーランド vs ウルブズ – プレミアリーグ 2025 フルマッチ | PS...</a> - Santos El Creador</li>
+<li><a href="https://www.youtube.com/watch?v=7CI00RIMNG8" target="_blank">【Noah Okafor】 ノア・オカフォーはリーズ対アーセナル戦で先発出場するか？🔥 新加入選手の詳細！</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=JBZfg6c6k0s" target="_blank">【Gabriel Gudmundsson】 リーズのセットピースコーチ、新オーナー＆新監督のテスト。リーズのプレッシャーについて語るグドム...</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=-bzTM5I3jZs" target="_blank">【Brian Brobbey】 アヤックスからサンダーランドに加入したが、ここまで話題性ゼロ？　57分しかプレイしていないオラ...</a> - Shohei Ohtani</li>
+<li><a href="https://www.youtube.com/watch?v=otuoQ56awbM" target="_blank">【Simon Adingra】 FIFA 26 | サンダーランドAFC選手のFC 26での評価！😱🔥 ft. アディングラ、...</a> - Mati 19900</li>
+<li><a href="https://www.youtube.com/watch?v=Q09gvwc1fx0" target="_blank">【Enzo Le Fée】 FC 25 サンダーランド vs ウェストハム – プレミアリーグ 2025 フルマッチハイラ...</a> - Santos El Creador</li>
+<li><a href="https://www.youtube.com/watch?v=h40M-xMg2fU" target="_blank">【Noah Okafor】 ノア・オカフォーはリーズ・ユナイテッドの攻撃陣の解決策となるか？ | ウルブズ 1-3 リーズ戦分析</a> - LockyLeeds</li>
+<li><a href="https://www.youtube.com/watch?v=f3lCCNoSaM0" target="_blank">【Brian Brobbey】 サンダーランド、ボーンマス戦で5ゴールの劇的逆転劇!! | PLマッチデー体験Vlog</a> - The Matchday Experience</li>
+<li><a href="https://www.youtube.com/watch?v=XTPHjZ-iv2E" target="_blank">【Simon Adingra】 クリスタル・パレス vs サンダーランド | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=OTKiziPmL7s" target="_blank">【Enzo Le Fée】 サンダーランド vs ブレントフォード | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=lfy2FAImgMA" target="_blank">【Noah Okafor】 リーズ・ユナイテッド・ニュース：ノア・オカフォーのスイス問題は継続、マハディの明るい未来、ダド...</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=uvrBEujc5Sw" target="_blank">【Gabriel Gudmundsson】 リーズ・ユナイテッド対フラムの選手評価｜カール・ダーロウ、終盤のオウンゴールにもかかわらずスタ...</a> - Star & Sports Daily</li>
+<li><a href="https://www.youtube.com/watch?v=vhUN_oK_un4" target="_blank">【Brian Brobbey】 Iliman Ndiaye RUNNING The Show in 2025ᴴᴰ 🔥</a> - TADZINHO</li>
+<li><a href="https://www.youtube.com/watch?v=_8CMbZza2pY" target="_blank">【Enzo Le Fée】 サンダーランド vs ウェストハム・ユナイテッド | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=W2QdGxNQFc4" target="_blank">【Noah Okafor】 FC 26 | 25/26 Premier League | Simulation | Sun...</a> - JustForFootball</li>
+<li><a href="https://www.youtube.com/watch?v=50r80hOCIOo" target="_blank">【Dominic Calvert-Lewin】 学んだ5つのこと：リーズ 2-2 ボーンマス | ビジョルのコメント、カルバート＝ルーウィンの...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=kOuk1_ACRJo" target="_blank">【Gabriel Gudmundsson】 リーズ・ユナイテッドの移籍の不満：すぐに契約が必要！</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=cdwgUK4W13w" target="_blank">【Brian Brobbey】 信じられない光景！ | チェルシー 1-2 サンダーランド</a> - TC</li>
+<li><a href="https://www.youtube.com/watch?v=-erTEucfFWE" target="_blank">【Simon Adingra】 ⚽️ アトウェルのショッキングなプレーと戦術ミスが敗因！ | マンチェスター 2-0 サンダーランド</a> - Only Fools and SAFC</li>
+<li><a href="https://www.youtube.com/watch?v=x-RxIQOPySg" target="_blank">【Enzo Le Fée】 FC 25 サンダーランド vs ブレントフォード – プレミアリーグ 2025 フルマッチハ...</a> - Santos El Creador</li>
+<li><a href="https://www.youtube.com/watch?v=HO0VXXIsQOs" target="_blank">【Noah Okafor】 オカフォー批判は現代サッカーの問題点を浮き彫りにする | リーズ・ユナイテッドはもっと大きな問...</a> - Kagey 1v1</li>
+<li><a href="https://www.youtube.com/watch?v=M3THyoK1b7w" target="_blank">【Gabriel Gudmundsson】 リーズ・ユナイテッド移籍ニュース：アイルランド人アタッカーに注目、ウィルソンのフラム移籍、グル...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=vwSdWO7GWt8" target="_blank">【Brian Brobbey】 ⚽️ 見事な逆転劇 | サンダーランド 3-2 ボーンマス</a> - Only Fools and SAFC</li>
+<li><a href="https://www.youtube.com/watch?v=S9M04v4jQiw" target="_blank">【Simon Adingra】 サンダーランドにとって大きな試練が迫る｜ブライトン対サンダーランド戦プレビュー</a> - Black Cats TV </li>
+<li><a href="https://www.youtube.com/watch?v=YTyGsYzDsbM" target="_blank">【Enzo Le Fée】 FC 25 スポルティングCP vs サンダーランド – クラブフレンドリー2025 フルマッ...</a> - Santos El Creador</li>
+<li><a href="https://www.youtube.com/watch?v=KMHm8xHCLN0" target="_blank">【Noah Okafor】 リーズ対ウェストハム：ファルケが戦いに臨む、4人負傷者の最新情報、オカフォーとグノントが活躍！</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=tKD1wEQA0Mw" target="_blank">【Dominic Calvert-Lewin】 ドミニク・カルバート＝ルーウィンが活躍する理由👏</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=Vwqs6gPtLcI" target="_blank">【Gabriel Gudmundsson】 🛑 GAK TAYANG DI TV ❗❗ INDONESIA BANTAI TIM TIMU...</a> - RDS timnas garuda Team</li>
+<li><a href="https://www.youtube.com/watch?v=Lbin53jy7Hs" target="_blank">【Brian Brobbey】 💥 プレミアリーグのドラマ：チェルシーがウルブズを圧倒！アーセナルは引き分け！マンチェスター・...</a> - THE UGO AMADI FOOTBALL CHANNEL</li>
+<li><a href="https://www.youtube.com/watch?v=28ofMPPdfcs" target="_blank">【Simon Adingra】 ハーツ対サンダーランド 3-0 | クレイグ・ゴードンの証言試合分析と選手評価 newsdrift</a> - NewsDrift</li>
+<li><a href="https://www.youtube.com/watch?v=kd0HJm994iQ" target="_blank">【Noah Okafor】 リーズがウルブズに3-1で逆転勝利した劇的な試合を分析 ― 見逃した隠れた名場面の数々！</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=4dp9nD7OXyg" target="_blank">【Dominic Calvert-Lewin】 学んだ5つのこと：ドミニク・カルバート＝ルイスの輝き、カール・ダーロウ、そしてアウェイでの圧倒...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=z1EIBsMOmb8" target="_blank">【Gabriel Gudmundsson】 EPL第4週：アーセナルとリバプールが勝利、チェルシーは引き分け、シティがマンチェスター・ユナ...</a> - Avuncular's Production</li>
+<li><a href="https://www.youtube.com/watch?v=6LEvGtEtg_o" target="_blank">【Brian Brobbey】 サンダーランドがルツシャレル・ゲルトリューダと契約したことが想像以上に大きい理由</a> - Jacob Horsfall</li>
+<li><a href="https://www.youtube.com/watch?v=yC06v7_2Kqo" target="_blank">【Enzo Le Fée】 明らかなファウル…ペナルティではない ― 審判がコントロールを失った！ | アンドーニ・イラオ...</a> - THYNK REACTS </li>
+<li><a href="https://www.youtube.com/watch?v=j5Uzxvm21dY" target="_blank">【Noah Okafor】 リーズ、まもなくノア・オカフォーの契約成立！</a> - サッカー移籍の噂チャンネル</li>
+<li><a href="https://www.youtube.com/watch?v=QmCAYwxAtYY" target="_blank">【Brian Brobbey】 次期ワールドクラスの監督 + アトレティコ・マドリードの何が問題なのか？ | エピソード120</a> - The Transfer Flow</li>
+<li><a href="https://www.youtube.com/watch?v=_61_YnlSnPc" target="_blank">【Enzo Le Fée】 リヴァプール vs サンダーランド | プレミアリーグ - バルサ & ジャカ | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=dAkH9vQlVVs" target="_blank">【Noah Okafor】 「アーセナルにバスを停めるつもりはない！」🚌⚽ | ダニエル・ファーケ | アーセナル vs ...</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=iv3cOacf25M" target="_blank">【Dominic Calvert-Lewin】 Historic free transfer! Calvert-Lewin to Leeds…...</a> - Football fans channel</li>
+<li><a href="https://www.youtube.com/watch?v=Box8f1x7asg" target="_blank">【Enzo Le Fée】 バーンリー vs サンダーランド | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=gxakjUV7k3A" target="_blank">【Noah Okafor】 アンチェロッティがDCLを最大限に活用した方法と、リーズがそうでない理由</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=Cm9ARnia9bs" target="_blank">【Dominic Calvert-Lewin】 リーズ・ユナイテッドの負傷懸念！、ウィリー・グノントと田中碧の獲得が急務！、ドミニク・カルバー...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=F8s_4mezJmg" target="_blank">【Dominic Calvert-Lewin】 Sofascore PL Team of the Week: Haaland, Leeds S...</a> - SPORTSBIBLE</li>
+<li><a href="https://www.youtube.com/watch?v=3GlqqAAIGcs" target="_blank">【Enzo Le Fée】 2026年最新版PES 2017 PCのダウンロードとインストール方法 | アップデート転送、...</a> - roffy wong</li>
+<li><a href="https://www.youtube.com/watch?v=-LARQy9mWHg" target="_blank">【Noah Okafor】 リーズ・ユナイテッドの移籍状況は？移籍期間残り4日！🤔⚽️</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=t3ACqaHPFJ0" target="_blank">【Noah Okafor】 リーズの移籍市場レビュー｜1億ポンドを費やしたが…それでも足りない？｜5/10</a> - Football Insider</li>
+<li><a href="https://www.youtube.com/watch?v=tz3SN2RC00U" target="_blank">【Dominic Calvert-Lewin】 リーズ・ユナイテッドの全移籍ランキング：ベストからワーストまで！⚪️🔵</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=MHUEUL5TuPw" target="_blank">【Noah Okafor】 JUSTJOEがリーズのスパーズ戦での痛恨の敗北に反応！🏟️⚽️ #フットボール #試合レポート</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=NvM7QG-_fQY" target="_blank">【Noah Okafor】 セットプレー重視のコーチの主張は信じない！🎯 | ダニエル・ファーケ | リーズ対ボーンマス</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=MgFeEIt5Y5A" target="_blank">【Noah Okafor】 アーセナル vs リーズ・ユナイテッド | プレミアリーグ 25/26 | FC 25</a> - Total Football</li>
+<li><a href="https://www.youtube.com/watch?v=o3gH5qaSkHw" target="_blank">【Dominic Calvert-Lewin】 地に足をつけ、懸命に頑張るぞ！💪 | ダニエル・ファーケ | サンダーランド対リーズ・ユナイテッド</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=w5KWYvB4mGs" target="_blank">【Noah Okafor】 速報！ビカリオスの後任？！ワールドクラスのゴールキーパーが来場！誰も予想できなかった！</a> - TOTTENHAM NEWS TODAY</li>
+<li><a href="https://www.youtube.com/watch?v=51P3_r7r0eM" target="_blank">【Dominic Calvert-Lewin】 田中碧は3戦連発ならず…リーズがカルヴァート・ルーウィンの4戦連発弾でドローに持ち込む</a> - Explore Japan</li>
+<li><a href="https://www.youtube.com/watch?v=-5ob4auyr9M" target="_blank">【Noah Okafor】 【今日の海外サッカーニュース】衝撃速報！エゼ、まさかの移籍！？</a> - GaroopTV</li>
+<li><a href="https://www.youtube.com/watch?v=V4JuvqOn87o" target="_blank">【Dominic Calvert-Lewin】 エランド・ロードでまた魔法のような夜、最高でした！✨ | ダニエル・ファーケ | リーズ・ユナ...</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=zCnxoB6i4JI" target="_blank">【Noah Okafor】 締め切り日：リーズ・ユナイテッドのニュース</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=iFLZpmWDb5A" target="_blank">【Dominic Calvert-Lewin】 改善点？ - ファーケ監督はスパーズ戦で全力を尽くしたのか？ | リーズ・ユナイテッドのDCL...</a> - Kagey 1v1</li>
+<li><a href="https://www.youtube.com/watch?v=mISgDWyG7Ik" target="_blank">【Noah Okafor】 リーズ・ユナイテッドの移籍期限ドラマ：契約締結まで残り10時間！⚽️</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=xnrplM1GEWg" target="_blank">【Noah Okafor】 セットプレーの決定機：エミレーツの心を打ち砕くかもしれない瞬間😱</a> - World Fame Stories</li>
+<li><a href="https://www.youtube.com/watch?v=S8JNIEHawWU" target="_blank">【Dominic Calvert-Lewin】 ブライトンがリーズに先んじて勝利！、1 月の出場枠は完璧、ボルナウの 1 月の退団、予想される...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=LjCAYEe59_M" target="_blank">【Noah Okafor】 オプション ファイル アップデート 2025 年 8 月 22 日 - PES 2017 | ...</a> - roffy wong</li>
+<li><a href="https://www.youtube.com/watch?v=0ubem0ay6Ts" target="_blank">【Dominic Calvert-Lewin】 アメックスでの現実検証 | ブライトン 3-0 リーズ・ユナイテッドの反応</a> - Leeds, That!</li>
+<li><a href="https://www.youtube.com/watch?v=2H0cxGWBZ-I" target="_blank">【Dominic Calvert-Lewin】 今夜、エランド・ロードは最高に盛り上がる！💥 | ダニエル・ファーケ | リーズ・ユナイテッド...</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=3HYvp4ynlco" target="_blank">【Dominic Calvert-Lewin】 ドンナルンマがなぜ倒れたのかは誰もが知っている！😤 | ダニエル・ファーケ | マンチェスター...</a> - BeanymanSports2</li>
+<li><a href="https://www.youtube.com/watch?v=rlt40XQ-sW4" target="_blank">【Dominic Calvert-Lewin】 アーチー・グレイ加入！ポロ退団！DCLのビッグテスト、中盤論争、そしてスパーズ戦の予想スタメン...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=u1TSiFILzYE" target="_blank">【Dominic Calvert-Lewin】 リーズ・ユナイテッド、大躍進の週末：順位表の入れ替えと移籍の噂がヒートアップ！ | White...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=ozGhGSbl2xI" target="_blank">【Dominic Calvert-Lewin】 リーズ・ユナイテッドがアウェイ初勝利！ウルブズ戦1-3の反応 | The Hardline</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=Ly7czlsKQ9c" target="_blank">【Dominic Calvert-Lewin】 戦術深掘り：リーズ・ユナイテッドの攻撃の苦戦とその解決策</a> - LockyLeeds</li>
+<li><a href="https://www.youtube.com/watch?v=t7-yvzFsp6Y" target="_blank">【Dominic Calvert-Lewin】 ダン・ジェームスの大幅アップデート！田中選手が質問攻めに、スパーズのボスがリーズとの対戦前に激怒！</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=tn_zJ4lc73I" target="_blank">【Dominic Calvert-Lewin】 1 月のリーズ マンとのコンタクト、1 月のストライカーの 3 つの新しい動き、ハーザラーが「...</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=YN0YBXi0aWk" target="_blank">【Dominic Calvert-Lewin】 アルネ・スロット 試合後記者会見 | リーズ・ユナイテッド 3-3 リバプール | プレミアリーグ</a> - AnfieldArmyNews</li>
+<li><a href="https://www.youtube.com/watch?v=LJvVyH6f71s" target="_blank">【Dominic Calvert-Lewin】 リーズ・ユナイテッド、インターナショナルブレイク後の膨大な試合日程 ― 厳しい試練が待ち受ける</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=TJSO8XcWEPs" target="_blank">【Dominic Calvert-Lewin】 女子サッカーショーが帰ってきた！ | リーズ・ユナイテッド プレビュー：次のインターナショナル...</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=V9qaeb1wOH8" target="_blank">【Dominic Calvert-Lewin】 バーンリー 2-0 リーズ・ユナイテッド 試合の反応とハイライト分析 | リーズは苦境に⚠️😡</a> - One Leeds </li>
+<li><a href="https://www.youtube.com/watch?v=13lfRPXh1MY" target="_blank">【Dominic Calvert-Lewin】 ウルブズ vs リーズ・ユナイテッド：モリニューでの重要な一戦！⚽️ 試合プレビュー</a> - JUSTJOE FOOTBALL SHOW</li>
+<li><a href="https://www.youtube.com/watch?v=4k3EohMnrzs" target="_blank">【Dominic Calvert-Lewin】 テルとクドゥスのゴールでアウェーで3ポイントを獲得 | リーズ (1) 対 トッテナム (2)...</a> - Hollie's Hotspurs</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (4件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=cHh5LskqcnE" target="_blank">【Dominic Calvert-Lewin】 Highlights: Leeds United 3-3 Liverpool | Points...</a> - Liverpool FC <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=b2RwkmwIh2k" target="_blank">【Dominic Calvert-Lewin】 PREMIER LEAGUE HIGHLIGHTS | LEEDS SMASH CHELSEA...</a> - GLOBAL KICK HIGHLIGHTS <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=a_Y1FgnMdvE" target="_blank">【Dominic Calvert-Lewin】 Seriously Hot and Seriously Hard! 🔥</a> - Global Cycling Network <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=BKqhOMtP-pQ" target="_blank">【Dominic Calvert-Lewin】 The Match Reaction: Leeds United v Newcastle Un...</a> - The Leeds View <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<details open>
+<summary><strong>🏃 練習風景 (10件)</strong></summary>
+<table class="youtube-table">
+<thead><tr><th style="text-align:center">サムネイル</th><th style="text-align:left">動画情報</th></tr></thead>
+<tbody>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=G_O8Rc8rNkw" target="_blank"><img src="https://i.ytimg.com/vi/G_O8Rc8rNkw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=G_O8Rc8rNkw" target="_blank">【Sunderland】 It&#39;s not Christmas without Cherki...</a></strong><br/>📺 <strong>✅ Man City</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=z4VTi5I3n7Y" target="_blank"><img src="https://i.ytimg.com/vi/z4VTi5I3n7Y/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=z4VTi5I3n7Y" target="_blank">【Sunderland】 SUPER SALIBA SLIDE TACKLE!</a></strong><br/>📺 <strong>✅ Arsenal</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=KFTOc-ZloK8" target="_blank"><img src="https://i.ytimg.com/vi/KFTOc-ZloK8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=KFTOc-ZloK8" target="_blank">【Leeds】 TWO Senior Debuts For United 👏</a></strong><br/>📺 <strong>✅ Manchester United</strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=V_BXNcUVo38" target="_blank"><img src="https://i.ytimg.com/vi/V_BXNcUVo38/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=V_BXNcUVo38" target="_blank">【Sunderland】 SUNDERLAND AFC YOUTH ACADEMY TRAINING 🎥📸</a></strong><br/>📺 <strong>⚠️ Anth Stubbs</strong> ・ 🕐 4日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=FfFZ3vpSBIA" target="_blank"><img src="https://i.ytimg.com/vi/FfFZ3vpSBIA/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=FfFZ3vpSBIA" target="_blank">【Leeds】 Mock Driving Test | Leeds | Colton Mi...</a></strong><br/>📺 <strong>⚠️ MQW Driving School - ORDIT </strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=OgTYR0lUFXw" target="_blank"><img src="https://i.ytimg.com/vi/OgTYR0lUFXw/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=OgTYR0lUFXw" target="_blank">【Leeds】 Horsforth New Driving Test Route | Le...</a></strong><br/>📺 <strong>⚠️ MQW Driving School - ORDIT </strong> ・ 🕐 6日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=2DdEJF9Q2b8" target="_blank"><img src="https://i.ytimg.com/vi/2DdEJF9Q2b8/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=2DdEJF9Q2b8" target="_blank">【Leeds】 BEYOND THE WHISTLE: Bradford City v W...</a></strong><br/>📺 <strong>⚠️ Bradford City AFC</strong> ・ 🕐 3時間前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=DmicnDKqS1o" target="_blank"><img src="https://i.ytimg.com/vi/DmicnDKqS1o/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=DmicnDKqS1o" target="_blank">【Sunderland】 I was invited inside US Special Force...</a></strong><br/>📺 <strong>⚠️ Scripps News</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=fBCaC4LjXy4" target="_blank"><img src="https://i.ytimg.com/vi/fBCaC4LjXy4/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=fBCaC4LjXy4" target="_blank">【Leeds】 IRONMAN Leeds 🇬🇧 Scenic Run Course Th...</a></strong><br/>📺 <strong>⚠️ The-Endurance-Guy</strong> ・ 🕐 5日前</td></tr>
+<tr><td style="text-align:center"><a href="https://www.youtube.com/watch?v=RdVODpb3TJI" target="_blank"><img src="https://i.ytimg.com/vi/RdVODpb3TJI/mqdefault.jpg" alt="thumb" style="width:120px;height:auto;"></a></td><td style="text-align:left"><strong><a href="https://www.youtube.com/watch?v=RdVODpb3TJI" target="_blank">【Leeds】 Marcelo Bielsa x Jorge Sampaoli Train...</a></strong><br/>📺 <strong>⚠️ srcdns </strong> ・ 🕐 13時間前</td></tr>
+</tbody>
+</table>
+<details>
+<summary>📋 ソートで落ちた動画 (53件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=q_Yq7_2VCCU" target="_blank">【Sunderland】 Sunderland Childhood Evacuee to Army Conscript</a> - Sunderland Antiquarian Society</li>
+<li><a href="https://www.youtube.com/watch?v=rZBujarxvKQ" target="_blank">【Leeds】 Leeds Y Passing Drill | Back-Foot Receiving &am...</a> - TacticalLayer</li>
+<li><a href="https://www.youtube.com/watch?v=y_fBPoRAC1w" target="_blank">【Leeds】 Sanda kick at kiatphontip muay thai 🥊#trainersa...</a> - 伍簣立 Sam Ng kwai lap</li>
+<li><a href="https://www.youtube.com/watch?v=VeIEm8tf1EI" target="_blank">【Leeds】 The Details - Episode 9: How We Train Like Prof...</a> - Seth | Asher</li>
+<li><a href="https://www.youtube.com/watch?v=VfOhWAvfCZ0" target="_blank">【Leeds】 Bleed Purple Trailer 💜</a> - Kirilonfilm </li>
+<li><a href="https://www.youtube.com/watch?v=2yG0_IZTUyI" target="_blank">【Leeds】 Woodhouse Moor Park Run Full Course POV - With ...</a> - WhaleSports Runner</li>
+<li><a href="https://www.youtube.com/watch?v=TUkV3UASdNE" target="_blank">【Sunderland】 The Leeds View Podcast: Sunderland Away, Who co...</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=cz21PufbJU0" target="_blank">【Sunderland】 Curtis Fleming assesses Norwich City defeat 🗣️ ...</a> - Charlton Athletic Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=pmQenGVpjg4" target="_blank">【Sunderland】 Tyne and Wear Metro | 555035 on Driver Training...</a> - T&WM Fan</li>
+<li><a href="https://www.youtube.com/watch?v=8q4BxVyD08g" target="_blank">【Leeds】 SO leben WIR in Leeds! Eine Woche Premier Leagu...</a> - DIE DREI OKAFORS</li>
+<li><a href="https://www.youtube.com/watch?v=Asflg5qnjFg" target="_blank">【Leeds】 🎉 PURE JOY IN LEEDS! Doris PASSED Her Life in t...</a> - Fast Track Training</li>
+<li><a href="https://www.youtube.com/watch?v=p1hi2qLlfmo" target="_blank">【Sunderland】 6개월 동안 EPL 20개 구장을 걸어서 완주한 남자 [몰아보기·결말포함]</a> - 대빠리 Daebbari</li>
+<li><a href="https://www.youtube.com/watch?v=L9nX2t5v6zI" target="_blank">【Leeds】 Forsell confirms new coaching team for 2026</a> - Leeds Rhinos</li>
+<li><a href="https://www.youtube.com/watch?v=tKI35Z_-4wA" target="_blank">【Leeds】 Bought First Flat at 19 &amp; Built 20 Properti...</a> - Samuel Leeds Academy</li>
+<li><a href="https://www.youtube.com/watch?v=6KNNGzL6HhE" target="_blank">【Sunderland】 PODCAST #6 - Unique Performance Coaching | Gav ...</a> - BIG G little g Podcast</li>
+<li><a href="https://www.youtube.com/watch?v=2n6RS7SE0Kg" target="_blank">【Leeds】 @kcaloreats.leeds Mac N Cheese #mobility #stren...</a> - ErodynamicTraining</li>
+<li><a href="https://www.youtube.com/watch?v=s-QpxWrSPvU" target="_blank">【Sunderland】 Karoy Anderson reflects on Norwich City loss 💬 ...</a> - Charlton Athletic Football Club</li>
+<li><a href="https://www.youtube.com/watch?v=1QsBI44LP4s" target="_blank">【Leeds】 training raws; assistance dog in Leeds hospital...</a> - 🦮Lotus.at.my.assistnace🦮</li>
+<li><a href="https://www.youtube.com/watch?v=kRs9Fb8AkCY" target="_blank">【Sunderland】 Christmas Killer FPV Drone Clown 🎄🤡 | DJI Avata...</a> - frogpark67 media</li>
+<li><a href="https://www.youtube.com/watch?v=vOuuqHfVRYU" target="_blank">【Leeds】 Lean back defense for overhand at kiatphontip m...</a> - 伍簣立 Sam Ng kwai lap</li>
+<li><a href="https://www.youtube.com/watch?v=9dTnb0RCtl4" target="_blank">【Sunderland】 Elland Road and South Stand News | Crew Returns...</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=zgg4YsWr8m8" target="_blank">【Leeds】 What’s involved in getting an HGV licence? | Dr...</a> - DriverHireNationwide</li>
+<li><a href="https://www.youtube.com/watch?v=b4cA-d6K_no" target="_blank">【Sunderland】 Christmas Killer FPV Drone Clown 🎄🤡 | DJI Avata...</a> - frogpark67 media</li>
+<li><a href="https://www.youtube.com/watch?v=o029USmmKEg" target="_blank">【Leeds】 Want to become a UK-Registered Nurse? 🩺The OSCE...</a> - Mentor Merlin</li>
+<li><a href="https://www.youtube.com/watch?v=gnANs3TjMx0" target="_blank">【Sunderland】 Man City to weigh players before Forest game</a> - tl-news</li>
+<li><a href="https://www.youtube.com/watch?v=x6Q-jk7jY3o" target="_blank">【Leeds】 GUESSING THE INCOME OF A PROPERTY INVESTOR 🤑</a> - Samuel Leeds</li>
+<li><a href="https://www.youtube.com/watch?v=eIkEYC3ndhk" target="_blank">【Sunderland】 The Leeds View Podcast: Whites Christmas</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=icHfhuhj_6s" target="_blank">【Leeds】 Lean back defense for overhand at kiatphontip m...</a> - 伍簣立 Sam Ng kwai lap</li>
+<li><a href="https://www.youtube.com/watch?v=F7mWUm7TOX8" target="_blank">【Sunderland】 LIGA INGGRIS PRIMERA LEAGUE | 28 DESEMBER 2025 ...</a> - @IT_214</li>
+<li><a href="https://www.youtube.com/watch?v=imq5PEtd84g" target="_blank">【Leeds】 02_Optimise Your Inventory Levels with Count Bo...</a> - MaximoLive</li>
+<li><a href="https://www.youtube.com/watch?v=lwgmj6OTMDM" target="_blank">【Sunderland】 FIRST TIME WORKOUT IN WOOD GYM 🪵</a> - Abhishek Yadav</li>
+<li><a href="https://www.youtube.com/watch?v=OOzdRwoS2FY" target="_blank">【Leeds】 How I&#39;ve Actually Solved My Run Niggle.</a> - TriathlonDan</li>
+<li><a href="https://www.youtube.com/watch?v=wB4oGilz41w" target="_blank">【Sunderland】 Umbra Veil (Stillness Ending) | Staying on Theme</a> - Ian Doherty</li>
+<li><a href="https://www.youtube.com/watch?v=om3EX8sveLQ" target="_blank">【Leeds】 Bijol Leeds Exit Dismissed | Martin Baturina &a...</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=4VW65bTvrCY" target="_blank">【Leeds】 I&#39;m Not One Of Those Weirdos.</a> - TriathlonDan</li>
+<li><a href="https://www.youtube.com/watch?v=qMP8LHWx1CM" target="_blank">【Leeds】 10-Minute Glute Workout for Women Over 40 | Lif...</a> - Amy Ryan Fitness</li>
+<li><a href="https://www.youtube.com/watch?v=WLH2nyuBrSw" target="_blank">【Sunderland】 🚨 Confirmed ✅Six players who could leave Chelse...</a> - The Chelsea Enthusiast </li>
+<li><a href="https://www.youtube.com/watch?v=rnzO3029m30" target="_blank">【Leeds】 299: Managing Performance Nutrition Over Christ...</a> - Science for Sport</li>
+<li><a href="https://www.youtube.com/watch?v=aBDMnrnioqE" target="_blank">【Sunderland】 Unbelievable How Manchester United Pulled Off t...</a> - Counter 11 Zone</li>
+<li><a href="https://www.youtube.com/watch?v=yyI7YDz-j24" target="_blank">【Leeds】 How long does it take to learn to drive an HGV?...</a> - DriverHireNationwide</li>
+<li><a href="https://www.youtube.com/watch?v=37KSXqguDNU" target="_blank">【Sunderland】 Oral questions: Education - House of Commons - ...</a> - House of Commons Playback</li>
+<li><a href="https://www.youtube.com/watch?v=GAshDQat7N8" target="_blank">【Leeds】 **UK Police Training Needed—Auditor Held Withou...</a> -  COP FOOTAGE TV</li>
+<li><a href="https://www.youtube.com/watch?v=kwX-y867_Ss" target="_blank">【Sunderland】 Which one sounds the best??</a> - Ammarrocker </li>
+<li><a href="https://www.youtube.com/watch?v=shQjzJ94XII" target="_blank">【Leeds】 Bright passed his exa in 7 days for Life in the...</a> - Fast Track Training</li>
+<li><a href="https://www.youtube.com/watch?v=Yc4pBq1An1M" target="_blank">【Leeds】 Man City Interest In Leeds United Harry Gray | ...</a> - The Leeds View</li>
+<li><a href="https://www.youtube.com/watch?v=nP93AnXiTjI" target="_blank">【Leeds】 Pass your Life in the UK test in January</a> - Fast Track Training</li>
+<li><a href="https://www.youtube.com/watch?v=L6Ny5JDYuhA" target="_blank">【Leeds】 Referee Development (CPD)</a> - West Riding FA</li>
+<li><a href="https://www.youtube.com/watch?v=6P9Ela8nBtc" target="_blank">【Leeds】 3 Players Who Regret Their Transfers!</a> - Counter 11 Zone</li>
+<li><a href="https://www.youtube.com/watch?v=o2i0HAm3ORY" target="_blank">【Leeds】 Free ai tool to try out #enhanced #optimized #d...</a> - ValueStreamAI</li>
+<li><a href="https://www.youtube.com/watch?v=dcHdgHkHrfA" target="_blank">【Leeds】 New Women&#39;s assistant coach proud to be par...</a> - Leeds Rhinos</li>
+<li><a href="https://www.youtube.com/watch?v=asf_83m68qw" target="_blank">【Leeds】 What Key Areas Do Behavioral Questions Target?</a> - Midlife Reset Coach</li>
+<li><a href="https://www.youtube.com/watch?v=LNEVFB3q2q8" target="_blank">【Leeds】 NOT ALL PLANNING PERMISSION IS GOOD 👀</a> - Samuel Leeds</li>
+<li><a href="https://www.youtube.com/watch?v=lW0I97FToaA" target="_blank">【Leeds】 Apply to the Opening Doors to Achievement Offic...</a> - Leeds School of Business</li>
+</ul>
+</details>
+<details>
+<summary>🚫 除外された動画 (21件)</summary>
+<ul style="font-size:0.85em;margin:0;padding-left:1.5em;">
+<li><a href="https://www.youtube.com/watch?v=_GgtxJkbG_U" target="_blank">【Sunderland】 Patrick Dorgu Rocket! 🚀 | Man Utd v Newcastle |...</a> - Manchester United <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">【Sunderland】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=2K47A4Vs4qA" target="_blank">【Sunderland】 SHOOT-OUT WINNERS, THROUGH TO THE SEMIS | HIGHL...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=dssBylHOjP8" target="_blank">【Sunderland】 Arsenal vs Brighton 2-1 Live Stream Premier Lea...</a> - Sammy Sk Football <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=7YXgidDIi5M" target="_blank">【Sunderland】 SEMI-FINAL BOUND | EXTENDED HIGHLIGHTS | Arsena...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=1qXXjNQNAaQ" target="_blank">【Sunderland】 Ryan cherki, #Cherki#DribblingSkills#Playmaker#...</a> - Cruyff's football philosophy  <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XRDa4aGDdx8" target="_blank">【Sunderland】 Rayan Cherki vs Spain #shorts #football #cherki...</a> - KickOff Nepal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Sunderland】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=hayLeqAkX7I" target="_blank">【Sunderland】 Chelsea 1-2 Aston Villa | HIGHLIGHTS | Premier ...</a> - Chelsea Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=nKh1TL0yt2s" target="_blank">【Sunderland】 Red star SAMBO Sunderland in 2025 highlights</a> - Red star sambo Sunderland  <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=571yolVgYQw" target="_blank">【Sunderland】 EXTENDED HIGHLIGHTS | Man City 3 - 0 West Ham |...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=Ex1AieQ8jHQ" target="_blank">【Sunderland】 Highlights: Norwich City 1 Charlton 0 (December...</a> - Charlton Athletic Football Club <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=aNuLblM1La8" target="_blank">【Sunderland】 Reagan&#39;s Heartwarming Surprise from Alisson...</a> - Liverpool FC <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=o3gH5qaSkHw" target="_blank">【Sunderland】 WE ARE BACK DOWN TO EARTH AND WORK HARD! 💪 | Da...</a> - BeanymanSports2 <span style="color:#f44336">[press_conference]</span></li>
+<li><a href="https://www.youtube.com/watch?v=SsbxEPr-Al8" target="_blank">【Sunderland】 Match Reaction: Sunderland 1 V 1 Leeds United</a> - The Leeds View <span style="color:#f44336">[reaction]</span></li>
+<li><a href="https://www.youtube.com/watch?v=X6w_zL7QlwQ" target="_blank">【Leeds】 ODEGAARD STUNNER &amp; OWN GOAL SECURE ALL THRE...</a> - Arsenal <span style="color:#f44336">[match_highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=JM1CBng2YGk" target="_blank">【Leeds】 HIGHLIGHTS! City end the year in style with lat...</a> - Man City <span style="color:#f44336">[highlights]</span></li>
+<li><a href="https://www.youtube.com/watch?v=XqQzqC_Ru30" target="_blank">【Leeds】 Ren 🆚️🇧🇷🥋 BJJ Grappling Industries Triangle Sub...</a> - Ninjas R Go <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=ZkLRW-M3Otw" target="_blank">【Leeds】 Ren 🆚️🇧🇷🥋 A Sick Finish To Take Gold At Grappli...</a> - Ninjas R Go <span style="color:#f44336">[full_match]</span></li>
+<li><a href="https://www.youtube.com/watch?v=4BYcl2VT9No" target="_blank">【Leeds】 🚀 “Why go far for OSCE prep? Liverpool, Newcast...</a> - Mentor Merlin <span style="color:#f44336">[live_stream]</span></li>
+<li><a href="https://www.youtube.com/watch?v=SsbxEPr-Al8" target="_blank">【Leeds】 Match Reaction: Sunderland 1 V 1 Leeds United</a> - The Leeds View <span style="color:#f44336">[reaction]</span></li>
+</ul>
+</details>
+</details>
+
+<h3>■ エラーステータス</h3>
+<ul>
+<li>Normal</li>
+</ul>
+<hr />
+<h2>選外試合リスト</h2>
+<ul>
+<li>なし</li>
+</ul>
+<h2>API使用状況</h2>
+<ul>
+<li>API-Football: Remaining: 7376 / Limit: 7500 (requests/day)</li>
+<li>Google Custom Search API: Check Cloud Console (Quota: 100/day free)</li>
+<li>YouTube Data API: 26回呼び出し (キャッシュ: 0件, 合計リクエスト: 26件)</li>
+</ul>
+        <div class="timestamp">
+            生成日時: 2025-12-29 08:38:33 JST
+        </div>
+    </div>
+    <script src="../assets/nav_menu.js"></script>
+</body>
+</html>
