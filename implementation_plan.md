@@ -1,24 +1,28 @@
-# 2026-03-08 Google OAuth 公開化 実装計画
+# 2026-03-13 Issue #243 過去の対戦UI 実装計画
 
 ## Goal
-- Google OAuth では許可リストなしで誰でもログインできるようにする。
-- ID/PW ログインは既存どおり `allowed_emails.json` ベースで制限し、運用用途を維持する。
-- Firebase/Firebase Hosting 側の設定意図をドキュメントに残し、再デプロイで巻き戻らない状態にする。
+- 「過去の対戦成績」テーブルから home 視点の `結果` 列を削除し、見づらさを解消する。
+- 既存の集計要約 (`h2h_summary`) とスコア表示は維持し、情報量を減らしすぎない。
+- 変更意図を描画ドキュメントへ反映し、今後のUI実装で `結果` 列を復活させないようにする。
 
 ## Scope
-- `public/assets/auth_common.js` に provider ごとの認可判定を追加する。
-- `public/index.html` と `src/calendar_generator.py` のログイン後判定を新ルールへ置き換える。
-- `docs/03_components/login.md` と `docs/04_operations/deployment.md` を更新する。
-- Firebase MCP で現行プロジェクトと Web App 設定を確認し、Auth 設定反映の前提を整理する。
+- `templates/partials/h2h_table.html` の列定義を更新する。
+- 必要なら `public/assets/report_styles.css` のテーブル表示を微調整する。
+- `docs/03_components/report_rendering.md` に H2H テーブル表示方針を追記する。
+- `implementation_plan.md` `task.md` `walkthrough.md` を #243 向けに更新する。
+
+## Out of Scope
+- `src/services/facts_formatter.py` の H2H 集計ロジック変更。
+- `h2h_summary` の文言変更。
+- 過去の対戦セクション全体のレイアウト刷新やカード化。
 
 ## Design Decisions
-- Google の初回ログインは Firebase Authentication の標準挙動に任せ、クライアント側では遮断しない。
-- ID/PW は誤開放を避けるため、従来どおり許可リストを必須とする。
-- 認可判定は `user.getIdTokenResult()` の `sign_in_provider` を優先し、取得不能時のみ `providerData` にフォールバックする。
-- `calendar.html` は生成物のため、生成元の `src/calendar_generator.py` を修正して反映する。
+- データ構造の `result_key` は今回は残す。既存テストや将来の内部利用を壊さず、UIだけを最小変更で直すため。
+- 列削除はテンプレート層で完結させる。集計ロジックまで触ると影響範囲が広がり、Issue要件に対して過剰。
+- UI後退を防ぐため、テンプレートの単体テストで `結果` 見出しと `Win/Draw/Loss` 表示が含まれないことを確認する。
 
 ## Validation
-1. `python -m src.calendar_generator`
-2. `python -m py_compile src/calendar_generator.py`
-3. `git diff -- public/assets/auth_common.js public/index.html src/calendar_generator.py docs/03_components/login.md docs/04_operations/deployment.md implementation_plan.md task.md`
-4. Firebase CLI / MCP でプロジェクト・Web App・SDK config を再確認する
+1. `python -m unittest tests.test_h2h_table_template`
+2. `DEBUG_MODE=True USE_MOCK_DATA=True TARGET_DATE="2026-01-08" python main.py`
+3. 生成された `public/reports/*.html` を開いて、過去の対戦成績テーブルが `日付 / 大会 / 対戦 / スコア` の4列になっていることを確認する。
+4. 必要なら `./scripts/safe_deploy.sh` を実行し、公開URLで表示確認する。

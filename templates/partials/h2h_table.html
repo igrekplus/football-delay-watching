@@ -5,7 +5,6 @@
             <th>大会</th>
             <th>対戦</th>
             <th>スコア</th>
-            <th>結果</th>
         </tr>
     </thead>
     <tbody>
@@ -40,17 +39,6 @@
                 <span>{{ away_display | safe }}</span>
             </td>
             <td>{{ detail.score }}</td>
-            {% set result_class = {
-            "W": "result-win",
-            "D": "result-draw",
-            "L": "result-loss"
-            }.get(detail.result_key, "") %}
-            {% set result_display = {
-            "W": "Win 🟢",
-            "D": "Draw ⚪",
-            "L": "Loss 🔴"
-            }.get(detail.result_key, detail.result_key) %}
-            <td class="{{ result_class }}">{{ result_display }}</td>
         </tr>
         {% endfor %}
     </tbody>
