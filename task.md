@@ -1,15 +1,15 @@
-# 2026-03-08 Google OAuth 公開化 Tasks
+# 2026-03-13 Issue #243 Tasks
 
-- [x] 認証実装と Firebase 設定の現状を確認
-- [x] 変更方針を `implementation_plan.md` に記録
-- [x] provider 別の認可判定を共通化
-- [x] ログイン画面とカレンダー画面へ新ルールを反映
-- [x] 関連ドキュメントを更新
-- [x] Firebase MCP / CLI で設定前提を再確認
-- [x] 差分と静的検証結果を整理
+- [x] Issue本文と既存H2H UIの実装箇所を確認
+- [x] `implementation_plan.md` に #243 の方針を記録
+- [x] `report_rendering.md` に H2H 表示方針を追記
+- [x] H2H テーブルから `結果` 列を削除
+- [x] テンプレートの回帰テストを追加
+- [x] モックの debug-run でHTMLを生成して表示確認
+- [x] 検証結果と残課題を `walkthrough.md` に整理
 
 ## Notes
 
-- `firebase_init` で Authentication 設定を `firebase.json` に反映しました。
-- `firebase deploy --only auth` は現行 CLI で `No targets in firebase.json match '--only auth'` となり、リモート反映には使えませんでした。
-- Hosting 側の変更は `./scripts/safe_deploy.sh` で本番へ反映済みです。
+- ワークツリーには本件と無関係の未追跡 `public/player-profiles/*.html` があるため、今回のコミット対象から除外する。
+- `result_key` は UIから未使用になっても、今回はデータ層で温存する。
+- `DEBUG_MODE=True USE_MOCK_DATA=True TARGET_DATE="2026-01-08" python main.py` の実行ログ `logs/execution/2026-03-13_15-00-34.log` を再確認し、`public/reports/2026-01-10_ManchesterCity_vs_ExeterCity_20260313_150041.html` の生成完了まで到達していることを確認した。
