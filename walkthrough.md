@@ -26,7 +26,18 @@
 - `tests/test_h2h_table_template.py`
 - `implementation_plan.md`
 - `task.md`
+- `walkthrough.md`
 
 ## 残課題
 
-- デプロイは未実施。公開URLでの確認も未実施
+- `safe_deploy.sh` 実行により `public/calendar.html` が再生成されるため、ワークツリーには本件と無関係の差分が残る
+
+## 公開確認
+
+- Hosting URL: `https://football-delay-watching-a8830.web.app`
+- 確認対象レポート: `https://football-delay-watching-a8830.web.app/reports/2026-01-10_ManchesterCity_vs_ExeterCity_20260313_150041.html`
+- `curl -I https://football-delay-watching-a8830.web.app/`
+  - HTTP 200 を確認
+- 公開レポートHTMLを取得して H2H テーブル見出しを抽出
+  - `['日付', '大会', '対戦', 'スコア']`
+  - `結果` 列なし
