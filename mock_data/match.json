@@ -1,17 +1,17 @@
 [
     {
-        "id": "mock_man_city_exeter",
-        "home_team": "Manchester City",
-        "away_team": "Exeter City",
-        "competition": "FA Cup",
-        "competition_logo": "https://media.api-sports.io/football/leagues/45.png",
-        "kickoff_jst": "2026/01/11 00:00 JST",
-        "kickoff_local": "2026-01-10 15:00 Local",
-        "rank": "S",
-        "venue": "Etihad Stadium, Manchester",
+        "id": "mock_italy_north_macedonia",
+        "home_team": "Italy",
+        "away_team": "North Macedonia",
+        "competition": "WCQ",
+        "competition_logo": "https://media.api-sports.io/football/leagues/32.png",
+        "kickoff_jst": "2026/03/25 03:45 JST",
+        "kickoff_local": "2026-03-24 19:45 Local",
+        "rank": "A",
+        "venue": "Stadio Renzo Barbera, Palermo",
         "referee": "Unknown",
-        "home_logo": "https://media.api-sports.io/football/teams/50.png",
-        "away_logo": "https://media.api-sports.io/football/teams/1364.png",
-        "kickoff_at_utc": "2026-01-10T15:00:00Z"
+        "home_logo": "https://media.api-sports.io/football/teams/768.png",
+        "away_logo": "https://media.api-sports.io/football/teams/769.png",
+        "kickoff_at_utc": "2026-03-24T18:45:00Z"
     }
 ]

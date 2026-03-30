@@ -29,3 +29,8 @@ leagues:
     id: 48
     display_name: EFL Cup
     logo_url: https://media.api-sports.io/football/leagues/48.png
+
+  - name: WCQ
+    id: 32
+    display_name: World Cup Qualification Europe
+    logo_url: https://media.api-sports.io/football/leagues/32.png
