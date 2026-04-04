@@ -1,0 +1,1 @@
+../../.agent/skills/generate_player_profiles/SKILL.md
