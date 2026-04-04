@@ -70,6 +70,11 @@ if [ -n "${GCP_SERVICE_ACCOUNT_KEY:-}" ]; then
   chmod 600 /tmp/gcp-sa-key.json
   "$GCLOUD" auth activate-service-account --key-file=/tmp/gcp-sa-key.json --quiet 2>&1
   "$GCLOUD" config set project gen-lang-client-0394252790 --quiet 2>&1
+  # Set ADC for Google Cloud Python SDK (google-cloud-storage etc.)
+  export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-sa-key.json
+  if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+    echo "export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-sa-key.json" >> "$CLAUDE_ENV_FILE"
+  fi
   echo "[session-start] GCS authentication complete."
 
   # 5. Load application secrets from Secret Manager into session environment
