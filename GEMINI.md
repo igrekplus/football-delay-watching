@@ -1,4 +1,18 @@
-# GEMINI.md - AI開発者向けガイド
+# GEMINI.md - Gemini / Antigravity 向けガイド
+
+> [!IMPORTANT]
+> **このファイルはルーターです。[`CLAUDE.md`](CLAUDE.md) が新しいSSOTです。**
+>
+> 作業時は `CLAUDE.md` をメインガイドとして参照してください。
+> `CLAUDE.md` 内の `<!-- claude-only-start -->` 〜 `<!-- claude-only-end -->` セクション
+>（「9. Claude Code Remote 専用セクション」）は Gemini / Antigravity 環境では**適用外**です。スキップしてください。
+>
+> Antigravity はローカルIDE環境での開発を前提としています。
+> GCP認証は `gcloud auth application-default login`、Secretsは `.env` ファイルを使用してください。
+
+---
+
+<!-- 以下は移行期間中の参照用に残しています。CLAUDE.md の内容が正となります。 -->
 
 このドキュメントは、本プロジェクトでAIアシスタントと共同開発する際のガイドラインです。
 

@@ -2,14 +2,21 @@
 
 # 目的
 このファイルは「入口（ルーター）」です。詳細ルールをここに重複記載しません。
-codexでも、GeminiやAntigravity向けのガイドを参照できるようにするための資料です。
+Codexでも、プロジェクト共通のガイドを参照できるようにするための資料です。
 
 # 参照先（Single Source of Truth）
 作業時は以下を優先参照してください。
 
-1. 全体方針・開発ガイド: `GEMINI.md`
+1. 全体方針・開発ガイド: `CLAUDE.md`（新SSOT）
 2. 実行手順（How）: `.agent/workflows/`
 3. 専門知識・判断観点（Know/Think）: `.agent/skills/`
+
+> [!IMPORTANT]
+> `CLAUDE.md` 内の `<!-- claude-only-start -->` 〜 `<!-- claude-only-end -->` セクション
+>（「9. Claude Code Remote 専用セクション」）は **Codex（IDE）環境では適用外**です。スキップしてください。
+>
+> Codex はローカルIDE環境での開発を前提としています。
+> GCP認証は `gcloud auth application-default login`、Secretsは `.env` ファイルを使用してください。
 
 # 運用ルール（Codex）
 1. `AGENTS.md` には要点のみを書き、詳細は `GEMINI.md` と `.agent` 側に集約してください（DRY）。
