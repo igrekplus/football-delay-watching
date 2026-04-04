@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   generate-report:
@@ -42,15 +43,32 @@ jobs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        workload_identity_provider: projects/60906964662/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+        service_account: fb-non-result@gen-lang-client-0394252790.iam.gserviceaccount.com
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
 
+    - name: Load secrets from Secret Manager
+      run: |
+        PROJECT="gen-lang-client-0394252790"
+        echo "API_FOOTBALL_KEY=$(gcloud secrets versions access latest --secret=API_FOOTBALL_KEY --project=$PROJECT)" >> $GITHUB_ENV
+        echo "GOOGLE_API_KEY=$(gcloud secrets versions access latest --secret=GOOGLE_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
+        echo "YOUTUBE_API_KEY=$(gcloud secrets versions access latest --secret=YOUTUBE_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
+        echo "NOTIFY_EMAIL=$(gcloud secrets versions access latest --secret=NOTIFY_EMAIL --project=$PROJECT)" >> $GITHUB_ENV
+        # JSON secrets: write to temp files to avoid newline issues in GITHUB_ENV
+        gcloud secrets versions access latest --secret=GMAIL_TOKEN --project=$PROJECT > /tmp/gmail_token.json
+        echo "GMAIL_TOKEN=$(cat /tmp/gmail_token.json)" >> $GITHUB_ENV
+        gcloud secrets versions access latest --secret=GMAIL_CREDENTIALS --project=$PROJECT > /tmp/gmail_creds.json
+        echo "GMAIL_CREDENTIALS=$(cat /tmp/gmail_creds.json)" >> $GITHUB_ENV
+        gcloud secrets versions access latest --secret=FIREBASE_CONFIG --project=$PROJECT > /tmp/firebase_config.json
+        echo "FIREBASE_CONFIG=$(cat /tmp/firebase_config.json)" >> $GITHUB_ENV
+        gcloud secrets versions access latest --secret=ALLOWED_EMAILS --project=$PROJECT > /tmp/allowed_emails.json
+        echo "ALLOWED_EMAILS=$(cat /tmp/allowed_emails.json)" >> $GITHUB_ENV
+        rm -f /tmp/gmail_token.json /tmp/gmail_creds.json /tmp/firebase_config.json /tmp/allowed_emails.json
+
     - name: Run Report Generator
       env:
-        API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         USE_MOCK_DATA: ${{ inputs.use_mock_data || 'False' }}
         DEBUG_MODE: ${{ inputs.debug_mode || 'False' }}
         # GCS Cache Settings
@@ -61,11 +79,6 @@ jobs:
         CACHE_WARMING_ENABLED: "False"
         # Gmail API Settings
         GMAIL_ENABLED: "True"
-        NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
-        GMAIL_TOKEN: ${{ secrets.GMAIL_TOKEN }}
-        GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
-        # YouTube API Settings
-        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
       run: |
         python main.py
 
@@ -109,7 +122,6 @@ jobs:
     - name: Update Calendar HTML
       if: env.SKIP_DEPLOY != 'true'
       env:
-        API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         USE_API_CACHE: "True"
         CACHE_BACKEND: "gcs"
         GCS_CACHE_BUCKET: "football-delay-watching-cache"
@@ -123,9 +135,6 @@ jobs:
 
     - name: Validate Firebase deploy secrets
       if: env.SKIP_DEPLOY != 'true'
-      env:
-        FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
-        ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
       run: |
         set -euo pipefail
         if [ -z "${FIREBASE_CONFIG}" ]; then
@@ -144,11 +153,9 @@ jobs:
 
     - name: Deploy to Firebase Hosting
       if: env.SKIP_DEPLOY != 'true'
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       run: |
         npm install -g firebase-tools
-        firebase deploy --only hosting --token "$FIREBASE_TOKEN"
+        firebase deploy --only hosting
         echo "✅ Deployed to Firebase Hosting"
         echo "URL: https://football-delay-watching-a8830.web.app"
 

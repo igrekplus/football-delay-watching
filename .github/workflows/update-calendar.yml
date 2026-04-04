@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   update-calendar:
@@ -31,11 +32,21 @@ jobs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        workload_identity_provider: projects/60906964662/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+        service_account: fb-non-result@gen-lang-client-0394252790.iam.gserviceaccount.com
+
+    - name: Load secrets from Secret Manager
+      run: |
+        PROJECT="gen-lang-client-0394252790"
+        echo "API_FOOTBALL_KEY=$(gcloud secrets versions access latest --secret=API_FOOTBALL_KEY --project=$PROJECT)" >> $GITHUB_ENV
+        gcloud secrets versions access latest --secret=FIREBASE_CONFIG --project=$PROJECT > /tmp/firebase_config.json
+        echo "FIREBASE_CONFIG=$(cat /tmp/firebase_config.json)" >> $GITHUB_ENV
+        gcloud secrets versions access latest --secret=ALLOWED_EMAILS --project=$PROJECT > /tmp/allowed_emails.json
+        echo "ALLOWED_EMAILS=$(cat /tmp/allowed_emails.json)" >> $GITHUB_ENV
+        rm -f /tmp/firebase_config.json /tmp/allowed_emails.json
 
     - name: Generate Calendar
       env:
-        API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         # GCS Cache Settings (Reuse existing cache to save quota)
         USE_API_CACHE: "True"
         CACHE_BACKEND: "gcs"
@@ -50,9 +61,6 @@ jobs:
         echo "=== Sync Complete ==="
 
     - name: Validate Firebase deploy secrets
-      env:
-        FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
-        ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
       run: |
         set -euo pipefail
         if [ -z "${FIREBASE_CONFIG}" ]; then
@@ -70,11 +78,9 @@ jobs:
         echo "✅ Firebase deploy secrets are valid JSON"
 
     - name: Deploy to Firebase Hosting
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       run: |
         npm install -g firebase-tools
-        firebase deploy --only hosting --token "$FIREBASE_TOKEN"
+        firebase deploy --only hosting
         echo "✅ Deployed to Firebase Hosting"
 
     - name: Smoke test required endpoints
