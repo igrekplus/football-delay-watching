@@ -2,6 +2,9 @@
 .env
 .env.local
 
+# Claude Code project settings (contains secrets for remote execution)
+.claude/settings.json
+
 # Python
 __pycache__/
 *.pyc
