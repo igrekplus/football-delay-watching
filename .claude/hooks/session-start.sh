@@ -71,11 +71,31 @@ if [ -n "${GCP_SERVICE_ACCOUNT_KEY:-}" ]; then
   "$GCLOUD" auth activate-service-account --key-file=/tmp/gcp-sa-key.json --quiet 2>&1
   "$GCLOUD" config set project gen-lang-client-0394252790 --quiet 2>&1
   echo "[session-start] GCS authentication complete."
+
+  # 5. Load application secrets from Secret Manager into session environment
+  echo "[session-start] Loading secrets from Secret Manager..."
+  PROJECT="gen-lang-client-0394252790"
+  SECRETS="API_FOOTBALL_KEY GOOGLE_API_KEY GOOGLE_SEARCH_ENGINE_ID GOOGLE_SEARCH_API_KEY YOUTUBE_API_KEY NOTIFY_EMAIL GMAIL_TOKEN GMAIL_CREDENTIALS FIREBASE_CONFIG ALLOWED_EMAILS"
+  LOADED=0
+  FAILED=0
+  for SECRET_NAME in $SECRETS; do
+    VALUE=$("$GCLOUD" secrets versions access latest --secret="$SECRET_NAME" --project="$PROJECT" 2>/dev/null) || {
+      echo "[session-start] WARNING: Failed to load secret: $SECRET_NAME"
+      FAILED=$((FAILED + 1))
+      continue
+    }
+    if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+      printf 'export %s=%q\n' "$SECRET_NAME" "$VALUE" >> "$CLAUDE_ENV_FILE"
+    fi
+    export "$SECRET_NAME=$VALUE"
+    LOADED=$((LOADED + 1))
+  done
+  echo "[session-start] Secrets loaded: ${LOADED} ok, ${FAILED} failed."
 else
   echo "[session-start] GCP_SERVICE_ACCOUNT_KEY not set. GCS access unavailable."
 fi
 
-# 5. Export PATH
+# 6. Export PATH
 if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   echo "export PATH=${GCLOUD_DIR}/bin:\$PATH" >> "$CLAUDE_ENV_FILE"
 fi
