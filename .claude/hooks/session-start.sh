@@ -80,7 +80,7 @@ if [ -n "${GCP_SERVICE_ACCOUNT_KEY:-}" ]; then
   # 5. Load application secrets from Secret Manager into session environment
   echo "[session-start] Loading secrets from Secret Manager..."
   PROJECT="gen-lang-client-0394252790"
-  SECRETS="API_FOOTBALL_KEY GOOGLE_API_KEY GOOGLE_SEARCH_ENGINE_ID GOOGLE_SEARCH_API_KEY YOUTUBE_API_KEY NOTIFY_EMAIL GMAIL_TOKEN GMAIL_CREDENTIALS FIREBASE_CONFIG ALLOWED_EMAILS"
+  SECRETS="API_FOOTBALL_KEY GOOGLE_API_KEY GOOGLE_SEARCH_ENGINE_ID GOOGLE_SEARCH_API_KEY YOUTUBE_API_KEY NOTIFY_EMAIL GMAIL_TOKEN GMAIL_CREDENTIALS FIREBASE_CONFIG ALLOWED_EMAILS GITHUB_TOKEN"
   LOADED=0
   FAILED=0
   for SECRET_NAME in $SECRETS; do
@@ -96,11 +96,47 @@ if [ -n "${GCP_SERVICE_ACCOUNT_KEY:-}" ]; then
     LOADED=$((LOADED + 1))
   done
   echo "[session-start] Secrets loaded: ${LOADED} ok, ${FAILED} failed."
+
+  # 6. Authenticate gh CLI using GITHUB_TOKEN from Secret Manager
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    if ! command -v gh &>/dev/null; then
+      echo "[session-start] Installing gh CLI..."
+      apt-get install -y gh -qq 2>/dev/null || true
+    fi
+    echo "${GITHUB_TOKEN}" | gh auth login --with-token 2>/dev/null || true
+    gh auth status 2>/dev/null | grep -q "Logged in" \
+      && echo "[session-start] gh CLI authenticated." \
+      || echo "[session-start] WARNING: gh auth status check failed."
+  fi
+
+  # 7. Set up Python venv (skip if requirements.txt unchanged)
+  PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+  VENV_DIR="${PROJECT_DIR}/.venv"
+  REQUIREMENTS="${PROJECT_DIR}/requirements.txt"
+  HASH_FILE="${VENV_DIR}/.requirements_hash"
+  if [ -f "$REQUIREMENTS" ]; then
+    CURRENT_HASH=$(md5sum "$REQUIREMENTS" | cut -d' ' -f1)
+    CACHED_HASH=$(cat "$HASH_FILE" 2>/dev/null || echo "")
+    if [ ! -d "$VENV_DIR" ] || [ "$CURRENT_HASH" != "$CACHED_HASH" ]; then
+      echo "[session-start] Setting up Python venv..."
+      python3.11 -m venv "$VENV_DIR"
+      "$VENV_DIR/bin/pip" install -r "$REQUIREMENTS" -q
+      echo "$CURRENT_HASH" > "$HASH_FILE"
+      echo "[session-start] Python venv ready."
+    else
+      echo "[session-start] Python venv up-to-date (skipping install)."
+    fi
+    # Export venv python to CLAUDE_ENV_FILE so Claude uses it by default
+    if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+      echo "export PATH=${VENV_DIR}/bin:\$PATH" >> "$CLAUDE_ENV_FILE"
+    fi
+    export PATH="${VENV_DIR}/bin:$PATH"
+  fi
 else
   echo "[session-start] GCP_SERVICE_ACCOUNT_KEY not set. GCS access unavailable."
 fi
 
-# 6. Export PATH
+# 8. Export gcloud PATH
 if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   echo "export PATH=${GCLOUD_DIR}/bin:\$PATH" >> "$CLAUDE_ENV_FILE"
 fi
