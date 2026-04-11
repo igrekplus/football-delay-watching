@@ -190,7 +190,7 @@ jobs:
         EOF
       env:
         SITE_ID: football-delay-watching-a8830
-        KEEP: "5"
+        KEEP: "10"
 
     - name: Deploy to Firebase Hosting
       if: env.SKIP_DEPLOY != 'true'
