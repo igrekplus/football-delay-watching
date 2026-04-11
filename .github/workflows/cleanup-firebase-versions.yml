@@ -1,0 +1,77 @@
+name: Cleanup Firebase Hosting Versions
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions_to_keep:
+        description: 'Number of versions to keep'
+        required: false
+        default: '10'
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: projects/60906964662/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+        service_account: fb-non-result@gen-lang-client-0394252790.iam.gserviceaccount.com
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Delete old Firebase Hosting versions
+      run: |
+        python3 << 'EOF'
+        import os, json, urllib.request, subprocess
+
+        site_id = "football-delay-watching-a8830"
+        keep = int(os.environ.get("VERSIONS_TO_KEEP", "10"))
+
+        token = subprocess.run(
+            ["gcloud", "auth", "print-access-token"],
+            capture_output=True, text=True
+        ).stdout.strip()
+
+        url = f"https://firebasehosting.googleapis.com/v1beta1/sites/{site_id}/versions?pageSize=200"
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+        try:
+            resp = urllib.request.urlopen(req)
+            data = json.loads(resp.read())
+            versions = [v for v in data.get("versions", []) if v.get("status") == "FINALIZED"]
+            versions.sort(key=lambda v: v.get("createTime", ""), reverse=True)
+            print(f"Found {len(versions)} finalized versions, keeping {keep}")
+
+            to_delete = versions[keep:]
+            print(f"Deleting {len(to_delete)} old versions...")
+            deleted = 0
+            failed = 0
+            for v in to_delete:
+                name = v["name"]
+                del_req = urllib.request.Request(
+                    f"https://firebasehosting.googleapis.com/v1beta1/{name}",
+                    method="DELETE",
+                    headers={"Authorization": f"Bearer {token}"}
+                )
+                try:
+                    urllib.request.urlopen(del_req)
+                    print(f"  ✅ Deleted: {name.split('/')[-1]} (created: {v.get('createTime','')[:19]})")
+                    deleted += 1
+                except Exception as e:
+                    print(f"  ❌ Failed: {name.split('/')[-1]}: {e}")
+                    failed += 1
+
+            print(f"\nDone: {deleted} deleted, {failed} failed")
+        except Exception as e:
+            print(f"Error: {e}")
+            raise
+        EOF
+      env:
+        VERSIONS_TO_KEEP: ${{ inputs.versions_to_keep }}
