@@ -1,0 +1,82 @@
+name: Restore Specific Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      gcs_path:
+        description: 'GCS path of the report to restore (e.g. gs://football-delay-watching-backup/reports/SNAPSHOT/filename.html)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: projects/60906964662/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+        service_account: fb-non-result@gen-lang-client-0394252790.iam.gserviceaccount.com
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Load secrets from Secret Manager
+      run: |
+        PROJECT="gen-lang-client-0394252790"
+        gcloud secrets versions access latest --secret=FIREBASE_CONFIG --project=$PROJECT > /tmp/firebase_config.json
+        echo "FIREBASE_CONFIG=$(cat /tmp/firebase_config.json)" >> $GITHUB_ENV
+        gcloud secrets versions access latest --secret=ALLOWED_EMAILS --project=$PROJECT > /tmp/allowed_emails.json
+        echo "ALLOWED_EMAILS=$(cat /tmp/allowed_emails.json)" >> $GITHUB_ENV
+        rm -f /tmp/firebase_config.json /tmp/allowed_emails.json
+
+    - name: Sync existing reports from Firebase
+      run: |
+        python scripts/sync_firebase_reports.py
+        echo "Synced: $(ls -1 public/reports/*.html 2>/dev/null | wc -l) reports"
+
+    - name: Restore report from GCS backup
+      run: |
+        GCS_PATH="${{ inputs.gcs_path }}"
+        FILENAME=$(basename "$GCS_PATH")
+        gsutil cp "$GCS_PATH" public/reports/
+        echo "✅ Restored: $FILENAME"
+        ls -la "public/reports/$FILENAME"
+
+    - name: Validate and deploy
+      run: |
+        printf '%s' "${FIREBASE_CONFIG}" > public/firebase_config.json
+        printf '%s' "${ALLOWED_EMAILS}" > public/allowed_emails.json
+        npm install -g firebase-tools
+        firebase deploy --only hosting
+        echo "✅ Deployed"
+
+    - name: Verify restored report
+      run: |
+        FILENAME=$(basename "${{ inputs.gcs_path }}")
+        URL="https://football-delay-watching-a8830.web.app/reports/${FILENAME}"
+        HTTP_CODE=$(curl -fsS "$URL" -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
+        echo "HTTP $HTTP_CODE: $URL"
+        if [ "$HTTP_CODE" = "200" ]; then
+          echo "✅ 復旧確認完了"
+        else
+          echo "❌ 確認失敗 (HTTP $HTTP_CODE)"
+          exit 1
+        fi
