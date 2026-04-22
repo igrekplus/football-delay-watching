@@ -207,9 +207,7 @@ LLMプロンプトは `settings/prompts/` 以下のMarkdownファイルとして
 | Secret名 | 用途 |
 |----------|------|
 | `API_FOOTBALL_KEY` | API-Football |
-| `GOOGLE_API_KEY` | Gemini / Custom Search |
-| `GOOGLE_SEARCH_ENGINE_ID` | Custom Search |
-| `GOOGLE_SEARCH_API_KEY` | Custom Search |
+| `GOOGLE_API_KEY` | Gemini（Grounding含む） |
 | `YOUTUBE_API_KEY` | YouTube Data API |
 | `NOTIFY_EMAIL` | Gmail通知先 |
 | `GMAIL_TOKEN` | Gmail OAuth2 token |
@@ -257,14 +255,14 @@ Claude Code Webの environment settings に設定が必要なもの：
 1. gcloud SDK のセットアップ
 2. プロキシCA証明書の設定
 3. `GCP_SERVICE_ACCOUNT_KEY` でGCP認証（`gcloud auth activate-service-account`）
-4. **GCP Secret Manager から10件のシークレットを環境変数にロード**
+4. **GCP Secret Manager から9件のシークレットを環境変数にロード**
 5. PATHの設定
 
 正常時のログ（system-reminderに表示）：
 ```
 [session-start] GCS authentication complete.
 [session-start] Loading secrets from Secret Manager...
-[session-start] Secrets loaded: 10 ok, 0 failed.
+[session-start] Secrets loaded: 9 ok, 0 failed.
 ```
 
 ### Claude Code Remote でのdebug-run
