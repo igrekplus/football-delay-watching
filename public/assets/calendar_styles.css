@@ -57,11 +57,151 @@
     border: 1px solid var(--card-border-light);
 }
 
-.filter-checkboxes {
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.filter-title {
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.filter-select-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.filter-select-sep {
+    color: var(--color-text-subtle);
+    font-size: 0.75rem;
+}
+
+.filter-select-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-subtle);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.2s;
+}
+
+.filter-select-btn:hover {
+    color: var(--color-accent);
+}
+
+/* ロゴカードグリッド */
+.filter-logo-cards {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
-    font-size: 0.9rem;
+    gap: 10px;
+}
+
+/* 各コンペティションカード */
+.competition-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: border-color 0.25s, box-shadow 0.25s, opacity 0.25s, background 0.25s;
+    min-width: 76px;
+    user-select: none;
+}
+
+.competition-card-logo {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    transition: filter 0.25s, opacity 0.25s;
+}
+
+.competition-card-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    transition: color 0.25s;
+    max-width: 80px;
+}
+
+/* ON状態（active）: フルカラー＋グロー */
+.competition-card.active .competition-card-logo {
+    filter: none;
+    opacity: 1;
+}
+
+.competition-card.active .competition-card-name {
+    color: #fff;
+}
+
+/* OFF状態（inactive）: グレーアウト */
+.competition-card:not(.active) {
+    opacity: 0.45;
+    background: transparent;
+}
+
+.competition-card:not(.active) .competition-card-logo {
+    filter: grayscale(1);
+    opacity: 0.5;
+}
+
+.competition-card:not(.active) .competition-card-name {
+    color: var(--color-text-subtle);
+}
+
+/* リーグカラー別グロー（ON時） */
+.competition-card.active[data-league="CL"] {
+    border-color: #1a67d4;
+    box-shadow: 0 0 10px rgba(26,103,212,0.4);
+    background: rgba(26,103,212,0.08);
+}
+
+.competition-card.active[data-league="EPL"] {
+    border-color: #8b1d4e;
+    box-shadow: 0 0 10px rgba(139,29,78,0.4);
+    background: rgba(139,29,78,0.08);
+}
+
+.competition-card.active[data-league="LALIGA"] {
+    border-color: #ef3842;
+    box-shadow: 0 0 10px rgba(239,56,66,0.35);
+    background: rgba(239,56,66,0.08);
+}
+
+.competition-card.active[data-league="FA"] {
+    border-color: #4a90d9;
+    box-shadow: 0 0 10px rgba(74,144,217,0.35);
+    background: rgba(74,144,217,0.08);
+}
+
+.competition-card.active[data-league="COPA"] {
+    border-color: #f5a623;
+    box-shadow: 0 0 10px rgba(245,166,35,0.35);
+    background: rgba(245,166,35,0.08);
+}
+
+.competition-card.active[data-league="EFL"] {
+    border-color: #00a551;
+    box-shadow: 0 0 10px rgba(0,165,81,0.35);
+    background: rgba(0,165,81,0.08);
+}
+
+/* ホバー */
+.competition-card:hover {
+    opacity: 1;
 }
 
 /* 週セクション (縦並び) */

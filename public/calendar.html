@@ -32,13 +32,21 @@
         </header>
 
         <div class="filter-container">
-            <span class="filter-title">表示するコンペティション:</span>
-            <div class="filter-buttons">
-                <button onclick="selectAll(true)">全選択</button>
-                <button onclick="selectAll(false)">全解除</button>
+            <div class="filter-header">
+                <span class="filter-title">表示するコンペティション</span>
+                <div class="filter-select-actions">
+                    <button class="filter-select-btn" onclick="selectAll(true)">全選択</button>
+                    <span class="filter-select-sep">|</span>
+                    <button class="filter-select-btn" onclick="selectAll(false)">全解除</button>
+                </div>
             </div>
-            <div class="filter-checkboxes">
-                <label><input type="checkbox" class="league-filter" value="CL" checked onchange="applyFilter()"> Champions League</label> <label><input type="checkbox" class="league-filter" value="EPL" checked onchange="applyFilter()"> Premier League</label> <label><input type="checkbox" class="league-filter" value="LALIGA" checked onchange="applyFilter()"> La Liga</label> <label><input type="checkbox" class="league-filter" value="FA" checked onchange="applyFilter()"> FA Cup</label> <label><input type="checkbox" class="league-filter" value="COPA" checked onchange="applyFilter()"> Copa del Rey</label> <label><input type="checkbox" class="league-filter" value="EFL" checked onchange="applyFilter()"> EFL Cup</label>
+            <div class="filter-logo-cards">
+                <button class="competition-card active" data-league="CL" onclick="toggleCard(this)" aria-pressed="true"><img src="https://media.api-sports.io/football/leagues/2.png" alt="Champions League" class="competition-card-logo"><span class="competition-card-name">Champions League</span></button>
+                <button class="competition-card active" data-league="EPL" onclick="toggleCard(this)" aria-pressed="true"><img src="https://media.api-sports.io/football/leagues/39.png" alt="Premier League" class="competition-card-logo"><span class="competition-card-name">Premier League</span></button>
+                <button class="competition-card active" data-league="LALIGA" onclick="toggleCard(this)" aria-pressed="true"><img src="https://media.api-sports.io/football/leagues/140.png" alt="La Liga" class="competition-card-logo"><span class="competition-card-name">La Liga</span></button>
+                <button class="competition-card active" data-league="FA" onclick="toggleCard(this)" aria-pressed="true"><img src="https://media.api-sports.io/football/leagues/45.png" alt="FA Cup" class="competition-card-logo"><span class="competition-card-name">FA Cup</span></button>
+                <button class="competition-card active" data-league="COPA" onclick="toggleCard(this)" aria-pressed="true"><img src="https://media.api-sports.io/football/leagues/143.png" alt="Copa del Rey" class="competition-card-logo"><span class="competition-card-name">Copa del Rey</span></button>
+                <button class="competition-card active" data-league="EFL" onclick="toggleCard(this)" aria-pressed="true"><img src="https://media.api-sports.io/football/leagues/48.png" alt="EFL Cup" class="competition-card-logo"><span class="competition-card-name">EFL Cup</span></button>
             </div>
         </div>
 

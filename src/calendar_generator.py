@@ -179,6 +179,9 @@ class CalendarGenerator:
             league["name"]: league.get("display_name", league["name"])
             for league in self.leagues
         }
+        leagues_logo = {
+            league["name"]: league.get("logo_url", "") for league in self.leagues
+        }
 
         html = f"""<!DOCTYPE html>
 <html lang="ja">
@@ -214,13 +217,16 @@ class CalendarGenerator:
         </header>
 
         <div class="filter-container">
-            <span class="filter-title">表示するコンペティション:</span>
-            <div class="filter-buttons">
-                <button onclick="selectAll(true)">全選択</button>
-                <button onclick="selectAll(false)">全解除</button>
+            <div class="filter-header">
+                <span class="filter-title">表示するコンペティション</span>
+                <div class="filter-select-actions">
+                    <button class="filter-select-btn" onclick="selectAll(true)">全選択</button>
+                    <span class="filter-select-sep">|</span>
+                    <button class="filter-select-btn" onclick="selectAll(false)">全解除</button>
+                </div>
             </div>
-            <div class="filter-checkboxes">
-                {" ".join([f'<label><input type="checkbox" class="league-filter" value="{name}" checked onchange="applyFilter()"> {leagues_display.get(name, name)}</label>' for name in league_order if name in leagues_display])}
+            <div class="filter-logo-cards">
+                {" ".join([f'<button class="competition-card active" data-league="{name}" onclick="toggleCard(this)" aria-pressed="true"><img src="{leagues_logo.get(name, "")}" alt="{leagues_display.get(name, name)}" class="competition-card-logo" onerror="this.style.display=\'none\'"><span class="competition-card-name">{leagues_display.get(name, name)}</span></button>' for name in league_order if name in leagues_display])}
             </div>
         </div>
 

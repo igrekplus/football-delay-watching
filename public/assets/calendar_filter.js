@@ -3,14 +3,23 @@
  */
 
 /**
+ * コンペティションカードのトグル
+ */
+function toggleCard(cardElement) {
+    const isActive = cardElement.classList.toggle('active');
+    cardElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    applyFilter();
+}
+
+/**
  * フィルタを適用する
  */
 function applyFilter() {
-    const checkedLeagues = Array.from(document.querySelectorAll('.league-filter:checked')).map(el => el.value);
+    const activeLeagues = Array.from(document.querySelectorAll('.competition-card.active')).map(el => el.getAttribute('data-league'));
 
     document.querySelectorAll('.league-column').forEach(column => {
         const leagueName = column.getAttribute('data-league');
-        if (checkedLeagues.includes(leagueName)) {
+        if (activeLeagues.includes(leagueName)) {
             column.style.display = 'flex';
         } else {
             column.style.display = 'none';
@@ -26,8 +35,16 @@ function applyFilter() {
 /**
  * 全選択/全解除
  */
-function selectAll(checked) {
-    document.querySelectorAll('.league-filter').forEach(el => el.checked = checked);
+function selectAll(active) {
+    document.querySelectorAll('.competition-card').forEach(card => {
+        if (active) {
+            card.classList.add('active');
+            card.setAttribute('aria-pressed', 'true');
+        } else {
+            card.classList.remove('active');
+            card.setAttribute('aria-pressed', 'false');
+        }
+    });
     applyFilter();
 }
 
