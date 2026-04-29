@@ -6,6 +6,7 @@ manifest.jsonの読み書き・マージロジックを集約。
 
 import json
 import logging
+import re
 from pathlib import Path
 
 from config import config
@@ -14,6 +15,22 @@ from src.clients.firebase_sync_client import FirebaseSyncClient
 logger = logging.getLogger(__name__)
 
 MANIFEST_FILE = Path("public/reports/manifest.json")
+
+# レポートファイル名末尾の `_YYYYMMDD_HHMMSS.html` を抽出する
+_FILE_TIMESTAMP_RE = re.compile(r"_(\d{8})_(\d{6})\.html$")
+
+
+def _extract_file_timestamp(file_name: str | None) -> str:
+    """レポートファイル名から `YYYYMMDDHHMMSS` 形式のタイムスタンプを抽出する。
+
+    タイムスタンプ部分が無い場合は空文字を返す（最古として扱う）。
+    """
+    if not file_name:
+        return ""
+    match = _FILE_TIMESTAMP_RE.search(file_name)
+    if not match:
+        return ""
+    return match.group(1) + match.group(2)
 
 
 def prune_missing_manifest_entries(
@@ -44,6 +61,58 @@ def prune_missing_manifest_entries(
 
     pruned_manifest = {**manifest, "reports_by_date": pruned_reports_by_date}
     return pruned_manifest, removed_files
+
+
+def dedupe_matches_by_fixture_id(manifest: dict) -> tuple[dict, list[str]]:
+    """同一 `fixture_id` のエントリは最新ファイル 1 件だけ残す。
+
+    「最新」はファイル名末尾の `_YYYYMMDD_HHMMSS` を文字列比較した最大値で判定する。
+    タイムスタンプを抽出できないエントリは最古とみなし、同タイムスタンプの場合は
+    後勝ち（後から追加された方を採用）とする。
+
+    `fixture_id` 自体が無いエントリは触らずに保持する。
+
+    Returns:
+        (deduped_manifest, dropped_files)
+    """
+    reports_by_date = manifest.get("reports_by_date", {})
+
+    # fixture_id 単位で「最新」とみなすエントリの位置 (date_key, idx) を特定
+    latest_index: dict[str, tuple[str, int, str]] = {}
+    for date_key, date_data in reports_by_date.items():
+        for idx, match in enumerate(date_data.get("matches", [])):
+            fixture_id = match.get("fixture_id")
+            if fixture_id is None:
+                continue
+            fid_key = str(fixture_id)
+            new_ts = _extract_file_timestamp(match.get("file"))
+            existing = latest_index.get(fid_key)
+            if existing is None or new_ts >= existing[2]:
+                latest_index[fid_key] = (date_key, idx, new_ts)
+
+    dropped_files: list[str] = []
+    deduped_reports_by_date: dict = {}
+    for date_key, date_data in reports_by_date.items():
+        new_matches = []
+        for idx, match in enumerate(date_data.get("matches", [])):
+            fixture_id = match.get("fixture_id")
+            if fixture_id is None:
+                new_matches.append(match)
+                continue
+            fid_key = str(fixture_id)
+            chosen_date, chosen_idx, _ = latest_index[fid_key]
+            if chosen_date == date_key and chosen_idx == idx:
+                new_matches.append(match)
+            else:
+                file_name = match.get("file")
+                if file_name:
+                    dropped_files.append(file_name)
+
+        if new_matches:
+            deduped_reports_by_date[date_key] = {**date_data, "matches": new_matches}
+
+    deduped_manifest = {**manifest, "reports_by_date": deduped_reports_by_date}
+    return deduped_manifest, dropped_files
 
 
 class ManifestManager:
@@ -110,6 +179,15 @@ class ManifestManager:
                                 "matches"
                             ].append(match)
 
+        # 同一 fixture_id の旧エントリを除去し、最新ファイルだけを残す
+        self._manifest, dropped_files = dedupe_matches_by_fixture_id(self._manifest)
+        if dropped_files:
+            logger.info(
+                "Dropped %d stale fixture entries during merge: %s",
+                len(dropped_files),
+                ", ".join(dropped_files[:5]),
+            )
+
         return self._manifest
 
     def add_match_entries(self, match_entries: list, generation_datetime: str) -> None:
@@ -150,6 +228,15 @@ class ManifestManager:
                 "Pruned %d missing manifest entries: %s",
                 len(removed_files),
                 ", ".join(removed_files[:5]),
+            )
+
+        # 同一 fixture_id のエントリは最新ファイルだけを残す
+        self._manifest, dropped_files = dedupe_matches_by_fixture_id(self._manifest)
+        if dropped_files:
+            logger.info(
+                "Dropped %d duplicate fixture entries: %s",
+                len(dropped_files),
+                ", ".join(dropped_files[:5]),
             )
 
         # manifestを保存
