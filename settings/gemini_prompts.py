@@ -21,51 +21,67 @@ PROMPTS_DIR = Path(__file__).parent / "prompts"
 # テンプレート本文は prompts/ ディレクトリのMarkdownファイルから読み込む
 # =============================================================================
 
+# backend値: "gemini-flash" | "gemini-pro" | "claude-sonnet" | "claude-haiku"
+# thinking_budget: Gemini 2.5系で利用。"low" | "medium" | "high"
 PROMPT_METADATA: dict[str, dict[str, Any]] = {
     "news_summary": {
         "label": "ニュースサマリー",
         "char_limit": (600, 1000),
         "use_grounding": True,
+        "backend": "gemini-flash",
     },
     "tactical_preview": {
         "label": "戦術プレビュー",
         "use_grounding": True,
+        "backend": "gemini-flash",
+        "thinking_budget": "medium",
     },
     "check_spoiler": {
         "label": "ネタバレ判定",
         "text_limit": 1500,
         "use_grounding": False,
+        "backend": "gemini-flash",
     },
     "interview": {
         "label": "インタビュー要約",
         "char_limit": (1500, 2000),
         "use_grounding": True,
+        "backend": "gemini-pro",
+        "thinking_budget": "high",
     },
     "same_country_trivia": {
         "label": "同国対決トリビア",
         "char_limit_per_country": (50, 150),
         "use_grounding": False,
+        "backend": "gemini-flash",
     },
     "former_club_trivia": {
         "label": "古巣対決トリビア",
         "char_limit": (100, 300),  # 最大3件×80字+余白
         "use_grounding": True,  # リアルタイム検索で確定
+        "backend": "gemini-pro",
+        "thinking_budget": "high",
     },
     "name_translation": {
         "label": "選手名翻訳",
         "use_grounding": False,
+        "backend": "claude-haiku",
     },
     "transfer_news": {
         "label": "移籍情報",
         "use_grounding": True,
+        "backend": "gemini-flash",
     },
     "team_name_translation": {
         "label": "チーム名翻訳",
         "use_grounding": False,
+        "backend": "claude-haiku",
     },
     "former_club_fact_check": {
+        # Issue #236: 自己承認バイアス回避のため別系統LLM (Claude Sonnet) で検証
         "label": "古巣対決ファクトチェック",
         "use_grounding": False,
+        "backend": "claude-sonnet",
     },
 }
 
@@ -157,6 +173,8 @@ def get_prompt_config(prompt_type: str) -> dict[str, Any]:
         "char_limit_per_country": spec.get("char_limit_per_country"),
         "text_limit": spec.get("text_limit"),
         "use_grounding": spec.get("use_grounding", False),
+        "backend": spec.get("backend", "gemini-flash"),
+        "thinking_budget": spec.get("thinking_budget"),
     }
 
 

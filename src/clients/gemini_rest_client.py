@@ -19,13 +19,19 @@ class GeminiRestClient:
     """
 
     BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
-    MODEL_NAME = "gemini-2.0-flash"
+    DEFAULT_MODEL_NAME = "gemini-2.5-flash"
     MAX_RETRIES = 2
     TIMEOUT_SECONDS = 60
 
-    def __init__(self, api_key: str = None, http_client: HttpClient | None = None):
+    def __init__(
+        self,
+        api_key: str = None,
+        http_client: HttpClient | None = None,
+        model_name: str | None = None,
+    ):
         self.api_key = api_key or config.GOOGLE_API_KEY
         self.http_client = http_client or get_http_client()
+        self.model_name = model_name or self.DEFAULT_MODEL_NAME
         if not self.api_key:
             logger.warning("GOOGLE_API_KEY is not set. GeminiRestClient will fail.")
 
@@ -34,7 +40,7 @@ class GeminiRestClient:
         Send a request to Gemini API.
         Retry and Timeout are handled by underlying HttpClient/Tenacity.
         """
-        url = f"{self.BASE_URL}/{self.MODEL_NAME}:generateContent"
+        url = f"{self.BASE_URL}/{self.model_name}:generateContent"
         headers = {"Content-Type": "application/json", "x-goog-api-key": self.api_key}
 
         try:

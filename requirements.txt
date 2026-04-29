@@ -4,6 +4,7 @@
 python-dotenv
 requests
 google-generativeai
+anthropic>=0.40.0
 pytz
 Pillow>=10.0.0
 google-auth

@@ -1,8 +1,10 @@
 """
-LLM (Gemini) クライアント
+LLM (Gemini / Claude) クライアント
 
-Gemini APIとのやり取りを一元化し、モック対応もここで行う。
-ServiceはこのClientを通じてLLM機能を使用する。
+LLM呼び出しを一元化し、モック対応・キャッシュ・ログ整形をここで行う。
+モデル選択は `settings/gemini_prompts.py` の PROMPT_METADATA で
+プロンプト単位に宣言され、`src/clients/llm_backends/` のバックエンド層が
+具体的なAPIクライアント（Gemini / Anthropic）に振り分ける。
 """
 
 import json
@@ -14,15 +16,14 @@ from config import config
 from settings.cache_config import GROUNDING_TTL_DAYS
 from settings.gemini_prompts import build_prompt, get_prompt_config
 from src.clients.cache_store import CacheStore, create_cache_store
+from src.clients.llm_backends import LLMResult, get_backend
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
 
 class LLMClient:
-    """Gemini APIクライアント"""
-
-    MODEL_NAME = "gemini-pro-latest"
+    """LLM クライアント（バックエンドはプロンプトごとに自動解決）"""
 
     def __init__(
         self, api_key: str = None, use_mock: bool = None, cache_store: CacheStore = None
@@ -39,23 +40,35 @@ class LLMClient:
         self.use_grounding_cache = (
             os.getenv("USE_GROUNDING_CACHE", "True").lower() == "true"
         )
-        self._model = None
 
-    def _get_model(self):
-        """モデルを遅延初期化"""
-        if self._model is None and not self.use_mock:
-            import google.generativeai as genai
+    def _call_backend(
+        self,
+        prompt_type: str,
+        prompt: str,
+    ) -> LLMResult:
+        """PROMPT_METADATA に基づいてバックエンドを解決して呼び出す。"""
+        prompt_config = get_prompt_config(prompt_type)
+        backend_id = prompt_config.get("backend") or "gemini-flash"
+        use_grounding = prompt_config.get("use_grounding", False)
+        thinking_budget = prompt_config.get("thinking_budget")
 
-            genai.configure(api_key=self.api_key)
-            self._model = genai.GenerativeModel(self.MODEL_NAME)
-        return self._model
+        backend = get_backend(backend_id)
+        result = backend.generate_text(
+            prompt,
+            use_grounding=use_grounding,
+            thinking_budget=thinking_budget,
+        )
+        ApiStats.record_call(backend.name + ("/Grounding" if use_grounding else ""))
+        return result
 
-    def generate_content(self, prompt: str) -> str:
+    def generate_content(self, prompt: str, prompt_type: str | None = None) -> str:
         """
-        汎用的なLLM呼び出し
+        汎用的なLLM呼び出し。
 
         Args:
             prompt: プロンプト文字列
+            prompt_type: PROMPT_METADATA のキー。指定するとそのバックエンドを使う。
+                         省略時は gemini-flash（非Grounding）にフォールバック。
 
         Returns:
             生成されたテキスト
@@ -64,11 +77,15 @@ class LLMClient:
             return "[MOCK] LLM response"
 
         try:
-            model = self._get_model()
-            response = model.generate_content(prompt)
-            # API呼び出しを記録
-            ApiStats.record_call("Gemini API")
-            return response.text
+            if prompt_type:
+                result = self._call_backend(prompt_type, prompt)
+                return result.text
+
+            # prompt_type 未指定の互換パス: gemini-flash 非Grounding
+            backend = get_backend("gemini-flash")
+            result = backend.generate_text(prompt, use_grounding=False)
+            ApiStats.record_call(backend.name)
+            return result.text
         except Exception as e:
             logger.error(f"LLM generate_content error: {e}")
             raise
@@ -83,17 +100,12 @@ class LLMClient:
         prompt = build_prompt("news_summary", home_team=home_team, away_team=away_team)
 
         try:
-            from src.clients.gemini_rest_client import GeminiRestClient
-
-            rest_client = GeminiRestClient(api_key=self.api_key)
             self._log_llm_request(
                 "news_summary", prompt, home_team=home_team, away_team=away_team
             )
-            result = rest_client.generate_content_with_grounding(prompt)
-            # API呼び出しを記録
-            ApiStats.record_call("Gemini Grounding")
-            self._log_llm_response("news_summary", result)
-            return result
+            result = self._call_backend("news_summary", prompt)
+            self._log_llm_response("news_summary", result.text)
+            return result.text
         except Exception as e:
             logger.error(f"Error generating news summary: {e}")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
@@ -110,16 +122,6 @@ class LLMClient:
     ) -> str:
         """
         戦術プレビューを生成（Grounding機能使用）
-
-        Args:
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-            articles: 記事リスト（現在は未使用、Groundingが検索）
-            home_formation: ホームチームのフォーメーション（例: "4-2-3-1"）
-            away_formation: アウェイチームのフォーメーション（例: "4-4-2"）
-            home_lineup: ホームチームのスタメンリスト
-            away_lineup: アウェイチームのスタメンリスト
-            competition: 大会名（例: "Premier League", "La Liga"）
         """
         if self.use_mock:
             return self._get_mock_tactical_preview(home_team, away_team)
@@ -148,9 +150,6 @@ class LLMClient:
             return cached_result
 
         try:
-            from src.clients.gemini_rest_client import GeminiRestClient
-
-            rest_client = GeminiRestClient(api_key=self.api_key)
             self._log_llm_request(
                 "tactical_preview",
                 prompt,
@@ -158,15 +157,12 @@ class LLMClient:
                 away_team=away_team,
                 competition=competition,
             )
-            result = rest_client.generate_content_with_grounding(prompt)
-
-            # API呼び出しを記録
-            ApiStats.record_call("Gemini Grounding")
+            result = self._call_backend("tactical_preview", prompt)
 
             # キャッシュ保存
-            self._write_grounding_cache(cache_key, result)
-            self._log_llm_response("tactical_preview", result)
-            return result
+            self._write_grounding_cache(cache_key, result.text)
+            self._log_llm_response("tactical_preview", result.text)
+            return result.text
         except Exception as e:
             logger.error(f"Error generating tactical preview: {e}")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
@@ -184,8 +180,8 @@ class LLMClient:
             return True, "モックモード"
 
         # テキストの長さ制限を取得
-        config = get_prompt_config("check_spoiler")
-        text_limit = config.get("text_limit", 1500)
+        prompt_config = get_prompt_config("check_spoiler")
+        text_limit = prompt_config.get("text_limit", 1500)
 
         prompt = build_prompt(
             "check_spoiler",
@@ -198,7 +194,9 @@ class LLMClient:
             self._log_llm_request(
                 "check_spoiler", prompt, home_team=home_team, away_team=away_team
             )
-            response_text = self.generate_content(prompt).strip()
+            response_text = self.generate_content(
+                prompt, prompt_type="check_spoiler"
+            ).strip()
             self._log_llm_response("check_spoiler", response_text)
             # マークダウンコードブロックを除去
             if response_text.startswith("```"):
@@ -224,13 +222,6 @@ class LLMClient:
     ) -> str:
         """
         インタビュー記事を要約（Gemini Grounding + REST API使用）
-
-        Args:
-            team_name: 対象チーム名
-            opponent_team: 対戦相手チーム名
-            is_home: 対象チームがホーム側かどうか
-            manager_name: 監督名（省略時は「監督」を使用）
-            opponent_manager_name: 対戦相手の監督名（省略時は「相手監督」を使用）
         """
         if self.use_mock:
             from src.mock_provider import MockProvider
@@ -260,24 +251,18 @@ class LLMClient:
             return cached_result
 
         try:
-            from src.clients.gemini_rest_client import GeminiRestClient
-
-            rest_client = GeminiRestClient(api_key=self.api_key)
             self._log_llm_request(
                 "interview",
                 prompt,
                 team_name=team_name,
                 opponent_team=opponent_team,
             )
-            result = rest_client.generate_content_with_grounding(prompt)
-
-            # API呼び出しを記録
-            ApiStats.record_call("Gemini Grounding")
+            result = self._call_backend("interview", prompt)
 
             # キャッシュ保存
-            self._write_grounding_cache(cache_key, result)
-            self._log_llm_response("interview", result)
-            return result
+            self._write_grounding_cache(cache_key, result.text)
+            self._log_llm_response("interview", result.text)
+            return result.text
 
         except Exception as e:
             error_type = type(e).__name__
@@ -295,12 +280,6 @@ class LLMClient:
     ) -> str:
         """
         移籍情報を生成（Grounding機能使用）
-
-        Args:
-            team_name: チーム名
-            match_date: 試合開催日 (YYYY-MM-DD)
-            transfer_window_context: 検索用コンテキスト（デフォルト "latest"）
-            is_home: 対象チームがホーム側かどうか（モック時に使用）
         """
         if self.use_mock:
             from src.mock_provider import MockProvider
@@ -323,24 +302,18 @@ class LLMClient:
             return cached_result
 
         try:
-            from src.clients.gemini_rest_client import GeminiRestClient
-
-            rest_client = GeminiRestClient(api_key=self.api_key)
             self._log_llm_request(
                 "transfer_news",
                 prompt,
                 team_name=team_name,
                 match_date=match_date,
             )
-            result = rest_client.generate_content_with_grounding(prompt)
-
-            # API呼び出しを記録
-            ApiStats.record_call("Gemini Grounding")
+            result = self._call_backend("transfer_news", prompt)
 
             # キャッシュ保存
-            self._write_grounding_cache(cache_key, result)
-            self._log_llm_response("transfer_news", result)
-            return result
+            self._write_grounding_cache(cache_key, result.text)
+            self._log_llm_response("transfer_news", result.text)
+            return result.text
 
         except Exception as e:
             error_type = type(e).__name__
@@ -479,15 +452,6 @@ class LLMClient:
     ) -> str:
         """
         同国対決の関係性・小ネタを生成
-
-        Args:
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-            matchups: 検出されたマッチアップリスト
-                [{"country": "Japan", "home_players": [...], "away_players": [...]}]
-
-        Returns:
-            関係性・小ネタを含むテキスト（日本語）
         """
         if self.use_mock:
             return self._get_mock_same_country_trivia(matchups)
@@ -518,7 +482,7 @@ class LLMClient:
                 home_team=home_team,
                 away_team=away_team,
             )
-            result = self.generate_content(prompt)
+            result = self.generate_content(prompt, prompt_type="same_country_trivia")
             self._log_llm_response("same_country_trivia", result)
             return result
         except Exception as e:
@@ -536,16 +500,6 @@ class LLMClient:
     ) -> str:
         """
         古巣対決トリビアを生成（Gemini Grounding使用）
-
-        Args:
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-            home_players: ホームチームの全選手リスト
-            away_players: アウェイチームの全選手リスト
-            match_date: 試合開催日 (YYYY-MM-DD)
-
-        Returns:
-            古巣対決トリビアテキスト（日本語）
         """
         if self.use_mock:
             return self._get_mock_former_club_trivia(home_team, away_team)
@@ -568,9 +522,6 @@ class LLMClient:
         )
 
         try:
-            from src.clients.gemini_rest_client import GeminiRestClient
-
-            rest_client = GeminiRestClient(api_key=self.api_key)
             self._log_llm_request(
                 "former_club_trivia",
                 prompt,
@@ -579,11 +530,9 @@ class LLMClient:
                 home_player_count=len(home_players),
                 away_player_count=len(away_players),
             )
-            result = rest_client.generate_content_with_grounding(prompt)
-            # API呼び出しを記録
-            ApiStats.record_call("Gemini Grounding")
-            self._log_llm_response("former_club_trivia", result)
-            return result
+            result = self._call_backend("former_club_trivia", prompt)
+            self._log_llm_response("former_club_trivia", result.text)
+            return result.text
         except Exception as e:
             logger.error(f"Error generating former club trivia: {e}")
             return ""
@@ -600,14 +549,6 @@ class LLMClient:
     ) -> list[dict]:
         """
         古巣対決のファクトチェック（バッチ処理）
-
-        Args:
-            entries: [{"player_name": str, "current_team": str, "opponent_team": str, "description": str}, ...]
-            home_team: ホームチーム名
-            away_team: アウェイチーム名
-
-        Returns:
-            [{"player_name": str, "is_valid": bool, "reason": str}, ...]
         """
         if self.use_mock:
             return [
@@ -640,7 +581,9 @@ class LLMClient:
                 away_team=away_team,
                 entry_count=len(entries),
             )
-            response_text = self.generate_content(prompt).strip()
+            response_text = self.generate_content(
+                prompt, prompt_type="former_club_fact_check"
+            ).strip()
             self._log_llm_response("former_club_fact_check", response_text)
 
             # マークダウンコードブロックを除去
