@@ -172,6 +172,28 @@ class CalendarGenerator:
 
         return weeks
 
+    @staticmethod
+    def _build_filter_cards(
+        league_order: list,
+        leagues_display: dict,
+        leagues_logo: dict,
+    ) -> str:
+        """コンペティションフィルターカードのHTMLを生成する"""
+        parts = []
+        for name in league_order:
+            if name not in leagues_display:
+                continue
+            display = leagues_display.get(name, name)
+            logo = leagues_logo.get(name, "")
+            parts.append(
+                f'<button class="competition-card active" data-league="{name}"'
+                f' onclick="toggleCard(this)" aria-pressed="true">'
+                f'<img src="{logo}" alt="{display}" class="competition-card-logo">'
+                f'<span class="competition-card-name">{display}</span>'
+                f"</button>"
+            )
+        return " ".join(parts)
+
     def _render_html(self, weeks_data: list) -> str:
         """HTMLを生成する（週別・リーグ横並びレイアウト）"""
         league_order = ["CL", "EPL", "LALIGA", "FA", "COPA", "EFL"]
@@ -226,7 +248,7 @@ class CalendarGenerator:
                 </div>
             </div>
             <div class="filter-logo-cards">
-                {" ".join([f'<button class="competition-card active" data-league="{name}" onclick="toggleCard(this)" aria-pressed="true"><img src="{leagues_logo.get(name, "")}" alt="{leagues_display.get(name, name)}" class="competition-card-logo" onerror="this.style.display=\'none\'"><span class="competition-card-name">{leagues_display.get(name, name)}</span></button>' for name in league_order if name in leagues_display])}
+                {self._build_filter_cards(league_order, leagues_display, leagues_logo)}
             </div>
         </div>
 
