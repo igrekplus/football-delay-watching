@@ -61,3 +61,4 @@ htmlcov/
 *.egg-info/
 dist/
 build/
+temp_rich/
