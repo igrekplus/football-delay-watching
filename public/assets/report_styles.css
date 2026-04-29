@@ -607,7 +607,9 @@ pre {
     width: min(1560px, calc(100vw - 32px));
     max-height: min(90vh, 900px);
     margin: 3vh auto 0;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     background: #071225;
     border-radius: 18px;
     border: 1px solid rgba(104, 187, 255, 0.18);
@@ -746,6 +748,13 @@ pre {
 
 body.player-profile-open {
     overflow: hidden;
+}
+
+/* Issue #245: Make content area scrollable so close button stays fixed */
+.player-profile-modal-content {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
 }
 
 /* Issue #239: Desktop/iPad - 2-column layout for player profile sections */
@@ -1951,9 +1960,13 @@ body.player-profile-open {
 
     .player-profile-modal-dialog {
         width: calc(100vw - 20px);
-        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
         margin-top: 12px;
         padding: 18px;
+    }
+
+    .player-profile-modal-content {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     .player-photo-container {
