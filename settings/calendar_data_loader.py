@@ -269,7 +269,6 @@ def _update_report_link_in_gcs(
                         "away_team", ""
                     )
                 updated = True
-                break
 
         if not updated:
             rows.append(_build_new_row(fieldnames, fixture_id, report_link, match_data))
