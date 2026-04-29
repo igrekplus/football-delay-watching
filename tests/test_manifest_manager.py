@@ -3,7 +3,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from src.manifest_manager import ManifestManager, prune_missing_manifest_entries
+from src.manifest_manager import (
+    ManifestManager,
+    dedupe_matches_by_fixture_id,
+    prune_missing_manifest_entries,
+)
 
 
 class TestManifestManager(unittest.TestCase):
@@ -62,6 +66,135 @@ class TestManifestManager(unittest.TestCase):
                 saved["reports_by_date"]["2026-03-08"]["matches"],
                 [{"file": "existing.html", "fixture_id": 1}],
             )
+
+    def test_dedupe_matches_by_fixture_id_keeps_latest_in_same_date(self):
+        manifest = {
+            "reports_by_date": {
+                "2026-02-28": {
+                    "matches": [
+                        {
+                            "fixture_id": 1379244,
+                            "file": "2026-02-28_Leeds_vs_ManchesterCity_20260307_161318.html",
+                        },
+                        {
+                            "fixture_id": 1379244,
+                            "file": "2026-02-28_Leeds_vs_ManchesterCity_20260307_182433.html",
+                        },
+                    ],
+                },
+            },
+        }
+
+        deduped, dropped = dedupe_matches_by_fixture_id(manifest)
+
+        matches = deduped["reports_by_date"]["2026-02-28"]["matches"]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(
+            matches[0]["file"],
+            "2026-02-28_Leeds_vs_ManchesterCity_20260307_182433.html",
+        )
+        self.assertEqual(
+            dropped,
+            ["2026-02-28_Leeds_vs_ManchesterCity_20260307_161318.html"],
+        )
+
+    def test_dedupe_matches_by_fixture_id_treats_string_and_int_equal(self):
+        manifest = {
+            "reports_by_date": {
+                "2026-02-28": {
+                    "matches": [
+                        {
+                            "fixture_id": "1379244",
+                            "file": "match_20260307_161318.html",
+                        },
+                        {
+                            "fixture_id": 1379244,
+                            "file": "match_20260307_182433.html",
+                        },
+                    ],
+                },
+            },
+        }
+
+        deduped, dropped = dedupe_matches_by_fixture_id(manifest)
+
+        matches = deduped["reports_by_date"]["2026-02-28"]["matches"]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0]["file"], "match_20260307_182433.html")
+        self.assertEqual(dropped, ["match_20260307_161318.html"])
+
+    def test_dedupe_matches_by_fixture_id_drops_old_across_dates(self):
+        manifest = {
+            "reports_by_date": {
+                "2026-02-27": {
+                    "matches": [
+                        {"fixture_id": 1, "file": "a_20260301_120000.html"},
+                    ],
+                },
+                "2026-02-28": {
+                    "matches": [
+                        {"fixture_id": 1, "file": "a_20260302_090000.html"},
+                    ],
+                },
+            },
+        }
+
+        deduped, dropped = dedupe_matches_by_fixture_id(manifest)
+
+        self.assertNotIn("2026-02-27", deduped["reports_by_date"])
+        self.assertEqual(
+            deduped["reports_by_date"]["2026-02-28"]["matches"][0]["file"],
+            "a_20260302_090000.html",
+        )
+        self.assertEqual(dropped, ["a_20260301_120000.html"])
+
+    def test_dedupe_matches_by_fixture_id_preserves_unrelated_entries(self):
+        manifest = {
+            "reports_by_date": {
+                "2026-02-28": {
+                    "matches": [
+                        {"fixture_id": 1, "file": "a_20260301_120000.html"},
+                        {"fixture_id": 2, "file": "b_20260301_120000.html"},
+                        {"file": "no_fixture_id.html"},
+                    ],
+                },
+            },
+        }
+
+        deduped, dropped = dedupe_matches_by_fixture_id(manifest)
+
+        matches = deduped["reports_by_date"]["2026-02-28"]["matches"]
+        self.assertEqual(len(matches), 3)
+        self.assertEqual(dropped, [])
+
+    def test_save_dedupes_duplicate_fixture_entries(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            reports_dir = Path(temp_dir) / "reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            old_file = "leeds_vs_mc_20260307_161318.html"
+            new_file = "leeds_vs_mc_20260307_182433.html"
+            (reports_dir / old_file).write_text("ok", encoding="utf-8")
+            (reports_dir / new_file).write_text("ok", encoding="utf-8")
+            manifest_path = reports_dir / "manifest.json"
+
+            manager = ManifestManager(manifest_path=manifest_path)
+            manager._manifest = {
+                "reports_by_date": {
+                    "2026-02-28": {
+                        "matches": [
+                            {"fixture_id": 1379244, "file": old_file},
+                            {"fixture_id": 1379244, "file": new_file},
+                        ],
+                    },
+                },
+            }
+
+            manager.save()
+
+            saved = json.loads(manifest_path.read_text(encoding="utf-8"))
+            matches = saved["reports_by_date"]["2026-02-28"]["matches"]
+            self.assertEqual(len(matches), 1)
+            self.assertEqual(matches[0]["file"], new_file)
 
 
 if __name__ == "__main__":
