@@ -122,10 +122,14 @@
 }
 
 .competition-card-logo {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
-    transition: filter 0.25s, opacity 0.25s;
+    background: #fff;
+    border-radius: 50%;
+    padding: 6px;
+    box-sizing: border-box;
+    transition: filter 0.25s, opacity 0.25s, background 0.25s;
 }
 
 .competition-card-name {
@@ -149,13 +153,14 @@
 
 /* OFF状態（inactive）: グレーアウト */
 .competition-card:not(.active) {
-    opacity: 0.45;
+    opacity: 0.6;
     background: transparent;
 }
 
 .competition-card:not(.active) .competition-card-logo {
     filter: grayscale(1);
-    opacity: 0.5;
+    opacity: 0.4;
+    background: rgba(255, 255, 255, 0.8);
 }
 
 .competition-card:not(.active) .competition-card-name {
