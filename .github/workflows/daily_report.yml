@@ -16,6 +16,21 @@ on:
         required: false
         default: false
         type: boolean
+      target_date:
+        description: 'Target date (YYYY-MM-DD). Optional.'
+        required: false
+        default: ''
+        type: string
+      target_fixture_id:
+        description: 'Target fixture ID. Optional.'
+        required: false
+        default: ''
+        type: string
+      skip_deploy:
+        description: 'Generate and verify reports without deploying'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -54,6 +69,7 @@ jobs:
         PROJECT="gen-lang-client-0394252790"
         echo "API_FOOTBALL_KEY=$(gcloud secrets versions access latest --secret=API_FOOTBALL_KEY --project=$PROJECT)" >> $GITHUB_ENV
         echo "GOOGLE_API_KEY=$(gcloud secrets versions access latest --secret=GOOGLE_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
+        echo "ANTHROPIC_API_KEY=$(gcloud secrets versions access latest --secret=ANTHROPIC_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
         echo "YOUTUBE_API_KEY=$(gcloud secrets versions access latest --secret=YOUTUBE_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
         echo "NOTIFY_EMAIL=$(gcloud secrets versions access latest --secret=NOTIFY_EMAIL --project=$PROJECT)" >> $GITHUB_ENV
         # JSON secrets: write to temp files to avoid newline issues in GITHUB_ENV
@@ -71,6 +87,8 @@ jobs:
       env:
         USE_MOCK_DATA: ${{ inputs.use_mock_data || 'False' }}
         DEBUG_MODE: ${{ inputs.debug_mode || 'False' }}
+        TARGET_DATE: ${{ inputs.target_date || '' }}
+        TARGET_FIXTURE_ID: ${{ inputs.target_fixture_id || '' }}
         # GCS Cache Settings
         USE_API_CACHE: "True"
         CACHE_BACKEND: "gcs"
@@ -102,6 +120,11 @@ jobs:
           fi
           echo ""
           echo "=== End of Summary ==="
+        fi
+
+        if [ "${{ inputs.skip_deploy || 'false' }}" = "true" ]; then
+          echo "ℹ️ skip_deploy=true のためデプロイをスキップします。"
+          echo "SKIP_DEPLOY=true" >> $GITHUB_ENV
         fi
         
     - name: Backup reports to GCS
