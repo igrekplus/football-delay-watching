@@ -66,22 +66,32 @@ jobs:
 
     - name: Load secrets from Secret Manager
       run: |
+        set -euo pipefail
         PROJECT="gen-lang-client-0394252790"
-        echo "API_FOOTBALL_KEY=$(gcloud secrets versions access latest --secret=API_FOOTBALL_KEY --project=$PROJECT)" >> $GITHUB_ENV
-        echo "GOOGLE_API_KEY=$(gcloud secrets versions access latest --secret=GOOGLE_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
-        echo "ANTHROPIC_API_KEY=$(gcloud secrets versions access latest --secret=ANTHROPIC_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
-        echo "YOUTUBE_API_KEY=$(gcloud secrets versions access latest --secret=YOUTUBE_API_KEY --project=$PROJECT)" >> $GITHUB_ENV
-        echo "NOTIFY_EMAIL=$(gcloud secrets versions access latest --secret=NOTIFY_EMAIL --project=$PROJECT)" >> $GITHUB_ENV
-        # JSON secrets: write to temp files to avoid newline issues in GITHUB_ENV
-        gcloud secrets versions access latest --secret=GMAIL_TOKEN --project=$PROJECT > /tmp/gmail_token.json
-        echo "GMAIL_TOKEN=$(cat /tmp/gmail_token.json)" >> $GITHUB_ENV
-        gcloud secrets versions access latest --secret=GMAIL_CREDENTIALS --project=$PROJECT > /tmp/gmail_creds.json
-        echo "GMAIL_CREDENTIALS=$(cat /tmp/gmail_creds.json)" >> $GITHUB_ENV
-        gcloud secrets versions access latest --secret=FIREBASE_CONFIG --project=$PROJECT > /tmp/firebase_config.json
-        echo "FIREBASE_CONFIG=$(cat /tmp/firebase_config.json)" >> $GITHUB_ENV
-        gcloud secrets versions access latest --secret=ALLOWED_EMAILS --project=$PROJECT > /tmp/allowed_emails.json
-        echo "ALLOWED_EMAILS=$(cat /tmp/allowed_emails.json)" >> $GITHUB_ENV
-        rm -f /tmp/gmail_token.json /tmp/gmail_creds.json /tmp/firebase_config.json /tmp/allowed_emails.json
+
+        load_secret() {
+          local name="$1"
+          local value
+          value="$(gcloud secrets versions access latest --secret="$name" --project="$PROJECT")"
+          while IFS= read -r line; do
+            [ -n "$line" ] && echo "::add-mask::$line"
+          done <<< "$value"
+          {
+            echo "$name<<__${name}_EOF__"
+            printf '%s\n' "$value"
+            echo "__${name}_EOF__"
+          } >> "$GITHUB_ENV"
+        }
+
+        load_secret API_FOOTBALL_KEY
+        load_secret GOOGLE_API_KEY
+        load_secret ANTHROPIC_API_KEY
+        load_secret YOUTUBE_API_KEY
+        load_secret NOTIFY_EMAIL
+        load_secret GMAIL_TOKEN
+        load_secret GMAIL_CREDENTIALS
+        load_secret FIREBASE_CONFIG
+        load_secret ALLOWED_EMAILS
 
     - name: Run Report Generator
       env:
