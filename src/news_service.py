@@ -53,7 +53,10 @@ class NewsService:
                         logger.warning(
                             f"  [SPOILER CHECK] {match.core.home_team} vs {match.core.away_team}: {reason}"
                         )
-                        match.preview.news_summary = f"⚠️ 結果言及の可能性あり: {reason}\n\n{match.preview.news_summary}"
+                        match.preview.news_summary = (
+                            "試合結果に触れる可能性があるため、"
+                            "ニュース要約の表示を控えています。"
+                        )
 
                 # 3. Generate Tactical Preview (Grounding機能で直接検索)
                 raw_preview = self._generate_tactical_preview(match)
