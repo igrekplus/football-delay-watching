@@ -169,15 +169,15 @@ class LLMClient:
 
     def check_spoiler(
         self, text: str, home_team: str, away_team: str
-    ) -> tuple[bool, str]:
+    ) -> tuple[bool, str, list[dict[str, str]]]:
         """
         テキストがネタバレを含むかチェック（Issue #33）
 
         Returns:
-            (is_safe, reason): 安全ならTrue、理由文字列
+            (is_safe, reason, unsafe_evidence): 安全ならTrue、理由文字列、危険判定の根拠
         """
         if self.use_mock:
-            return True, "モックモード"
+            return True, "モックモード", []
 
         # テキストの長さ制限を取得
         prompt_config = get_prompt_config("check_spoiler")
@@ -204,13 +204,46 @@ class LLMClient:
                 if response_text.startswith("json"):
                     response_text = response_text[4:]
             result = json.loads(response_text)
-            return result.get("is_safe", True), result.get("reason", "")
+            return self._normalize_spoiler_result(result)
         except json.JSONDecodeError as e:
             logger.warning(f"Spoiler check JSON parse error: {e}")
-            return True, "判定スキップ（JSON解析エラー）"
+            return True, "判定スキップ（JSON解析エラー）", []
         except Exception as e:
             logger.warning(f"Spoiler check failed: {e}")
-            return True, "判定スキップ（APIエラー）"
+            return True, "判定スキップ（APIエラー）", []
+
+    def _normalize_spoiler_result(
+        self, result: dict
+    ) -> tuple[bool, str, list[dict[str, str]]]:
+        """LLMのスポイラー判定JSONを、根拠必須の内部形式へ正規化する。"""
+        is_safe = bool(result.get("is_safe", True))
+        reason = str(result.get("reason", "") or "")
+        raw_evidence = result.get("unsafe_evidence", [])
+        unsafe_evidence: list[dict[str, str]] = []
+
+        if isinstance(raw_evidence, list):
+            for item in raw_evidence:
+                if not isinstance(item, dict):
+                    continue
+                quote = str(item.get("quote", "") or "").strip()
+                if not quote:
+                    continue
+                unsafe_evidence.append(
+                    {
+                        "type": str(item.get("type", "unknown") or "unknown"),
+                        "quote": quote,
+                    }
+                )
+
+        if not is_safe and not unsafe_evidence:
+            logger.warning(
+                "[SPOILER CHECK] inconsistent_verdict: is_safe=false but "
+                "unsafe_evidence is empty. reason=%s",
+                reason,
+            )
+            return True, reason or "判定矛盾のため安全扱い", []
+
+        return is_safe, reason, unsafe_evidence
 
     def summarize_interview(
         self,
