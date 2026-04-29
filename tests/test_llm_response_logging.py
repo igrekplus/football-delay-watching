@@ -105,6 +105,52 @@ class TestLLMResponseLogging(unittest.TestCase):
 
     @patch("src.clients.llm_client.LLMClient.generate_content")
     @patch("src.clients.llm_client.logger")
+    def test_check_spoiler_treats_false_without_evidence_as_inconsistent(
+        self, mock_logger, mock_gen
+    ):
+        """false でも根拠が空なら false positive として安全扱いすること"""
+        mock_gen.return_value = (
+            '{"is_safe": false, '
+            '"reason": "スコア、勝敗、得点者のいずれの記載もありません。", '
+            '"unsafe_evidence": []}'
+        )
+
+        is_safe, reason, unsafe_evidence = self.client.check_spoiler(
+            "試合前の展望のみ", "PSG", "Bayern"
+        )
+
+        self.assertTrue(is_safe)
+        self.assertEqual(unsafe_evidence, [])
+        self.assertIn("記載もありません", reason)
+        self.assertTrue(
+            any(
+                "inconsistent_verdict" in call.args[0]
+                for call in mock_logger.warning.call_args_list
+            )
+        )
+
+    @patch("src.clients.llm_client.LLMClient.generate_content")
+    def test_check_spoiler_returns_unsafe_evidence(self, mock_gen):
+        """対象試合結果の根拠がある場合は unsafe として返すこと"""
+        mock_gen.return_value = (
+            '{"is_safe": false, '
+            '"reason": "対象試合の勝敗に触れている", '
+            '"unsafe_evidence": [{"type": "winner", "quote": "PSGが勝利した"}]}'
+        )
+
+        is_safe, reason, unsafe_evidence = self.client.check_spoiler(
+            "PSGが勝利した", "PSG", "Bayern"
+        )
+
+        self.assertFalse(is_safe)
+        self.assertEqual(reason, "対象試合の勝敗に触れている")
+        self.assertEqual(
+            unsafe_evidence,
+            [{"type": "winner", "quote": "PSGが勝利した"}],
+        )
+
+    @patch("src.clients.llm_client.LLMClient.generate_content")
+    @patch("src.clients.llm_client.logger")
     def test_fact_check_logs_raw_response(self, mock_logger, mock_gen):
         """fact_check_former_club_batch でパース前応答がログに出ること"""
         mock_gen.return_value = (

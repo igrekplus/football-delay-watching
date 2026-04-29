@@ -14,6 +14,15 @@ class Config:
     # API Keys
     API_FOOTBALL_KEY: str = os.getenv("API_FOOTBALL_KEY", "")
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
+    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+
+    # LLM Models (override-able via env)
+    GEMINI_FLASH_MODEL: str = os.getenv("GEMINI_FLASH_MODEL", "gemini-2.5-flash")
+    GEMINI_PRO_MODEL: str = os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")
+    CLAUDE_SONNET_MODEL: str = os.getenv("CLAUDE_SONNET_MODEL", "claude-sonnet-4-6")
+    CLAUDE_HAIKU_MODEL: str = os.getenv(
+        "CLAUDE_HAIKU_MODEL", "claude-haiku-4-5-20251001"
+    )
 
     # Gmail
     NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL")

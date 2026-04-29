@@ -21,38 +21,58 @@ fi
 ln -sf "${GCLOUD_DIR}/bin/gcloud" /usr/local/bin/gcloud 2>/dev/null || true
 ln -sf "${GCLOUD_DIR}/bin/gsutil" /usr/local/bin/gsutil 2>/dev/null || true
 
-# 2. Obtain proxy CA certificate and configure ~/.boto
+# 2. Detect TLS interception (explicit proxy or transparent) and configure CA certs
+# Handles both env-var proxies and Anthropic sandbox's transparent TLS inspection proxy.
+# Sets /tmp/combined-ca.pem which is used by gsutil (~/.boto), gRPC, and requests.
 python3 << 'PYEOF'
-import socket, ssl, os, base64, urllib.parse
+import subprocess, re, os
 
-proxy_url = os.environ.get('https_proxy') or os.environ.get('HTTPS_PROXY', '')
-if not proxy_url:
-    print('[session-start] No proxy detected, skipping CA cert setup')
-    exit(0)
+TARGET = 'generativelanguage.googleapis.com'
+SYSTEM_CA = '/etc/ssl/certs/ca-certificates.crt'
+COMBINED_CA = '/tmp/combined-ca.pem'
 
-p = urllib.parse.urlparse(proxy_url)
-TARGET = 'storage.googleapis.com'
+# Get full cert chain via openssl (works for both explicit and transparent proxies)
 try:
-    creds = base64.b64encode(f'{p.username or ""}:{p.password or ""}'.encode()).decode()
-    sock = socket.create_connection((p.hostname, p.port), timeout=10)
-    sock.sendall(f'CONNECT {TARGET}:443 HTTP/1.1\r\nHost: {TARGET}\r\nProxy-Authorization: Basic {creds}\r\n\r\n'.encode())
-    resp = sock.recv(4096)
-    if b'200' in resp:
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        tls = ctx.wrap_socket(sock, server_hostname=TARGET)
-        cert_pem = ssl.DER_cert_to_PEM_cert(tls.getpeercert(binary_form=True))
-        tls.close()
-        system_ca = open('/etc/ssl/certs/ca-certificates.crt').read()
-        open('/tmp/combined-ca.pem', 'w').write(system_ca + '\n' + cert_pem)
-        print('[session-start] Proxy CA cert configured.')
-    sock.close()
+    result = subprocess.run(
+        ['openssl', 's_client', '-connect', f'{TARGET}:443', '-showcerts'],
+        input=b'Q', capture_output=True, timeout=10
+    )
+    output = result.stdout.decode('utf-8', errors='ignore') + result.stderr.decode('utf-8', errors='ignore')
+
+    # Extract all PEM certs from chain
+    certs = re.findall(r'-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----', output, re.DOTALL)
+
+    # Check if any cert's issuer is non-standard (not Google/DigiCert/GlobalSign etc.)
+    standard_issuers = ('Google', 'DigiCert', 'GlobalSign', 'Entrust', 'Sectigo', 'Amazon', 'Let\'s Encrypt')
+    non_standard = []
+    for cert_pem in certs:
+        issuer_result = subprocess.run(
+            ['openssl', 'x509', '-noout', '-issuer'],
+            input=cert_pem.encode(), capture_output=True
+        )
+        issuer = issuer_result.stdout.decode()
+        if not any(s in issuer for s in standard_issuers):
+            non_standard.append(cert_pem)
+
+    if non_standard:
+        # Use the last non-standard cert (likely the root CA)
+        ca_cert = non_standard[-1]
+        issuer_result = subprocess.run(
+            ['openssl', 'x509', '-noout', '-issuer'],
+            input=ca_cert.encode(), capture_output=True
+        )
+        issuer_str = issuer_result.stdout.decode().strip()
+        system_ca = open(SYSTEM_CA).read()
+        open(COMBINED_CA, 'w').write(system_ca + '\n' + ca_cert + '\n')
+        print(f'[session-start] TLS inspection CA detected and configured: {issuer_str}')
+    else:
+        print('[session-start] No TLS interception detected, skipping CA cert setup')
+
 except Exception as e:
     print(f'[session-start] CA cert setup skipped: {e}')
 PYEOF
 
-# 3. Configure ~/.boto for gsutil
+# 3. Configure ~/.boto (gsutil), gRPC, and requests with the combined CA bundle
 if [ -f /tmp/combined-ca.pem ]; then
   cat > ~/.boto << 'BOTOEOF'
 [Boto]
@@ -61,6 +81,17 @@ ca_certificates_file = /tmp/combined-ca.pem
 [GSUtil]
 parallel_process_count = 1
 BOTOEOF
+
+  # gRPC (google-generativeai SDK uses gRPC with its own SSL roots)
+  export GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/tmp/combined-ca.pem
+  # requests / urllib3
+  export REQUESTS_CA_BUNDLE=/tmp/combined-ca.pem
+  export SSL_CERT_FILE=/tmp/combined-ca.pem
+  if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+    echo "export GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/tmp/combined-ca.pem" >> "$CLAUDE_ENV_FILE"
+    echo "export REQUESTS_CA_BUNDLE=/tmp/combined-ca.pem" >> "$CLAUDE_ENV_FILE"
+    echo "export SSL_CERT_FILE=/tmp/combined-ca.pem" >> "$CLAUDE_ENV_FILE"
+  fi
 fi
 
 # 4. Activate GCP service account from environment variable
@@ -80,7 +111,7 @@ if [ -n "${GCP_SERVICE_ACCOUNT_KEY:-}" ]; then
   # 5. Load application secrets from Secret Manager into session environment
   echo "[session-start] Loading secrets from Secret Manager..."
   PROJECT="gen-lang-client-0394252790"
-  SECRETS="API_FOOTBALL_KEY GOOGLE_API_KEY YOUTUBE_API_KEY NOTIFY_EMAIL GMAIL_TOKEN GMAIL_CREDENTIALS FIREBASE_CONFIG ALLOWED_EMAILS GITHUB_TOKEN"
+  SECRETS="API_FOOTBALL_KEY GOOGLE_API_KEY GOOGLE_SEARCH_ENGINE_ID GOOGLE_SEARCH_API_KEY YOUTUBE_API_KEY NOTIFY_EMAIL GMAIL_TOKEN GMAIL_CREDENTIALS FIREBASE_CONFIG ALLOWED_EMAILS GITHUB_TOKEN ANTHROPIC_API_KEY"
   LOADED=0
   FAILED=0
   for SECRET_NAME in $SECRETS; do

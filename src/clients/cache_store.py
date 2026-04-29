@@ -7,6 +7,7 @@
 
 import json
 import logging
+import os
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 # シングルトンとして保持するGCSクライアントとバケット
 _shared_gcs_client = None
 _shared_gcs_buckets = {}
+GCS_OPERATION_TIMEOUT_SECONDS = float(os.getenv("GCS_OPERATION_TIMEOUT_SECONDS", "20"))
 
 
 class CacheStore(ABC):
@@ -162,8 +164,8 @@ class GcsCacheStore(CacheStore):
         try:
             bucket = self._get_bucket()
             blob = bucket.blob(path)
-            if blob.exists():
-                content = blob.download_as_text()
+            if blob.exists(timeout=GCS_OPERATION_TIMEOUT_SECONDS):
+                content = blob.download_as_text(timeout=GCS_OPERATION_TIMEOUT_SECONDS)
                 return json.loads(content)
         except Exception as e:
             logger.warning(f"Failed to read from GCS {path}: {e}")
@@ -176,6 +178,7 @@ class GcsCacheStore(CacheStore):
             blob.upload_from_string(
                 json.dumps(data, ensure_ascii=False, indent=2),
                 content_type="application/json",
+                timeout=GCS_OPERATION_TIMEOUT_SECONDS,
             )
             logger.debug(f"Cache saved to GCS: {path}")
         except Exception as e:
@@ -185,7 +188,7 @@ class GcsCacheStore(CacheStore):
         try:
             bucket = self._get_bucket()
             blob = bucket.blob(path)
-            return blob.exists()
+            return blob.exists(timeout=GCS_OPERATION_TIMEOUT_SECONDS)
         except Exception as e:
             logger.warning(f"Failed to check GCS existence {path}: {e}")
             return False
@@ -194,8 +197,8 @@ class GcsCacheStore(CacheStore):
         try:
             bucket = self._get_bucket()
             blob = bucket.blob(path)
-            if blob.exists():
-                blob.delete()
+            if blob.exists(timeout=GCS_OPERATION_TIMEOUT_SECONDS):
+                blob.delete(timeout=GCS_OPERATION_TIMEOUT_SECONDS)
                 logger.info(f"GCS cache deleted: {path}")
                 return True
         except Exception as e:

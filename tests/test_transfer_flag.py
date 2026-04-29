@@ -78,6 +78,76 @@ class TestTransferFlag(unittest.TestCase):
             # 呼ばれていることを確認
             mock_transfer.assert_called_once_with(match)
 
+    def test_news_service_hides_spoiler_summary_when_detected(self):
+        """スポイラー判定時、理由や本文をレポート本文へ出さないこと"""
+        config.ENABLE_TRANSFER_NEWS = False
+
+        mock_llm = MagicMock()
+        mock_llm.check_spoiler.return_value = (
+            False,
+            "PSGが勝利したため",
+            [{"type": "winner", "quote": "PSGが勝利した"}],
+        )
+        service = NewsService(llm_client=mock_llm)
+        match = self._create_mock_match()
+
+        with (
+            patch.object(
+                service,
+                "_generate_summary",
+                return_value="PSGが勝利した。合計9ゴール。",
+            ),
+            patch.object(
+                service,
+                "_generate_tactical_preview",
+                return_value="tactical",
+            ),
+            patch.object(service, "_process_interviews"),
+        ):
+            service.process_news([match])
+
+        self.assertEqual(
+            match.preview.news_summary,
+            "試合結果に触れる可能性があるため、ニュース要約の表示を控えています。",
+        )
+        self.assertNotIn("PSGが勝利", match.preview.news_summary)
+        self.assertNotIn("合計9ゴール", match.preview.news_summary)
+
+    def test_news_service_keeps_summary_when_spoiler_verdict_has_no_evidence(self):
+        """false でも根拠が空ならニュース要約を隠さないこと"""
+        config.ENABLE_TRANSFER_NEWS = False
+
+        mock_llm = MagicMock()
+        mock_llm.check_spoiler.return_value = (
+            False,
+            "スコア、勝敗、得点者のいずれの記載もありません。",
+            [],
+        )
+        service = NewsService(llm_client=mock_llm)
+        match = self._create_mock_match()
+
+        with (
+            patch.object(
+                service,
+                "_generate_summary",
+                return_value="試合前の展望。両チームの状態に注目が集まる。",
+            ),
+            patch.object(
+                service,
+                "_generate_tactical_preview",
+                return_value="tactical",
+            ),
+            patch.object(service, "_process_interviews"),
+            self.assertLogs("src.news_service", level="WARNING") as cm,
+        ):
+            service.process_news([match])
+
+        self.assertEqual(
+            match.preview.news_summary,
+            "試合前の展望。両チームの状態に注目が集まる。",
+        )
+        self.assertTrue(any("inconsistent_verdict" in line for line in cm.output))
+
 
 if __name__ == "__main__":
     unittest.main()

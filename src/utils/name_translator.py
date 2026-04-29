@@ -13,7 +13,7 @@ import unicodedata
 
 from config import config
 from src.clients.cache_store import CacheStore, create_cache_store
-from src.clients.gemini_rest_client import GeminiRestClient
+from src.clients.llm_client import LLMClient
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
@@ -31,9 +31,9 @@ class NameTranslator:
             cache_store: キャッシュストア（省略時は自動生成）
             use_mock: モックモード（省略時はconfig.USE_MOCK_DATA）
         """
-        self.gemini = GeminiRestClient()
         self.cache_store = cache_store or create_cache_store()
         self.use_mock = use_mock if use_mock is not None else config.USE_MOCK_DATA
+        self.llm = LLMClient(use_mock=self.use_mock)
 
     def translate_names_in_html(self, html: str, player_names: list[str]) -> str:
         """
@@ -143,8 +143,8 @@ class NameTranslator:
         prompt = build_prompt("name_translation", names_list=names_list)
 
         try:
-            response = self.gemini.generate_content(prompt)
-            ApiStats.record_call("Gemini API (Translation)")
+            response = self.llm.generate_content(prompt, prompt_type="name_translation")
+            ApiStats.record_call("LLM (Name Translation)")
 
             # JSONパース（Geminiの出力から抽出）
             # 時々マークダウンコードブロックで返ってくることがある
@@ -156,13 +156,13 @@ class NameTranslator:
 
             translations = json.loads(json_str)
             logger.info(
-                f"[NAME_TRANSLATION] Translated {len(translations)} names via Gemini"
+                f"[NAME_TRANSLATION] Translated {len(translations)} names via LLM"
             )
 
             return self._align_translations_to_requested_names(names, translations)
 
         except json.JSONDecodeError as e:
-            logger.error(f"[NAME_TRANSLATION] Failed to parse Gemini response: {e}")
+            logger.error(f"[NAME_TRANSLATION] Failed to parse LLM response: {e}")
             logger.debug(f"Raw response: {response}")
             return {name: {"full": name, "short": name} for name in names}
 

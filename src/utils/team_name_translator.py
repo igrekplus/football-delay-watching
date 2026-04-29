@@ -4,7 +4,7 @@ import logging
 
 from config import config
 from src.clients.cache_store import CacheStore, create_cache_store
-from src.clients.gemini_rest_client import GeminiRestClient
+from src.clients.llm_client import LLMClient
 from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
@@ -22,9 +22,9 @@ class TeamNameTranslator:
             cache_store: キャッシュストア（省略時は自動生成）
             use_mock: モックモード（省略時はconfig.USE_MOCK_DATA）
         """
-        self.gemini = GeminiRestClient()
         self.cache_store = cache_store or create_cache_store()
         self.use_mock = use_mock if use_mock is not None else config.USE_MOCK_DATA
+        self.llm = LLMClient(use_mock=self.use_mock)
 
     def get_katakana_keywords(self, team_name: str) -> list[str]:
         """
@@ -83,7 +83,7 @@ class TeamNameTranslator:
         return data.get("katakana") if data else None
 
     def _translate_team(self, team_name: str) -> dict | None:
-        """Gemini APIを使用してチーム名を翻訳"""
+        """LLM経由でチーム名を翻訳"""
         if self.use_mock:
             return {
                 "katakana": f"[MOCK]{team_name}",
@@ -95,8 +95,10 @@ class TeamNameTranslator:
         prompt = build_prompt("team_name_translation", team_name=team_name)
 
         try:
-            response = self.gemini.generate_content(prompt)
-            ApiStats.record_call("Gemini API (Team Translation)")
+            response = self.llm.generate_content(
+                prompt, prompt_type="team_name_translation"
+            )
+            ApiStats.record_call("LLM (Team Translation)")
 
             json_str = response.strip()
             if json_str.startswith("```"):
