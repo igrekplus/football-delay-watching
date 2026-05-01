@@ -646,10 +646,10 @@ pre {
 .player-profile-modal-photo-frame {
     width: 64px;
     height: 64px;
-    border-radius: 14px;
+    border-radius: 16px;
     border: 1px solid rgba(104, 187, 255, 0.22);
-    background: rgba(255, 255, 255, 0.04);
-    padding: 4px;
+    background: rgba(255, 255, 255, 0.92);
+    overflow: hidden;
     flex-shrink: 0;
     box-sizing: border-box;
 }
@@ -657,10 +657,10 @@ pre {
 .player-profile-modal-photo {
     width: 100%;
     height: 100%;
-    border-radius: 10px;
-    object-fit: cover;
+    border-radius: inherit;
+    object-fit: contain;
     display: block;
-    background: rgba(255, 255, 255, 0.04);
+    background: transparent;
 }
 
 .player-profile-modal-heading {

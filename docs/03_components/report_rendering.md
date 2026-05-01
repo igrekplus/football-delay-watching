@@ -109,6 +109,8 @@
 
 - 実装: `templates/partials/player_profile_modal.html`, `templates/report.html`, `public/assets/report_styles.css`
 - モーダル本体は表示責務のみを持ち、本文は外部の選手プロフィールHTMLを事前fetchして差し込む
+- ヘッダーの選手写真はプロフィールモーダル専用の四角い枠で扱い、API-Football のナマ画像を不自然に拡大・トリミングしない
+- API-Football の人物写真は白背景や余白の個体差があるため、写真枠側の余白・背景・角丸を調整し、通常の選手カードやフォーメーションカードへ副作用を出さない
 - レスポンシブ方針:
   - モバイルは1カラムを維持する
   - `769px` 以上では本文カードを2カラム表示にして、デスクトップ/iPadでの縦スクロールを減らす

@@ -1,28 +1,90 @@
-# 2026-03-13 Issue #243 過去の対戦UI 実装計画
+# 2026-05-01 Issue #252 顔写真と枠の問題 実装計画
 
 ## Goal
-- 「過去の対戦成績」テーブルから home 視点の `結果` 列を削除し、見づらさを解消する。
-- 既存の集計要約 (`h2h_summary`) とスコア表示は維持し、情報量を減らしすぎない。
-- 変更意図を描画ドキュメントへ反映し、今後のUI実装で `結果` 列を復活させないようにする。
+- 選手詳細モーダルの顔写真が、写真枠に対して浮いて見える/枠と噛み合っていない状態を改善する。
+- API-Footballの人物写真に含まれる白背景・余白・縦横比のばらつきを吸収し、顔写真と枠が一体に見えるようにする。
+- 既存の選手カード、フォーメーションカード、国旗、チームロゴ表示には影響を出さない。
+
+## Issue Understanding
+- Issue #252: 「顔写真と枠の問題」
+- 添付スクリーンショットでは、選手詳細モーダル左上の写真が角丸の外枠内に表示されているが、写真自体の白背景・角丸・外枠の形が一致せず、二重の枠のように見えている。
+- 実装箇所は主に `templates/partials/player_profile_modal.html` と `public/assets/report_styles.css`。
+- 現状は `.player-profile-modal-photo-frame` が 64px 四方、内側の `.player-profile-modal-photo` が `object-fit: cover` で全面表示されるため、元画像の白背景が枠として残りやすい。
+- ユーザー確認により、写真はAPI-Footballのナマ画像の見え方を保つ。画像を拡大・トリミングして枠へ無理に合わせるのではなく、四角い写真を自然に置ける外枠へ調整する。
 
 ## Scope
-- `templates/partials/h2h_table.html` の列定義を更新する。
-- 必要なら `public/assets/report_styles.css` のテーブル表示を微調整する。
-- `docs/03_components/report_rendering.md` に H2H テーブル表示方針を追記する。
-- `implementation_plan.md` `task.md` `walkthrough.md` を #243 向けに更新する。
+- `public/assets/report_styles.css`
+  - 選手詳細モーダルの写真枠と画像表示を調整する。
+  - モバイル幅でも写真・名前・国旗・チームロゴが破綻しないようにする。
+  - 通常の選手カードも確認し、同じズレが再現している場合のみ同じ方針で揃える。
+- `templates/partials/player_profile_modal.html`
+  - CSSだけで解決できない場合のみ、写真ラッパーのクラスや構造を最小限調整する。
+- `docs/03_components/report_rendering.md`
+  - 選手詳細モーダルの写真表示方針を明記する。
+- 必要に応じて `tests/` にCSS/HTML構造の回帰テストを追加する。
 
 ## Out of Scope
-- `src/services/facts_formatter.py` の H2H 集計ロジック変更。
-- `h2h_summary` の文言変更。
-- 過去の対戦セクション全体のレイアウト刷新やカード化。
+- API-Footballから取得する写真URLや保存データ構造の変更。
+- 選手プロフィール本文生成、CSV、GCS上の選手マスタ更新。
+- フォーメーションカードや通常の選手カード全体のデザイン刷新。
+- API-Football画像のトリミング、拡大、顔位置補正。
+- 既存レポートHTMLの一括再生成。
 
 ## Design Decisions
-- データ構造の `result_key` は今回は残す。既存テストや将来の内部利用を壊さず、UIだけを最小変更で直すため。
-- 列削除はテンプレート層で完結させる。集計ロジックまで触ると影響範囲が広がり、Issue要件に対して過剰。
-- UI後退を防ぐため、テンプレートの単体テストで `結果` 見出しと `Win/Draw/Loss` 表示が含まれないことを確認する。
+- まずCSSで解決する。今回の問題はデータ不整合ではなく、既存画像の見せ方の問題であるため。
+- 写真枠は現在の四角ベースを維持する。
+- API-Footballのナマ画像を尊重し、画像自体を拡大・トリミングして顔位置を補正する方向にはしない。
+- 「外枠」「内側画像」の二重角丸が目立たないように、外枠の padding/background/border-radius/border を調整する。
+- `object-fit` は現状の見え方を壊さない範囲で扱う。原則として画像の中身を変えるための `object-position` 調整は行わない。
+- レポート内の他の写真系クラスには波及させず、`.player-profile-modal-*` のみに限定する。
+- 通常の選手カードは、実際に同じズレがあるか確認してから判断する。ズレがない場合は変更しない。
 
-## Validation
-1. `python -m unittest tests.test_h2h_table_template`
-2. `DEBUG_MODE=True USE_MOCK_DATA=True TARGET_DATE="2026-01-08" python main.py`
-3. 生成された `public/reports/*.html` を開いて、過去の対戦成績テーブルが `日付 / 大会 / 対戦 / スコア` の4列になっていることを確認する。
-4. 必要なら `./scripts/safe_deploy.sh` を実行し、公開URLで表示確認する。
+## Implementation Steps
+1. 現状再現
+   - 添付スクリーンショットと既存CSSを確認し、問題がモーダルヘッダーの写真枠であることを確定する。
+   - 既存生成済みレポートまたはdebug-run生成物で、プロフィールモーダルを開ける選手を1名選ぶ。
+2. CSS修正
+   - `.player-profile-modal-photo-frame` と `.player-profile-modal-photo` を中心に、枠・角丸・背景・padding・overflowを調整する。
+   - 第一候補として、フレームを四角ベースのまま、内側画像の白背景と外枠が二重に見えない余白・背景へ整える。
+   - 画像そのものはナマ画像として扱い、不自然な拡大や顔位置補正を避ける。
+   - モバイル時のサイズが名前行を圧迫しないか確認し、必要なら `@media (max-width: 768px)` でサイズを少し下げる。
+3. 選手カード確認
+   - 通常の選手カードにも同じ枠ズレがあるか確認する。
+   - 同じ問題がある場合のみ、既存デザインを崩さない範囲で写真枠を揃える。
+4. 必要ならテンプレート調整
+   - CSSだけでは不十分な場合に限り、写真枠へ追加クラスや補助要素を入れる。
+5. 設計書同期
+   - `docs/03_components/report_rendering.md` に、選手詳細モーダル写真はプロフィールヘッダー専用スタイルで枠と画像の形を一致させる方針を追記する。
+6. 検証
+   - CSS/HTML構造の単体テストが妥当なら追加する。
+   - UI変更なので `DEBUG_MODE=True USE_MOCK_DATA=True` のdebug-runでHTMLを生成する。
+   - 生成HTMLを `file://` で開き、プロフィールモーダルを開いてデスクトップ/モバイル相当幅で確認する。
+   - ユーザーが見た目に問題ないと判断した後に、debug-runで再確認する流れを想定する。
+7. デプロイ準備
+   - 実装完了後、変更ファイルだけをcommitする。
+   - `/deploy` ワークフローに従いFirebase Hostingへデプロイする。
+   - 公開URLを `curl` で取得し、表示可能であることを確認する。
+
+## Validation Plan
+- `python -m unittest discover tests`
+  - CSSのみで既存テストに影響がないことを確認する。
+- `DEBUG_MODE=True USE_MOCK_DATA=True TARGET_DATE="<スタメン確定済みの2日以上前の日付>" python main.py`
+  - UI微修正なのでモックモードを許容する。
+  - 実行時は `.agent/workflows/debug-run.md` のTARGET_DATEガイドに従う。
+- 生成された `public/reports/*.html` を `file://` で開き、以下を目視確認する。
+  - 四角いナマ画像と外枠が二重枠のように見えない。
+  - 写真が不自然に拡大・トリミングされていない。
+  - 選手名、国旗、チームロゴと重ならない。
+  - 375px幅相当でもヘッダーが破綻しない。
+- デプロイ後、Firebase Hosting URLで同じレポートを確認する。
+
+## Risks
+- API-Football写真は白背景・透過なし・顔位置の個体差があるため、枠側だけで全選手を完全に同じ見え方にはできない。
+- 画像をナマのまま維持するため、画像内の白背景や余白そのものは残る。違和感の主因である外枠との不一致を減らす方針に留める。
+- 通常の選手カードを同時に触る場合、カード一覧の密度や既存レイアウトへ影響する可能性があるため、実際にズレている場合だけ最小変更にする。
+
+## Review Answers
+1. 写真枠は四角のまま維持する。
+2. ナマ画像を優先し、顔の拡大やユニフォーム表示量の調整は行わない。
+3. 選手カードは確認対象に含めるが、ズレが確認できない場合は変更しない。
+4. 実装後、ユーザーが見た目に問題ないと判断してから `USE_MOCK_DATA=true` のdebug-runで再確認する。
