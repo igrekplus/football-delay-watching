@@ -5,6 +5,7 @@
 依存性注入（DI）によるテスト容易性と拡張性を提供する。
 """
 
+import concurrent.futures
 import json
 import logging
 import os
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 _shared_gcs_client = None
 _shared_gcs_buckets = {}
 GCS_OPERATION_TIMEOUT_SECONDS = float(os.getenv("GCS_OPERATION_TIMEOUT_SECONDS", "20"))
+GCS_AUTH_TIMEOUT_SECONDS = float(os.getenv("GCS_AUTH_TIMEOUT_SECONDS", "10"))
 
 
 class CacheStore(ABC):
@@ -146,7 +148,17 @@ class GcsCacheStore(CacheStore):
             from google.cloud import storage
 
             if _shared_gcs_client is None:
-                _shared_gcs_client = storage.Client()
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(storage.Client)
+                    try:
+                        _shared_gcs_client = future.result(
+                            timeout=GCS_AUTH_TIMEOUT_SECONDS
+                        )
+                    except concurrent.futures.TimeoutError:
+                        raise TimeoutError(
+                            f"GCS client initialization timed out after {GCS_AUTH_TIMEOUT_SECONDS}s"
+                            " (DNS resolution may be unavailable)"
+                        )
                 logger.info("GCS client initialized (Singleton)")
 
             bucket = _shared_gcs_client.bucket(self.bucket_name)

@@ -19,6 +19,7 @@ Usage:
     profile = profiles.get(156477)
 """
 
+import concurrent.futures
 import csv
 import io
 import logging
@@ -94,7 +95,16 @@ def _get_gcs_bucket():
 
     from google.cloud import storage
 
-    _gcs_client = storage.Client()
+    _gcs_auth_timeout = float(os.getenv("GCS_AUTH_TIMEOUT_SECONDS", "10"))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(storage.Client)
+        try:
+            _gcs_client = future.result(timeout=_gcs_auth_timeout)
+        except concurrent.futures.TimeoutError:
+            raise TimeoutError(
+                f"GCS client initialization timed out after {_gcs_auth_timeout}s"
+                " (DNS resolution may be unavailable)"
+            )
     _gcs_bucket = _gcs_client.bucket(GCS_BUCKET_NAME)
     return _gcs_bucket
 

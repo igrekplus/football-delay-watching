@@ -128,6 +128,10 @@ class GenerateGuideWorkflow:
         Returns:
             (youtube_videos, youtube_stats)
         """
+        from src.clients.llm_client import reset_rate_limit_failures
+
+        reset_rate_limit_failures()
+
         # 3. Facts Acquisition
         facts_service = FactsService()
         facts_service.enrich_matches(matches)
@@ -266,6 +270,8 @@ class GenerateGuideWorkflow:
         Returns:
             (is_complete, missing_items): 完全か否かと、欠損コンテンツのリスト
         """
+        from src.clients.llm_client import get_rate_limit_failures_for
+
         missing = []
 
         # 必須: スタメン（ホーム・アウェイ両方）
@@ -277,6 +283,13 @@ class GenerateGuideWorkflow:
         # 必須: ニュースサマリー または 戦術プレビュー
         if not match.news_summary and not match.tactical_preview:
             missing.append("news_summary/tactical_preview")
+
+        # Gemini 429 で欠落したセクションがあれば partial 扱い
+        rate_limit_failures = get_rate_limit_failures_for(
+            match.home_team, match.away_team
+        )
+        for section in rate_limit_failures:
+            missing.append(f"llm_rate_limit:{section}")
 
         # YouTube動画は品質判定から除外（クォータ切れ時に再処理ループを防ぐため）
         # 動画がなくても complete として扱う

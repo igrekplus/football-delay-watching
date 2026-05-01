@@ -21,6 +21,22 @@ from src.utils.api_stats import ApiStats
 
 logger = logging.getLogger(__name__)
 
+# (home_team, away_team, section) のタプルで429失敗を記録する
+_rate_limit_failures: list[tuple[str, str, str]] = []
+
+
+def reset_rate_limit_failures() -> None:
+    global _rate_limit_failures
+    _rate_limit_failures = []
+
+
+def get_rate_limit_failures_for(home_team: str, away_team: str) -> list[str]:
+    return [s for h, a, s in _rate_limit_failures if h == home_team and a == away_team]
+
+
+def _record_rate_limit_failure(home_team: str, away_team: str, section: str) -> None:
+    _rate_limit_failures.append((home_team, away_team, section))
+
 
 class LLMClient:
     """LLM クライアント（バックエンドはプロンプトごとに自動解決）"""
@@ -108,6 +124,8 @@ class LLMClient:
             return result.text
         except Exception as e:
             logger.error(f"Error generating news summary: {e}")
+            if "429" in str(e):
+                _record_rate_limit_failure(home_team, away_team, "news_summary")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
 
     def generate_tactical_preview(
@@ -165,6 +183,8 @@ class LLMClient:
             return result.text
         except Exception as e:
             logger.error(f"Error generating tactical preview: {e}")
+            if "429" in str(e):
+                _record_rate_limit_failure(home_team, away_team, "tactical_preview")
             return "エラーにつき取得不可（情報の取得に失敗しました）"
 
     def check_spoiler(
@@ -520,6 +540,8 @@ class LLMClient:
             return result
         except Exception as e:
             logger.error(f"Error generating same country trivia: {e}")
+            if "429" in str(e):
+                _record_rate_limit_failure(home_team, away_team, "same_country_trivia")
             return ""
 
     # ========== 古巣対決（Issue #20） ==========
@@ -568,6 +590,8 @@ class LLMClient:
             return result.text
         except Exception as e:
             logger.error(f"Error generating former club trivia: {e}")
+            if "429" in str(e):
+                _record_rate_limit_failure(home_team, away_team, "former_club_trivia")
             return ""
 
     def _get_mock_former_club_trivia(self, home_team: str, away_team: str) -> str:
