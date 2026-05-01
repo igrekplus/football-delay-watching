@@ -439,14 +439,19 @@ class LLMClient:
     def _log_llm_request(
         self, prompt_type: str, prompt: str, max_chars: int = 500, **params
     ):
-        """LLMリクエストをログ出力"""
+        """LLMリクエストをログ出力（GitHub Actions では折りたたみブロックで囲む）"""
         params_str = (
             ", ".join(f"{k}={v}" for k, v in params.items()) if params else "no params"
         )
+        in_actions = os.getenv("GITHUB_ACTIONS") == "true"
+        if in_actions:
+            print(f"::group::LLM Request [{prompt_type}] ({params_str})", flush=True)
         logger.info(f"=== LLM Request [{prompt_type}] ({params_str}) ===")
         display = prompt[:max_chars] + "..." if len(prompt) > max_chars else prompt
         logger.info(f"Prompt ({len(prompt)} chars): {display}")
         logger.info(f"=== End LLM Request [{prompt_type}] ===")
+        if in_actions:
+            print("::endgroup::", flush=True)
 
     def _log_llm_response(
         self,
@@ -455,9 +460,15 @@ class LLMClient:
         max_chars: int = 3000,
         source: str = "api",
     ):
-        """LLM応答をログ出力（長すぎる場合はtruncate）"""
+        """LLM応答をログ出力（長すぎる場合はtruncate、GitHub Actions では折りたたみブロックで囲む）"""
         if not response:
             return
+        in_actions = os.getenv("GITHUB_ACTIONS") == "true"
+        if in_actions:
+            print(
+                f"::group::LLM Response [{prompt_type}] (source={source}, {len(response)} chars)",
+                flush=True,
+            )
         display = (
             response[:max_chars] + "..." if len(response) > max_chars else response
         )
@@ -466,6 +477,8 @@ class LLMClient:
         )
         logger.info(display)
         logger.info(f"=== End LLM Response [{prompt_type}] ===")
+        if in_actions:
+            print("::endgroup::", flush=True)
 
     # ========== モック用メソッド ==========
 

@@ -300,12 +300,7 @@ class GenerateGuideWorkflow:
     def _generate_html(self, report_list):
         html_paths = []
         try:
-            from src.html_generator import generate_html_reports, sync_from_firebase
-
-            if not config.USE_MOCK_DATA:
-                sync_from_firebase()
-            else:
-                logger.info("Mock mode: Skipping Firebase sync")
+            from src.html_generator import generate_html_reports
 
             html_paths = generate_html_reports(report_list)
             logger.info(f"Generated {len(html_paths)} HTML files")

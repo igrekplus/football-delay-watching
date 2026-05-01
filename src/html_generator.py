@@ -136,16 +136,7 @@ def generate_html_reports(report_list: list) -> list:
         生成されたHTMLファイルパスのリスト
     """
     now_jst = DateTimeUtil.now_jst()
-    DateTimeUtil.format_display_timestamp(now_jst)
     generation_datetime = DateTimeUtil.format_filename_datetime(now_jst)
-
-    # デバッグ/モックモード判定
-    if config.USE_MOCK_DATA:
-        pass
-    elif config.DEBUG_MODE:
-        pass
-    else:
-        pass
 
     # 出力ディレクトリ作成
     Path(REPORTS_DIR).mkdir(parents=True, exist_ok=True)
