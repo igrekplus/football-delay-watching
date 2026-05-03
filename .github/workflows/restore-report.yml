@@ -40,12 +40,25 @@ jobs:
 
     - name: Load secrets from Secret Manager
       run: |
+        set -euo pipefail
         PROJECT="gen-lang-client-0394252790"
-        gcloud secrets versions access latest --secret=FIREBASE_CONFIG --project=$PROJECT > /tmp/firebase_config.json
-        echo "FIREBASE_CONFIG=$(cat /tmp/firebase_config.json)" >> $GITHUB_ENV
-        gcloud secrets versions access latest --secret=ALLOWED_EMAILS --project=$PROJECT > /tmp/allowed_emails.json
-        echo "ALLOWED_EMAILS=$(cat /tmp/allowed_emails.json)" >> $GITHUB_ENV
-        rm -f /tmp/firebase_config.json /tmp/allowed_emails.json
+
+        load_secret() {
+          local name="$1"
+          local value
+          value="$(gcloud secrets versions access latest --secret="$name" --project="$PROJECT")"
+          while IFS= read -r line; do
+            [ -n "$line" ] && echo "::add-mask::$line"
+          done <<< "$value"
+          {
+            echo "$name<<__${name}_EOF__"
+            printf '%s\n' "$value"
+            echo "__${name}_EOF__"
+          } >> "$GITHUB_ENV"
+        }
+
+        load_secret FIREBASE_CONFIG
+        load_secret ALLOWED_EMAILS
 
     - name: Sync existing reports from Firebase
       run: |
