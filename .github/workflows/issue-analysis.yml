@@ -111,7 +111,7 @@ jobs:
 
           echo "=== Running analysis ==="
           set +e
-          claude -p "$(cat /tmp/prompt.txt)" --max-turns 1 > /tmp/analysis.txt 2>&1
+          claude -p "$(cat /tmp/prompt.txt)" --max-turns 3 > /tmp/analysis.txt 2>&1
           EXIT_CODE=$?
           set -e
 
