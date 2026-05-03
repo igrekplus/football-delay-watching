@@ -7,6 +7,14 @@ jobs:
   test-claude:
     runs-on: ubuntu-latest
     steps:
+      - name: Enforce main-branch-only execution
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "❌ Security: This workflow must run on the main branch only."
+            echo "   Current ref: $GITHUB_REF"
+            exit 1
+          fi
+
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
