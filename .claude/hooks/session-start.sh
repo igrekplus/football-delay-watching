@@ -128,7 +128,8 @@ if [ -n "${GCP_SERVICE_ACCOUNT_KEY:-}" ]; then
   done
   echo "[session-start] Secrets loaded: ${LOADED} ok, ${FAILED} failed."
 
-  # 6. Authenticate gh CLI using GITHUB_TOKEN from Secret Manager
+  # 6. Authenticate gh CLI
+  GITHUB_TOKEN="${GITHUB_TOKEN:-REPLACE_WITH_YOUR_TOKEN}"
   if [ -n "${GITHUB_TOKEN:-}" ]; then
     if ! command -v gh &>/dev/null; then
       echo "[session-start] Installing gh CLI..."
