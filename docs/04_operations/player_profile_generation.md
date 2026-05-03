@@ -38,6 +38,7 @@
 |------|------|------|
 | 実行手順 | CSV pull、対象選定、CSV push、HTML生成、debug-run、deploy | `.agent/skills/generate_player_profiles/SKILL.md` |
 | 本文調査 | 情報源選定、`labelled_lines_v1` 本文、セルフレビュー、`temp/*.md` 出力 | `.agent/skills/research_player_profile_content/SKILL.md` |
+| 定期実行プロンプト | recurring automation に設定する固定指示文 | `.agent/automations/player-profile-generation.md` |
 | デプロイ | Firebase Hosting の安全な同期・デプロイ | `.agent/workflows/deploy.md`, `docs/04_operations/deployment.md` |
 | 運用設計 | 継続運用の目的、責務境界、完了条件 | 本文書 |
 
@@ -91,6 +92,7 @@ standalone HTML を生成しても、既存レポート側の選手カードに 
 
 ## 関連ファイル
 
+- `.agent/automations/player-profile-generation.md`
 - `.agent/skills/generate_player_profiles/SKILL.md`
 - `.agent/skills/research_player_profile_content/SKILL.md`
 - `.agent/workflows/deploy.md`
