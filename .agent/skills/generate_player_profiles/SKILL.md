@@ -3,11 +3,12 @@ name: generate_player_profiles
 description: 試合レポートの「選手詳細（player_profiles）」を更新する統括スキル。GCS上の選手CSV更新、standalone HTML生成、deploy までを扱う。調査と本文生成は `research_player_profile_content` を参照する。
 ---
 
-# 選手詳細作成スキル
+# 選手詳細作成運用スキル
 
 ## 概要
 
 この skill は、選手プロフィール更新の入口です。
+継続運用としての設計・責務境界は `docs/04_operations/player_profile_generation.md` を参照し、実行手順はこの skill を SSOT とします。
 
 想定 input は以下の 2 つだけである。
 

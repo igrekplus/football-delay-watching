@@ -309,6 +309,11 @@ Claude Code Remoteが自動生成するブランチは `claude/<slug>` 形式に
 
 詳細は [docs/04_operations/api_quota.md](docs/04_operations/api_quota.md) を参照。
 
+### 選手プロフィール作成運用
+
+運用設計は [docs/04_operations/player_profile_generation.md](docs/04_operations/player_profile_generation.md) を参照。
+実行手順は `generate_player_profiles` skill を SSOT とし、本文調査は `research_player_profile_content` skill に従う。
+
 ### Workflows・Skills一覧
 
 - Workflows: [.agent/workflows/](.agent/workflows/)
@@ -316,6 +321,6 @@ Claude Code Remoteが自動生成するブランチは `claude/<slug>` 形式に
   - `issue_resolution`: Issue解決のライフサイクル管理
   - `reviewer_mode`: 高度な技術レビュー
   - `manage_unext_commentators`: U-NEXTの実況・解説者情報の調査からCSV更新、カレンダー反映
-  - `generate_player_profiles`: 選手詳細プロフィールの作成
+  - `generate_player_profiles`: 選手詳細プロフィールの作成運用
   - `create_codex_skill_reference`: GeminiスキルをCodexで使えるようにする
   - `regenerate_report`: レポートをCSV・manifest・キャッシュリセットして再生成

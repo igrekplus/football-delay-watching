@@ -237,6 +237,11 @@ python -m unittest tests/test_datetime_util.py
 詳細は [docs/04_operations/api_quota.md](docs/04_operations/api_quota.md) を参照。
 各APIのヘルスチェックコマンドは同ドキュメントの「ヘルスチェックスクリプト」セクションを参照すること。
 
+### 選手プロフィール作成運用
+
+運用設計は [docs/04_operations/player_profile_generation.md](docs/04_operations/player_profile_generation.md) を参照。
+実行手順は `generate_player_profiles` skill を SSOT とし、本文調査は `research_player_profile_content` skill に従う。
+
 ### Workflows・Skills一覧
 
 - Workflows: [.agent/workflows/](.agent/workflows/)
@@ -245,6 +250,6 @@ python -m unittest tests/test_datetime_util.py
   - `issue_resolution`: Issue解決のライフサイクル管理
   - `reviewer_mode`: 高度な技術レビュー
   - `manage_unext_commentators`: U-NEXTの実況・解説者情報の調査からCSV更新、カレンダー反映までを行う総合スキル。
-  - `generate_player_profiles`: 選手詳細プロフィールの作成（基本情報＋深掘りエピソード）
+  - `generate_player_profiles`: 選手詳細プロフィールの作成運用（基本情報＋深掘りエピソード）
   - `create_codex_skill_reference`: Gemini / Antigravity 由来の skill を Codex の `$...` で使える状態にする
   - `regenerate_report`: fixture_id 指定で既存レポートの CSV・manifest・キャッシュをリセットして再生成する
