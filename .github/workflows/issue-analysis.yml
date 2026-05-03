@@ -106,9 +106,14 @@ jobs:
           echo "=== Claude version ==="
           claude --version || true
 
+          echo "=== Prompt preview (first 200 chars) ==="
+          head -c 200 /tmp/prompt.txt
+
           echo "=== Running analysis ==="
+          set +e
           claude -p "$(cat /tmp/prompt.txt)" --max-turns 1 > /tmp/analysis.txt 2>&1
           EXIT_CODE=$?
+          set -e
 
           echo "=== Analysis output (exit code: $EXIT_CODE) ==="
           cat /tmp/analysis.txt
