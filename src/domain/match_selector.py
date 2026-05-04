@@ -23,14 +23,15 @@ class MatchSelector:
         # Sort logic
         def sort_key(m: MatchAggregate):
             r_score = rank_order.get(m.rank, 99)
-            # Competition priority: CL > LALIGA > EPL > COPA > FA > EFL
+            # Competition priority: CL > WCQ > LALIGA > EPL > COPA > FA > EFL
             comp_priority = {
                 "CL": 0,
-                "LALIGA": 1,
-                "EPL": 2,
-                "COPA": 3,
-                "FA": 4,
-                "EFL": 5,
+                "WCQ": 1,
+                "LALIGA": 2,
+                "EPL": 3,
+                "COPA": 4,
+                "FA": 5,
+                "EFL": 6,
             }
             comp_score = comp_priority.get(m.competition, 99)
             return (r_score, comp_score)
