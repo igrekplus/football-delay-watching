@@ -29,8 +29,15 @@
             {% endif %}
             <div class="player-card-info">
                 <div class="player-card-position">{{ player.position }} {{ player.number_display }}</div>
-                <div class="player-card-nationality">{% if player.flag %}{{ player.flag }} {% endif %}{{
-                    player.nationality }}</div>
+                {% if player.is_national_team and player.club_name %}
+                <div class="player-card-club">
+                    {% if player.club_logo %}<img src="{{ player.club_logo }}" alt="{{ player.club_name }}" class="player-card-club-logo">{% endif %}
+                    <span class="player-card-club-name">{{ player.club_name }}</span>
+                    {% if player.league_logo %}<img src="{{ player.league_logo }}" alt="" class="player-card-league-logo">{% endif %}
+                </div>
+                {% else %}
+                <div class="player-card-nationality">{% if player.flag %}{{ player.flag }} {% endif %}{{ player.nationality }}</div>
+                {% endif %}
                 <div class="player-card-age">{{ player.age_display }}</div>
             </div>
         </div>

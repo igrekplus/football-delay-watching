@@ -61,6 +61,11 @@ class Config:
                 self.LEAGUE_INFO = (
                     leagues_data  # Full data including display_name and logo
                 )
+                self.NATIONAL_TEAM_LEAGUE_IDS: set[int] = {
+                    league["id"]
+                    for league in leagues_data
+                    if league.get("type") == "national_team"
+                }
         except Exception as e:
             # Fallback to hardcoded defaults if YAML loading fails
             self.TARGET_LEAGUES = ["EPL", "CL", "LALIGA", "FA", "COPA", "EFL", "WCQ"]
@@ -74,6 +79,7 @@ class Config:
                 "WCQ": 32,
             }
             self.LEAGUE_INFO = []
+            self.NATIONAL_TEAM_LEAGUE_IDS: set[int] = {32}
             print(
                 f"Warning: Failed to load leagues from {yaml_path}. Using defaults. Error: {e}"
             )
@@ -90,6 +96,30 @@ class Config:
             return self._USE_API_CACHE_OVERRIDE.lower() == "true"
         # Default: enable cache in debug mode with real API
         return self.DEBUG_MODE and not self.USE_MOCK_DATA
+
+    def is_national_team_match(self, league_id: int) -> bool:
+        return league_id in self.NATIONAL_TEAM_LEAGUE_IDS
+
+    # Known international competition league IDs (national team competitions, friendlies)
+    # Used to filter out national team stats when looking for a player's club affiliation
+    INTERNATIONAL_LEAGUE_IDS: frozenset = frozenset(
+        {
+            4,  # Euro Championship
+            5,  # UEFA Nations League
+            6,  # Africa Cup of Nations
+            7,  # AFC Asian Cup
+            8,  # Copa America
+            9,  # Copa America (alt)
+            10,  # Friendlies (International)
+            13,  # CONCACAF Gold Cup
+            29,  # CONCACAF WCQ
+            31,  # CONMEBOL WCQ
+            32,  # UEFA WCQ (Europe)
+            34,  # AFC WCQ
+            35,  # CAF WCQ
+            36,  # OFC WCQ
+        }
+    )
 
     # S Rank Teams - Manchester City (highest priority)
     S_RANK_TEAMS: list[str] = ("Manchester City",)

@@ -160,6 +160,11 @@ class PlayerFormatter:
         player_profile_urls: dict[str, str] = None,
         css_class: str = "player-cards",
         team_logo: str = "",
+        player_club_names: dict[str, str] = None,
+        player_club_logos: dict[str, str] = None,
+        player_league_names: dict[str, str] = None,
+        player_league_logos: dict[str, str] = None,
+        is_national_team: bool = False,
     ) -> str:
         """
         選手リストをカード形式のHTMLに変換
@@ -239,6 +244,11 @@ class PlayerFormatter:
                     "profile_url": profile_url,
                     "team_logo": team_logo,
                     "team_name": team_name,
+                    "club_name": (player_club_names or {}).get(name, ""),
+                    "club_logo": (player_club_logos or {}).get(name, ""),
+                    "league_name": (player_league_names or {}).get(name, ""),
+                    "league_logo": (player_league_logos or {}).get(name, ""),
+                    "is_national_team": is_national_team,
                 }
             )
 
