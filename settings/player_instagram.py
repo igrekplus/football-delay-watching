@@ -37,22 +37,95 @@ USE_GCS_PLAYER_DATA = os.getenv("PLAYER_DATA_USE_GCS", "True").lower() == "true"
 TEAM_CSV_FILES = {
     33: "player_33.csv",  # Manchester United
     34: "player_34.csv",  # Newcastle
+    35: "player_35.csv",  # Bournemouth
+    36: "player_36.csv",  # Fulham
     39: "player_39.csv",  # Wolves
     40: "player_40.csv",  # Liverpool
     42: "player_42.csv",  # Arsenal
+    44: "player_44.csv",  # Burnley
+    45: "player_45.csv",  # Everton
     47: "player_47.csv",  # Tottenham
+    48: "player_48.csv",  # West Ham
     49: "player_49.csv",  # Chelsea
     50: "player_50.csv",  # Manchester City
     51: "player_51.csv",  # Brighton
     52: "player_52.csv",  # Crystal Palace
+    55: "player_55.csv",  # Brentford
+    63: "player_63.csv",  # Leeds
     65: "player_65.csv",  # Nottingham Forest
     66: "player_66.csv",  # Aston Villa
+    79: "player_79.csv",  # Lille
+    80: "player_80.csv",  # Lyon
+    81: "player_81.csv",  # Marseille
     85: "player_85.csv",  # Paris Saint Germain
+    91: "player_91.csv",  # Monaco
+    120: "player_120.csv",  # Botafogo
+    121: "player_121.csv",  # Palmeiras
+    124: "player_124.csv",  # Fluminense
+    126: "player_126.csv",  # Sao Paulo
+    127: "player_127.csv",  # Flamengo
+    128: "player_128.csv",  # Santos
     157: "player_157.csv",  # Bayern Munich
+    165: "player_165.csv",  # Borussia Dortmund
     168: "player_168.csv",  # Bayer Leverkusen
+    169: "player_169.csv",  # Eintracht Frankfurt
+    173: "player_173.csv",  # RB Leipzig
+    194: "player_194.csv",  # Ajax
+    197: "player_197.csv",  # PSV Eindhoven
+    209: "player_209.csv",  # Feyenoord
+    211: "player_211.csv",  # Benfica
+    212: "player_212.csv",  # FC Porto
+    228: "player_228.csv",  # Sporting CP
+    247: "player_247.csv",  # Celtic
+    257: "player_257.csv",  # Rangers
+    400: "player_400.csv",  # FC Copenhagen
+    435: "player_435.csv",  # River Plate
+    451: "player_451.csv",  # Boca Juniors
+    487: "player_487.csv",  # Lazio
+    489: "player_489.csv",  # AC Milan
+    492: "player_492.csv",  # Napoli
+    496: "player_496.csv",  # Juventus
+    497: "player_497.csv",  # AS Roma
+    499: "player_499.csv",  # Atalanta
+    505: "player_505.csv",  # Inter
     529: "player_529.csv",  # Barcelona
     530: "player_530.csv",  # Atletico Madrid
+    531: "player_531.csv",  # Athletic Club
+    532: "player_532.csv",  # Valencia
+    533: "player_533.csv",  # Villarreal
+    536: "player_536.csv",  # Sevilla
+    538: "player_538.csv",  # Celta Vigo
+    539: "player_539.csv",  # Levante
+    540: "player_540.csv",  # Espanyol
     541: "player_541.csv",  # Real Madrid
+    542: "player_542.csv",  # Alaves
+    543: "player_543.csv",  # Real Betis
+    546: "player_546.csv",  # Getafe
+    547: "player_547.csv",  # Girona
+    548: "player_548.csv",  # Real Sociedad
+    550: "player_550.csv",  # Shakhtar Donetsk
+    551: "player_551.csv",  # FC Basel 1893
+    553: "player_553.csv",  # Olympiakos Piraeus
+    560: "player_560.csv",  # Slavia Praha
+    569: "player_569.csv",  # Club Brugge KV
+    571: "player_571.csv",  # Red Bull Salzburg
+    572: "player_572.csv",  # Dynamo Kyiv
+    611: "player_611.csv",  # Fenerbahce
+    645: "player_645.csv",  # Galatasaray
+    718: "player_718.csv",  # Oviedo
+    727: "player_727.csv",  # Osasuna
+    728: "player_728.csv",  # Rayo Vallecano
+    746: "player_746.csv",  # Sunderland
+    797: "player_797.csv",  # Elche
+    798: "player_798.csv",  # Mallorca
+    1616: "player_1616.csv",  # Los Angeles FC
+    2282: "player_2282.csv",  # Monterrey
+    2287: "player_2287.csv",  # Club America
+    2929: "player_2929.csv",  # Al-Ahli Jeddah
+    2932: "player_2932.csv",  # Al-Hilal Saudi FC
+    2938: "player_2938.csv",  # Al-Ittihad FC
+    2939: "player_2939.csv",  # Al-Nassr
+    9568: "player_9568.csv",  # Inter Miami
     # 将来的に他のチームを追加
 }
 

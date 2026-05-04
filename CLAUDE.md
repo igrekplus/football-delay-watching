@@ -87,6 +87,27 @@ python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirem
 
 > 主要なワークフローのみ記載。全一覧は [.agent/workflows/](.agent/workflows/) を参照
 
+### Schedule Tasks（定期自動実行）
+
+Claude Code の Schedule Task として登録済みのルーティン：
+
+| タスク名 | スケジュール | 用途 |
+|---------|------------|------|
+| `analyze-github-issues` | 毎日 9:00 JST | 未分析の open Issue を 1 件自動分析し、コードベースを参照した初期見立てを Issue 本文に追記 |
+
+**Issue 分析の使い分け**:
+| | GitHub Actions (`issue-analysis.yml`) | Schedule Task (`analyze-github-issues`) |
+|--|--|--|
+| トリガー | 手動（`workflow_dispatch`） | 毎日定時（自動） |
+| コード参照 | なし（Issue 本文のみ） | あり（CLAUDE.md を起点に関連ファイルを探索） |
+| 用途 | 特定 Issue を今すぐ分析したい場合 | 日常的な定期分析・コード文脈を含む見立て |
+
+**ラベル仕様**:
+- `claude-analyzed`: 分析済み（自動付与）。このラベルがある Issue はスキップされる
+- `no-analysis`: 分析不要（手動付与）。このラベルがある Issue はスキップされる
+
+**Schedule Task の管理**: Claude Code サイドバーの「Scheduled」セクションから確認・手動実行・停止が可能
+
 ### Code Style
 
 本プロジェクトでは**Ruff**を採用している。
