@@ -75,30 +75,8 @@ def generate_html_report(content: str, report_datetime: str = None) -> str:
         extensions=["tables", "fenced_code", "nl2br", "markdown.extensions.md_in_html"],
     )
 
-    # CSS外部参照HTMLテンプレート
-    html_template = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{mode_prefix}サッカー観戦ガイド - {report_date}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{CSS_PATH}">
-</head>
-<body>
-    <div class="container">
-        <a href="../index.html" class="back-link">← レポート一覧に戻る</a>
-        {mode_banner}
-        {html_body}
-        <div class="timestamp">
-            生成日時: {timestamp}
-        </div>
-    </div>
-</body>
-</html>
-"""
+    title = f"{mode_prefix}サッカー観戦ガイド - {report_date}"
+    html_template = _get_html_template(title, html_body, timestamp, mode_banner)
 
     # 出力ディレクトリ作成
     Path(REPORTS_DIR).mkdir(parents=True, exist_ok=True)
@@ -136,16 +114,7 @@ def generate_html_reports(report_list: list) -> list:
         生成されたHTMLファイルパスのリスト
     """
     now_jst = DateTimeUtil.now_jst()
-    DateTimeUtil.format_display_timestamp(now_jst)
     generation_datetime = DateTimeUtil.format_filename_datetime(now_jst)
-
-    # デバッグ/モックモード判定
-    if config.USE_MOCK_DATA:
-        pass
-    elif config.DEBUG_MODE:
-        pass
-    else:
-        pass
 
     # 出力ディレクトリ作成
     Path(REPORTS_DIR).mkdir(parents=True, exist_ok=True)

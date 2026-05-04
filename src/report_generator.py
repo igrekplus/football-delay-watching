@@ -829,7 +829,9 @@ class ReportGenerator:
 
         result = []
         for m in matchups_data:
-            country = m.get("country", "")
+            country = m.get("country") or ""
+            if not country:
+                continue
             flag = get_flag_emoji(country)
             header = f"{flag} {country}" if flag else country
 

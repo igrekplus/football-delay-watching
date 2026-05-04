@@ -59,7 +59,7 @@ class GmailClient:
                 and self.credentials.refresh_token
             ):
                 logger.info("Refreshing expired Gmail token...")
-                self.credentials.refresh(Request())
+                self.credentials.refresh(Request(timeout=10))
                 logger.info("Gmail token refreshed successfully.")
 
         except Exception as e:

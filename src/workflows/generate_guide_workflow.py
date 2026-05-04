@@ -128,6 +128,10 @@ class GenerateGuideWorkflow:
         Returns:
             (youtube_videos, youtube_stats)
         """
+        from src.clients.llm_client import reset_rate_limit_failures
+
+        reset_rate_limit_failures()
+
         # 3. Facts Acquisition
         facts_service = FactsService()
         facts_service.enrich_matches(matches)
@@ -266,6 +270,8 @@ class GenerateGuideWorkflow:
         Returns:
             (is_complete, missing_items): 完全か否かと、欠損コンテンツのリスト
         """
+        from src.clients.llm_client import get_rate_limit_failures_for
+
         missing = []
 
         # 必須: スタメン（ホーム・アウェイ両方）
@@ -278,6 +284,13 @@ class GenerateGuideWorkflow:
         if not match.news_summary and not match.tactical_preview:
             missing.append("news_summary/tactical_preview")
 
+        # Gemini 429 で欠落したセクションがあれば partial 扱い
+        rate_limit_failures = get_rate_limit_failures_for(
+            match.home_team, match.away_team
+        )
+        for section in rate_limit_failures:
+            missing.append(f"llm_rate_limit:{section}")
+
         # YouTube動画は品質判定から除外（クォータ切れ時に再処理ループを防ぐため）
         # 動画がなくても complete として扱う
 
@@ -287,12 +300,7 @@ class GenerateGuideWorkflow:
     def _generate_html(self, report_list):
         html_paths = []
         try:
-            from src.html_generator import generate_html_reports, sync_from_firebase
-
-            if not config.USE_MOCK_DATA:
-                sync_from_firebase()
-            else:
-                logger.info("Mock mode: Skipping Firebase sync")
+            from src.html_generator import generate_html_reports
 
             html_paths = generate_html_reports(report_list)
             logger.info(f"Generated {len(html_paths)} HTML files")

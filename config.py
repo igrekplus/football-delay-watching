@@ -63,7 +63,7 @@ class Config:
                 )
         except Exception as e:
             # Fallback to hardcoded defaults if YAML loading fails
-            self.TARGET_LEAGUES = ["EPL", "CL", "LALIGA", "FA", "COPA", "EFL"]
+            self.TARGET_LEAGUES = ["EPL", "CL", "LALIGA", "FA", "COPA", "EFL", "WCQ"]
             self.LEAGUE_IDS = {
                 "EPL": 39,
                 "CL": 2,
@@ -71,6 +71,7 @@ class Config:
                 "FA": 45,
                 "COPA": 143,
                 "EFL": 48,
+                "WCQ": 32,
             }
             self.LEAGUE_INFO = []
             print(

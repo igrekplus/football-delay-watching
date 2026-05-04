@@ -23,11 +23,13 @@
 2. [04_operations/execution_mode.md](./04_operations/execution_mode.md) - 実行モード（本番/デバッグ/モック）
 3. [04_operations/api_quota.md](./04_operations/api_quota.md) - APIクォータ管理
 4. [04_operations/report_status.md](./04_operations/report_status.md) - レポートステータス管理
+5. [04_operations/player_profile_generation.md](./04_operations/player_profile_generation.md) - 選手プロフィール作成運用
 
 ### 「AIと一緒に開発したい」 → AI協業
 1. [GEMINI.md](../GEMINI.md) - AI向けガイド（開発規約・AI姿勢）
 2. [.agent/workflows/](../.agent/workflows/) - 作業別の定型手順書（スラッシュコマンド）
 3. [.agent/skills/](../.agent/skills/) - 特定ドメインの専門知識・判断ロジック
+4. [.agent/automations/](../.agent/automations/) - recurring automation に設定する固定指示文
 
 ---
 
@@ -38,9 +40,9 @@
 | `01_requirements/` | WHAT: 何を作るか | `index.md`, `non_functional.md` |
 | `02_architecture/` | HOW: 全体設計・データフロー | `system_overview.md`, `implementation_flow.md` |
 | `03_components/` | WHAT EACH: 各コンポーネント設計 | `api_football.md`, `cache.md`, `youtube_search.md` |
-| `04_operations/` | RUN: どう動かすか | `deployment.md`, `api_quota.md`, `execution_mode.md` |
+| `04_operations/` | RUN: どう動かすか | `deployment.md`, `api_quota.md`, `execution_mode.md`, `player_profile_generation.md` |
 | `GEMINI.md` | AI: 開発ガイド | (ルート配置) |
-| `.agent/` | AI: 設定・自動化 | `workflows/`, `skills/` |
+| `.agent/` | AI: 設定・自動化 | `workflows/`, `skills/`, `automations/` |
 
 ---
 

@@ -4,6 +4,7 @@ Gemini REST Client with Grounding Support
 
 import json
 import logging
+import time
 from typing import Any
 
 from config import config
@@ -20,7 +21,8 @@ class GeminiRestClient:
 
     BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
     DEFAULT_MODEL_NAME = "gemini-2.5-flash"
-    MAX_RETRIES = 2
+    MAX_RETRIES = 3
+    RETRY_WAIT_SECONDS = [5, 10, 20]
     TIMEOUT_SECONDS = 60
 
     def __init__(
@@ -38,28 +40,35 @@ class GeminiRestClient:
     def _make_request(self, payload: dict[str, Any], log_prefix: str = "") -> str:
         """
         Send a request to Gemini API.
-        Retry and Timeout are handled by underlying HttpClient/Tenacity.
+        Retries up to MAX_RETRIES times on 429 with exponential backoff.
         """
         url = f"{self.BASE_URL}/{self.model_name}:generateContent"
         headers = {"Content-Type": "application/json", "x-goog-api-key": self.api_key}
 
-        try:
-            response = self.http_client.post(
-                url, headers=headers, json=payload, timeout=self.TIMEOUT_SECONDS
-            )
+        for attempt in range(self.MAX_RETRIES + 1):
+            try:
+                response = self.http_client.post(
+                    url, headers=headers, json=payload, timeout=self.TIMEOUT_SECONDS
+                )
+            except Exception as e:
+                logger.error(f"{log_prefix} Gemini Request failed: {e}")
+                raise
 
             if response.status_code == 200:
                 return self._parse_response(response.json(), log_prefix)
-            else:
-                error_msg = (
-                    f"Gemini API Error {response.status_code}: {response.json()}"
-                )
-                logger.warning(f"{log_prefix} {error_msg}")
-                raise Exception(error_msg)
 
-        except Exception as e:
-            logger.error(f"{log_prefix} Gemini Request failed: {e}")
-            raise
+            if response.status_code == 429 and attempt < self.MAX_RETRIES:
+                wait = self.RETRY_WAIT_SECONDS[attempt]
+                logger.warning(
+                    f"{log_prefix} Gemini API Error 429: Resource exhausted. "
+                    f"Retry {attempt + 1}/{self.MAX_RETRIES} in {wait}s..."
+                )
+                time.sleep(wait)
+                continue
+
+            error_msg = f"Gemini API Error {response.status_code}: {response.json()}"
+            logger.warning(f"{log_prefix} {error_msg}")
+            raise Exception(error_msg)
 
     def generate_content(self, prompt: str) -> str:
         """
@@ -129,9 +138,9 @@ class GeminiRestClient:
                 if "groundingMetadata" in candidate:
                     meta = candidate["groundingMetadata"]
                     chunks = meta.get("groundingChunks", [])
-                    entry_point = meta.get("searchEntryPoint", {}).get(
-                        "renderedContent", "N/A"
-                    )
+                    entry_point = (meta.get("searchEntryPoint") or {}).get(
+                        "renderedContent"
+                    ) or "N/A"
                     chunk_details = []
                     for idx, chunk in enumerate(chunks[:15], 1):
                         web_info = chunk.get("web", {})

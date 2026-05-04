@@ -1,0 +1,190 @@
+name: Issue Analysis by Claude
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue番号（空欄なら最新1件を自動選択）'
+        required: false
+        type: string
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  analyze-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Determine target issue
+        id: get-issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
+            ISSUE_NUMBER="${{ github.event.inputs.issue_number }}"
+            echo "Using specified issue: $ISSUE_NUMBER"
+          else
+            # claude-analyzed ラベルが付いていない最新の open Issue を選ぶ
+            ISSUE_NUMBER=$(gh issue list \
+              --repo ${{ github.repository }} \
+              --state open \
+              --limit 20 \
+              --json number,labels \
+              --jq '[.[] | select(.labels | map(.name) | contains(["claude-analyzed"]) | not)] | .[0].number')
+            echo "Using latest unanalyzed open issue: $ISSUE_NUMBER"
+          fi
+
+          if [ -z "$ISSUE_NUMBER" ] || [ "$ISSUE_NUMBER" = "null" ]; then
+            echo "No unanalyzed open issues found."
+            exit 1
+          fi
+
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Get issue content
+        id: issue-content
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_JSON=$(gh issue view ${{ steps.get-issue.outputs.issue_number }} \
+            --repo ${{ github.repository }} \
+            --json title,body)
+
+          TITLE=$(echo "$ISSUE_JSON" | jq -r '.title')
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+
+          # ボディはファイルに書き出す（改行・特殊文字の問題を回避）
+          echo "$ISSUE_JSON" | jq -r '.body // ""' > /tmp/issue_body.txt
+          echo "Issue: #${{ steps.get-issue.outputs.issue_number }} - $TITLE"
+
+      - name: Build prompt
+        run: |
+          python3 << 'PYEOF'
+          import os
+
+          issue_number = "${{ steps.get-issue.outputs.issue_number }}"
+          title = "${{ steps.issue-content.outputs.title }}"
+
+          with open('/tmp/issue_body.txt', 'r') as f:
+              body = f.read().strip()
+
+          prompt = f"""以下の GitHub Issue を読んで、開発者として初期見立てをまとめてください。
+
+          Issue #{issue_number}: {title}
+
+          ---
+          {body}
+          ---
+
+          【出力形式】日本語で以下の構成で回答してください：
+
+          ## 🔍 課題の初期見立て
+          （Issueが解決しようとしている問題を2〜3文で整理）
+
+          ## 💡 実装方針の仮説
+          （まだ確定ではなく、考えられるアプローチを1〜3個候補として列挙）
+
+          ## ❓ 確認したいこと
+          （実装方針を固めるために igrekplus に確認すべき点を箇条書きで3〜5項目）
+
+          ---
+          分析は「完成形」ではなく「対話のたたき台」として書いてください。"""
+
+          with open('/tmp/prompt.txt', 'w') as f:
+              f.write(prompt)
+
+          print(f"Prompt built ({len(prompt)} chars)")
+          PYEOF
+
+      - name: Analyze with Claude
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          echo "=== Claude version ==="
+          claude --version || true
+
+          echo "=== Prompt preview (first 200 chars) ==="
+          head -c 200 /tmp/prompt.txt
+
+          echo "=== Running analysis ==="
+          set +e
+          claude -p "$(cat /tmp/prompt.txt)" --max-turns 10 > /tmp/analysis.txt 2>&1
+          EXIT_CODE=$?
+          set -e
+
+          echo "=== Analysis output (exit code: $EXIT_CODE) ==="
+          cat /tmp/analysis.txt
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "Claude exited with code $EXIT_CODE"
+            exit $EXIT_CODE
+          fi
+          echo "=== Analysis complete ($(wc -c < /tmp/analysis.txt) bytes) ==="
+
+      - name: Update issue body
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 << 'PYEOF'
+          import subprocess, os
+
+          issue_number = "${{ steps.get-issue.outputs.issue_number }}"
+          repo = "${{ github.repository }}"
+
+          with open('/tmp/issue_body.txt', 'r') as f:
+              original_body = f.read().strip()
+
+          with open('/tmp/analysis.txt', 'r') as f:
+              analysis = f.read().strip()
+
+          section = f"""
+
+          ---
+
+          ## 🤖 Claude 初期分析（自動生成）
+
+          <!-- claude-analysis-start -->
+          {analysis}
+
+          > このセクションは GitHub Actions により自動追記されました。
+          > Issue の内容を Claude モバイルアプリにコピペし、実装方針を深めてください。
+          <!-- claude-analysis-end -->"""
+
+          new_body = original_body + "\n" + section
+
+          with open('/tmp/new_body.txt', 'w') as f:
+              f.write(new_body)
+
+          result = subprocess.run(
+              ['gh', 'issue', 'edit', issue_number,
+               '--repo', repo,
+               '--body-file', '/tmp/new_body.txt'],
+              capture_output=True, text=True
+          )
+
+          if result.returncode != 0:
+              print(f"Error: {result.stderr}")
+              exit(1)
+          print(f"Issue #{issue_number} body updated successfully")
+          PYEOF
+
+      - name: Add label to issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # ラベルが存在しなければ作成（--force で冪等）
+          gh label create "claude-analyzed" \
+            --repo ${{ github.repository }} \
+            --color "0075ca" \
+            --description "Claude による初期分析済み" \
+            --force || true
+
+          gh issue edit ${{ steps.get-issue.outputs.issue_number }} \
+            --repo ${{ github.repository }} \
+            --add-label "claude-analyzed"
+
+          echo "Label 'claude-analyzed' added to issue #${{ steps.get-issue.outputs.issue_number }}"

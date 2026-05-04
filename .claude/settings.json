@@ -10,5 +10,11 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python main.py*)",
+      "Bash(curl *)"
+    ]
   }
 }

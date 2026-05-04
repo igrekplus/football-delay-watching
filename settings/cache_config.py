@@ -39,6 +39,8 @@ ENDPOINT_TTL_DAYS = {
     "headtohead": 10,
     # チーム統計: 10日間
     "statistics": 10,
+    # 順位表: 1日（同週内は standings_cache.csv が吸収するため短くてよい）
+    "standings": 1,
     # 怪我人情報: キャッシュしない（リアルタイム性が重要）
     "injuries": 0,
     # スクワッド: 7日間（移籍期間中は変動あり）
