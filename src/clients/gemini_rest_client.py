@@ -138,9 +138,9 @@ class GeminiRestClient:
                 if "groundingMetadata" in candidate:
                     meta = candidate["groundingMetadata"]
                     chunks = meta.get("groundingChunks", [])
-                    entry_point = meta.get("searchEntryPoint", {}).get(
-                        "renderedContent", "N/A"
-                    )
+                    entry_point = (meta.get("searchEntryPoint") or {}).get(
+                        "renderedContent"
+                    ) or "N/A"
                     chunk_details = []
                     for idx, chunk in enumerate(chunks[:15], 1):
                         web_info = chunk.get("web", {})
