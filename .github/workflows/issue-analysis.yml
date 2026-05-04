@@ -28,17 +28,18 @@ jobs:
             ISSUE_NUMBER="${{ github.event.inputs.issue_number }}"
             echo "Using specified issue: $ISSUE_NUMBER"
           else
+            # claude-analyzed ラベルが付いていない最新の open Issue を選ぶ
             ISSUE_NUMBER=$(gh issue list \
               --repo ${{ github.repository }} \
               --state open \
-              --limit 1 \
-              --json number \
-              --jq '.[0].number')
-            echo "Using latest open issue: $ISSUE_NUMBER"
+              --limit 20 \
+              --json number,labels \
+              --jq '[.[] | select(.labels | map(.name) | contains(["claude-analyzed"]) | not)] | .[0].number')
+            echo "Using latest unanalyzed open issue: $ISSUE_NUMBER"
           fi
 
-          if [ -z "$ISSUE_NUMBER" ]; then
-            echo "No open issues found."
+          if [ -z "$ISSUE_NUMBER" ] || [ "$ISSUE_NUMBER" = "null" ]; then
+            echo "No unanalyzed open issues found."
             exit 1
           fi
 
