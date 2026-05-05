@@ -6,7 +6,10 @@
     <div class="player-card" data-player-profile-url="{{ player.profile_url }}" data-player-name="{{ player.name }}"
         data-player-photo="{{ player.photo_url }}" data-player-flag-url="{{ player.flag_url }}"
         data-player-nationality="{{ player.nationality }}" data-player-team-logo="{{ player.team_logo }}"
-        data-player-team-name="{{ player.team_name }}">
+        data-player-team-name="{{ player.team_name }}"
+        data-player-club-logo="{{ player.club_logo or '' }}"
+        data-player-club-name="{{ player.club_name or '' }}"
+        data-is-national-team="{{ 'true' if player.is_national_team else 'false' }}">
         <div class="player-card-header">
             <span class="player-card-title">{{ player.name }}</span>
             <div class="player-card-actions">

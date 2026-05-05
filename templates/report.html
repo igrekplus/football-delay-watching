@@ -218,9 +218,18 @@
                 photoFrame.hidden = true;
             }
 
+            const isNationalTeam = trigger.getAttribute("data-is-national-team") === "true";
             const flagUrl = trigger.getAttribute("data-player-flag-url") || "";
             const nationality = trigger.getAttribute("data-player-nationality") || "";
-            if (flagUrl) {
+            const clubLogoUrl = trigger.getAttribute("data-player-club-logo") || "";
+            const clubName = trigger.getAttribute("data-player-club-name") || "";
+
+            // 代表戦では国旗を非表示にする（クラブ情報をメインにするため）
+            if (isNationalTeam) {
+                flag.removeAttribute("src");
+                flag.alt = "";
+                flag.hidden = true;
+            } else if (flagUrl) {
                 flag.src = flagUrl;
                 flag.alt = nationality ? `${nationality}の国旗` : "";
                 flag.hidden = false;
@@ -230,8 +239,13 @@
                 flag.hidden = true;
             }
 
-            const teamLogoUrl = trigger.getAttribute("data-player-team-logo") || "";
-            const teamName = trigger.getAttribute("data-player-team-name") || "";
+            // 代表戦ではクラブロゴを優先、それ以外はナショナルチームロゴ
+            const teamLogoUrl = isNationalTeam
+                ? clubLogoUrl
+                : (trigger.getAttribute("data-player-team-logo") || "");
+            const teamName = isNationalTeam
+                ? clubName
+                : (trigger.getAttribute("data-player-team-name") || "");
             if (teamLogoUrl) {
                 teamLogo.src = teamLogoUrl;
                 teamLogo.alt = teamName ? `${teamName}のロゴ` : "";
