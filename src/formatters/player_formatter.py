@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from settings.club_abbreviations import get_club_display_name
 from src.utils.nationality_flags import (
     format_player_with_flag,
     get_flagcdn_country_code,
@@ -244,7 +245,9 @@ class PlayerFormatter:
                     "profile_url": profile_url,
                     "team_logo": team_logo,
                     "team_name": team_name,
-                    "club_name": (player_club_names or {}).get(name, ""),
+                    "club_name": get_club_display_name(
+                        (player_club_names or {}).get(name, "")
+                    ),
                     "club_logo": (player_club_logos or {}).get(name, ""),
                     "league_name": (player_league_names or {}).get(name, ""),
                     "league_logo": (player_league_logos or {}).get(name, ""),
