@@ -63,6 +63,47 @@ CLUB_ABBREVIATIONS: dict[str, str] = {
     "Al-Ahli Saudi FC": "Al-Ahli",
     "Al-Ittihad Club": "Al-Ittihad",
     "Al Hilal Saudi FC": "Al Hilal",
+    # Russia / Eastern Europe
+    "FC Orenburg": "Orenburg",
+    "FC Zenit": "Zenit",
+    "FC Lokomotiv Moscow": "Lokomotiv",
+    "FK Krasnodar": "Krasnodar",
+    # Switzerland
+    "FC Zurich": "FC Zürich",
+    "BSC Young Boys": "Young Boys",
+    "FC Basel": "Basel",
+    # Czech Republic
+    "FC Slavia Prague": "Slavia",
+    "AC Sparta Prague": "Sparta",
+    "MFK Karviná": "Karviná",
+    # Cyprus / Other
+    "Pafos FC": "Pafos",
+    # Italy (additional)
+    "US Sassuolo": "Sassuolo",
+    "US Lecce": "Lecce",
+    "US Salernitana": "Salernitana",
+    "Hellas Verona": "Verona",
+    "Bologna FC": "Bologna",
+    "Udinese Calcio": "Udinese",
+    # Spain (additional)
+    "Celta de Vigo": "Celta Vigo",
+    "Villarreal CF": "Villarreal",
+    "RCD Mallorca": "Mallorca",
+    "Girona FC": "Girona",
+    # Germany (additional)
+    "1. FC Union Berlin": "Union Berlin",
+    "VfL Wolfsburg": "Wolfsburg",
+    "Werder Bremen": "Werder",
+    "VfL Bochum": "Bochum",
+    "TSG 1899 Hoffenheim": "Hoffenheim",
+    "SV Darmstadt 98": "Darmstadt",
+    "1. FC Heidenheim": "Heidenheim",
+    # France (additional)
+    "RC Lens": "Lens",
+    "Stade Brestois": "Brest",
+    "Montpellier HSC": "Montpellier",
+    "OGC Nice": "Nice",
+    "RC Strasbourg": "Strasbourg",
 }
 
 

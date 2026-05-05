@@ -548,9 +548,9 @@ pre {
 }
 
 .player-card-club-name {
-    display: grid;
-    align-content: center;
-    height: calc(1.4em * 2);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     word-break: break-word;
     line-height: 1.4;
