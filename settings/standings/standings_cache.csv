@@ -119,3 +119,23 @@ week_key,league,rank,team_id,team_name,team_logo,points,played,won,draw,lost,goa
 2026-02-23,LALIGA,18,536,Sevilla,https://media.api-sports.io/football/teams/536.png,34,33,9,7,17,40,55,-15,LLWLL,Relegation - LaLiga2
 2026-02-23,LALIGA,19,539,Levante,https://media.api-sports.io/football/teams/539.png,33,34,8,9,17,38,55,-17,LDWWL,Relegation - LaLiga2
 2026-02-23,LALIGA,20,718,Oviedo,https://media.api-sports.io/football/teams/718.png,28,34,6,10,18,26,54,-28,LLDWW,Relegation - LaLiga2
+2026-05-04,LALIGA,1,529,Barcelona,https://media.api-sports.io/football/teams/529.png,88,34,29,1,4,89,31,58,WWWWW,Promotion - Champions League (League phase)
+2026-05-04,LALIGA,2,541,Real Madrid,https://media.api-sports.io/football/teams/541.png,77,34,24,5,5,70,31,39,WDWDL,Promotion - Champions League (League phase)
+2026-05-04,LALIGA,3,533,Villarreal,https://media.api-sports.io/football/teams/533.png,68,34,21,5,8,64,39,25,WWDWL,Promotion - Champions League (League phase)
+2026-05-04,LALIGA,4,530,Atletico Madrid,https://media.api-sports.io/football/teams/530.png,63,34,19,6,9,58,37,21,WWLLL,Promotion - Champions League (League phase)
+2026-05-04,LALIGA,5,543,Real Betis,https://media.api-sports.io/football/teams/543.png,53,34,13,14,7,52,41,11,WDWDD,Promotion - Europa League (League phase)
+2026-05-04,LALIGA,6,538,Celta Vigo,https://media.api-sports.io/football/teams/538.png,47,34,12,11,11,48,44,4,WLLLW,Promotion - Conference League (Qualification)
+2026-05-04,LALIGA,7,546,Getafe,https://media.api-sports.io/football/teams/546.png,44,34,13,5,16,28,36,-8,LLWLW,
+2026-05-04,LALIGA,8,531,Athletic Club,https://media.api-sports.io/football/teams/531.png,44,34,13,5,16,40,50,-10,WLWLL,
+2026-05-04,LALIGA,9,548,Real Sociedad,https://media.api-sports.io/football/teams/548.png,43,33,11,10,12,52,52,0,DLDWL,Promotion - Europa League (League phase)
+2026-05-04,LALIGA,10,727,Osasuna,https://media.api-sports.io/football/teams/727.png,42,34,11,9,14,40,42,-2,LWLDD,
+2026-05-04,LALIGA,11,728,Rayo Vallecano,https://media.api-sports.io/football/teams/728.png,42,34,10,12,12,35,41,-6,WDWLW,
+2026-05-04,LALIGA,12,532,Valencia,https://media.api-sports.io/football/teams/532.png,39,34,10,9,15,37,50,-13,LWDLL,
+2026-05-04,LALIGA,13,540,Espanyol,https://media.api-sports.io/football/teams/540.png,39,34,10,9,15,37,51,-14,LDLLD,
+2026-05-04,LALIGA,14,797,Elche,https://media.api-sports.io/football/teams/797.png,38,34,9,11,14,45,53,-8,LWWWL,
+2026-05-04,LALIGA,15,798,Mallorca,https://media.api-sports.io/football/teams/798.png,38,34,10,8,16,42,51,-9,WLDWW,
+2026-05-04,LALIGA,16,547,Girona,https://media.api-sports.io/football/teams/547.png,38,34,9,11,14,36,51,-15,LLLDW,
+2026-05-04,LALIGA,17,542,Alaves,https://media.api-sports.io/football/teams/542.png,36,34,9,9,16,40,53,-13,LWLDD,
+2026-05-04,LALIGA,18,536,Sevilla,https://media.api-sports.io/football/teams/536.png,34,33,9,7,17,40,55,-15,LLWLL,Relegation - LaLiga2
+2026-05-04,LALIGA,19,539,Levante,https://media.api-sports.io/football/teams/539.png,33,34,8,9,17,38,55,-17,LDWWL,Relegation - LaLiga2
+2026-05-04,LALIGA,20,718,Oviedo,https://media.api-sports.io/football/teams/718.png,28,34,6,10,18,26,54,-28,LLDWW,Relegation - LaLiga2
