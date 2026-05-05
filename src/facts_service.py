@@ -120,7 +120,24 @@ class FactsService:
                             if s.get("league", {}).get("id")
                             not in config.INTERNATIONAL_LEAGUE_IDS
                         ]
-                        latest = club_stats[-1] if club_stats else stats[0]
+                        # Issue #262: league.type=="League"（国内リーグ）を優先し、
+                        # appearances が最多のエントリを選ぶ。
+                        # カップ戦（CL・FAカップ等）が statistics 末尾に来ても
+                        # 国内リーグロゴが正しく選ばれるようにする。
+                        if club_stats:
+                            domestic = [
+                                s
+                                for s in club_stats
+                                if s.get("league", {}).get("type") == "League"
+                            ]
+                            candidates = domestic if domestic else club_stats
+                            latest = max(
+                                candidates,
+                                key=lambda s: s.get("games", {}).get("appearences")
+                                or 0,
+                            )
+                        else:
+                            latest = stats[0]
                         club_team = latest.get("team", {})
                         club_league = latest.get("league", {})
                         if club_team.get("name"):
