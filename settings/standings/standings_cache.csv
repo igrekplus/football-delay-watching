@@ -39,3 +39,23 @@ week_key,league,rank,team_id,team_name,team_logo,points,played,won,draw,lost,goa
 2026-02-09,EPL,18,47,Tottenham,https://media.api-sports.io/football/teams/47.png,34,34,8,10,16,43,53,-10,WDLLD,Relegation - Championship
 2026-02-09,EPL,19,44,Burnley,https://media.api-sports.io/football/teams/44.png,20,35,4,8,23,35,71,-36,LLLLL,Relegation - Championship
 2026-02-09,EPL,20,39,Wolves,https://media.api-sports.io/football/teams/39.png,18,35,3,9,23,25,63,-38,DLLLD,Relegation - Championship
+2026-05-04,EPL,1,42,Arsenal,https://media.api-sports.io/football/teams/42.png,76,35,23,7,5,67,26,41,WWLLW,Promotion - Champions League (League phase)
+2026-05-04,EPL,2,50,Manchester City,https://media.api-sports.io/football/teams/50.png,70,33,21,7,5,66,29,37,WWWDD,Promotion - Champions League (League phase)
+2026-05-04,EPL,3,33,Manchester United,https://media.api-sports.io/football/teams/33.png,64,35,18,10,7,63,48,15,WWWLD,Promotion - Champions League (League phase)
+2026-05-04,EPL,4,40,Liverpool,https://media.api-sports.io/football/teams/40.png,58,35,17,7,11,59,47,12,LWWWL,Promotion - Champions League (League phase)
+2026-05-04,EPL,5,66,Aston Villa,https://media.api-sports.io/football/teams/66.png,58,35,17,7,11,48,44,4,LLWDW,Promotion - Champions League (League phase)
+2026-05-04,EPL,6,35,Bournemouth,https://media.api-sports.io/football/teams/35.png,52,35,12,16,7,55,52,3,WDWWD,Promotion - Europa League (League phase)
+2026-05-04,EPL,7,55,Brentford,https://media.api-sports.io/football/teams/55.png,51,35,14,9,12,52,46,6,WLDDD,Promotion - Conference League (Play Offs)
+2026-05-04,EPL,8,51,Brighton,https://media.api-sports.io/football/teams/51.png,50,35,13,11,11,49,42,7,LWDWW,
+2026-05-04,EPL,9,49,Chelsea,https://media.api-sports.io/football/teams/49.png,48,34,13,9,12,53,45,8,LLLLL,
+2026-05-04,EPL,10,36,Fulham,https://media.api-sports.io/football/teams/36.png,48,35,14,6,15,44,49,-5,LWDLW,
+2026-05-04,EPL,11,45,Everton,https://media.api-sports.io/football/teams/45.png,47,34,13,8,13,41,41,0,LLDWL,
+2026-05-04,EPL,12,746,Sunderland,https://media.api-sports.io/football/teams/746.png,47,35,12,11,12,37,46,-9,DLLWW,
+2026-05-04,EPL,13,34,Newcastle,https://media.api-sports.io/football/teams/34.png,45,35,13,6,16,49,51,-2,WLLLL,
+2026-05-04,EPL,14,63,Leeds,https://media.api-sports.io/football/teams/63.png,43,35,10,13,12,47,52,-5,WDWWD,
+2026-05-04,EPL,15,52,Crystal Palace,https://media.api-sports.io/football/teams/52.png,43,34,11,10,13,36,42,-6,LLDWD,
+2026-05-04,EPL,16,65,Nottingham Forest,https://media.api-sports.io/football/teams/65.png,39,34,10,9,15,41,45,-4,WWDWD,
+2026-05-04,EPL,17,47,Tottenham,https://media.api-sports.io/football/teams/47.png,37,35,9,10,16,45,54,-9,WWDLL,
+2026-05-04,EPL,18,48,West Ham,https://media.api-sports.io/football/teams/48.png,36,35,9,9,17,42,61,-19,LWDWL,Relegation - Championship
+2026-05-04,EPL,19,44,Burnley,https://media.api-sports.io/football/teams/44.png,20,35,4,8,23,35,71,-36,LLLLL,Relegation - Championship
+2026-05-04,EPL,20,39,Wolves,https://media.api-sports.io/football/teams/39.png,18,35,3,9,23,25,63,-38,DLLLD,Relegation - Championship
