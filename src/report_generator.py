@@ -269,6 +269,7 @@ class ReportGenerator:
             player_profile_urls[jp_name] = player_profile_urls[eng_name]
 
         # 選手カードの生成
+        is_national = config.is_national_team_match(match.core.league_id)
         home_cards_html = self.player_formatter.format_player_cards(
             match.facts.home_lineup,
             match.facts.home_formation,
@@ -280,6 +281,11 @@ class ReportGenerator:
             player_instagram=match.facts.player_instagram,
             player_profile_urls=player_profile_urls,
             team_logo=match.core.home_logo,
+            player_club_names=match.facts.player_club_names,
+            player_club_logos=match.facts.player_club_logos,
+            player_league_names=match.facts.player_league_names,
+            player_league_logos=match.facts.player_league_logos,
+            is_national_team=is_national,
         )
         away_cards_html = self.player_formatter.format_player_cards(
             match.facts.away_lineup,
@@ -292,6 +298,11 @@ class ReportGenerator:
             player_instagram=match.facts.player_instagram,
             player_profile_urls=player_profile_urls,
             team_logo=match.core.away_logo,
+            player_club_names=match.facts.player_club_names,
+            player_club_logos=match.facts.player_club_logos,
+            player_league_names=match.facts.player_league_names,
+            player_league_logos=match.facts.player_league_logos,
+            is_national_team=is_national,
         )
         home_bench_html = self.player_formatter.format_player_cards(
             match.facts.home_bench,
@@ -307,6 +318,11 @@ class ReportGenerator:
             player_profile_urls=player_profile_urls,
             css_class="player-cards-scroll",
             team_logo=match.core.home_logo,
+            player_club_names=match.facts.player_club_names,
+            player_club_logos=match.facts.player_club_logos,
+            player_league_names=match.facts.player_league_names,
+            player_league_logos=match.facts.player_league_logos,
+            is_national_team=is_national,
         )
         away_bench_html = self.player_formatter.format_player_cards(
             match.facts.away_bench,
@@ -322,6 +338,11 @@ class ReportGenerator:
             player_profile_urls=player_profile_urls,
             css_class="player-cards-scroll",
             team_logo=match.core.away_logo,
+            player_club_names=match.facts.player_club_names,
+            player_club_logos=match.facts.player_club_logos,
+            player_league_names=match.facts.player_league_names,
+            player_league_logos=match.facts.player_league_logos,
+            is_national_team=is_national,
         )
 
         home_injuries = [
@@ -362,6 +383,8 @@ class ReportGenerator:
             player_photos=match.facts.player_photos,
             player_profile_urls=player_profile_urls,
             player_short_names=short_names_dict,
+            player_club_logos=match.facts.player_club_logos,
+            is_national_team=is_national,
         )
         away_formation_data = get_formation_layout_data(
             formation=match.facts.away_formation,
@@ -375,6 +398,8 @@ class ReportGenerator:
             player_photos=match.facts.player_photos,
             player_profile_urls=player_profile_urls,
             player_short_names=short_names_dict,
+            player_club_logos=match.facts.player_club_logos,
+            is_national_team=is_national,
         )
 
         formation_html = render_template(

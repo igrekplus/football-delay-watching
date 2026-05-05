@@ -29,7 +29,9 @@
                     {% endif %}
                 </div>
                 <div class="card-right-side">
-                    {% if player.flag_url %}
+                    {% if player.club_logo %}
+                    <img src="{{ player.club_logo }}" class="player-flag" alt="">
+                    {% elif player.flag_url %}
                     <img src="{{ player.flag_url }}" class="player-flag" alt="">
                     {% endif %}
                     <span class="player-number-badge">#{{ player.number }}</span>
@@ -71,7 +73,9 @@
                     {% endif %}
                 </div>
                 <div class="card-right-side">
-                    {% if player.flag_url %}
+                    {% if player.club_logo %}
+                    <img src="{{ player.club_logo }}" class="player-flag" alt="">
+                    {% elif player.flag_url %}
                     <img src="{{ player.flag_url }}" class="player-flag" alt="">
                     {% endif %}
                     <span class="player-number-badge">#{{ player.number }}</span>

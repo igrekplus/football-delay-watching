@@ -122,6 +122,22 @@ python src/workflows/generate_player_profile/check_missing_profiles.py --fixture
 - 先発だけで 5 人埋まる場合でも、情報価値が低い組み合わせなら最適判断で入れ替えてよい
 - それでも上限は **5 選手まで**
 
+### Step 3.5: 調査観点を事前整理する
+
+5選手を選定したら、本文調査に入る前に、各選手について以下を1行ずつ整理する。
+
+- 基本情報以外に掘るべきテーマ
+- 期待する「へぇ」と思える情報
+- 注意すべき未確認情報・噂
+- 優先して見るべき言語・媒体
+
+この整理なしに本文作成へ進まない。
+
+目的:
+- Codex が公式プロフィール / Wikipedia / Transfermarkt だけで早くまとめてしまうことを防ぐ
+- 選手ごとに「人物像が立つ情報」を探す観点を先に固定する
+- ネガティブ情報や私生活情報を扱う場合に、出典確認と文脈づけを先に意識する
+
 ### Step 4: 本文調査と `temp/*.md` 出力
 
 この工程は下位 skill を使う。
@@ -131,6 +147,9 @@ python src/workflows/generate_player_profile/check_missing_profiles.py --fixture
 注意:
 - 調査対象は Step 3 で選んだ **5 選手のみ**
 - 6人目以降は同ターンで広げない
+- 下位 skill の品質ゲートを満たすまで CSV 反映に進まない
+- 特に、各選手について「インタビュー / 特集記事 / 監督・関係者コメント」のいずれかを最低1本確認する
+- 各選手について、単なる経歴ではない「へぇ」と思える情報を最低2つ本文に入れる
 
 ### Step 5: ローカル CSV へ反映
 
@@ -236,10 +255,13 @@ TARGET_DATE="2026-02-28" TARGET_FIXTURE_ID="1379244" DEBUG_MODE=True USE_MOCK_DA
 ## 最低限の検証
 
 1. fixture の対象チームについて、既存プロフィール有無を確認したうえで 5 選手を選定したことを明示する。
-2. ローカル CSV の対象行に `profile_format` / `profile_detail` が入っていることを確認する。
-3. 更新対象が 5 選手以内であることを確認する。
-4. standalone HTML を更新した場合は、対象の `public/player-profiles/*.html` に期待する本文断片が出ていることを確認する。
-5. レポートから確認する場合は、対象レポート HTML がその `data-player-profile-url` を参照していることを確認する。
-6. `data-player-profile-url` が空だった場合は、debug-run または HTML修正のどちらで導線を作ったかを明示する。
-7. deploy 後は、公開 URL 側でもレポートHTML内の `data-player-profile-url` と、プロフィール本文の断片語句の両方を確認する。
-8. レポートのモーダル確認は `fetch()` を使うため、`file://` 直開きではなく、deploy 後の公開 URL かローカル HTTP サーバ経由で確認する。
+2. 5選手それぞれについて、調査観点（掘るテーマ / 期待するへぇ情報 / 注意する噂 / 優先媒体）を整理したことを明示する。
+3. 各選手について、基本情報ソースだけでなく、インタビュー・特集記事・監督/関係者コメントのいずれかを確認したことを明示する。
+4. 各選手に「へぇ」と思える情報が最低2つ入っていることを確認する。
+5. ローカル CSV の対象行に `profile_format` / `profile_detail` が入っていることを確認する。
+6. 更新対象が 5 選手以内であることを確認する。
+7. standalone HTML を更新した場合は、対象の `public/player-profiles/*.html` に期待する本文断片が出ていることを確認する。
+8. レポートから確認する場合は、対象レポート HTML がその `data-player-profile-url` を参照していることを確認する。
+9. `data-player-profile-url` が空だった場合は、debug-run または HTML修正のどちらで導線を作ったかを明示する。
+10. deploy 後は、公開 URL 側でもレポートHTML内の `data-player-profile-url` と、プロフィール本文の断片語句の両方を確認する。
+11. レポートのモーダル確認は `fetch()` を使うため、`file://` 直開きではなく、deploy 後の公開 URL かローカル HTTP サーバ経由で確認する。

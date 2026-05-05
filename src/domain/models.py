@@ -69,6 +69,10 @@ class MatchFacts:
     player_instagram: dict[str, str] = field(default_factory=dict)
     player_profiles: dict[str, dict[str, str]] = field(default_factory=dict)
     player_id_map: dict[str, int] = field(default_factory=dict)  # name -> player_id
+    player_club_names: dict[str, str] = field(default_factory=dict)
+    player_club_logos: dict[str, str] = field(default_factory=dict)
+    player_league_names: dict[str, str] = field(default_factory=dict)
+    player_league_logos: dict[str, str] = field(default_factory=dict)
 
     # 負傷者情報
     injuries_list: list[dict] = field(default_factory=list)

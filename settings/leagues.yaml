@@ -34,3 +34,4 @@ leagues:
     id: 32
     display_name: World Cup Qualification - Europe
     logo_url: https://media.api-sports.io/football/leagues/32.png
+    type: national_team

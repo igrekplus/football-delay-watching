@@ -339,7 +339,9 @@ def get_formation_layout_data(
     player_numbers: dict[str, int],
     player_photos: dict[str, str],
     player_profile_urls: dict[str, str] | None = None,
-    player_short_names: dict[str, str] = None,  # New argument
+    player_short_names: dict[str, str] = None,
+    player_club_logos: dict[str, str] = None,
+    is_national_team: bool = False,
 ) -> dict:
     """
     Get formation layout data for HTML rendering.
@@ -396,15 +398,19 @@ def get_formation_layout_data(
                     if len(parts) > 1:
                         short_name = f"{parts[0][0]}. {parts[-1][:8]}"
 
+                club_logo = (
+                    (player_club_logos or {}).get(name, "") if is_national_team else ""
+                )
                 player_data.append(
                     {
                         "name": name,
-                        "short_name": short_name,  # New field
+                        "short_name": short_name,
                         "number": player_numbers.get(name, ""),
                         "photo": player_photos.get(name, ""),
                         "nationality": nationality_code,
                         "nationality_name": nationality_name,
-                        "flag_url": flag_url,
+                        "flag_url": "" if is_national_team else flag_url,
+                        "club_logo": club_logo,
                         "top_percent": round(base_top_percent + y_offsets[i], 1),
                         "left_percent": round(left_percent, 1),
                         "profile_url": player_profile_urls.get(name, ""),

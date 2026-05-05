@@ -111,6 +111,35 @@ class FactsService:
                     if birth_date:
                         match.facts.player_birthdates[lineup_name] = birth_date
 
+                    stats = player_data.get("statistics", [])
+                    if stats:
+                        # Exclude international/national team competition entries to get club stats
+                        club_stats = [
+                            s
+                            for s in stats
+                            if s.get("league", {}).get("id")
+                            not in config.INTERNATIONAL_LEAGUE_IDS
+                        ]
+                        latest = club_stats[-1] if club_stats else stats[0]
+                        club_team = latest.get("team", {})
+                        club_league = latest.get("league", {})
+                        if club_team.get("name"):
+                            match.facts.player_club_names[lineup_name] = club_team[
+                                "name"
+                            ]
+                        if club_team.get("logo"):
+                            match.facts.player_club_logos[lineup_name] = club_team[
+                                "logo"
+                            ]
+                        if club_league.get("name"):
+                            match.facts.player_league_names[lineup_name] = club_league[
+                                "name"
+                            ]
+                        if club_league.get("logo"):
+                            match.facts.player_league_logos[lineup_name] = club_league[
+                                "logo"
+                            ]
+
             except Exception as e:
                 logger.warning(f"Error fetching details for player {player_id}: {e}")
                 continue
