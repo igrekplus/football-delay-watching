@@ -224,12 +224,8 @@
             const clubLogoUrl = trigger.getAttribute("data-player-club-logo") || "";
             const clubName = trigger.getAttribute("data-player-club-name") || "";
 
-            // 代表戦では国旗を非表示にする（クラブ情報をメインにするため）
-            if (isNationalTeam) {
-                flag.removeAttribute("src");
-                flag.alt = "";
-                flag.hidden = true;
-            } else if (flagUrl) {
+            // 国旗は代表戦・クラブ戦共通で表示する
+            if (flagUrl) {
                 flag.src = flagUrl;
                 flag.alt = nationality ? `${nationality}の国旗` : "";
                 flag.hidden = false;
