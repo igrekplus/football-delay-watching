@@ -114,10 +114,10 @@ class FactsFormatter:
                 }
             )
 
-            if player_id:
+            if player_id and player_name:
                 player_id_name_pairs.append((player_id, player_name, team_name))
 
-            if photo:
+            if photo and player_name:
                 match.facts.player_photos[player_name] = photo
 
         if injuries:

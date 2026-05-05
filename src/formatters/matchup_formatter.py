@@ -42,13 +42,13 @@ class MatchupFormatter:
         # 2. 大文字小文字を無視した完全一致
         name_l = player_name.lower()
         for k, v in player_photos.items():
-            if k.lower() == name_l:
+            if k is not None and k.lower() == name_l:
                 return v
 
         # 3. 部分一致（苗字のみ等に対応）- 短すぎる名前は除外して誤マッチ防止
         if len(name_l) >= 4:
             for k, v in player_photos.items():
-                if name_l in k.lower() or k.lower() in name_l:
+                if k is not None and (name_l in k.lower() or k.lower() in name_l):
                     logger.debug(f"Partial match: '{player_name}' -> '{k}'")
                     return v
 
@@ -56,6 +56,8 @@ class MatchupFormatter:
         best_match = None
         best_ratio = 0.0
         for k, v in player_photos.items():
+            if k is None:
+                continue
             ratio = SequenceMatcher(None, name_l, k.lower()).ratio()
             if ratio > best_ratio:
                 best_ratio = ratio
