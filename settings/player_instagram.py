@@ -126,6 +126,8 @@ TEAM_CSV_FILES = {
     2938: "player_2938.csv",  # Al-Ittihad FC
     2939: "player_2939.csv",  # Al-Nassr
     9568: "player_9568.csv",  # Inter Miami
+    281: "player_281.csv",  # Kashiwa Reysol
+    287: "player_287.csv",  # Urawa Reds
     # 将来的に他のチームを追加
 }
 
