@@ -133,8 +133,9 @@ class FactsService:
                             candidates = domestic if domestic else club_stats
                             latest = max(
                                 candidates,
-                                key=lambda s: s.get("games", {}).get("appearences")
-                                or 0,
+                                key=lambda s: (
+                                    s.get("games", {}).get("appearences") or 0
+                                ),
                             )
                         else:
                             latest = stats[0]
