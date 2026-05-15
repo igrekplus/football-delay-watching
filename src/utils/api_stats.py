@@ -36,24 +36,34 @@ class ApiStats:
     _stats: dict[str, ApiStatEntry] = {}
 
     # API定義（デフォルト設定）
+    # unit_cost: 1回の呼び出しが消費するユニット数（YouTube search.list=100, playlistItems=1）
     API_DEFINITIONS = {
         "API-Football": {
             "quota_limit_str": "7,500/日",
             "console_url": "https://dashboard.api-football.com/",
+            "unit_cost": 1,
         },
         "YouTube Data API": {
-            "quota_limit_str": "10,000/日",
+            "quota_limit_str": "10,000 units/日",
             "console_url": "https://console.cloud.google.com/apis/dashboard",
+            "unit_cost": 100,  # search.list = 100 units/call
+        },
+        "YouTube Playlist API": {
+            "quota_limit_str": "10,000 units/日（search.listと共有）",
+            "console_url": "https://console.cloud.google.com/apis/dashboard",
+            "unit_cost": 1,  # playlistItems.list = 1 unit/call
         },
         "Gemini API": {
             "quota_limit_str": "~1,500/日",
             "console_url": "https://aistudio.google.com/app/u/1/api-keys?pli=1&project=gen-lang-client-0394252790",
+            "unit_cost": 1,
         },
         "Gemini Grounding": {
             "quota_limit_str": "課金制",
             "console_url": "https://console.cloud.google.com/billing?authuser=1",
+            "unit_cost": 1,
         },
-        "Gmail API": {"quota_limit_str": "500/日*", "console_url": ""},
+        "Gmail API": {"quota_limit_str": "500/日*", "console_url": "", "unit_cost": 1},
     }
 
     @classmethod
@@ -132,8 +142,8 @@ class ApiStats:
             Markdownテーブル文字列
         """
         lines = []
-        lines.append("| API | 実行回数 | 残クォータ | 上限 | 確認リンク |")
-        lines.append("|-----|---------|----------|------|-----------|")
+        lines.append("| API | 実行回数 (消費ユニット) | 残クォータ | 上限 | 確認リンク |")
+        lines.append("|-----|----------------------|----------|------|-----------|")
 
         # 統計データがあるか確認
         has_stats = len(cls._stats) > 0
@@ -148,16 +158,18 @@ class ApiStats:
                 entry = cls._stats.get(api_name)
 
                 if entry:
-                    # 実行回数
+                    unit_cost = defaults.get("unit_cost", 1)
+                    units = entry.calls * unit_cost
+                    # 実行回数 (消費ユニット)
                     if entry.calls > 0:
-                        if entry.cache_hits > 0:
-                            calls_str = (
-                                f"{entry.calls} (キャッシュ: {entry.cache_hits})"
-                            )
+                        if unit_cost > 1:
+                            calls_str = f"{entry.calls}回 ({units} units)"
                         else:
-                            calls_str = str(entry.calls)
+                            calls_str = f"{entry.calls}回"
+                        if entry.cache_hits > 0:
+                            calls_str += f" / キャッシュ: {entry.cache_hits}"
                     elif entry.cache_hits > 0:
-                        calls_str = f"0 (キャッシュ: {entry.cache_hits})"
+                        calls_str = f"0回 / キャッシュ: {entry.cache_hits}"
                     else:
                         calls_str = "0"
 
