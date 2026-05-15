@@ -93,32 +93,6 @@ mcp__github__get_me を呼び出す
 
 ---
 
-### 8. Gmail OAuth2 トークン（GMAIL_TOKEN / GMAIL_CREDENTIALS）
-
-```bash
-python3 << 'EOF'
-import json, os, subprocess
-
-token_data = json.loads(os.environ.get("GMAIL_TOKEN", "{}"))
-cred_data = json.loads(os.environ.get("GMAIL_CREDENTIALS", "{}")).get("installed", {})
-
-result = subprocess.run([
-    "curl", "-sf", "--cacert", "/tmp/combined-ca.pem",
-    "-X", "POST", "https://oauth2.googleapis.com/token",
-    "-d", f"client_id={cred_data['client_id']}&client_secret={cred_data['client_secret']}&refresh_token={token_data['refresh_token']}&grant_type=refresh_token"
-], capture_output=True, text=True)
-resp = json.loads(result.stdout) if result.stdout else {}
-if "access_token" in resp:
-    print("Gmail OAuth2: OK")
-else:
-    print(f"Gmail OAuth2: FAIL ({resp.get('error_description', resp.get('error', 'unknown'))})")
-EOF
-```
-
-> [!WARNING]
-> 2026-05-15 時点で `invalid_grant (Bad Request)` が確認されている。
-> リフレッシュトークンの再発行が必要。Gmail 送信機能は現在利用不可。
-
 ---
 
 ## 一括確認スクリプト
@@ -183,23 +157,6 @@ try:
 except:
     results["GitHub Token"] = "FAIL → use mcp__github__* instead"
 
-# 8. Gmail OAuth2
-token_data = json.loads(os.environ.get("GMAIL_TOKEN", "{}"))
-cred_data = json.loads(os.environ.get("GMAIL_CREDENTIALS", "{}")).get("installed", {})
-r = subprocess.run([
-    "curl", "-sf", "--cacert", "/tmp/combined-ca.pem",
-    "-X", "POST", "https://oauth2.googleapis.com/token",
-    "-d", f"client_id={cred_data.get('client_id','')}&client_secret={cred_data.get('client_secret','')}&refresh_token={token_data.get('refresh_token','')}&grant_type=refresh_token"
-], capture_output=True, text=True)
-try:
-    resp = json.loads(r.stdout)
-    if "access_token" in resp:
-        results["Gmail OAuth2"] = "OK"
-    else:
-        results["Gmail OAuth2"] = f"FAIL ({resp.get('error_description', resp.get('error', '?'))})"
-except:
-    results["Gmail OAuth2"] = "FAIL"
-
 # 表示
 print("=" * 50)
 print("  Environment Variable Check Results")
@@ -218,7 +175,6 @@ ALLCHECK
 | 項目 | 状態 | 対処 |
 |------|------|------|
 | `GITHUB_TOKEN` | ❌ Bad credentials (401) | `mcp__github__*` ツールを使う |
-| `GMAIL_TOKEN` | ❌ invalid_grant | リフレッシュトークンの再発行が必要 |
 | Firebase CLI (`firebase` コマンド) | ❌ not installed | `safe_deploy.sh` / `gsutil` で代替 |
 
 ---
