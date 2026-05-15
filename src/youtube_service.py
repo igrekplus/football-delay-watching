@@ -427,11 +427,15 @@ class YouTubeService:
         if self.UNEXT_CHANNEL_ID not in channel_ids:
             channel_ids = [self.UNEXT_CHANNEL_ID] + channel_ids
 
+        # フルネームに加え姓（ラストネーム）でもマッチ（例: "Erling Haaland" → "Haaland"）
+        last_name = player_name.split()[-1]
+        keywords = [player_name] if last_name == player_name else [player_name, last_name]
+
         kept = self._fetch_from_playlists(
             channel_ids=channel_ids,
             published_after=published_after,
             published_before=published_before,
-            title_keywords=[player_name],
+            title_keywords=keywords,
             category=category,
         )
         for v in kept:
@@ -450,7 +454,7 @@ class YouTubeService:
         デバッグモード: 1人/チーム
         通常モード: 3人/チーム
         """
-        player_count = 1 if config.DEBUG_MODE else 3
+        player_count = 2 if config.DEBUG_MODE else 3
 
         home_players = []
         away_players = []
