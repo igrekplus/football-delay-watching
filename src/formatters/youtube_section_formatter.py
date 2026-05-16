@@ -10,11 +10,10 @@ class YouTubeSectionFormatter:
 
     # カテゴリラベル定義
     CATEGORY_LABELS = {
-        "tactical": "📊 戦術分析",
-        "historic": "🎬 過去ハイライト",
-        "player_highlight": "⭐ 選手紹介",
         "press_conference": "🎤 記者会見",
-        "training": "🏃 練習風景",
+        "historic": "🎬 過去ハイライト",
+        "tactical": "📊 戦術分析",
+        "player_highlight": "⭐ 選手紹介",
     }
 
     def __init__(self):

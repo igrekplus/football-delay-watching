@@ -13,9 +13,16 @@ from collections.abc import Callable
 from datetime import datetime
 
 from config import config
+from settings.channels import (
+    find_team_channel_ids,
+    get_channel_info,
+    get_channels_by_categories,
+    get_team_name_variants,
+)
 from settings.search_specs import (
     build_youtube_query,
-    get_youtube_exclude_filters,
+    get_youtube_allowed_channel_categories,
+    get_youtube_max_display,
     get_youtube_time_window,
 )
 from src.clients.http_client import HttpClient
@@ -158,6 +165,61 @@ class YouTubeService:
             channel_id=channel_id,
         )
 
+    # ========== playlist方式の共通取得ロジック ==========
+
+    # UNEXT チャンネルID（playlistItems で確実に取得できる）
+    UNEXT_CHANNEL_ID = "UCMjvvElkdLRTgcTKklAUkSw"
+
+    def _fetch_from_playlists(
+        self,
+        channel_ids: list[str],
+        published_after: datetime | None,
+        published_before: datetime | None,
+        title_keywords: list[str],
+        category: str,
+        require_all_keywords: bool = False,
+    ) -> list[dict]:
+        """
+        複数チャンネルのuploadsプレイリストから動画を取得・フィルタ
+
+        Args:
+            channel_ids: 対象チャンネルIDリスト
+            published_after / published_before: 日付範囲
+            title_keywords: タイトルに含まれるべきキーワード（OR条件、require_all_keywords=True でAND）
+            category: 動画カテゴリ
+            require_all_keywords: Trueならキーワードを全て含む動画のみ残す
+        """
+        results = []
+        seen_ids = set()
+
+        for channel_id in channel_ids:
+            videos = self._youtube_client.get_channel_playlist_videos(
+                channel_id=channel_id,
+                max_results=50,
+                published_after=published_after,
+                published_before=published_before,
+            )
+            for v in videos:
+                vid_id = v.get("video_id", "")
+                if vid_id in seen_ids:
+                    continue
+                title = v.get("title", "").lower()
+                if title_keywords:
+                    if require_all_keywords:
+                        if not all(kw.lower() in title for kw in title_keywords):
+                            continue
+                    else:
+                        if not any(kw.lower() in title for kw in title_keywords):
+                            continue
+                seen_ids.add(vid_id)
+                v["category"] = category
+                info = get_channel_info(v.get("channel_id", channel_id))
+                v["is_trusted"] = True
+                v["channel_display"] = f"✅ {info['name']}"
+                results.append(v)
+
+        return results
+
     def _apply_trusted_channel_filter(self, videos: list[dict]) -> list[dict]:
         """
         信頼チャンネル優先でソート + バッジ付与
@@ -225,44 +287,36 @@ class YouTubeService:
         kickoff_time: datetime,
     ) -> dict[str, list[dict]]:
         """
-        記者会見を検索
+        記者会見を検索（playlist方式: チーム公式チャンネルのみ）
 
         Returns:
-            {"kept": [...], "removed": [...], "overflow": [...]}
+            {"kept": [...], "removed": [...]}
         """
         category = "press_conference"
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
 
-        # スペックから時間ウィンドウを取得
-        published_after, published_before = get_youtube_time_window(
-            category, kickoff_time
-        )
+        # チーム名に対応するチャンネルIDを取得
+        channel_ids = find_team_channel_ids(team_name)
+        if not channel_ids:
+            logger.info(f"No team channel found for '{team_name}', skipping press_conference")
+            return {"kept": [], "removed": []}
 
-        # スペックからクエリを生成
-        query = build_youtube_query(
-            category, team_name=team_name, manager_name=manager_name
-        )
+        # タイトルキーワード: "press conference" or "記者会見"
+        keywords = ["press conference", "記者会見"]
+        if manager_name:
+            keywords.append(manager_name)
 
-        videos = self._search_videos(
-            query=query,
+        kept = self._fetch_from_playlists(
+            channel_ids=channel_ids,
             published_after=published_after,
             published_before=published_before,
-            max_results=self.FETCH_MAX_RESULTS,
+            title_keywords=keywords,
+            category=category,
         )
-
-        for v in videos:
-            v["category"] = category
+        for v in kept:
             v["query_label"] = manager_name or team_name
 
-        # スペックからフィルタを取得して適用
-        exclude_filters = get_youtube_exclude_filters(category)
-        filter_result = self.filter.apply_filters(videos, exclude_filters)
-        kept = filter_result["kept"]
-        removed = filter_result["removed"]
-
-        # sort_trusted適用（件数制限なし）
-        kept = self.filter.sort_trusted(kept)
-
-        return {"kept": kept, "removed": removed}
+        return {"kept": kept, "removed": []}
 
     def _search_historic_clashes(
         self,
@@ -271,19 +325,16 @@ class YouTubeService:
         kickoff_time: datetime,
     ) -> dict[str, list[dict]]:
         """
-        過去の名勝負・対戦ハイライトを検索
+        過去の名勝負・対戦ハイライトを検索（search.list + 厳格チャンネルフィルタ）
+
+        1年さかのぼるため playlist の50件制限では不足。search.list でキーワード+日付検索後、
+        許可チャンネルカテゴリ（team/league/broadcaster）のみ残す。
 
         Returns:
-            {"kept": [...], "removed": [...], "overflow": [...]}
+            {"kept": [...], "removed": [...]}
         """
         category = "historic"
-
-        # スペックから時間ウィンドウを取得
-        published_after, published_before = get_youtube_time_window(
-            category, kickoff_time
-        )
-
-        # スペックからクエリを生成
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
         query = build_youtube_query(category, home_team=home_team, away_team=away_team)
 
         videos = self._search_videos(
@@ -292,34 +343,37 @@ class YouTubeService:
             published_before=published_before,
             max_results=self.FETCH_MAX_RESULTS,
         )
-
         for v in videos:
             v["category"] = category
 
-        # スペックからフィルタを取得して適用
-        exclude_filters = get_youtube_exclude_filters(category)
-        filter_result = self.filter.apply_filters(videos, exclude_filters)
-        kept = filter_result["kept"]
-        removed = filter_result["removed"]
+        # 許可カテゴリかつ両チーム名のいずれかがタイトルに含まれるもののみ残す
+        allowed_cats = get_youtube_allowed_channel_categories(category)
+        from settings.channels import get_channel_info as _get_info
 
-        # sort_trusted適用（件数制限なし）
-        kept = self.filter.sort_trusted(kept)
+        home_variants = get_team_name_variants(home_team)
+        away_variants = get_team_name_variants(away_team)
 
-        # Issue #109: LLM Post-Filter（Gemini）を適用
-        # モック/オーバーライドモードではスキップ
-        if kept and not self._search_override and not config.USE_MOCK_DATA:
-            try:
-                from src.clients.gemini_rest_client import GeminiRestClient
+        kept = []
+        removed = []
+        for v in videos:
+            info = _get_info(v.get("channel_id", ""))
+            title_lower = v.get("title", "").lower()
+            channel_ok = info["category"] in allowed_cats
+            # 両チーム名が両方含まれる動画のみ（対戦を示すタイトル）
+            home_ok = any(kw.lower() in title_lower for kw in home_variants)
+            away_ok = any(kw.lower() in title_lower for kw in away_variants)
+            title_ok = home_ok and away_ok
+            if channel_ok and title_ok:
+                v["is_trusted"] = True
+                v["channel_display"] = f"✅ {info['name']}"
+                kept.append(v)
+            else:
+                removed.append(v)
 
-                gemini_client = GeminiRestClient()
-                llm_result = self.filter.filter_by_context(
-                    kept, home_team, away_team, gemini_client
-                )
-                removed.extend(llm_result["removed"])
-                kept = llm_result["kept"]
-            except Exception as e:
-                logger.warning(f"LLM filter skipped due to error: {e}")
-
+        logger.info(
+            f"Historic filter: {len(kept)} kept, {len(removed)} removed "
+            f"(allowed: {allowed_cats})"
+        )
         return {"kept": kept, "removed": removed}
 
     def _search_tactical(
@@ -328,42 +382,30 @@ class YouTubeService:
         kickoff_time: datetime,
     ) -> dict[str, list[dict]]:
         """
-        戦術分析を検索
+        戦術分析を検索（playlist方式: tactics + media チャンネルのみ）
 
         Returns:
-            {"kept": [...], "removed": [...], "overflow": [...]}
+            {"kept": [...], "removed": [...]}
         """
         category = "tactical"
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
 
-        # スペックから時間ウィンドウを取得
-        published_after, published_before = get_youtube_time_window(
-            category, kickoff_time
-        )
+        allowed_cats = get_youtube_allowed_channel_categories(category)
+        channel_ids = get_channels_by_categories(allowed_cats)
 
-        # スペックからクエリを生成
-        query = build_youtube_query(category, team_name=team_name)
+        team_variants = get_team_name_variants(team_name)
 
-        videos = self._search_videos(
-            query=query,
+        kept = self._fetch_from_playlists(
+            channel_ids=channel_ids,
             published_after=published_after,
             published_before=published_before,
-            max_results=self.FETCH_MAX_RESULTS,
+            title_keywords=team_variants,
+            category=category,
         )
-
-        for v in videos:
-            v["category"] = category
+        for v in kept:
             v["query_label"] = team_name
 
-        # スペックからフィルタを取得して適用
-        exclude_filters = get_youtube_exclude_filters(category)
-        filter_result = self.filter.apply_filters(videos, exclude_filters)
-        kept = filter_result["kept"]
-        removed = filter_result["removed"]
-
-        # sort_trusted適用（件数制限なし）
-        kept = self.filter.sort_trusted(kept)
-
-        return {"kept": kept, "removed": removed}
+        return {"kept": kept, "removed": []}
 
     def _search_player_highlight(
         self,
@@ -372,87 +414,34 @@ class YouTubeService:
         kickoff_time: datetime,
     ) -> dict[str, list[dict]]:
         """
-        選手紹介動画を検索
+        選手紹介動画を検索（playlist方式: UNEXT・チーム公式・リーグ公式）
 
         Returns:
-            {"kept": [...], "removed": [...], "overflow": [...]}
+            {"kept": [...], "removed": [...]}
         """
         category = "player_highlight"
+        published_after, published_before = get_youtube_time_window(category, kickoff_time)
 
-        # スペックから時間ウィンドウを取得
-        published_after, published_before = get_youtube_time_window(
-            category, kickoff_time
-        )
+        # 選手紹介はチーム固有チャンネル + UNEXT のみ（全broadcaster巡回は無駄が多い）
+        channel_ids = find_team_channel_ids(team_name)
+        if self.UNEXT_CHANNEL_ID not in channel_ids:
+            channel_ids = [self.UNEXT_CHANNEL_ID] + channel_ids
 
-        # スペックからクエリを生成
-        query = build_youtube_query(
-            category, player_name=player_name, team_name=team_name
-        )
+        # フルネームに加え姓（ラストネーム）でもマッチ（例: "Erling Haaland" → "Haaland"）
+        last_name = player_name.split()[-1]
+        keywords = [player_name] if last_name == player_name else [player_name, last_name]
 
-        videos = self._search_videos(
-            query=query,
+        kept = self._fetch_from_playlists(
+            channel_ids=channel_ids,
             published_after=published_after,
             published_before=published_before,
-            max_results=self.FETCH_MAX_RESULTS,
+            title_keywords=keywords,
+            category=category,
         )
-
-        for v in videos:
-            v["category"] = category
+        for v in kept:
             v["query_label"] = player_name
 
-        # スペックからフィルタを取得して適用
-        exclude_filters = get_youtube_exclude_filters(category)
-        filter_result = self.filter.apply_filters(videos, exclude_filters)
-        kept = filter_result["kept"]
-        removed = filter_result["removed"]
-
-        # sort_trusted適用（件数制限なし）
-        kept = self.filter.sort_trusted(kept)
-
-        return {"kept": kept, "removed": removed}
-
-    def _search_training(
-        self,
-        team_name: str,
-        kickoff_time: datetime,
-    ) -> dict[str, list[dict]]:
-        """
-        練習風景を検索
-
-        Returns:
-            {"kept": [...], "removed": [...], "overflow": [...]}
-        """
-        category = "training"
-
-        # スペックから時間ウィンドウを取得
-        published_after, published_before = get_youtube_time_window(
-            category, kickoff_time
-        )
-
-        # スペックからクエリを生成
-        query = build_youtube_query(category, team_name=team_name)
-
-        videos = self._search_videos(
-            query=query,
-            published_after=published_after,
-            published_before=published_before,
-            max_results=self.FETCH_MAX_RESULTS,
-        )
-
-        for v in videos:
-            v["category"] = category
-            v["query_label"] = team_name
-
-        # スペックからフィルタを取得して適用
-        exclude_filters = get_youtube_exclude_filters(category)
-        filter_result = self.filter.apply_filters(videos, exclude_filters)
-        kept = filter_result["kept"]
-        removed = filter_result["removed"]
-
-        # sort_trusted適用（件数制限なし）
-        kept = self.filter.sort_trusted(kept)
-
-        return {"kept": kept, "removed": removed}
+        return {"kept": kept, "removed": []}
 
     def _deduplicate(self, videos: list[dict]) -> list[dict]:
         """重複を排除（後方互換性のため、内部ではself.filter.deduplicateを使用）"""
@@ -465,7 +454,7 @@ class YouTubeService:
         デバッグモード: 1人/チーム
         通常モード: 3人/チーム
         """
-        player_count = 1 if config.DEBUG_MODE else 3
+        player_count = 2 if config.DEBUG_MODE else 3
 
         home_players = []
         away_players = []
@@ -535,7 +524,7 @@ class YouTubeService:
             all_removed.extend(result.get("removed", []))
             all_overflow.extend(result.get("overflow", []))
 
-        # 1. 記者会見（2クエリ = 1クエリ × 2チーム）
+        # 1. 記者会見（各チームのチャンネルから取得）
         merge_result(
             self._search_press_conference(home_team, home_manager, kickoff_time)
         )
@@ -543,46 +532,40 @@ class YouTubeService:
             self._search_press_conference(away_team, away_manager, kickoff_time)
         )
 
-        # 2. 因縁（1クエリ）
+        # 2. 過去の対戦（UNEXT・チーム・リーグ・放送局から取得）
         merge_result(self._search_historic_clashes(home_team, away_team, kickoff_time))
 
-        # 3. 戦術（2クエリ = 1クエリ × 2チーム）
+        # 3. 戦術（tactics・mediaチャンネルから取得）
         merge_result(self._search_tactical(home_team, kickoff_time))
         merge_result(self._search_tactical(away_team, kickoff_time))
 
-        # 4. 選手紹介（各選手×チーム、デバッグモードは1人/チーム）
+        # 4. 選手紹介（UNEXT・チーム・リーグから取得、デバッグモードは1人/チーム）
         for player in home_players:
             merge_result(self._search_player_highlight(player, home_team, kickoff_time))
         for player in away_players:
             merge_result(self._search_player_highlight(player, away_team, kickoff_time))
 
-        # 5. 練習風景（2クエリ = 1クエリ × 2チーム）
-        merge_result(self._search_training(home_team, kickoff_time))
-        merge_result(self._search_training(away_team, kickoff_time))
-
         # 重複排除（keptのみ）
         unique_kept = self.filter.deduplicate(all_kept)
 
-        # カテゴリ別にグルーピングして10件制限
-        MAX_PER_CATEGORY = 10
+        # カテゴリ別にグルーピングしてmax_display件制限
         categories = [
             "press_conference",
             "historic",
             "tactical",
             "player_highlight",
-            "training",
         ]
         final_kept = []
         final_overflow = []
 
         for category in categories:
+            max_display = get_youtube_max_display(category)
             cat_videos = [v for v in unique_kept if v.get("category") == category]
             if cat_videos:
-                # 既にsort_trusted済みだが、2チーム分をまとめた後なので再ソート
-                cat_videos = self.filter.sort_trusted(cat_videos)
-                final_kept.extend(cat_videos[:MAX_PER_CATEGORY])
-                if len(cat_videos) > MAX_PER_CATEGORY:
-                    final_overflow.extend(cat_videos[MAX_PER_CATEGORY:])
+                cat_videos = sorted(cat_videos, key=lambda v: v.get("published_at", ""), reverse=True)
+                final_kept.extend(cat_videos[:max_display])
+                if len(cat_videos) > max_display:
+                    final_overflow.extend(cat_videos[max_display:])
 
         logger.info(
             f"Found {len(final_kept)} kept, {len(all_removed)} removed, {len(final_overflow)} overflow videos for {home_team} vs {away_team}"

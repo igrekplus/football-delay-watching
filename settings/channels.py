@@ -170,11 +170,6 @@ TRUSTED_CHANNELS: dict[str, dict] = {
         "handle": "@DAZNFootball",
         "category": "broadcaster",
     },
-    "UCf3sCM5LyzU1hI_lU4Av3eQ": {
-        "name": "DAZN Japan",
-        "handle": "@DAZNJapan",
-        "category": "broadcaster",
-    },
     "UCoFLB_Gw_AoxUuuzKjXrc_Q": {
         "name": "DAZN Japan",
         "handle": "@daznjapan",
@@ -229,7 +224,7 @@ TRUSTED_CHANNELS: dict[str, dict] = {
     "UCkWccBKBP0pvnUhuplw3lIA": {
         "name": "スポルティーバ",
         "handle": "@sportiva",
-        "category": "media",
+        "category": "tactics",
     },
     "UC8yHePe_RgUBE-waRWy6olw": {
         "name": "PIVOT 公式チャンネル",
@@ -386,6 +381,71 @@ TACTICS_CHANNELS = {
     "CRACK FOOTBALL": "@CRACKfootball",
     "Football Made Simple": "@FootballMadeSimple",
 }
+
+
+# =============================================================================
+# チーム名の日本語・略称バリアント（UNEXT等の日本語タイトルフィルタ用）
+# =============================================================================
+TEAM_NAME_VARIANTS: dict[str, list[str]] = {
+    "Arsenal": ["Arsenal", "アーセナル"],
+    "Manchester City": ["Manchester City", "Man City", "マンチェスター・C", "マンチェスターC"],
+    "Chelsea": ["Chelsea", "チェルシー"],
+    "Liverpool": ["Liverpool", "リバプール"],
+    "Manchester United": ["Manchester United", "Man United", "マンチェスター・U"],
+    "Tottenham": ["Tottenham", "Spurs", "トッテナム", "スパーズ"],
+    "Brighton": ["Brighton", "ブライトン"],
+    "Newcastle": ["Newcastle", "ニューカッスル"],
+    "Crystal Palace": ["Crystal Palace", "クリスタル・パレス", "クリスタルパレス"],
+    "West Ham": ["West Ham", "ウェストハム"],
+    "Nottingham Forest": ["Nottingham Forest", "ノッティンガム"],
+    "Bournemouth": ["Bournemouth", "ボーンマス"],
+    "Fulham": ["Fulham", "フルアム"],
+    "Aston Villa": ["Aston Villa", "アストン・ヴィラ"],
+    "Brentford": ["Brentford", "ブレントフォード"],
+    "Everton": ["Everton", "エバートン"],
+    "Wolves": ["Wolves", "Wolverhampton", "ウルブズ", "ウルヴァーハンプトン"],
+    "Leeds United": ["Leeds", "リーズ"],
+    "Sunderland": ["Sunderland", "サンダーランド"],
+    "Barcelona": ["Barcelona", "Barça", "バルセロナ", "バルサ"],
+    "Real Madrid": ["Real Madrid", "レアル・マドリー", "レアルマドリー"],
+    "Atletico Madrid": ["Atletico", "Atlético", "アトレティコ"],
+    "Real Sociedad": ["Real Sociedad", "レアル・ソシエダ"],
+    "Bayern Munich": ["Bayern", "バイエルン"],
+    "Borussia Dortmund": ["Dortmund", "BVB", "ドルトムント"],
+    "Inter": ["Inter", "インテル"],
+    "AC Milan": ["AC Milan", "Milan", "ミラン"],
+    "Juventus": ["Juventus", "ユベントス"],
+}
+
+
+def get_team_name_variants(team_name: str) -> list[str]:
+    """チーム名の検索バリアント一覧を返す（部分一致で検索）"""
+    for key, variants in TEAM_NAME_VARIANTS.items():
+        if key.lower() in team_name.lower() or team_name.lower() in key.lower():
+            return variants
+    return [team_name]
+
+
+def get_channels_by_categories(categories: list[str]) -> list[str]:
+    """指定カテゴリに属するチャンネルIDのリストを返す"""
+    return [
+        cid
+        for cid, info in TRUSTED_CHANNELS.items()
+        if info.get("category") in categories
+    ]
+
+
+def find_team_channel_ids(team_name: str) -> list[str]:
+    """チーム名に一致するteamカテゴリのチャンネルIDを返す（バリアント対応）"""
+    variants_lower = [v.lower() for v in get_team_name_variants(team_name)]
+    matches = []
+    for cid, info in TRUSTED_CHANNELS.items():
+        if info.get("category") != "team":
+            continue
+        ch_name = info.get("name", "").lower()
+        if any(v in ch_name or ch_name in v for v in variants_lower):
+            matches.append(cid)
+    return matches
 
 
 def get_team_channel(team_name: str) -> str | None:

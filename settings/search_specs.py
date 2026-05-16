@@ -32,17 +32,25 @@ YOUTUBE_SEARCH_SPECS: dict[str, dict[str, Any]] = {
             "live_stream",
             "reaction",
         ],
+        # playlist方式: チーム公式チャンネルのみ
+        "allowed_channel_categories": ["team"],
+        "title_keywords_type": "press_conference",  # "press conference" or "記者会見"
         "max_results": 50,
+        "max_display": 2,
     },
     "historic": {
         "label": "過去の対戦",
         "query_template": "{home_team} vs {away_team} highlights",
         "window": {
-            "days_before": 730,  # キックオフの何日前から（2年）
+            "days_before": 365,  # キックオフの何日前から（1年に短縮）
             "offset_hours": 24,  # キックオフの24時間前まで（ネタバレ防止）
         },
         "exclude_filters": ["live_stream", "press_conference", "reaction"],
+        # playlist方式: UNEXT・チーム公式・リーグ・放送局
+        "allowed_channel_categories": ["team", "league", "broadcaster"],
+        "title_keywords_type": "both_teams",  # ホーム/アウェイ両チーム名
         "max_results": 50,
+        "max_display": 3,
     },
     "tactical": {
         "label": "戦術分析",
@@ -59,7 +67,11 @@ YOUTUBE_SEARCH_SPECS: dict[str, dict[str, Any]] = {
             "press_conference",
             "reaction",
         ],
+        # playlist方式: 戦術専門チャンネルのみ（スポルティーバ含むtacticsカテゴリ）
+        "allowed_channel_categories": ["tactics"],
+        "title_keywords_type": "team_name",  # チーム名
         "max_results": 50,
+        "max_display": 2,
     },
     "player_highlight": {
         "label": "選手紹介",
@@ -77,24 +89,11 @@ YOUTUBE_SEARCH_SPECS: dict[str, dict[str, Any]] = {
             "press_conference",
             "reaction",
         ],
+        # playlist方式: UNEXT・チーム公式・リーグ
+        "allowed_channel_categories": ["team", "league", "broadcaster"],
+        "title_keywords_type": "player_name",  # 選手名
         "max_results": 50,
-    },
-    "training": {
-        "label": "練習風景",
-        "query_template": "{team_name} training",
-        "window": {
-            "hours_before": 168,  # 1週間
-            "offset_hours": 0,
-        },
-        "exclude_filters": [
-            "match_highlights",
-            "highlights",
-            "full_match",
-            "live_stream",
-            "press_conference",
-            "reaction",
-        ],
-        "max_results": 50,
+        "max_display": 2,
     },
 }
 
@@ -160,6 +159,22 @@ def get_youtube_time_window(
     published_before = kickoff_time - timedelta(hours=offset_hours)
 
     return published_after, published_before
+
+
+def get_youtube_allowed_channel_categories(category: str) -> list[str]:
+    """カテゴリの許可チャンネルカテゴリリストを取得"""
+    spec = YOUTUBE_SEARCH_SPECS.get(category)
+    if not spec:
+        raise ValueError(f"Unknown YouTube search category: {category}")
+    return spec.get("allowed_channel_categories", [])
+
+
+def get_youtube_max_display(category: str) -> int:
+    """カテゴリの最大表示件数を取得"""
+    spec = YOUTUBE_SEARCH_SPECS.get(category)
+    if not spec:
+        return 3
+    return spec.get("max_display", 3)
 
 
 def get_youtube_exclude_filters(category: str) -> list[str]:

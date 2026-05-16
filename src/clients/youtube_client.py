@@ -8,7 +8,7 @@ ServiceはこのClientを通じてYouTube検索機能を使用する。
 import hashlib
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from config import config
 from settings.cache_config import ENDPOINT_TTL_DAYS, USE_YOUTUBE_CACHE
@@ -229,6 +229,119 @@ class YouTubeSearchClient:
             logger.error(f"YouTube search error: {e}")
 
         return []
+
+    def get_channel_playlist_videos(
+        self,
+        channel_id: str,
+        max_results: int = 50,
+        published_after: datetime | None = None,
+        published_before: datetime | None = None,
+    ) -> list[dict]:
+        """
+        チャンネルのuploads playlistから動画を取得（1 unit、search.listの1/100）
+
+        playlistItems.list を使用するため、search.list の channelId 指定より確実。
+        UNEXTのように search.list で 0件になるチャンネルでも正常取得できる。
+
+        Args:
+            channel_id: YouTubeチャンネルID（UC...形式）
+            max_results: 取得件数上限（最大50）
+            published_after: この日時以降の動画のみ返す（クライアント側フィルタ）
+            published_before: この日時以前の動画のみ返す（クライアント側フィルタ）
+
+        Returns:
+            動画情報のリスト（search()と同じ形式）
+        """
+        # uploads playlist ID = "UU" + channel_id[2:]
+        playlist_id = "UU" + channel_id[2:]
+        cache_path = f"youtube/playlist_{channel_id}_{published_after.strftime('%Y%m%d') if published_after else 'nodate'}.json"
+
+        cached = self._read_cache(cache_path)
+        if cached is not None:
+            return self._filter_by_date(cached, published_after, published_before)
+
+        try:
+            url = f"{self.API_BASE}/playlistItems"
+            params = {
+                "key": self.api_key,
+                "part": "snippet",
+                "playlistId": playlist_id,
+                "maxResults": min(max_results, 50),
+            }
+            response = self.http_client.get(url, params=params)
+
+            if response.status_code == 200:
+                data = response.json()
+                results = []
+                for item in data.get("items", []):
+                    snippet = item.get("snippet", {})
+                    resource = snippet.get("resourceId", {})
+                    video_id = resource.get("videoId")
+                    if not video_id:
+                        continue
+                    thumbnails = snippet.get("thumbnails", {})
+                    thumb = (
+                        thumbnails.get("medium")
+                        or thumbnails.get("default")
+                        or {}
+                    )
+                    results.append(
+                        {
+                            "video_id": video_id,
+                            "title": snippet.get("title", ""),
+                            "url": f"https://www.youtube.com/watch?v={video_id}",
+                            "channel_id": snippet.get("videoOwnerChannelId", channel_id),
+                            "channel_name": snippet.get("videoOwnerChannelTitle", ""),
+                            "thumbnail_url": thumb.get("url", ""),
+                            "published_at": snippet.get("publishedAt", ""),
+                            "description": snippet.get("description", ""),
+                        }
+                    )
+
+                self._write_cache(cache_path, results)
+                self.api_call_count += 1
+                ApiStats.record_call("YouTube Playlist API")
+                logger.info(
+                    f"YouTube Playlist: channel={channel_id} -> {len(results)} videos"
+                )
+                return self._filter_by_date(results, published_after, published_before)
+            else:
+                logger.warning(
+                    f"YouTube playlistItems failed: {response.status_code} for channel {channel_id}"
+                )
+        except Exception as e:
+            logger.error(f"YouTube playlist error for {channel_id}: {e}")
+
+        return []
+
+    def _filter_by_date(
+        self,
+        videos: list[dict],
+        published_after: datetime | None,
+        published_before: datetime | None,
+    ) -> list[dict]:
+        """日付範囲でフィルタ（クライアント側）"""
+        if not published_after and not published_before:
+            return videos
+
+
+        result = []
+        for v in videos:
+            pub = v.get("published_at", "")
+            if not pub:
+                result.append(v)
+                continue
+            try:
+                dt = datetime.fromisoformat(pub.replace("Z", "+00:00"))
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=UTC)
+                after_ok = (not published_after) or dt >= published_after.astimezone(UTC)
+                before_ok = (not published_before) or dt <= published_before.astimezone(UTC)
+                if after_ok and before_ok:
+                    result.append(v)
+            except ValueError:
+                result.append(v)
+        return result
 
     def get_stats(self) -> dict[str, int]:
         """API呼び出しとキャッシュヒットの統計を返す"""
