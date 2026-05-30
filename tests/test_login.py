@@ -67,6 +67,7 @@ def clean_page(page: Page):
     return page
 
 
+@pytest.mark.e2e
 class TestLoginPage:
     """ログインページのテスト"""
 
@@ -228,6 +229,7 @@ class TestLoginPage:
         expect(page.locator("#user-email")).to_contain_text(TEST_EMAIL)
 
 
+@pytest.mark.e2e
 class TestGoogleLogin:
     """Googleログインのテスト（UI要素のみ、実際の認証フローはスキップ）"""
 
@@ -254,6 +256,7 @@ class TestGoogleLogin:
         pass
 
 
+@pytest.mark.e2e
 class TestAllowedEmailsList:
     """許可リスト関連のテスト"""
 

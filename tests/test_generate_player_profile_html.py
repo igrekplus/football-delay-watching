@@ -2,7 +2,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts import generate_player_profile_html
+from src.workflows.generate_player_profile import (
+    generate_profile_html as generate_player_profile_html,
+)
 
 
 class TestGeneratePlayerProfileHtml(unittest.TestCase):

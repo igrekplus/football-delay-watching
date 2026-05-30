@@ -49,7 +49,7 @@ python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirem
 ├── settings/            # 設定ファイル（検索仕様・プロンプト）
 │   ├── search_specs.py      # YouTube/Google検索クエリテンプレート
 │   └── gemini_prompts.py    # LLMプロンプトテンプレート
-├── tests/               # ユニットテスト（unittest使用）
+├── tests/               # ユニットテスト（pytest実行、unittest互換）
 ├── docs/                # 設計ドキュメント
 │   ├── 01_requirements/     # 要件定義
 │   ├── 02_architecture/     # 全体アーキテクチャ
@@ -149,12 +149,15 @@ ruff format .         # フォーマット
 ## 5. Testing
 
 ```bash
-python -m unittest discover tests      # 全テスト
-python -m unittest tests/test_foo.py   # 個別テスト
+python -m pytest                        # 全テスト（E2E除外）
+python -m pytest tests/test_foo.py      # 個別テスト
+python -m pytest -m e2e                 # E2E / Playwright テスト（要 playwright install）
+make test                               # 上記と同等のラッパー
 ```
 
-- `tests/test_*.py`: ユニットテスト（unittest）
+- `tests/test_*.py`: ユニットテスト（pytest で実行、`unittest.TestCase` ベースも互換動作）
 - `tests/verify_*.py`: API検証スクリプト
+- E2E テスト (`@pytest.mark.e2e`) はデフォルト実行から除外済み
 
 ---
 
