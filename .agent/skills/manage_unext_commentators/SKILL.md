@@ -84,8 +84,11 @@ python -c "from src.calendar_generator import CalendarGenerator; CalendarGenerat
 ```
 
 ### デプロイ
+
+`.agent/workflows/deploy.md` に従う。
+
 ```bash
-firebase deploy --only hosting
+./scripts/safe_deploy.sh
 ```
 
 ### 確認

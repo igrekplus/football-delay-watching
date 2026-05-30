@@ -119,20 +119,17 @@ def clean_llm_output(text: str) -> str:
 
 ## ✅ 検証フェーズ
 
-### 1. debug-run による結合テスト
-```bash
-TARGET_DATE="YYYY-MM-DD" DEBUG_MODE=True USE_MOCK_DATA=False python main.py
-```
+実行手順は `.agent/workflows/debug-run.md` に従う。
 
-### 2. 確認項目
+### プロンプト修正後の確認項目
 - [ ] HTMLレポートに中間出力が見えない
 - [ ] 選手名や項目が重複していない
 - [ ] 不要なプレフィックス（`: ` 等）がない
 - [ ] コードブロックの残骸（```）がない
 
-### 3. ワークフロー参照
-- プロンプト調整: `.agent/workflows/tune-gemini.md`
+### ワークフロー参照
 - デバッグ実行: `.agent/workflows/debug-run.md`
+- プロンプト調整: `.agent/workflows/tune-gemini.md`
 
 ---
 
